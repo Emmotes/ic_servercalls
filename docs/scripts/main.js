@@ -99,6 +99,7 @@ async function deleteFormationSaves() {
 		}
 		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="menuCol2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp} ${patron}</span></span>`;
 		form.parentNode.style.display=`none`;
+		form.checked = false;
 		formsDeleter.innerHTML = c;
 	}
 }
