@@ -29,6 +29,10 @@ function init() {
 }
 
 async function pullFormationSaves() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
 	let button = document.getElementById(`formationsPullButton`);
 	let message = document.getElementById(`formationsPullButtonDisabled`);
 	button.hidden = true;

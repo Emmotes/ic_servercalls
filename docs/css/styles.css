@@ -293,8 +293,8 @@ input[type="checkbox"]:checked::before {
 .tabs {
 	display: flex;
 	flex-wrap: wrap;
-	max-width: 1112px;
-	min-width: 394px;
+	max-width: 1192px;
+	min-width: 612px;
 	width: 90%;
 	font-size: 0.97em;
 	margin: auto;
@@ -346,7 +346,7 @@ input[type="checkbox"]:checked::before {
 
 .formsWrapper {
 	display: grid;
-	grid-template-columns: repeat(auto-fill,350px);
+	grid-template-columns: repeat(auto-fill,280px);
 	column-gap: 10px;
 	row-gap: 10px;
 }
@@ -354,12 +354,13 @@ input[type="checkbox"]:checked::before {
 .formsCampaign {
 	display: flex;
 	flex-direction: column;
-	min-width: 330px;
-	max-width: 400px;
+	min-width: 280px;
+	max-width: 280px;
 	padding: 10px;
 	border: 1px solid black;
 	border-radius: 10px;
 	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*var(--darken)));
+	font-size: 0.8em;
 }
 
 .formsCampaignTitle {
