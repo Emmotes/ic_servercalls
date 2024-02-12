@@ -4,7 +4,7 @@ const settingsUserId=document.getElementById(`userId`);
 const settingsUserHash=document.getElementById(`userHash`);
 const settingsSave=document.getElementById(`settingsMenuButtonSave`);
 const settingsClose=document.getElementById(`settingsMenuButtonClose`);
-const M=`http://master.idlechampions.com/~idledragons/`;
+const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
 const OII=`Outdated instance id`;
@@ -171,7 +171,7 @@ async function getPlayServerFromMaster() {
 	let call = `${PARAM_CALL}=getPlayServerForDefinitions`;
 	call += appendBoilerplate();
 	let response = await sendServerCall(M,call);
-	SERVER = response['play_server'];
+	SERVER = response['play_server'].replace(`http:`,`https:`);
 }
 
 async function getUserDetails() {
@@ -226,7 +226,7 @@ async function sendServerCall(server,call) {
 	let limit = 0;
 	while (response[SPS]!=undefined||!response['success']&&limit<RETRIES) {
 		if (response[SPS]) {
-			SERVER = response[SPS];
+			SERVER = response[SPS].replace(`http:`,`https:`);
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
 			console.log(`Got outdated instance id.`);
