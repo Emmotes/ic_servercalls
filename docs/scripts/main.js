@@ -56,6 +56,7 @@ async function displayFormationSaves(wrapper,saves) {
 		let patron = id - camp;
 		let campName = campaignIds[`${camp}`];
 		let patronName = patron==0?``:patronIds[`${patron}`];
+		if (patronName==undefined) patronName=``;
 		c += `<span class="formsCampaign" id="${key}"><span class="formsCampaignTitle">${campName}</span><span class="formsCampaignTitle">`+(patronName==``?`No Patron`:patronName)+`</span>`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
