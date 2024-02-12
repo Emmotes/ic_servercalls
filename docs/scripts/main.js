@@ -181,16 +181,17 @@ function setHash(hash) {
 
 async function getPlayServerFromMaster() {
 	let call = `${PARAM_CALL}=getPlayServerForDefinitions`;
-	call += appendBoilerplate();
 	let response = await sendServerCall(M,call);
 	SERVER = response['play_server'];
 }
 
 async function getUserDetails() {
 	let call = `${PARAM_CALL}=getuserdetails`;
-	call += `&${PARAM_USERID}=${userIdent[0]}`;
-	call += `&${PARAM_USERHASH}=${userIdent[1]}`;
-	call += appendBoilerplate();
+	return await sendServerCall(SERVER,call,true);
+}
+
+async function getDefinitions() {
+	let call = `${PARAM_CALL}=getdefinitions`;
 	return await sendServerCall(SERVER,call);
 }
 
@@ -202,33 +203,49 @@ async function getUpdatedInstanceId(deets) {
 
 async function getFormationSaves() {
 	let call = `${PARAM_CALL}=getallformationsaves`;
-	call += `&${PARAM_USERID}=${userIdent[0]}`;
-	call += `&${PARAM_USERHASH}=${userIdent[1]}`;
-	if (instanceId==``)
-		await getUpdatedInstanceId()
-	call += `&${PARAM_INSTANCEID}=${instanceId}`;
-	call += appendBoilerplate();
-	return await sendServerCall(SERVER,call);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function deleteFormationSave(id) {
 	if (id==undefined) return;
 	let call = `${PARAM_CALL}=DeleteFormationSave`;
 	call += `&formation_save_id=${id}`;
-	call += `&${PARAM_USERID}=${userIdent[0]}`;
-	call += `&${PARAM_USERHASH}=${userIdent[1]}`;
+	return await sendServerCall(SERVER,call,true,true);
+}
+
+async function purchaseFeat(id) {
+    let call = `${PARAM_CALL}=purchasefeat`;
+    call += `&feat_id=${id}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function upgradeLegendary(heroId,slotId) {
+	let call = `${PARAM_CALL}=upgradelegendaryitem`;
+	call += `&hero_id=${heroId}`;
+	call += `&slot_id=${slotId}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+function appendUserData() {
+	return `&${PARAM_USERID}=${userIdent[0]}&${PARAM_USERHASH}=${userIdent[1]}`;
+}
+
+async function appendInstanceId() {
 	if (instanceId==``)
 		await getUpdatedInstanceId()
-	call += `&${PARAM_INSTANCEID}=${instanceId}`;
-	call += appendBoilerplate();
-	return await sendServerCall(SERVER,call);
+	return `&${PARAM_INSTANCEID}=${instanceId}`;
 }
 
 function appendBoilerplate() {
 	return `&language_id=1&timestamp=0&request_id=0&mobile_client_version=99999&include_free_play_objectives=true&instance_key=1&offline_v2_build=1&localization_aware=true`;
 }
 
-async function sendServerCall(server,call) {
+async function sendServerCall(server,call,addUserData,addInstanceId) {
+	if (addUserData)
+		call += appendUserData();
+	if (addInstanceId)
+		call += await appendInstanceId();
+	call += appendBoilerplate();
 	if (server==``) {
 		if (SERVER==``)
 			await getPlayServerFromMaster();
