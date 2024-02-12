@@ -1,0 +1,56 @@
+:root {
+	/* colour names from: https://www.color-name.com/ */
+	/* darks */
+	--dark1hue: 240;
+	--dark1sat: 15%;
+	--dark1lig: 16%;
+	--dark1: hsl(var(--dark1hue),var(--dark1sat),var(--dark1lig)); /* Dark Gunmetal */
+
+	--dark2hue: 307;
+	--dark2sat: 36%;
+	--dark2lig: 9%;
+	--dark2: hsl(var(--dark2hue),var(--dark2sat),var(--dark2lig));  /* Eerie Black */
+	
+	--dark3hue: 331;
+	--dark3sat: 37%;
+	--dark3lig: 25%;
+	--dark3: hsl(var(--dark3hue),var(--dark3sat),var(--dark3lig));  /* Old Mauve */
+	
+	/* mids */
+	--mid1hue: 325;
+	--mid1sat: 24%;
+	--mid1lig: 56%;
+	--mid1: hsl(var(--mid1hue),var(--mid1sat),var(--mid1lig)); /* English Lavender */
+	
+	--mid2hue: 26;
+	--mid2sat: 12%;
+	--mid2lig: 53%;
+	--mid2: hsl(var(--mid2hue),var(--mid2sat),var(--mid2lig)); /* Mountbatten Pink */
+	
+	--mid3hue: 258;
+	--mid3sat: 21%;
+	--mid3lig: 41%;
+	--mid3: hsl(var(--mid3hue),var(--mid3sat),var(--mid3lig)); /* Purple Navy */
+	
+	/* lights */
+	--light1hue: 290;
+	--light1sat: 14%;
+	--light1lig: 83%;
+	--light1: hsl(var(--light1hue),var(--light1sat),var(--light1lig)); /* Languid Lavender */
+	
+	--light2hue: 289;
+	--light2sat: 17%;
+	--light2lig: 88%;
+	--light2: hsl(var(--light2hue),var(--light2sat),var(--light2lig)); /* Platinum */
+	
+	--light3hue: 289;
+	--light3sat: 44%;
+	--light3lig: 95%;
+	--light3: hsl(var(--light3hue),var(--light3sat),var(--light3lig)); /* Anti-Flash White */
+	
+	/* highlight darks */
+	--highlightDark1: #38384A;
+	
+	--darken: 0.6;
+	--lighten: 1.4;
+}
