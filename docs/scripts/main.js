@@ -68,7 +68,7 @@ async function displayFormationSaves(wrapper,saves) {
 			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
 			if (formLet!=``) formLet = ` (Fav: ${formLet})`;
-			c += `<span class="formsCampaignFormation" id="form_${formId}_cont"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-patron="${patronName}"><label class="cblabel" for="form_${formId}">${formName}${formLet}</label></span>`;
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-patron="${patronName}"><label class="cblabel" for="form_${formId}">${formName}${formLet}</label></span>`;
 		}
 		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span>`;
 	}
@@ -90,8 +90,10 @@ async function deleteFormationSaves() {
 	let c = `<span class="menuRow">Deleting Formation Saves:</span>`;
 	formsDeleter.innerHTML = c;
 	let list = document.querySelectorAll('[id^="form_"]');
+	let count = 0;
 	for (let form of list) {
 		if (!form.checked) continue;
+		count++;
 		let id = Number(form.id.replaceAll("form_",""));
 		let result = await deleteFormationSave(id);
 		let patron = form.dataset.patron;
@@ -105,6 +107,10 @@ async function deleteFormationSaves() {
 		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="menuCol2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp} ${patron}</span></span>`;
 		form.parentNode.style.display=`none`;
 		form.checked = false;
+		formsDeleter.innerHTML = c;
+	}
+	if (count==0) {
+		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}
 }
