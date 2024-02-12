@@ -60,7 +60,7 @@ async function displayFormationSaves(wrapper,saves) {
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let formName = formation.name;
-			let formFav = Number(formation.favorite);
+			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
 			if (formLet!=``) formLet = ` (Fav: ${formLet})`;
 			c += `<span class="formsCampaignFormation" id="form_${formId}_cont"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-patron="${patronName}"><label class="cblabel" for="form_${formId}">${formName}${formLet}</label></span>`;
