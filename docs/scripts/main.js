@@ -171,7 +171,7 @@ async function getPlayServerFromMaster() {
 	let call = `${PARAM_CALL}=getPlayServerForDefinitions`;
 	call += appendBoilerplate();
 	let response = await sendServerCall(M,call);
-	SERVER = response['play_server'].replace(`http:`,`https:`);
+	SERVER = response['play_server'];
 }
 
 async function getUserDetails() {
@@ -226,7 +226,7 @@ async function sendServerCall(server,call) {
 	let limit = 0;
 	while (response[SPS]!=undefined||!response['success']&&limit<RETRIES) {
 		if (response[SPS]) {
-			SERVER = response[SPS].replace(`http:`,`https:`);
+			SERVER = response[SPS];
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
 			console.log(`Got outdated instance id.`);
