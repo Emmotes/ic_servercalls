@@ -191,7 +191,7 @@ input[type="input"] {
 
 input[type="button"] {
 	width: 80%;
-	background-color: var(--dark1);
+	background-color: var(--dark4);
 	color: var(--light1);
 	padding: 3px;
 	font-size: 0.9em;
@@ -200,11 +200,24 @@ input[type="button"] {
 }
 
 input[type="button"]:hover {
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*var(--lighten)));
+	background-color: hsl(var(--dark4hue),var(--dark4sat),calc(var(--dark4lig)*var(--lighten)));
 }
 
 input[type="button"]:focus {
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*var(--darken)));
+	background-color: hsl(var(--dark4hue),var(--dark4sat),calc(var(--dark4lig)*var(--darken)));
+}
+
+.redButton input[type="button"] {
+	color: var(--warning1);
+	background-color: var(--warning2);
+}
+
+.redButton input[type="button"]:hover {
+	background-color: hsl(var(--warning2hue),var(--warning2sat),calc(var(--warning2lig)*var(--lighten)*var(--lighten)));
+}
+
+.redButton input[type="button"]:focus {
+	background-color: hsl(var(--warning2hue),var(--warning2sat),calc(var(--warning2lig)*var(--darken)*var(--darken)));
 }
 
 input[type="checkbox"] {

@@ -16,6 +16,11 @@
 	--dark3lig: 25%;
 	--dark3: hsl(var(--dark3hue),var(--dark3sat),var(--dark3lig));  /* Old Mauve */
 	
+	--dark4hue: 240;
+	--dark4sat: 14%;
+	--dark4lig: 8%;
+	--dark4: hsl(var(--dark4hue),var(--dark4sat),var(--dark4lig));  /* Chinese Black */
+	
 	/* mids */
 	--mid1hue: 325;
 	--mid1sat: 24%;
@@ -47,6 +52,17 @@
 	--light3sat: 44%;
 	--light3lig: 95%;
 	--light3: hsl(var(--light3hue),var(--light3sat),var(--light3lig)); /* Anti-Flash White */
+	
+	/* warnings */
+	--warning1hue: 0;
+	--warning1sat: 74%;
+	--warning1lig: 49%;
+	--warning1: hsl(var(--warning1hue),var(--warning1sat),var(--warning1lig)); /* Maximal Red */
+	
+	--warning2hue: 300;
+	--warning2sat: 38%;
+	--warning2lig: 3%;
+	--warning2: hsl(var(--warning2hue),var(--warning2sat),var(--warning2lig)); /* Maximal Red */
 	
 	/* highlight darks */
 	--highlightDark1: #38384A;

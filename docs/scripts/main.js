@@ -76,7 +76,7 @@ async function displayFormationSaves(wrapper,saves) {
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
-	formsDeleter.innerHTML = `<span class="menuRow"><span class="menuCol1" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+	formsDeleter.innerHTML = `<span class="menuRow"><span class="menuCol1 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
 }
 
 function formsSelectAll(id,check) {
