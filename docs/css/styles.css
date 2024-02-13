@@ -40,17 +40,17 @@ h6{
     margin:2.33em 0
 }
 h1,h2,h3 {
-	line-height: 2.0em;
+	line-height: 1em;
 	color: var(--light3);
 }
 h4,h5 {
-	line-height: 1.7em;
+	line-height: 1em;
 }
 h3,h4,h5 {
 	color: var(--light2);
 }
 h6 {
-	line-height: 1.4em;
+	line-height: 1em;
 	color: var(--light1);
 }
 ul {

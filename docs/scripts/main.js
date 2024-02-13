@@ -1,4 +1,5 @@
 const tabsContainer=document.getElementById(`tabsContainer`);
+const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
 const settingsUserId=document.getElementById(`userId`);
 const settingsUserHash=document.getElementById(`userHash`);
@@ -22,6 +23,7 @@ function init() {
 		settingsClose.hidden = false;
 		userIdent = JSON.parse(localStorage.scUserIdent);
 	} else {
+		disabledUntilData.hidden = false;
 		tabsContainer.hidden = true;
 		settingsClose.hidden = true;
 		settingsToggle();
@@ -141,6 +143,8 @@ async function saveUserData() {
 			settingsClose.hidden = false;
 		if (tabsContainer.hidden)
 			tabsContainer.hidden = false;
+		if (!disabledUntilData.hidden)
+			disabledUntilData.hidden = true;
 		await new Promise(r => setTimeout(r, 2000));
 		settingsSave.value = `Save`;
 	} else {
