@@ -63,14 +63,22 @@ async function displayFormationSaves(wrapper,saves) {
 		let campName = campaignIds[`${camp}`];
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
-		c += `<span class="formsCampaign" id="${key}"><span class="formsCampaignTitle">${campName}</span><span class="formsCampaignTitle">`+(patronName==``?`No Patron`:patronName)+`</span>`;
+		let patronDisplay = patronName==``?`No Patron`:patronName;
+		c += `<span class="formsCampaign" id="${key}"><span class="formsCampaignTitle">${campName}</span><span class="formsCampaignTitle">${patronDisplay}</span>`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let formName = formation.name;
 			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
-			if (formLet!=``) formLet = ` (Fav: ${formLet})`;
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-patron="${patronName}"><label class="cblabel" for="form_${formId}">${formName}${formLet}</label></span>`;
+			let formFeats = Object.prototype.toString.call(formation.feats||[]) != `[object Array]`;
+			let extras = ``;
+			if (formLet!=``) extras += `Fav: ${formLet}`;
+			if (formFeats) {
+				if (extras!=``) extras += " / ";
+				extras += "Has Feats";
+			}
+			if (extras!=``) extras = ` (${extras})`;
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label></span>`;
 		}
 		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span>`;
 	}
@@ -98,15 +106,14 @@ async function deleteFormationSaves() {
 		count++;
 		let id = Number(form.id.replaceAll("form_",""));
 		let result = await deleteFormationSave(id);
-		let patron = form.dataset.patron;
-		if (patron!=``) patron = `(${patron})`;
+		let extras = form.dataset.extras;
 		let successType = ``;
 		if (result['success']&&result['okay']) {
 			successType = `Successfully deleted`;
 		} else {
 			successType = `Failed to delete`;
 		}
-		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="menuCol2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp} ${patron}</span></span>`;
+		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="menuCol2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
 		form.parentNode.style.display=`none`;
 		form.checked = false;
 		formsDeleter.innerHTML = c;
