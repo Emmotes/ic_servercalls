@@ -64,7 +64,7 @@ async function displayFormationSaves(wrapper,saves) {
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
-		c += `<span class="formsCampaign" id="${key}"><span class="formsCampaignTitle">${campName}</span><span class="formsCampaignTitle">${patronDisplay}</span>`;
+		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let formName = formation.name;
@@ -80,7 +80,7 @@ async function displayFormationSaves(wrapper,saves) {
 			if (extras!=``) extras = ` (${extras})`;
 			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label></span>`;
 		}
-		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span>`;
+		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);

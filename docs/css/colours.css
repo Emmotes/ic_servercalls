@@ -55,9 +55,9 @@
 	
 	/* warnings */
 	--warning1hue: 0;
-	--warning1sat: 74%;
-	--warning1lig: 49%;
-	--warning1: hsl(var(--warning1hue),var(--warning1sat),var(--warning1lig)); /* Maximal Red */
+	--warning1sat: 85%;
+	--warning1lig: 55%;
+	--warning1: hsl(var(--warning1hue),var(--warning1sat),var(--warning1lig));
 	
 	--warning2hue: 300;
 	--warning2sat: 38%;
