@@ -78,7 +78,7 @@ async function displayFormationSaves(wrapper,saves) {
 				extras += "Has Feats";
 			}
 			if (extras!=``) extras = ` (${extras})`;
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}${formLet}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label></span>`;
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label></span>`;
 		}
 		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}

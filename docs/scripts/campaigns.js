@@ -26,12 +26,14 @@ campaignIds = {
 	"25": "Trials of Mount Tiamat",
 	"27": "Wild Beyond the Witchlight",
 	"28": "Light of Xaryxis",
-	"29": "Turn of Fortune's Wheel"
+	"29": "Turn of Fortune's Wheel",
+	"30": "Vecna: Eve of Ruin"
 };
 patronIds = {
 	      "0": "",
 	"1100000": "Mirt",
 	"1200000": "Vajra",
 	"1300000": "Strahd",
-	"1400000": "Zariel"
+	"1400000": "Zariel",
+	"1500000": "Elminster"
 };
