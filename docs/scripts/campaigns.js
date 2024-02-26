@@ -24,6 +24,7 @@ campaignIds = {
 	"23": "Special",
 	"24": "Icewind Dale: Rime of the Frostmaiden",
 	"25": "Trials of Mount Tiamat",
+	"26": "Split the Party",
 	"27": "Wild Beyond the Witchlight",
 	"28": "Light of Xaryxis",
 	"29": "Turn of Fortune's Wheel",
