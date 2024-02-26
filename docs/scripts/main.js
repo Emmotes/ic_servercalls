@@ -61,6 +61,7 @@ async function displayFormationSaves(wrapper,saves) {
 		let camp = id % 1000;
 		let patron = id - camp;
 		let campName = campaignIds[`${camp}`];
+		if (campName==undefined) campName = `Unknown Campaign ID: ${camp}`;
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
