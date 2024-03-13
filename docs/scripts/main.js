@@ -43,18 +43,8 @@ async function pullFormationSaves() {
 	setTimeout (function(){message.hidden = true;},10000);
 	setTimeout (function(){button.hidden = false;},10000);
 	let wrapper = document.getElementById(`formsWrapper`);
-	let c = `Waiting for response...`;
-	wrapper.innerHTML = c;
-	try {
-		let forms = await getFormationSaves();
-		if (forms.includes("Security hash failure")) {
-			wrapper.innerHTML = BADDATA;
-		} else {
-			await displayFormationSaves(wrapper,forms);
-		}
-	} catch {
-		wrapper.innerHTML = BADDATA;
-	}
+	wrapper.innerHTML = `Waiting for response...`;
+	await displayFormationSaves(wrapper,forms);
 }
 
 async function displayFormationSaves(wrapper,saves) {
