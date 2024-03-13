@@ -44,7 +44,12 @@ async function pullFormationSaves() {
 	setTimeout (function(){button.hidden = false;},10000);
 	let wrapper = document.getElementById(`formsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	await displayFormationSaves(wrapper,forms);
+	try {
+		let forms = await getFormationSaves();
+		await displayFormationSaves(wrapper,forms);
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
 }
 
 async function displayFormationSaves(wrapper,saves) {
