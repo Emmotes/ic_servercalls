@@ -14,6 +14,7 @@ const PARAM_INSTANCEID=`instance_id`;
 const PARAM_USERID=`user_id`;
 const PARAM_USERHASH=`hash`;
 const RETRIES=3;
+const BADDATA = `Response: Your user data is incorrect. Server call failed.`;
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
@@ -44,8 +45,16 @@ async function pullFormationSaves() {
 	let wrapper = document.getElementById(`formsWrapper`);
 	let c = `Waiting for response...`;
 	wrapper.innerHTML = c;
-	let forms = await getFormationSaves();
-	await displayFormationSaves(wrapper,forms);
+	try {
+		let forms = await getFormationSaves();
+		if (forms.includes("Security hash failure")) {
+			wrapper.innerHTML = BADDATA;
+		} else {
+			await displayFormationSaves(wrapper,forms);
+		}
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
 }
 
 async function displayFormationSaves(wrapper,saves) {
