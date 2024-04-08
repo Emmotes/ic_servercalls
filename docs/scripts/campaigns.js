@@ -1,3 +1,4 @@
+const vc=1.0
 campaignIds = {
 	 "1": "Grand Tour of the Sword Coast",
 	 "2": "Tomb of Annihilation",
