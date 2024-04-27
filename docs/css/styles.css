@@ -395,6 +395,7 @@ input[type="checkbox"]:checked::before {
 	justify-content: flex-start;
 	margin-bottom: 1px;
 	font-size: 0.9em;
+	position: relative;
 }
 
 .formsCampaignSelect {
@@ -406,4 +407,30 @@ input[type="checkbox"]:checked::before {
 .formsCampaignSelect input[type="button"] {
 	width: 45%;
 	margin: 10px 5px 5px 5px;
+}
+
+.formsCampaignFormation:hover .tooltipContents {
+	visibility: visible;
+}
+.tooltipContents {
+	visibility: hidden;
+	padding: 25px;
+	border-radius: 5px;
+	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*0.6));
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	z-index: 1;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	transform: translate(0px, -40px);
+	color: #f0e7d5;
+	pointer-events: none;
+	font-size: 1.1em;
+}
+.tooltipContents svg {
+	margin-top: 10px;
 }

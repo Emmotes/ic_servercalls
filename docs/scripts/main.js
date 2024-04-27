@@ -1,4 +1,4 @@
-const v=1.0
+const v=1.1
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -59,13 +59,18 @@ async function displayFormationSaves(wrapper,saves) {
 		return;
 	}
 	let all = saves.all_saves;
+	let formObjs = saves.formation_objects;
 	let c = ``;
 	for (let key of Object.keys(all)) {
 		if (key=="-1") continue;
 		let id = Number(key);
 		let camp = id % 1000;
 		let patron = id - camp;
+		let formObj = formObjs[`${id}`];
 		let campName = campaignIds[`${camp}`];
+		if (id > 1000 && id < 1000000) {
+			campName = formObj.campaign_name;
+		}
 		if (campName==undefined) campName = `Unknown Campaign ID: ${camp}`;
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
@@ -84,13 +89,66 @@ async function displayFormationSaves(wrapper,saves) {
 				extras += "Has Feats";
 			}
 			if (extras!=``) extras = ` (${extras})`;
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label></span>`;
+			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 		}
 		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
 	formsDeleter.innerHTML = `<span class="menuRow"><span class="menuCol1 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+}
+
+function createFormationTooltip(name,champs,formation) {
+	let formObj = ``;
+	for (let currForm of formation.game_change_data) {
+		if (currForm.type!=undefined&&currForm.type==`formation`) {
+			if (currForm.formation == undefined)
+				return ``;
+			formObj = currForm.formation;
+			break;
+		}
+	}
+	if (formObj == ``) {
+		for (let currForm of formation.campaign_changes) {
+			if (currForm.type!=undefined&&currForm.type==`formation`) {
+				if (currForm.formation == undefined)
+					return ``;
+				formObj = currForm.formation;
+				break;
+			}
+		}
+	}
+	if (formObj == ``) return ``;
+	
+	let circleRadius = 25;
+	let colMult = 60;
+	let rowMult = 30;
+	
+	let maxCol = 0;
+	let minY = 99999999;
+	let maxY = 0;
+	for (let currObj of formObj) {
+		if (currObj.col > maxCol) maxCol = currObj.col;
+		let y = Math.floor(currObj.y / 10);
+		if (y < minY) minY = y;
+		if (y > maxY) maxY = y;
+	}
+		
+	let formWidth = (circleRadius*2) + (colMult * maxCol);
+	let formHeight = (circleRadius*2) + (rowMult * (maxY - minY));
+	
+	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${formWidth}" height="${formHeight}">`;
+	for (let i=0; i<formObj.length; i++) {
+		let currObj = formObj[i];
+		let champ = champs[i];
+		let yPos = Math.floor(currObj.y / 10);
+		let x = (maxCol - currObj.col) * colMult;
+		let y = (yPos - minY) * rowMult;
+		svg += `<image x="${x}" y="${y}" width="${circleRadius*2}" height="${circleRadius*2}" href="images/portraits/${champ}.png" />`;
+	}
+	svg += `</svg>`;
+	return `<span class="tooltipContents">${name}${svg}</span>`;
 }
 
 function formsSelectAll(id,check) {
