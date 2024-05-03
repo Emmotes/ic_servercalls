@@ -1,4 +1,4 @@
-const v=1.1
+const v=1.2
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -16,6 +16,7 @@ const PARAM_USERID=`user_id`;
 const PARAM_USERHASH=`hash`;
 const RETRIES=3;
 const BADDATA = `Response: Your user data is incorrect. Server call failed.`;
+const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
@@ -30,6 +31,10 @@ function init() {
 		settingsClose.hidden = true;
 		settingsToggle();
 	}
+	window.addEventListener('hashchange',() =>{
+		swapTab();
+	});
+	swapTab();
 }
 
 async function pullFormationSaves() {
@@ -188,6 +193,87 @@ async function deleteFormationSaves() {
 	}
 }
 
+async function pullShiniesData() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
+	let button = document.getElementById(`shiniesPullButton`);
+	let message = document.getElementById(`shiniesPullButtonDisabled`);
+	button.hidden = true;
+	message.hidden = false;
+	setTimeout (function(){message.hidden = true;},10000);
+	setTimeout (function(){button.hidden = false;},10000);
+	let wrapper = document.getElementById(`shiniesWrapper`);
+	wrapper.innerHTML = `Waiting for response...`;
+	try {
+		let userData = await getUserDetails();
+		await displayShiniesData(wrapper,userData.details);
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
+}
+
+async function displayShiniesData(wrapper,details) {
+	let tokens = Number(details.stats.event_v2_tokens);
+	let chestPacks = tokens / 7500;
+	let chests = tokens / 2500;
+	let shinies = chests / 1000;
+	let bcC = 0;
+	let bcU = 0;
+	let bcR = 0;
+	let bcE = 0;
+	for (let buff of details.buffs) {
+		let id = Number(buff.buff_id);
+		if (id==undefined||id==""||id<17||id>20)
+			continue;
+		let amount = Number(buff.inventory_amount);
+		if (amount==undefined||amount=="")
+			continue;
+		switch (Number(id)) {
+			case 17: bcC = amount; break;
+			case 18: bcU = amount; break;
+			case 19: bcR = amount; break;
+			case 20: bcE = amount; break;
+		}
+	}
+	let bcCT = bcC * 12;
+	let bcUT = bcU * 72;
+	let bcRT = bcR * 576;
+	let bcET = bcE * 1152;
+	let tokensB = tokens + bcCT + bcUT + bcRT + bcET;
+	let chestPacksB = tokensB / 7500;
+	let chestsB = tokensB / 2500;
+	let shiniesB = chestsB / 1000;
+	let txt = ``;
+	txt+=`<span class="menuRow" style="font-size:1.2em">Without Bounties:</span>`;
+	txt+=addShiniesRow(`Tokens:`,nf(tokens));
+	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacks));
+	txt+=addShiniesRow(`Total Chests:`,nf(chests));
+	txt+=addShiniesRow(`Avg Shinies:`,nf(shinies));
+	txt+=`<span class="menuRow">&nbsp;</span>`;
+	txt+=`<span class="menuRow" style="font-size:1.2em">With Bounties:</span>`;
+	txt+=addShiniesRow(`Tiny Bounty Contracts:`,nf(bcC),`Tokens:`,nf(bcCT));
+	txt+=addShiniesRow(`Small Bounty Contracts:`,nf(bcU),`Tokens:`,nf(bcUT));
+	txt+=addShiniesRow(`Medium Bounty Contracts:`,nf(bcR),`Tokens:`,nf(bcRT));
+	txt+=addShiniesRow(`Large Bounty Contracts:`,nf(bcE),`Tokens:`,nf(bcET));
+	txt+=`<span class="menuRow">&nbsp;</span>`;
+	txt+=addShiniesRow(`Tokens:`,nf(tokensB));
+	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacksB));
+	txt+=addShiniesRow(`Total Chests:`,nf(chestsB));
+	txt+=addShiniesRow(`Avg Shinies:`,nf(shiniesB));
+	wrapper.innerHTML = txt;
+}
+
+function addShiniesRow(left,right,left2,right2) {
+	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol1" style="width:20%">${right}</span>`;
+	if (left2!=undefined&&right2!=undefined) {
+		txt += `<span class="menuCol1" style="width:15%;min-width:80px;">${left2}</span><span class="menuCol1" style="width:20%">${right2}</span>`;
+	}
+	txt += `</span>`;
+	return txt;
+}
+
 function settingsToggle() {
 	if (localStorage.scUserIdent==undefined||localStorage.scUserIdent==``) {
 		settingsMenu.style.display = `flex`;
@@ -226,31 +312,18 @@ async function saveUserData() {
 }
 
 function swapTab() {
-	let hash=window.location.hash.substring(1).split("_");
-	if (hash[0]!=""&&document.getElementById(hash[0])!=undefined) {
-		document.getElementById(hash[0]).click();
-	}
-	if (hash.length>1) {
-		switch (hash[0]) {
-			case `${st}`:
-				stackRoute.value=hash[1];
-				stackReset.value=hash[2];
-				stackFavour.value=hash[3];
-				stackStack.value=hash[4];
-				stackBrivZone.value=hash[5];
-				stackWithMetal.checked=hash[6]==`1`?true:false;
-				stackRuns.value=hash[7];
-				break;
-		}
+	var hash = window.location.hash.substring(1);
+	if (hash != "" && document.getElementById(hash) != undefined) {
+		document.getElementById(hash).click();
 	}
 }
 
 function setHash(hash) {
-	hash=`#`+hash;
+	hash = "#" + hash;
 	if(history.replaceState) {
-		history.replaceState(null,null,hash);
+		history.replaceState(null, null, hash);
 	} else {
-		window.location.hash=hash;
+		window.location.hash = hash;
 	}
 }
 
@@ -356,4 +429,8 @@ async function sendOutgoingCall(server,call) {
 		.then(response => response.text())
 		.catch(err => console.log(err));
 	return await JSON.parse(response);
+}
+
+function nf(number) {
+	return NUMFORM.format(number);
 }

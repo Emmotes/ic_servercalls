@@ -70,7 +70,7 @@
 				<span class="menuRow">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="menuRow" style="height:34px;">
 					<span class="menuCol1" style="width:50%;">
 						<input type="button" onClick="pullFormationSaves()" name="formationsPullButton" id="formationsPullButton" value="Pull Formation Save Data" style="min-width:175px">
 						<span id="formationsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
@@ -92,10 +92,45 @@
 					&nbsp;
 				</span>
 			</div>
+			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
+			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
+			<div class="tabsContent">
+				<span class="menuRow">
+					<span class="menuCol2" style="width:100%">
+						<h1>Shinies Calculator</h1>
+					</span>
+				</span>
+				<span class="menuRow">
+					<span class="menuCol2" style="width:100%">
+						This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
+					</span>
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuRow" style="height:34px;">
+					<span class="menuCol1" style="width:50%;">
+						<input type="button" onClick="pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
+						<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuCol1" style="flex-direction:column" id="shiniesWrapper">
+					&nbsp;
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+			</div>
 		</div>
 	</div>
 
 	<script type="text/javascript" src="scripts/campaigns.js?vc=1.0"></script>
-	<script type="text/javascript" src="scripts/main.js?v=1.1"></script>
+	<script type="text/javascript" src="scripts/main.js?v=1.2"></script>
 </body>
 </html>
