@@ -1,4 +1,4 @@
-const v=1.2
+const v=1.3
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -266,9 +266,9 @@ async function displayShiniesData(wrapper,details) {
 }
 
 function addShiniesRow(left,right,left2,right2) {
-	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol1" style="width:20%">${right}</span>`;
+	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol1" style="min-width:120px;max-width:140px;">${right}</span>`;
 	if (left2!=undefined&&right2!=undefined) {
-		txt += `<span class="menuCol1" style="width:15%;min-width:80px;">${left2}</span><span class="menuCol1" style="width:20%">${right2}</span>`;
+		txt += `<span class="menuCol1" style="min-width:90px;max-width:110px;">${left2}</span><span class="menuCol1" style="min-width:120px;max-width:140px;">${right2}</span>`;
 	}
 	txt += `</span>`;
 	return txt;
