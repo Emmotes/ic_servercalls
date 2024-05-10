@@ -1,4 +1,4 @@
-const v=1.3
+const v=1.4
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -14,7 +14,7 @@ const PARAM_CALL=`call`;
 const PARAM_INSTANCEID=`instance_id`;
 const PARAM_USERID=`user_id`;
 const PARAM_USERHASH=`hash`;
-const RETRIES=3;
+const RETRIES=4;
 const BADDATA = `Response: Your user data is incorrect. Server call failed.`;
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
 var SERVER=``;
@@ -401,13 +401,13 @@ async function sendServerCall(server,call,addUserData,addInstanceId) {
 	}
 	let response = await sendOutgoingCall(server,call);
 	let limit = 0;
-	while (response[SPS]!=undefined||!response['success']&&limit<RETRIES) {
+	while ((response[SPS]!=undefined||!response['success'])&&limit<RETRIES) {
 		if (response[SPS]) {
 			SERVER = response[SPS];
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
-			console.log(`Got outdated instance id.`);
 			if (response[FR]==OII) {
+				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
 				instanceId = await getUpdatedInstanceId();
 				call = call.replace(oldII,instanceId);
