@@ -374,6 +374,20 @@ async function upgradeLegendary(heroId,slotId) {
     return await sendServerCall(SERVER,call,true,true);
 }
 
+async function trialsJoinCampaign(code) {
+	let call = `${PARAM_CALL}=trialsjoincampaign`;
+	call += `&player_index=1`;
+	return await sendServerCall(SERVER,call,true,true);
+}
+
+async function trialsPickRoleHero(roleId,heroId,costChoice) {
+	let call = `${PARAM_CALL}=trialspickrolehero`;
+	call += `&role_id=${roleId}`;
+	call += `&hero_id=${heroId}`;
+	call += `&cost_choice=${cost_choice}`;
+	return await sendServerCall(SERVER,call,true,true);
+}
+
 function appendUserData() {
 	return `&${PARAM_USERID}=${userIdent[0]}&${PARAM_USERHASH}=${userIdent[1]}`;
 }
