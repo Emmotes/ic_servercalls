@@ -409,8 +409,10 @@ async function sendServerCall(server,call,addUserData,addInstanceId) {
 			if (response[FR]==OII) {
 				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
-				instanceId = await getUpdatedInstanceId();
+				await getUpdatedInstanceId();
+				console.log(`Old: ${call}`)
 				call = call.replace(oldII,instanceId);
+				console.log(`New: ${call}`)
 				response = await sendOutgoingCall(server,call);
 			} else {
 				// Unknown error.
