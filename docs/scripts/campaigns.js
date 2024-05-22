@@ -29,7 +29,7 @@ campaignIds = {
 	"27": "Wild Beyond the Witchlight",
 	"28": "Light of Xaryxis",
 	"29": "Turn of Fortune's Wheel",
-	"30": "Vecna: Eve of Ruin"
+	"31": "Vecna: Eve of Ruin"
 };
 patronIds = {
 	      "0": "",
