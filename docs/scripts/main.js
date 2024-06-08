@@ -1,4 +1,4 @@
-const v=1.4
+const v=1.41
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -374,9 +374,24 @@ async function upgradeLegendary(heroId,slotId) {
     return await sendServerCall(SERVER,call,true,true);
 }
 
-async function trialsJoinCampaign(code) {
+async function trialsRefreshData() {
+	let call = `${PARAM_CALL}=trialsrefreshdata`;
+	return await sendServerCall(SERVER,call,true,true);
+}
+
+async function trialsCreateCampaign(difficultyId,isPrivate,costChoice,autoStart) {
+	let call = `${PARAM_CALL}=trialsopencampaign`;
+	call += `&difficulty_id=${difficultyId}`;
+	call += `&private=${isPrivate}`;
+	call += `&cost_choice=${costChoice}`;
+	call += `&auto_start=${autoStart}`;
+	return await sendServerCall(SERVER,call,true,true);
+}
+
+async function trialsJoinCampaign(joinKey,playerIndex) {
 	let call = `${PARAM_CALL}=trialsjoincampaign`;
-	call += `&player_index=1`;
+	call += `&join_key=${joinKey}`;
+	call += `&player_index=${playerIndex}`;
 	return await sendServerCall(SERVER,call,true,true);
 }
 
