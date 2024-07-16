@@ -1,4 +1,4 @@
-const v=1.41
+const v=1.42
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -464,4 +464,32 @@ async function sendOutgoingCall(server,call) {
 
 function nf(number) {
 	return NUMFORM.format(number);
+}
+
+async function monitorElectrums(minSleep,maxSleep) {
+    let first = true;
+    while (true) {
+        if (!first)
+            getPlayServerFromMaster();
+        let current = (await getUserDetails()).details.chests[282];
+        let time = new Date();
+        let output = `${dateFormat(time)} -> Electrums: ${current}`;
+        let sleep = randInt(minSleep*60, maxSleep*60);
+        time.setSeconds(time.getSeconds() + sleep);
+        output += `    (Sleeping until: ${dateFormat(time)})`;
+        console.log(output);
+        if (first)
+            first = false;
+        await new Promise(r => setTimeout(r, sleep*1000));
+    }
+}
+
+function randInt(min, max) {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+}
+
+function dateFormat(input) {
+    return Intl.DateTimeFormat("en-GB", {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
 }
