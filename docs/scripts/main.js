@@ -1,4 +1,4 @@
-const v=1.42
+const v=1.43
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -46,8 +46,7 @@ async function pullFormationSaves() {
 	let message = document.getElementById(`formationsPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;},10000);
-	setTimeout (function(){button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
 	let wrapper = document.getElementById(`formsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -126,7 +125,7 @@ function createFormationTooltip(name,champs,formation) {
 	}
 	if (formObj == ``) return ``;
 	
-	let circleRadius = 25;
+	let circleDiameter = 50;
 	let colMult = 60;
 	let rowMult = 30;
 	
@@ -140,8 +139,8 @@ function createFormationTooltip(name,champs,formation) {
 		if (y > maxY) maxY = y;
 	}
 		
-	let formWidth = (circleRadius*2) + (colMult * maxCol);
-	let formHeight = (circleRadius*2) + (rowMult * (maxY - minY));
+	let formWidth = circleDiameter + (colMult * maxCol);
+	let formHeight = circleDiameter + (rowMult * (maxY - minY));
 	
 	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${formWidth}" height="${formHeight}">`;
 	for (let i=0; i<formObj.length; i++) {
@@ -150,7 +149,7 @@ function createFormationTooltip(name,champs,formation) {
 		let yPos = Math.floor(currObj.y / 10);
 		let x = (maxCol - currObj.col) * colMult;
 		let y = (yPos - minY) * rowMult;
-		svg += `<image x="${x}" y="${y}" width="${circleRadius*2}" height="${circleRadius*2}" href="images/portraits/${champ}.png" />`;
+		svg += `<image x="${x}" y="${y}" width="${circleDiameter}" height="${circleDiameter}" href="images/portraits/${champ}.png" />`;
 	}
 	svg += `</svg>`;
 	return `<span class="tooltipContents">${name}${svg}</span>`;
@@ -202,8 +201,7 @@ async function pullShiniesData() {
 	let message = document.getElementById(`shiniesPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;},10000);
-	setTimeout (function(){button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
 	let wrapper = document.getElementById(`shiniesWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
