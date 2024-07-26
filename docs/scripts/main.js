@@ -1,4 +1,4 @@
-const v=1.43
+const v=1.44
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -145,7 +145,8 @@ function createFormationTooltip(name,champs,formation) {
 	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${formWidth}" height="${formHeight}">`;
 	for (let i=0; i<formObj.length; i++) {
 		let currObj = formObj[i];
-		let champ = champs[i];
+		let champ = Number(champs[i]);
+		if (isNaN(champ) || champ < 0) champ = 0;
 		let yPos = Math.floor(currObj.y / 10);
 		let x = (maxCol - currObj.col) * colMult;
 		let y = (yPos - minY) * rowMult;
