@@ -307,7 +307,7 @@ async function displayAeonData(wrapper,details) {
 	txt+=`<span class="menuRow" style="font-size:1.2em">Aeon Patron Data:</span>`;
 	txt+=addAeonRow(`Current Patron:`,currPatron);
 	txt+=addAeonRow(`Next Patron:`,nextPatron);
-	txt+=addAeonRow(`Time Til Switch:`,getDisplayTime(millisecondsTilRollover));
+	txt+=addAeonRow(`Time 'til Switch:`,getDisplayTime(millisecondsTilRollover));
 	wrapper.innerHTML = txt;
 }
 
