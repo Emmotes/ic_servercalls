@@ -1,4 +1,4 @@
-const v=1.44
+const v=1.45
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -273,6 +273,61 @@ function addShiniesRow(left,right,left2,right2) {
 	return txt;
 }
 
+async function pullAeonData() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
+	let button = document.getElementById(`aeonPullButton`);
+	let message = document.getElementById(`aeonPullButtonDisabled`);
+	button.hidden = true;
+	message.hidden = false;
+	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	let wrapper = document.getElementById(`aeonWrapper`);
+	wrapper.innerHTML = `Waiting for response...`;
+	//try {
+		let details = await getPatronDetails();
+		await displayAeonData(wrapper,details);
+	//} catch {
+	//	wrapper.innerHTML = BADDATA;
+	//}
+}
+
+async function displayAeonData(wrapper,details) {
+	let aeonData = details.aeon_data;
+	let millisecondsTilRollover = Number(aeonData.seconds_until_patron_rollover) * 1000;
+	let currPatronId = Number(aeonData.current_patron_id);
+	let nextPatronId = Number(aeonData.next_patron_id);
+	let currPatron = getPatronNameById(currPatronId);
+	let nextPatron = getPatronNameById(nextPatronId);
+
+	let col1 = `width:25%;min-width:200px;`;
+	let col2 = `width:35%;min-width:250px;`;
+	let txt = ``;
+	txt+=`<span class="menuRow" style="font-size:1.2em">Aeon Patron Data:</span>`;
+	txt+=addAeonRow(`Current Patron:`,currPatron);
+	txt+=addAeonRow(`Next Patron:`,nextPatron);
+	txt+=addAeonRow(`Time Til Switch:`,getDisplayTime(millisecondsTilRollover));
+	wrapper.innerHTML = txt;
+}
+
+function addAeonRow(left,right) {
+	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
+	txt += `</span>`;
+	return txt;
+}
+
+function getPatronNameById(id) {
+	switch (id) {
+		case 1: return `Mirt`;
+		case 2: return `Vajra`;
+		case 3: return `Strahd`;
+		case 4: return `Zariel`
+		case 5: return `Elminster`
+		default: return `??? (id: ${id})`;
+	}
+}
+
 function settingsToggle() {
 	if (localStorage.scUserIdent==undefined||localStorage.scUserIdent==``) {
 		settingsMenu.style.display = `flex`;
@@ -340,6 +395,11 @@ async function getUserDetails() {
 async function getDefinitions() {
 	let call = `${PARAM_CALL}=getdefinitions`;
 	return await sendServerCall(SERVER,call);
+}
+
+async function getPatronDetails() {
+	let call = `${PARAM_CALL}=getpatrondetails`;
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function getUpdatedInstanceId(deets) {
@@ -491,4 +551,21 @@ function randInt(min, max) {
 
 function dateFormat(input) {
     return Intl.DateTimeFormat("en-GB", {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
+}
+
+function getDisplayTime(time) {
+	let days = Math.floor(time/(1000*60*60*24));
+	let hours = Math.floor((time/(1000*60*60)) % 24);
+	let minutes = Math.floor((time/1000/60) % 60);
+	let seconds = Math.floor((time/1000) % 60);
+	let display = ``;
+	if (days>0) display += `${days} days `;
+	if (days>0||hours>0) display += `${hours} hours `;
+	if (days>0||hours>0||minutes>0) display += `${padZeros(minutes,2)} mins `;
+	display+= `${padZeros(seconds,2)} secs`;
+	return display;
+}
+
+function padZeros(num,places) {
+	return String(num).padStart(places, '0');
 }

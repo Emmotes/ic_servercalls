@@ -125,10 +125,45 @@
 					&nbsp;
 				</span>
 			</div>
+			<input onClick="setHash('aeonTab')" type="radio" class="tabsRadio" name="serverTabs" id="aeonTab">
+			<label for="aeonTab" class="tabsLabel">Aeon</label>
+			<div class="tabsContent">
+				<span class="menuRow">
+					<span class="menuCol2" style="width:100%">
+						<h1>Aeon Patron Data</h1>
+					</span>
+				</span>
+				<span class="menuRow">
+					<span class="menuCol2" style="width:100%">
+						This page will just tell you which patron Aeon is currently on - as well as when she'll switch and what patron she'll switch to.
+					</span>
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuRow" style="height:34px;">
+					<span class="menuCol1" style="width:50%;">
+						<input type="button" onClick="pullAeonData()" name="aeonPullButton" id="aeonPullButton" value="Pull Aeon Data" style="min-width:175px">
+						<span id="aeonPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuCol1" style="flex-direction:column" id="aeonWrapper">
+					&nbsp;
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+				<span class="menuRow">
+					&nbsp;
+				</span>
+			</div>
 		</div>
 	</div>
 
 	<script type="text/javascript" src="scripts/campaigns.js?vc=1.0"></script>
-	<script type="text/javascript" src="scripts/main.js?v=1.44"></script>
+	<script type="text/javascript" src="scripts/main.js?v=1.45"></script>
 </body>
 </html>
