@@ -1,0 +1,20 @@
+body {
+	background-color: var(--bg);
+	color: var(--font);
+	font-size: 1.2em;
+}
+.mc {
+	padding: 50px;
+	margin: 0px;
+}
+.f{display:flex}
+.fc{flex-direction:column}
+.fw{flex-wrap:wrap}
+.mw {max-width:1000px}
+.jcc{justify-content:center}
+.aic{align-items:center}
+.p{padding:15px}
+:root {
+	--bg: #37374b;
+	--font: #d8ceda;
+}
