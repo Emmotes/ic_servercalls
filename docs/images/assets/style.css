@@ -10,7 +10,7 @@ body {
 .f{display:flex}
 .fc{flex-direction:column}
 .fw{flex-wrap:wrap}
-.mw {max-width:1000px}
+.mw {max-width:1150px}
 .jcc{justify-content:center}
 .aic{align-items:center}
 .p{padding:15px}
