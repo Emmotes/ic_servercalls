@@ -1,4 +1,4 @@
-const v=1.45
+const v=1.46
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -460,6 +460,18 @@ async function trialsPickRoleHero(roleId,heroId,costChoice) {
 	call += `&hero_id=${heroId}`;
 	call += `&cost_choice=${cost_choice}`;
 	return await sendServerCall(SERVER,call,true,true);
+}
+
+async function saveFormation(id,name,fav,form,fams,specs,feats) {
+    let call = `${PARAM_CALL}=saveformation`;
+    call += `&campaign_id=${id}`;
+    call += `&name=${name}`;
+    call += `&favorite=${fav}`;
+    call += `&formation=${form}`;
+    call += `&familiars=${fams}`;
+    call += `&specializations=${specs}`;
+    call += `&feats=${feats}`;
+    return await sendServerCall(SERVER,call,true,true);
 }
 
 function appendUserData() {
