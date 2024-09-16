@@ -1,4 +1,4 @@
-const v=1.48
+const v=1.49
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -388,12 +388,16 @@ async function supportUrlSaveData() {
 	let url = supportUrl.value || ``;
 	if (url==``)
 		return;
-	let userId = Number(url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=",""));
-	let userHash = url.match(/&device_hash=[A-Za-z0-9]+/g)[0].replace("&device_hash=","");
-	settingsUserId.value = userId;
-	settingsUserHash.value = userHash;
-	supportUrl.value = ``;
-	await saveUserData();
+	try {
+		let userId = Number(url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=",""));
+		let userHash = url.match(/&device_hash=[A-Za-z0-9]+/g)[0].replace("&device_hash=","");
+		settingsUserId.value = userId;
+		settingsUserHash.value = userHash;
+		supportUrl.value = ``;
+		await saveUserData();
+	} catch {
+		supportUrl.value = `Couldn't find user data in url.`;
+	}
 }
 
 function swapTab() {
