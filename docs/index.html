@@ -21,17 +21,29 @@
 
 	<div class="menuPopupContainer">
 		<div class="menuPopup" id="settingsMenu">
-			<div class="menuRow">
-				<div class="menuCol1" style="width:40%"><label for="userId">User ID:</label></div>
-				<div class="menuCol2" style="width:60%"><input type="input" name="userId" id="userId"></div>
+			<div class="f fr w100 p5">
+				<div class="f fac fje mr2" style="width:40%"><label for="userId">User ID:</label></div>
+				<div class="f fac fjs ml2" style="width:60%"><input type="input" name="userId" id="userId"></div>
 			</div>
-			<div class="menuRow">
-				<div class="menuCol1" style="width:40%"><label for="userHash">User Hash:</label></div>
-				<div class="menuCol2" style="width:60%"><input type="input" name="userHash" id="userHash"></div>
+			<div class="f fr w100 p5">
+				<div class="f fac fje mr2" style="width:40%"><label for="userHash">User Hash:</label></div>
+				<div class="f fac fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash"></div>
 			</div>
-			<div class="menuRow">	
-				<div class="menuCol1" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
-				<div class="menuCol2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
+			<div class="f fr w100 p5">	
+				<div class="f fac fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
+				<div class="f fac fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
+			</div>
+			<div class="f fr w100 p5">
+				&nbsp;
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f fac fjs ml2" style="width:100%">Support URL:</div>
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f fac fjc mb2" style="width:100%"><input type="input" name="supportUrl" id="supportUrl" style="width:100%"></div>
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f fac fjc mb2" style="width:100%"><input type="button" onClick="supportUrlSaveData()" id="supportUrlMenuButton" value=" Get User Data From Support Url " style="width:100%"></div>
 			</div>
 		</div>
 	</div>
@@ -55,108 +67,108 @@
 			<input onClick="setHash('formationsTab')" type="radio" class="tabsRadio" name="serverTabs" id="formationsTab" checked>
 			<label for="formationsTab" class="tabsLabel">Delete Formations</label>
 			<div class="tabsContent">
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						<h1>Delete Formation Saves</h1>
 					</span>
 				</span>
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						This page will let you pick and choose any formation saves you have and delete them. The aim of this is to lower the amount of data you need to download every time the game restarts or the modron resets - since the server pulls ALL of your formation saves every time.
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuRow" style="height:34px;">
-					<span class="menuCol1" style="width:50%;">
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f fac fje mr2" style="width:50%;">
 						<input type="button" onClick="pullFormationSaves()" name="formationsPullButton" id="formationsPullButton" value="Pull Formation Save Data" style="min-width:175px">
 						<span id="formationsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
 				<span class="formsWrapper" id="formsWrapper">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuCol1" style="width:100%;flex-direction:column" id="formsDeleter">
+				<span class="f fac fje mr2" style="width:100%;flex-direction:column" id="formsDeleter">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
 			</div>
 			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
 			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
 			<div class="tabsContent">
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						<h1>Shinies Calculator</h1>
 					</span>
 				</span>
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuRow" style="height:34px;">
-					<span class="menuCol1" style="width:50%;">
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f fac fje mr2" style="width:50%;">
 						<input type="button" onClick="pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
 						<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuCol1" style="flex-direction:column" id="shiniesWrapper">
+				<span class="f fac fje mr2" style="flex-direction:column" id="shiniesWrapper">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
 			</div>
 			<input onClick="setHash('aeonTab')" type="radio" class="tabsRadio" name="serverTabs" id="aeonTab">
 			<label for="aeonTab" class="tabsLabel">Aeon</label>
 			<div class="tabsContent">
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						<h1>Aeon Patron Data</h1>
 					</span>
 				</span>
-				<span class="menuRow">
-					<span class="menuCol2" style="width:100%">
+				<span class="f fr w100 p5">
+					<span class="f fac fjs ml2" style="width:100%">
 						This page will just tell you which patron Aeon is currently on - as well as when she'll switch and what patron she'll switch to.
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuRow" style="height:34px;">
-					<span class="menuCol1" style="width:50%;">
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f fac fje mr2" style="width:50%;">
 						<input type="button" onClick="pullAeonData()" name="aeonPullButton" id="aeonPullButton" value="Pull Aeon Data" style="min-width:175px">
 						<span id="aeonPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuCol1" style="flex-direction:column" id="aeonWrapper">
+				<span class="f fac fje mr2" style="flex-direction:column" id="aeonWrapper">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="menuRow">
+				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
 			</div>

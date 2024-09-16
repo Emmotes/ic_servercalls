@@ -146,8 +146,8 @@ pre {
 
 .menuPopup {
 	margin: auto;
-	width: 300px;
-	height: 200px;
+	width: fit-content;
+	height: fit-content;
 	background-color: var(--highlightDark1);
 	border: 1px solid black;
 	border-radius: 20px;
@@ -158,26 +158,18 @@ pre {
 	padding: 8px;
 }
 
-.menuRow {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	padding: 5px;
-}
-
-.menuCol1 {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	margin-right: 2px;
-}
-
-.menuCol2 {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	margin-left: 2px;
-}
+.f {display:flex}
+.fr {flex-direction:row}
+.fc {flex-direction:column}
+.fac {align-items:center}
+.fjs {justify-content:flex-start}
+.fje {justify-content:flex-end}
+.fjc {justify-content:center}
+.ml2 {margin-left:2px}
+.mr2 {margin-right:2px}
+.mb2 {margin:0 2px}
+.w100 {width:100%}
+.p5 {padding:5px}
 
 input[type="input"] {
 	width: 80%;

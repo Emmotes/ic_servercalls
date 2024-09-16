@@ -6,6 +6,8 @@ const settingsUserId=document.getElementById(`userId`);
 const settingsUserHash=document.getElementById(`userHash`);
 const settingsSave=document.getElementById(`settingsMenuButtonSave`);
 const settingsClose=document.getElementById(`settingsMenuButtonClose`);
+const supportUrl=document.getElementById(`supportUrl`);
+const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -380,6 +382,18 @@ async function saveUserData() {
 		await new Promise(r => setTimeout(r, 2000));
 		settingsSave.value = `Save`;
 	}
+}
+
+async function supportUrlSaveData() {
+	let url = supportUrl.value || ``;
+	if (url==``)
+		return;
+	let userId = Number(url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=",""));
+	let userHash = url.match(/&device_hash=[A-Za-z0-9]+/g)[0].replace("&device_hash=","");
+	settingsUserId.value = userId;
+	settingsUserHash.value = userHash;
+	supportUrl.value = ``;
+	await saveUserData();
 }
 
 function swapTab() {
