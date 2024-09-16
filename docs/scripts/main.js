@@ -1,4 +1,4 @@
-const v=1.47
+const v=1.48
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -102,7 +102,7 @@ async function displayFormationSaves(wrapper,saves) {
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
-	formsDeleter.innerHTML = `<span class="menuRow"><span class="menuCol1 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+	formsDeleter.innerHTML = `<span class="f fr w100 p5"><span class="f fac fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
 }
 
 function createFormationTooltip(name,champs,formation) {
@@ -168,7 +168,7 @@ function formsSelectAll(id,check) {
 
 async function deleteFormationSaves() {
 	let formsDeleter = document.getElementById(`formsDeleter`);
-	let c = `<span class="menuRow">Deleting Formation Saves:</span>`;
+	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
 	formsDeleter.innerHTML = c;
 	let list = document.querySelectorAll('[id^="form_"]');
 	let count = 0;
@@ -184,13 +184,13 @@ async function deleteFormationSaves() {
 		} else {
 			successType = `Failed to delete`;
 		}
-		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="menuCol2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
+		c += `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f fac fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
 		form.parentNode.style.display=`none`;
 		form.checked = false;
 		formsDeleter.innerHTML = c;
 	}
 	if (count==0) {
-		c += `<span class="menuRow"><span class="menuCol1" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
+		c += `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}
 }
@@ -247,18 +247,18 @@ async function displayShiniesData(wrapper,details) {
 	let chestsB = tokensB / 2500;
 	let shiniesB = chestsB / 1000;
 	let txt = ``;
-	txt+=`<span class="menuRow" style="font-size:1.2em">Without Bounties:</span>`;
+	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Without Bounties:</span>`;
 	txt+=addShiniesRow(`Tokens:`,nf(tokens));
 	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacks));
 	txt+=addShiniesRow(`Total Chests:`,nf(chests));
 	txt+=addShiniesRow(`Avg Shinies:`,nf(shinies));
-	txt+=`<span class="menuRow">&nbsp;</span>`;
-	txt+=`<span class="menuRow" style="font-size:1.2em">With Bounties:</span>`;
+	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
+	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">With Bounties:</span>`;
 	txt+=addShiniesRow(`Tiny Bounty Contracts:`,nf(bcC),`Tokens:`,nf(bcCT));
 	txt+=addShiniesRow(`Small Bounty Contracts:`,nf(bcU),`Tokens:`,nf(bcUT));
 	txt+=addShiniesRow(`Medium Bounty Contracts:`,nf(bcR),`Tokens:`,nf(bcRT));
 	txt+=addShiniesRow(`Large Bounty Contracts:`,nf(bcE),`Tokens:`,nf(bcET));
-	txt+=`<span class="menuRow">&nbsp;</span>`;
+	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
 	txt+=addShiniesRow(`Tokens:`,nf(tokensB));
 	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacksB));
 	txt+=addShiniesRow(`Total Chests:`,nf(chestsB));
@@ -267,9 +267,9 @@ async function displayShiniesData(wrapper,details) {
 }
 
 function addShiniesRow(left,right,left2,right2) {
-	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol1" style="min-width:120px;max-width:140px;">${right}</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f fac fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
 	if (left2!=undefined&&right2!=undefined) {
-		txt += `<span class="menuCol1" style="min-width:90px;max-width:110px;">${left2}</span><span class="menuCol1" style="min-width:120px;max-width:140px;">${right2}</span>`;
+		txt += `<span class="f fac fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f fac fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;
 	}
 	txt += `</span>`;
 	return txt;
@@ -321,7 +321,7 @@ async function displayAeonData(wrapper,details) {
 	let col1 = `width:25%;min-width:200px;`;
 	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
-	txt+=`<span class="menuRow" style="font-size:1.2em">Aeon Patron Data:</span>`;
+	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Aeon Patron Data:</span>`;
 	txt+=addAeonRow(`Current Patron:`,currPatron);
 	txt+=addAeonRow(`${currPatron} Weekly Chores:`,`${count} / ${goal} (${percent}%)`);
 	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
@@ -331,7 +331,7 @@ async function displayAeonData(wrapper,details) {
 }
 
 function addAeonRow(left,right) {
-	let txt = `<span class="menuRow"><span class="menuCol1" style="width:25%;min-width:200px;">${left}</span><span class="menuCol2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f fac fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
 	txt += `</span>`;
 	return txt;
 }
