@@ -22,28 +22,28 @@
 	<div class="menuPopupContainer">
 		<div class="menuPopup" id="settingsMenu">
 			<div class="f fr w100 p5">
-				<div class="f fac fje mr2" style="width:40%"><label for="userId">User ID:</label></div>
-				<div class="f fac fjs ml2" style="width:60%"><input type="input" name="userId" id="userId"></div>
+				<div class="f falc fje mr2" style="width:40%"><label for="userId">User ID:</label></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userId" id="userId"></div>
 			</div>
 			<div class="f fr w100 p5">
-				<div class="f fac fje mr2" style="width:40%"><label for="userHash">User Hash:</label></div>
-				<div class="f fac fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash"></div>
+				<div class="f falc fje mr2" style="width:40%"><label for="userHash">User Hash:</label></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash"></div>
 			</div>
 			<div class="f fr w100 p5">	
-				<div class="f fac fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
-				<div class="f fac fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
+				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
+				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
 			</div>
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
 			<div class="f fr w100 p5">	
-				<div class="f fac fjs ml2" style="width:100%">Support URL:</div>
+				<div class="f falc fjs ml2" style="width:100%">Support URL:</div>
 			</div>
 			<div class="f fr w100 p5">	
-				<div class="f fac fjc mb2" style="width:100%"><input type="input" name="supportUrl" id="supportUrl" style="width:100%"></div>
+				<div class="f falc fjc mb2" style="width:100%"><input type="input" name="supportUrl" id="supportUrl" style="width:100%"></div>
 			</div>
 			<div class="f fr w100 p5">	
-				<div class="f fac fjc mb2" style="width:100%"><input type="button" onClick="supportUrlSaveData()" id="supportUrlMenuButton" value=" Get User Data From Support Url " style="width:100%"></div>
+				<div class="f falc fjc mb2" style="width:100%"><input type="button" onClick="supportUrlSaveData()" id="supportUrlMenuButton" value=" Get User Data From Support Url " style="width:100%"></div>
 			</div>
 		</div>
 	</div>
@@ -68,12 +68,12 @@
 			<label for="formationsTab" class="tabsLabel">Delete Formations</label>
 			<div class="tabsContent">
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						<h1>Delete Formation Saves</h1>
 					</span>
 				</span>
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						This page will let you pick and choose any formation saves you have and delete them. The aim of this is to lower the amount of data you need to download every time the game restarts or the modron resets - since the server pulls ALL of your formation saves every time.
 					</span>
 				</span>
@@ -81,7 +81,7 @@
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5" style="height:34px;">
-					<span class="f fac fje mr2" style="width:50%;">
+					<span class="f falc fje mr2" style="width:50%;">
 						<input type="button" onClick="pullFormationSaves()" name="formationsPullButton" id="formationsPullButton" value="Pull Formation Save Data" style="min-width:175px">
 						<span id="formationsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
@@ -95,7 +95,7 @@
 				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="f fac fje mr2" style="width:100%;flex-direction:column" id="formsDeleter">
+				<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="formsDeleter">
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5">
@@ -106,12 +106,12 @@
 			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
 			<div class="tabsContent">
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						<h1>Shinies Calculator</h1>
 					</span>
 				</span>
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
 					</span>
 				</span>
@@ -119,7 +119,7 @@
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5" style="height:34px;">
-					<span class="f fac fje mr2" style="width:50%;">
+					<span class="f falc fje mr2" style="width:50%;">
 						<input type="button" onClick="pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
 						<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
@@ -127,7 +127,7 @@
 				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="f fac fje mr2" style="flex-direction:column" id="shiniesWrapper">
+				<span class="f falc fje mr2" style="flex-direction:column" id="shiniesWrapper">
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5">
@@ -141,12 +141,12 @@
 			<label for="aeonTab" class="tabsLabel">Aeon</label>
 			<div class="tabsContent">
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						<h1>Aeon Patron Data</h1>
 					</span>
 				</span>
 				<span class="f fr w100 p5">
-					<span class="f fac fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%">
 						This page will just tell you which patron Aeon is currently on - as well as when she'll switch and what patron she'll switch to.
 					</span>
 				</span>
@@ -154,7 +154,7 @@
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5" style="height:34px;">
-					<span class="f fac fje mr2" style="width:50%;">
+					<span class="f falc fje mr2" style="width:50%;">
 						<input type="button" onClick="pullAeonData()" name="aeonPullButton" id="aeonPullButton" value="Pull Aeon Data" style="min-width:175px">
 						<span id="aeonPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
@@ -162,7 +162,57 @@
 				<span class="f fr w100 p5">
 					&nbsp;
 				</span>
-				<span class="f fac fje mr2" style="flex-direction:column" id="aeonWrapper">
+				<span class="f falc fje mr2" style="flex-direction:column" id="aeonWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<input onClick="setHash('chestDataTab')" type="radio" class="tabsRadio" name="serverTabs" id="chestDataTab">
+			<label for="chestDataTab" class="tabsLabel">Chest Data</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Chest Drop Data Collection</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%">
+						<p>I've made this page to help collect data on the drop chance of pots / blacksmiths / bounties from Gold or Silvers chests.</p>
+						<p>The intention is that you collect a whole bunch of chests and pull data to create a snapshot from before opening them. Then open as many of a <strong>single type of chest</strong> that you can (preferably 10k+) and re-pull data for the after snapshot. Then copy paste the results into a text document and send it to me on Discord (I will probably make a thread for it).</p>
+						<p>I know it means stopping the gem farm - but <em>please</em> close the game prior to taking the 'Before' snapshot. Then open chests via server calls. Then take the 'After' snapshot. And do not reload the game until afterwards. The reason is simply that if a boss drops a chest of the type you're opening — you can skew the data. (You could also turn off auto-progress but the game being off is simply safer for data accuracy.)</p>
+						<p>We're after data from Gold Chests at the moment.</p>
+						<p>Note:
+							<ul>
+								<li>Opening more than 1 type of chest between pulling data will invalidate that data.</li>
+								<li>Do not refresh the page after pulling the 'Before' snapshot or you'll delete that data and have to start from scratch.</li>
+							</ul>
+						</p>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullChestCollectData()" name="chestCollectPullButton" id="chestCollectPullButton" value="Snapshot the 'Before' Chest Data" style="min-width:175px">
+						<span id="chestCollectPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="chestCollectWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;" id="chestCollectData2">
 					&nbsp;
 				</span>
 				<span class="f fr w100 p5">
@@ -176,6 +226,7 @@
 	</div>
 
 	<script type="text/javascript" src="scripts/campaigns.js?vc=1.0"></script>
-	<script type="text/javascript" src="scripts/main.js?v=1.49"></script>
+	<script type="text/javascript" src="scripts/buffs.js?vb=1.0"></script>
+	<script type="text/javascript" src="scripts/main.js?v=1.50"></script>
 </body>
 </html>

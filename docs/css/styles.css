@@ -161,7 +161,9 @@ pre {
 .f {display:flex}
 .fr {flex-direction:row}
 .fc {flex-direction:column}
-.fac {align-items:center}
+.fals {align-items:flex-start}
+.fale {align-items:flex-end}
+.falc {align-items:center}
 .fjs {justify-content:flex-start}
 .fje {justify-content:flex-end}
 .fjc {justify-content:center}

@@ -1,4 +1,4 @@
-const v=1.49
+const v=1.50
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -22,6 +22,7 @@ const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigi
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
+var chestDataBefore=``;
 
 function init() {
 	if (localStorage.scUserIdent!=undefined&&localStorage.scUserIdent!=``) {
@@ -102,7 +103,7 @@ async function displayFormationSaves(wrapper,saves) {
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
-	formsDeleter.innerHTML = `<span class="f fr w100 p5"><span class="f fac fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+	formsDeleter.innerHTML = `<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
 }
 
 function createFormationTooltip(name,champs,formation) {
@@ -184,13 +185,13 @@ async function deleteFormationSaves() {
 		} else {
 			successType = `Failed to delete`;
 		}
-		c += `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f fac fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
+		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
 		form.parentNode.style.display=`none`;
 		form.checked = false;
 		formsDeleter.innerHTML = c;
 	}
 	if (count==0) {
-		c += `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
+		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}
 }
@@ -267,9 +268,9 @@ async function displayShiniesData(wrapper,details) {
 }
 
 function addShiniesRow(left,right,left2,right2) {
-	let txt = `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f fac fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
 	if (left2!=undefined&&right2!=undefined) {
-		txt += `<span class="f fac fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f fac fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;
+		txt += `<span class="f falc fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;
 	}
 	txt += `</span>`;
 	return txt;
@@ -287,12 +288,12 @@ async function pullAeonData() {
 	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	//try {
+	try {
 		let details = await getPatronDetails();
 		await displayAeonData(wrapper,details);
-	//} catch {
-	//	wrapper.innerHTML = BADDATA;
-	//}
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
 }
 
 async function displayAeonData(wrapper,details) {
@@ -331,9 +332,118 @@ async function displayAeonData(wrapper,details) {
 }
 
 function addAeonRow(left,right) {
-	let txt = `<span class="f fr w100 p5"><span class="f fac fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f fac fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
 	txt += `</span>`;
 	return txt;
+}
+
+async function pullChestCollectData() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
+	let button = document.getElementById(`chestCollectPullButton`);
+	let message = document.getElementById(`chestCollectPullButtonDisabled`);
+	if (chestDataBefore!=``)
+		document.getElementById(`chestCollectData2`).innerHTML = `&nbsp;`;
+	button.hidden = true;
+	message.hidden = false;
+	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	let wrapper = document.getElementById(`chestCollectWrapper`);
+	wrapper.innerHTML = `Waiting for response...`;
+	try {
+		let details = await getUserDetails();
+		if (chestDataBefore==``)
+			await displayChestCollectDataPhase1(wrapper,details);
+		else
+			await displayChestCollectDataPhase2(wrapper,details);
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
+}
+
+async function displayChestCollectDataPhase1(wrapper,details) {
+	document.getElementById(`chestCollectPullButton`).value = `Snapshot the 'After' Chest Data`;
+	let chests = details.details.chests;
+	//let loot = details.details.loot;
+	let buffs = [];
+	for (let buff of details.details.buffs) {
+		if (!Object.keys(buffValues).includes(""+buff.buff_id))
+			continue;
+        buffs[buff.buff_id] = buff.inventory_amount;
+	}
+	chestDataBefore = {'chests':chests,'buffs':buffs};//,'loot':loot};
+	let txt=``;
+	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Chest Data Before:</span>`;
+	for (let id of Object.keys(chestDataBefore.buffs)) {
+		let name=buffValues[""+id];
+		let value=chestDataBefore.buffs[id];
+		txt+=addShiniesRow(`${name}`,`${nf(value)}`);
+	}
+	wrapper.innerHTML = txt;
+	txt=`<span class="f falc fje mr2" style="width:50%;">
+			<input type="button" onClick="pullChestCollectData()" name="chestCollectPullButton2" id="chestCollectPullButton2" value="Snapshot the 'After' Chest Data" style="min-width:175px">
+		</span>`;
+	document.getElementById(`chestCollectData2`).innerHTML = txt;
+}
+
+async function displayChestCollectDataPhase2(wrapper,details) {
+	document.getElementById(`chestCollectPullButton`).value = `Snapshot the 'Before' Chest Data`;
+	let chests = details.details.chests;
+	//let loot = details.details.loot;
+	let buffs = [];
+	for (let buff of details.details.buffs) {
+		if (!Object.keys(buffValues).includes(""+buff.buff_id))
+			continue;
+        buffs[buff.buff_id] = buff.inventory_amount;
+	}
+	let chestDataAfter = {'chests':chests,'buffs':buffs};//,'loot':loot};
+	
+	let txt=``;
+	
+	let chestsReduced = {};
+	for (let key in chestDataAfter.chests) {
+		let before = Number(chestDataBefore.chests[key]);
+		let after = Number(chestDataAfter.chests[key]);
+		console.log(" Chest: " + key);
+		console.log("Before: " + before);
+		console.log(" After: " + after);
+		if (after < before)
+			chestsReduced[key]=(before-after);
+	}
+	let chestTypesOpened = Object.keys(chestsReduced).length;
+	if (chestTypesOpened > 1) {
+		txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Error:</span>`;
+		txt+=`<span class="f fr w100 p5">You've invalidated the dataset by opening multiple chest types.</span>`;
+		wrapper.innerHTML = txt;
+		chestDataBefore=``;
+		return;
+	} else if (chestTypesOpened == 0) {
+		document.getElementById(`chestCollectPullButton`).value = `Snapshot the 'After' Chest Data`;
+		txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Error:</span>`;
+		txt+=`<span class="f fr w100 p5">No chests have been opened since the 'Before' snapshot. Open a chest type and try again.</span>`;
+		wrapper.innerHTML = txt;
+		return;
+	}
+	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Chest Data Difference:</span>`;
+	let chestOpenedId = Object.keys(chestsReduced)[0];
+	let chestOpenedName = ``;
+	switch (Number(chestOpenedId)) {
+		case 1: chestOpenedName = `Silver`; break;
+		case 2: chestOpenedName = `Gold`; break;
+		default: chestOpenedName = `???: ${chestOpenedId}`;
+	}
+	txt+=addShiniesRow(`Chest Type Opened`,`${chestOpenedName}`);
+	txt+=addShiniesRow(`Amount Opened`,`${nf(chestsReduced[chestOpenedId])}`);
+	for (let id of Object.keys(chestDataBefore.buffs)) {
+		let name=buffValues[""+id];
+		let valueBefore=chestDataBefore.buffs[id];
+		let valueAfter=chestDataAfter.buffs[id];
+		let diff=valueAfter-valueBefore;
+		txt+=addShiniesRow(`${name}`,`${nf(diff)}`);
+	}
+	wrapper.innerHTML = txt;
+	document.getElementById(`chestCollectData2`).innerHTML = `&nbsp;`;
 }
 
 function getPatronNameById(id) {
@@ -615,4 +725,12 @@ function getDisplayTime(time) {
 
 function padZeros(num,places) {
 	return String(num).padStart(places, '0');
+}
+
+function compress(input) {
+	return LZString.compress(input);
+}
+
+function decompress(input) {
+	return LZString.decompress(input);
 }
