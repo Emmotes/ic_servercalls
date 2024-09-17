@@ -1,4 +1,4 @@
-const v=1.51
+const v=1.52
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -400,6 +400,7 @@ async function displayChestCollectDataPhase2(wrapper,details) {
 	let chestDataAfter = {'chests':chests,'buffs':buffs};//,'loot':loot};
 	
 	let txt=``;
+	let comma=``;
 	
 	let chestsReduced = {};
 	for (let key in chestDataAfter.chests) {
@@ -432,13 +433,17 @@ async function displayChestCollectDataPhase2(wrapper,details) {
 	}
 	txt+=addShiniesRow(`Chest Type Opened`,`${chestOpenedName}`);
 	txt+=addShiniesRow(`Amount Opened`,`${nf(chestsReduced[chestOpenedId])}`);
+	comma+=`${chestOpenedName},${chestsReduced[chestOpenedId]}`;
 	for (let id of Object.keys(chestDataBefore.buffs)) {
 		let name=buffValues[""+id];
 		let valueBefore=chestDataBefore.buffs[id];
 		let valueAfter=chestDataAfter.buffs[id];
 		let diff=valueAfter-valueBefore;
 		txt+=addShiniesRow(`${name}`,`${nf(diff)}`);
+		comma+=`,${id},${diff}`;
 	}
+	txt+=addShiniesRow(`&nbsp;`,`&nbsp;`);
+	txt+=`<span class="f fr w100 p5"><code style="max-width:100%;color:var(--light3);overflow-wrap:break-word">${comma}</code></span>`;
 	wrapper.innerHTML = txt;
 	document.getElementById(`chestCollectData2`).innerHTML = `&nbsp;`;
 }
