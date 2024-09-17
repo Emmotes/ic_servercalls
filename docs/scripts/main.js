@@ -1,4 +1,4 @@
-const v=1.52
+const v=1.53
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -433,7 +433,7 @@ async function displayChestCollectDataPhase2(wrapper,details) {
 	}
 	txt+=addShiniesRow(`Chest Type Opened`,`${chestOpenedName}`);
 	txt+=addShiniesRow(`Amount Opened`,`${nf(chestsReduced[chestOpenedId])}`);
-	comma+=`${chestOpenedName},${chestsReduced[chestOpenedId]}`;
+	comma+=`${chestOpenedId},${chestsReduced[chestOpenedId]}`;
 	for (let id of Object.keys(chestDataBefore.buffs)) {
 		let name=buffValues[""+id];
 		let valueBefore=chestDataBefore.buffs[id];
