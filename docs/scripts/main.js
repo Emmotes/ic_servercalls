@@ -1,4 +1,4 @@
-const v=1.54
+const v=1.53;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -406,6 +406,8 @@ async function displayChestCollectDataPhase2(wrapper,details) {
 	for (let key in chestDataBefore.chests) {
 		let before = Number(chestDataBefore.chests[key]);
 		let after = Number(chestDataAfter.chests[key]);
+		if (after==undefined)
+			after = 0;
 		if (after < before)
 			chestsReduced[key]=(before-after);
 	}
