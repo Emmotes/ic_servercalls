@@ -1,4 +1,4 @@
-const v=1.58;
+const v=1.59;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -307,7 +307,7 @@ async function displayAeonData(wrapper,details) {
 	let goal = 0;
 	outerLoop:
 	for (let patron of details.patrons) {
-		if (patron.patron_id != currPatronId || patron.unlocked==false)
+		if (patron.patron_id!=currPatronId||patron.unlocked==false||patron.progress_bars==undefined)
 			continue;
 		for (let prog of patron.progress_bars) {
 			if (prog.label != "weekly_challenges_progress")
@@ -318,18 +318,17 @@ async function displayAeonData(wrapper,details) {
 		}
 	}
 	let percent = 0;
-	if (goal!=0)
+	let choreInfo=`Patron Not Unlocked`;
+	if (goal>0) {
 		percent = ((count / goal) * 100).toFixed(2);
+		choreInfo=`${count} / ${goal} (${percent}%)`;
+	}
 
 	let col1 = `width:25%;min-width:200px;`;
 	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
 	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Aeon Patron Data:</span>`;
-	txt+=addAeonRow(`Current Patron:`,currPatron);
-	if (goal>0&&percent>0)
-		txt+=addAeonRow(`${currPatron} Weekly Chores:`,`${count} / ${goal} (${percent}%)`);
-	else
-		txt+=addAeonRow(`${currPatron} Weekly Chores:`,`Patron Not Unlocked`);
+	txt+=addAeonRow(`${currPatron} Weekly Chores:`,choreInfo);
 	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
 	txt+=addAeonRow(`Next Patron:`,nextPatron);
 	txt+=addAeonRow(`Time 'til Switch:`,getDisplayTime(millisecondsTilRollover));
