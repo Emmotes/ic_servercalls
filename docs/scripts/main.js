@@ -1,4 +1,4 @@
-const v=1.59;
+const v=1.60;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -328,6 +328,7 @@ async function displayAeonData(wrapper,details) {
 	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
 	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Aeon Patron Data:</span>`;
+	txt+=addAeonRow(`Current Patron:`,currPatron);
 	txt+=addAeonRow(`${currPatron} Weekly Chores:`,choreInfo);
 	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
 	txt+=addAeonRow(`Next Patron:`,nextPatron);
