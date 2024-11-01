@@ -64,6 +64,7 @@
 	
 	<div class="tabsContainer" id="tabsContainer">
 		<div class="tabs">
+			<!-- START: Delete Formations Tab -->
 			<input onClick="setHash('formationsTab')" type="radio" class="tabsRadio" name="serverTabs" id="formationsTab" checked>
 			<label for="formationsTab" class="tabsLabel">Delete Formations</label>
 			<div class="tabsContent">
@@ -102,6 +103,48 @@
 					&nbsp;
 				</span>
 			</div>
+			<!-- END: Delete Formations Tab -->
+			<!-- START: Buy Feats Tab -->
+			<input onClick="setHash('featsTab')" type="radio" class="tabsRadio" name="serverTabs" id="featsTab">
+			<label for="featsTab" class="tabsLabel">Buy Feats</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Buy Unowned Gem Feats</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						This page will let you buy any gem feat that is available that you don't already own. Mainly it's for people who want to buy every feat in the game regardless of what the feats do - which is why so little information is given.
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullFeatsData()" name="featsPullButton" id="featsPullButton" value="Pull Feat Data" style="min-width:175px">
+						<span id="featsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="formsWrapper" id="featsWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc falc w100 fje mr2" id="featsBuyer">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Buy Feats Tab -->
+			<!-- START: Shinies Calculator Tab -->
 			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
 			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
 			<div class="tabsContent">
@@ -137,6 +180,8 @@
 					&nbsp;
 				</span>
 			</div>
+			<!-- END: Shinies Calculator Tab -->
+			<!-- START: Aeon Tab -->
 			<input onClick="setHash('aeonTab')" type="radio" class="tabsRadio" name="serverTabs" id="aeonTab">
 			<label for="aeonTab" class="tabsLabel">Aeon</label>
 			<div class="tabsContent">
@@ -172,7 +217,8 @@
 					&nbsp;
 				</span>
 			</div>
-			<!--
+			<!-- END: Aeon Tab -->
+			<!-- START: Chest Data Tab
 			<input onClick="setHash('chestDataTab')" type="radio" class="tabsRadio" name="serverTabs" id="chestDataTab">
 			<label for="chestDataTab" class="tabsLabel">Chest Data</label>
 			<div class="tabsContent">
@@ -234,12 +280,12 @@
 					&nbsp;
 				</span>
 			</div>
-			-->
+			<!-- END: Chest Data Tab -->
 		</div>
 	</div>
 
 	<script type="text/javascript" src="scripts/campaigns.js?vc=1.0"></script>
 	<script type="text/javascript" src="scripts/buffs.js?vb=1.0"></script>
-	<script type="text/javascript" src="scripts/main.js?v=1.60"></script>
+	<script type="text/javascript" src="scripts/main.js?v=2.0"></script>
 </body>
 </html>

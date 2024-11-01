@@ -64,6 +64,17 @@
 	--warning2lig: 3%;
 	--warning2: hsl(var(--warning2hue),var(--warning2sat),var(--warning2lig)); /* Maximal Red */
 	
+	/* goods */
+	--good1hue: 110;
+	--good1sat: 75%;
+	--good1lig: 55%;
+	--good1: hsl(var(--good1hue),var(--good1sat),var(--good1lig)); /* Lime Green */
+	
+	--good2hue: 110;
+	--good2sat: 38%;
+	--good2lig: 3%;
+	--good2: hsl(var(--good2hue),var(--good2sat),var(--good2lig)); /* Lime Green */
+	
 	/* highlight darks */
 	--highlightDark1: #38384A;
 	

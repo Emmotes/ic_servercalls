@@ -1,4 +1,4 @@
-const v=1.60;
+const v=2.0;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -49,7 +49,7 @@ async function pullFormationSaves() {
 	let message = document.getElementById(`formationsPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`formsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -196,6 +196,170 @@ async function deleteFormationSaves() {
 	}
 }
 
+async function pullFeatsData() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
+	let button = document.getElementById(`featsPullButton`);
+	let message = document.getElementById(`featsPullButtonDisabled`);
+	button.hidden = true;
+	message.hidden = false;
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	let wrapper = document.getElementById(`featsWrapper`);
+	wrapper.innerHTML = `Waiting for response...`;
+	//try {
+		let defs = await getDefinitions("hero_defines,hero_feat_defines");
+		let details = await getUserDetails();
+		await displayFeatsData(wrapper,details,defs);
+	//} catch {
+	//	wrapper.innerHTML = BADDATA;
+	//}
+}
+
+async function displayFeatsData(wrapper,details,defs) {
+	if (details==undefined||defs==undefined) {
+		wrapper.innerHTML = `Error.`;
+		return;
+	}
+	// Get the now.
+	let now = Date.now() / 1000;
+	// Available Gems.
+	let availableGems = details.details.red_rubies;
+	if (availableGems == undefined)
+		availableGems = 0;
+	wrapper.dataset.gems = availableGems;
+	// Populate unlocked champions and unlocked feats.
+	let unlockedChampIDs = [];
+	let unlockedFeats = [];
+	for (let hero of details.details.heroes) {
+		if (hero.owned!=undefined&&hero.owned==1&&hero.hero_id!=undefined) {
+			unlockedChampIDs.push(hero.hero_id);
+			for (let id of hero.unlocked_feats) {
+				if (!unlockedFeats.includes(id))
+					unlockedFeats.push(id);
+			}
+		}
+	}
+	// Populate champions.
+	let champs = {};
+	for (let champ of defs.hero_defines) {
+		if (unlockedChampIDs.includes(`${champ.id}`)) {
+			champs[champ.id]={name:champ.name,feats:[]};
+		}
+	}
+	// Populate buyable feats.
+	for (let feat of defs.hero_feat_defines) {
+		// Ignore unlocked feats.
+		if (unlockedFeats.includes(feat.id))
+			continue;
+		// Ignore if it belogns to unowned champion.
+		if (!unlockedChampIDs.includes(`${feat.hero_id}`))
+			continue;
+		// Ignore feats that aren't available yet.
+		// Either by flag.
+		let avail = feat.properties.is_available;
+		if (avail!=undefined&&!avail)
+			continue;
+		// Or by time.
+		avail = feat.properties.available_at_time;
+		if (avail!=undefined&&avail>now)
+			continue;
+		// Now see if it's available for gems.
+		for (let source of feat.sources) {
+			if (source.source=="gems") {
+				if (source.cost <= 50000) {
+					champs[feat.hero_id].feats.push({id:feat.id,name:feat.name,cost:source.cost});
+				}
+				break;
+			}
+		}
+	}
+	let txt=``;
+	for (let id of unlockedChampIDs) {
+		let feats = champs[id].feats;
+		if (feats.length == 0)
+			continue;
+		let name = champs[id].name;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${id}">`;
+		for (let feat of champs[id].feats) {
+			let featID = feat.id;
+			let featName = feat.name;
+			let featCost = feat.cost;
+			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${featID}" name="${featName}" data-cost="${featCost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${featID}">${featName} ${nf(featCost)}</label></span>`;
+		}
+		txt += `<span class="formsCampaignSelect"><input type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
+	}
+	if (txt==``)
+		txt = `Congratulations. You have every available feat.`;
+	wrapper.innerHTML = txt;
+	let featsBuyer = document.getElementById(`featsBuyer`);
+	featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
+	featsRecalcCost();
+}
+
+function featsRecalcCost() {
+	let wrapper = document.getElementById("featsWrapper");
+	let availableGems = Number(wrapper.dataset.gems);
+	let checked = wrapper.querySelectorAll('input[type="checkbox"]:checked');
+	let cost = 0;
+	checked.forEach(cb => {cost += Number(cb.dataset.cost);});
+	let wrapAvailableGems = document.getElementById("featsBuyAvailable");
+	if (wrapAvailableGems != undefined)
+		wrapAvailableGems.innerHTML = `Gems Available: ${nf(availableGems)}`;
+	let wrapGemsCost = document.getElementById("featsBuyCost");
+	if (wrapGemsCost != undefined)
+		wrapGemsCost.innerHTML = `Total Gems Cost: ${nf(cost)}`;
+	let featsBuyRow = document.getElementById("featsBuyRow");
+	if (featsBuyRow != undefined) {
+		if (cost > availableGems) {
+			featsBuyRow.innerHTML = `You don't have enough gems to buy the selected feats.`;
+			featsBuyRow.style.color = `var(--warning1)`;
+		} else {
+			featsBuyRow.innerHTML = `<input type="button" onClick="buyFeats()" name="featsBuyButton" id="featsBuyButton" style="font-size:0.9em;min-width:180px" value="Buy Selected Feats">`;
+			featsBuyRow.style.color = ``;
+		}
+	}
+}
+
+function featsSelectAll(id,check) {
+	var container = document.getElementById(id);
+	var cbs = container.querySelectorAll('input[type="checkbox"]');
+	for (let cb of cbs) {
+		cb.checked = check;
+	}
+	featsRecalcCost();
+}
+
+async function buyFeats() {
+	let featsBuyer = document.getElementById(`featsBuyer`);
+	let txt = `<span class="f fr w100 p5">Buying Feats:</span>`;
+	featsBuyer.innerHTML = txt;
+	let list = document.querySelectorAll('[id^="feat_"]');
+	let count = 0;
+	for (let feat of list) {
+		if (!feat.checked) continue;
+		count++;
+		let id = Number(feat.id.replaceAll("feat_",""));
+		let result = await purchaseFeat(id);
+		let cost = feat.dataset.cost;
+		let successType = ``;
+		if (result['success']&&result['okay']) {
+			successType = `Successfully bought`;
+		} else {
+			successType = `Failed to buy`;
+		}
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} (${nf(Number(cost))} gems)</span></span>`;
+		feat.parentNode.style.display=`none`;
+		feat.checked = false;
+		featsBuyer.innerHTML = txt;
+	}
+	if (count==0) {
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
+		featsBuyer.innerHTML = txt;
+	}
+}
+
 async function pullShiniesData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
@@ -205,7 +369,7 @@ async function pullShiniesData() {
 	let message = document.getElementById(`shiniesPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`shiniesWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -285,7 +449,7 @@ async function pullAeonData() {
 	let message = document.getElementById(`aeonPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -353,7 +517,7 @@ async function pullChestCollectData() {
 		document.getElementById(`chestCollectData2`).innerHTML = `&nbsp;`;
 	button.hidden = true;
 	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},10000);
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -550,8 +714,10 @@ async function getUserDetails() {
 	return await sendServerCall(SERVER,call,true);
 }
 
-async function getDefinitions() {
+async function getDefinitions(filter) {
 	let call = `${PARAM_CALL}=getdefinitions`;
+	if (filter!=undefined&&filter!="")
+		call += `&filter=${filter}`;
 	return await sendServerCall(SERVER,call);
 }
 

@@ -428,3 +428,30 @@ input[type="checkbox"]:checked::before {
 .tooltipContents svg {
 	margin-top: 10px;
 }
+
+.featsChampionList {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin-bottom: 1px;
+	font-size: 0.9em;
+	position: relative;
+}
+
+.featsChampionList input[type="checkbox"]:checked {
+	background-color: hsl(calc(var(--dark1hue)*1.95),calc(var(--dark1sat)*14),calc(var(--dark1lig)*0.9));
+}
+
+.greenButton input[type="button"] {
+	color: var(--good1);
+	background-color: var(--good2);
+}
+
+.greenButton input[type="button"]:hover {
+	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--lighten)*var(--lighten)));
+}
+
+.greenButton input[type="button"]:focus {
+	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--darken)*var(--darken)));
+}
