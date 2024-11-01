@@ -1,4 +1,4 @@
-const v=2.0;
+const v=2.01;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -178,6 +178,7 @@ async function deleteFormationSaves() {
 		count++;
 		let id = Number(form.id.replaceAll("form_",""));
 		let result = await deleteFormationSave(id);
+		sleep(200);
 		let extras = form.dataset.extras;
 		let successType = ``;
 		if (result['success']&&result['okay']) {
@@ -342,6 +343,7 @@ async function buyFeats() {
 		count++;
 		let id = Number(feat.id.replaceAll("feat_",""));
 		let result = await purchaseFeat(id);
+		sleep(200);
 		let cost = feat.dataset.cost;
 		let successType = ``;
 		if (result['success']&&result['okay']) {
@@ -912,4 +914,8 @@ function compress(input) {
 
 function decompress(input) {
 	return LZString.decompress(input);
+}
+
+function sleep(ms) {
+	await new Promise(r => setTimeout(r, ms));
 }
