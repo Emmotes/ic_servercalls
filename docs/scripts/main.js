@@ -1,4 +1,4 @@
-const v=2.01;
+const v=2.02;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -916,6 +916,6 @@ function decompress(input) {
 	return LZString.decompress(input);
 }
 
-function sleep(ms) {
+async function sleep(ms) {
 	await new Promise(r => setTimeout(r, ms));
 }
