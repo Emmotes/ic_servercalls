@@ -1,4 +1,4 @@
-const v=2.04;
+const v=2.05;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -223,76 +223,59 @@ async function displayFeatsData(wrapper,details,defs) {
 		wrapper.innerHTML = `Error.`;
 		return;
 	}
-	// Get the now.
 	let now = Date.now() / 1000;
-	// Available Gems.
 	let availableGems = details.details.red_rubies;
 	if (availableGems == undefined)
 		availableGems = 0;
 	wrapper.dataset.gems = availableGems;
-	// Populate unlocked champions and unlocked feats.
 	let unlockedChampIDs = [];
 	let unlockedFeats = [];
 	for (let hero of details.details.heroes) {
 		if (hero.owned!=undefined&&hero.owned==1&&hero.hero_id!=undefined) {
-			unlockedChampIDs.push(hero.hero_id);
+			unlockedChampIDs.push(Number(hero.hero_id));
 			for (let id of hero.unlocked_feats) {
 				if (!unlockedFeats.includes(id))
 					unlockedFeats.push(id);
 			}
 		}
 	}
-	// Populate champions.
 	let champs = {};
 	for (let champ of defs.hero_defines) {
-		if (unlockedChampIDs.includes(`${champ.id}`)) {
+		if (unlockedChampIDs.includes(champ.id))
 			champs[champ.id]={name:champ.name,feats:[]};
-		}
 	}
-	// Populate buyable feats.
 	for (let feat of defs.hero_feat_defines) {
-		// Ignore unlocked feats.
 		if (unlockedFeats.includes(feat.id))
 			continue;
-		// Ignore if it belogns to unowned champion.
-		if (!unlockedChampIDs.includes(`${feat.hero_id}`))
+		if (!unlockedChampIDs.includes(feat.hero_id))
 			continue;
-		// Ignore feats that aren't available yet.
-		// Either by flag.
 		let avail = feat.properties.is_available;
 		if (avail!=undefined&&!avail)
 			continue;
-		// Or by time.
 		avail = feat.properties.available_at_time;
 		if (avail!=undefined&&avail>now)
 			continue;
-		// Now see if it's available for gems.
 		for (let source of feat.sources) {
 			if (source.source=="gems") {
-				if (source.cost <= 50000) {
+				if (source.cost <= 50000)
 					champs[feat.hero_id].feats.push({id:feat.id,name:feat.name,cost:source.cost});
-				}
 				break;
 			}
 		}
 	}
 	let txt=``;
 	for (let id of unlockedChampIDs) {
-		let feats = champs[id].feats;
+		let feats = champs[""+id].feats;
 		if (feats.length == 0)
 			continue;
 		let name = champs[id].name;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${id}">`;
 		for (let feat of champs[id].feats) {
-			let featID = feat.id;
-			let featName = feat.name;
-			let featCost = feat.cost;
-			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${featID}" name="${featName}" data-cost="${featCost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${featID}">${featName} ${nf(featCost)}</label></span>`;
+			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-cost="${feat.cost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
 		}
 		txt += `<span class="formsCampaignSelect"><input type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
 	let featsBuyer = document.getElementById(`featsBuyer`);
-	wrapper.innerHTML = (txt == `` ? `&nbsp;` : txt);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
 		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
@@ -318,11 +301,11 @@ function featsRecalcCost() {
 	let featsBuyRow = document.getElementById("featsBuyRow");
 	if (featsBuyRow != undefined) {
 		if (cost > availableGems) {
-			featsBuyRow.innerHTML = `You don't have enough gems to buy the selected feats.`;
 			featsBuyRow.style.color = `var(--warning1)`;
+			featsBuyRow.innerHTML = `You don't have enough gems to buy the selected feats.`;
 		} else {
-			featsBuyRow.innerHTML = `<input type="button" onClick="buyFeats()" name="featsBuyButton" id="featsBuyButton" style="font-size:0.9em;min-width:180px" value="Buy Selected Feats">`;
 			featsBuyRow.style.color = ``;
+			featsBuyRow.innerHTML = `<input type="button" onClick="buyFeats()" name="featsBuyButton" id="featsBuyButton" style="font-size:0.9em;min-width:180px" value="Buy Selected Feats">`;
 		}
 	}
 }
@@ -343,18 +326,18 @@ async function buyFeats() {
 	let list = document.querySelectorAll('[id^="feat_"]');
 	let count = 0;
 	for (let feat of list) {
-		if (!feat.checked) continue;
+		if (!feat.checked)
+			continue;
 		count++;
 		let id = Number(feat.id.replaceAll("feat_",""));
 		let result = await purchaseFeat(id);
 		sleep(200);
 		let cost = feat.dataset.cost;
 		let successType = ``;
-		if (result['success']&&result['okay']) {
+		if (result['success']&&result['okay'])
 			successType = `Successfully bought`;
-		} else {
+		else
 			successType = `Failed to buy`;
-		}
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} (${nf(Number(cost))} gems)</span></span>`;
 		feat.parentNode.style.display=`none`;
 		feat.checked = false;
