@@ -1,4 +1,4 @@
-const v=2.03;
+const v=2.04;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -209,13 +209,13 @@ async function pullFeatsData() {
 	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`featsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	//try {
+	try {
 		let defs = await getDefinitions("hero_defines,hero_feat_defines");
 		let details = await getUserDetails();
 		await displayFeatsData(wrapper,details,defs);
-	//} catch {
-	//	wrapper.innerHTML = BADDATA;
-	//}
+	} catch {
+		wrapper.innerHTML = BADDATA;
+	}
 }
 
 async function displayFeatsData(wrapper,details,defs) {
