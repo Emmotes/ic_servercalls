@@ -1,4 +1,4 @@
-const v=2.02;
+const v=2.03;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -291,12 +291,16 @@ async function displayFeatsData(wrapper,details,defs) {
 		}
 		txt += `<span class="formsCampaignSelect"><input type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
-	if (txt==``)
-		txt = `Congratulations. You have every available feat.`;
-	wrapper.innerHTML = txt;
 	let featsBuyer = document.getElementById(`featsBuyer`);
-	featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
-	featsRecalcCost();
+	wrapper.innerHTML = (txt == `` ? `&nbsp;` : txt);
+	if (txt!=``) {
+		wrapper.innerHTML = txt;
+		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
+		featsRecalcCost();
+	} else {
+		wrapper.innerHTML = `&nbsp;`;
+		featsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Congratulations. You have every available feat.</span>`
+	}
 }
 
 function featsRecalcCost() {
