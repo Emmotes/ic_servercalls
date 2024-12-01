@@ -1,4 +1,4 @@
-const v=2.05;
+const v=2.06;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -784,6 +784,14 @@ async function saveFormation(id,name,fav,form,fams,specs,feats) {
     call += `&familiars=${fams}`;
     call += `&specializations=${specs}`;
     call += `&feats=${feats}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function purchasePatronShopItem(patronId,shopItemId,count) {
+    let call = `${PARAM_CALL}=purchasepatronshopitem`;
+    call += `&patron_id=${patronId}`;
+    call += `&shop_item_id=${shopItemId}`;
+    call += `&count=${count}`;
     return await sendServerCall(SERVER,call,true,true);
 }
 
