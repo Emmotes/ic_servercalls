@@ -75,9 +75,8 @@ async function displayFormationSaves(wrapper,saves) {
 		let patron = id - camp;
 		let formObj = formObjs[`${id}`];
 		let campName = campaignIds[`${camp}`];
-		if (id > 1000 && id < 1000000) {
+		if (id > 1000 && id < 1000000)
 			campName = formObj.campaign_name;
-		}
 		if (campName==undefined) campName = `Unknown Campaign ID: ${camp}`;
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
@@ -162,9 +161,8 @@ function createFormationTooltip(name,champs,formation) {
 function formsSelectAll(id,check) {
 	var container = document.getElementById(id);
 	var cbs = container.querySelectorAll('input[type="checkbox"]');
-	for (let cb of cbs) {
+	for (let cb of cbs)
 		cb.checked = check;
-	}
 }
 
 async function deleteFormationSaves() {
@@ -181,11 +179,10 @@ async function deleteFormationSaves() {
 		sleep(200);
 		let extras = form.dataset.extras;
 		let successType = ``;
-		if (result['success']&&result['okay']) {
+		if (result['success']&&result['okay'])
 			successType = `Successfully deleted`;
-		} else {
+		else
 			successType = `Failed to delete`;
-		}
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
 		form.parentNode.style.display=`none`;
 		form.checked = false;
@@ -233,10 +230,9 @@ async function displayFeatsData(wrapper,details,defs) {
 	for (let hero of details.details.heroes) {
 		if (hero.owned!=undefined&&hero.owned==1&&hero.hero_id!=undefined) {
 			unlockedChampIDs.push(Number(hero.hero_id));
-			for (let id of hero.unlocked_feats) {
+			for (let id of hero.unlocked_feats)
 				if (!unlockedFeats.includes(id))
 					unlockedFeats.push(id);
-			}
 		}
 	}
 	let champs = {};
@@ -313,9 +309,8 @@ function featsRecalcCost() {
 function featsSelectAll(id,check) {
 	var container = document.getElementById(id);
 	var cbs = container.querySelectorAll('input[type="checkbox"]');
-	for (let cb of cbs) {
+	for (let cb of cbs)
 		cb.checked = check;
-	}
 	featsRecalcCost();
 }
 
@@ -422,9 +417,8 @@ async function displayShiniesData(wrapper,details) {
 
 function addShiniesRow(left,right,left2,right2) {
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
-	if (left2!=undefined&&right2!=undefined) {
+	if (left2!=undefined&&right2!=undefined)
 		txt += `<span class="f falc fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;
-	}
 	txt += `</span>`;
 	return txt;
 }
@@ -678,18 +672,16 @@ async function supportUrlSaveData() {
 
 function swapTab() {
 	var hash = window.location.hash.substring(1);
-	if (hash != "" && document.getElementById(hash) != undefined) {
+	if (hash != "" && document.getElementById(hash) != undefined)
 		document.getElementById(hash).click();
-	}
 }
 
 function setHash(hash) {
 	hash = "#" + hash;
-	if(history.replaceState) {
+	if (history.replaceState)
 		history.replaceState(null, null, hash);
-	} else {
+	else
 		window.location.hash = hash;
-	}
 }
 
 async function getPlayServerFromMaster() {
@@ -792,6 +784,28 @@ async function purchasePatronShopItem(patronId,shopItemId,count) {
     call += `&patron_id=${patronId}`;
     call += `&shop_item_id=${shopItemId}`;
     call += `&count=${count}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function saveModron(coreId,gameInstanceId,buffs) {
+    let userDetails = await getUserDetails();
+    let modronSave = userDetails.details.modron_saves[coreId];
+    let grid = JSON.stringify(modronSave.grid);
+    let formationSaves = JSON.stringify(modronSave.formation_saves);
+    let areaGoal = modronSave.area_goal;
+    let buffsStr = JSON.stringify(buffs);
+    let checkinTimestamp = (Date.now() / 1000) + 604800;
+    let properties = JSON.stringify(modronSave.properties);
+    
+    let call = `${PARAM_CALL}=saveModron`;
+    call += `&core_id=${coreId}`;
+    call += `&grid=${grid}`;
+    call += `&game_instance_id=${gameInstanceId}`;
+    call += `&formation_saves=${formationSaves}`;
+    call += `&area_goal=${areaGoal}`;
+    call += `&buffs=${buffsStr}`;
+    call += `&checkin_timestamp=${checkinTimestamp}`;
+    call += `&properties=${properties}`;
     return await sendServerCall(SERVER,call,true,true);
 }
 
