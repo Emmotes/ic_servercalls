@@ -102,7 +102,11 @@ async function displayFormationSaves(wrapper,saves) {
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
-	formsDeleter.innerHTML = `<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+	let fd = ``;
+	if (document.querySelectorAll('input[name="___AUTO___SAVE___"]').length > 0)
+		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
+	fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+	formsDeleter.innerHTML = fd;
 }
 
 function createFormationTooltip(name,champs,formation) {
@@ -159,10 +163,29 @@ function createFormationTooltip(name,champs,formation) {
 }
 
 function formsSelectAll(id,check) {
-	var container = document.getElementById(id);
-	var cbs = container.querySelectorAll('input[type="checkbox"]');
+	let container = document.getElementById(id);
+	let cbs = container.querySelectorAll('input[type="checkbox"]');
 	for (let cb of cbs)
 		cb.checked = check;
+}
+
+function toggleSelectAutosaveForms() {
+	let ele = document.getElementById(`toggleSelectAutosaveFormsButton`);
+	let check = false;
+	if (ele.value==`Select All Autosaved Formations`)
+		check = true;
+	let cbs = document.querySelectorAll('input[name="___AUTO___SAVE___"]');
+	let counter=0;
+	for (let cb of cbs) {
+		cb.checked = check;
+		counter++;
+	}
+	if (counter>0) {
+		if (check)
+			ele.value = `Deselect All Autosaved Formations`;
+		else
+			ele.value = `Select All Autosaved Formations`;
+	}
 }
 
 async function deleteFormationSaves() {
@@ -313,8 +336,8 @@ function featsRecalcCost() {
 }
 
 function featsSelectAll(id,check) {
-	var container = document.getElementById(id);
-	var cbs = container.querySelectorAll('input[type="checkbox"]');
+	let container = document.getElementById(id);
+	let cbs = container.querySelectorAll('input[type="checkbox"]');
 	for (let cb of cbs)
 		cb.checked = check;
 	featsRecalcCost();
@@ -677,7 +700,7 @@ async function supportUrlSaveData() {
 }
 
 function swapTab() {
-	var hash = window.location.hash.substring(1);
+	let hash = window.location.hash.substring(1);
 	if (hash != "" && document.getElementById(hash) != undefined)
 		document.getElementById(hash).click();
 }
@@ -870,7 +893,7 @@ async function sendServerCall(server,call,addUserData,addInstanceId) {
 
 async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
-	var response = await fetch(url)
+	let response = await fetch(url)
 		.then(response => response.text())
 		.catch(err => console.log(err));
 	return await JSON.parse(response);
