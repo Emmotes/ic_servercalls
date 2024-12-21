@@ -81,10 +81,13 @@ async function displayFormationSaves(wrapper,saves) {
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
-		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
+		let temp = `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
+		let added = 0;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let formName = formation.name;
+			if (formName == `___AUTO___SAVE___`)
+				continue
 			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
 			let formFeats = Object.prototype.toString.call(formation.feats||[]) != `[object Array]`;
@@ -96,9 +99,13 @@ async function displayFormationSaves(wrapper,saves) {
 			}
 			if (extras!=``) extras = ` (${extras})`;
 			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
+			temp += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
+			added++;
 		}
-		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
+		if (added == 0)
+			continue
+		temp += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
+		c += temp;
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
