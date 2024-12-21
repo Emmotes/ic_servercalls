@@ -180,12 +180,10 @@ function toggleSelectAutosaveForms() {
 		cb.checked = check;
 		counter++;
 	}
-	if (counter>0) {
-		if (check)
-			ele.value = `Deselect All Autosaved Formations`;
-		else
-			ele.value = `Select All Autosaved Formations`;
-	}
+	if (check)
+		ele.value = `Deselect All Autosaved Formations`;
+	else
+		ele.value = `Select All Autosaved Formations`;
 }
 
 async function deleteFormationSaves() {
