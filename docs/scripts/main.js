@@ -81,13 +81,10 @@ async function displayFormationSaves(wrapper,saves) {
 		let patronName = patron==0?``:patronIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
-		let temp = `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
-		let added = 0;
+		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let formName = formation.name;
-			if (formName == `___AUTO___SAVE___`)
-				continue
 			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
 			let formFeats = Object.prototype.toString.call(formation.feats||[]) != `[object Array]`;
@@ -99,13 +96,9 @@ async function displayFormationSaves(wrapper,saves) {
 			}
 			if (extras!=``) extras = ` (${extras})`;
 			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
-			temp += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
-			added++;
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${camp}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 		}
-		if (added == 0)
-			continue
-		temp += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
-		c += temp;
+		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
@@ -182,6 +175,12 @@ async function deleteFormationSaves() {
 		if (!form.checked) continue;
 		count++;
 		let id = Number(form.id.replaceAll("form_",""));
+		if (form.name == `___AUTO___SAVE___`) {
+			// Can't delete the autosaves atm. So have to rename them first.
+			let campId = form.dataset.campid
+			let result = await saveFormation(id,campId,`renameAutoSaveToDeleteIt`)
+			sleep(200)
+		}
 		let result = await deleteFormationSave(id);
 		sleep(200);
 		let extras = form.dataset.extras;
@@ -774,16 +773,18 @@ async function trialsPickRoleHero(roleId,heroId,costChoice) {
 	return await sendServerCall(SERVER,call,true,true);
 }
 
-async function saveFormation(id,name,fav,form,fams,specs,feats) {
-    let call = `${PARAM_CALL}=saveformation`;
-    call += `&campaign_id=${id}`;
-    call += `&name=${name}`;
-    call += `&favorite=${fav}`;
-    call += `&formation=${form}`;
-    call += `&familiars=${fams}`;
-    call += `&specializations=${specs}`;
-    call += `&feats=${feats}`;
-    return await sendServerCall(SERVER,call,true,true);
+async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats,overwrite) {
+	if (formId==undefined||campId==undefined||name==undefined) return;
+	let call = `${PARAM_CALL}=SaveFormation`;
+	call += `&formation_save_id=${formId}`;
+	call += `&campaign_id=${campId}`;
+	call += `&name=${name}`;
+	call += `&favorite=` + (fav==undefined ? 0 : fav);
+	call += `&formation=` + (formation==undefined ? "[]" : formation)
+	call += `&familiars=` + (familiars==undefined ? "{}" : familiars)
+	call += `&specializations=` + (specs==undefined ? "{}" : specs)
+	call += `&feats=` + (feats==undefined ? "{}" : feats)
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function purchasePatronShopItem(patronId,shopItemId,count) {
