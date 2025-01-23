@@ -1,4 +1,4 @@
-const v=2.08;
+const v=2.09;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -276,7 +276,6 @@ async function displayFeatsData(wrapper,details,defs) {
 			continue;
 		let test = localStorage.scTestDontFilterFeatsByDate;
 		if (test==undefined||test==0) {
-			console.log(`Filtering by date.`);
 			let avail = feat.properties.is_available;
 			if (avail!=undefined&&!avail)
 				continue;
