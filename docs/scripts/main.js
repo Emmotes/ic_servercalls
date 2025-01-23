@@ -1,4 +1,4 @@
-const v=2.09;
+const v=2.10;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -963,7 +963,13 @@ function decompress(input) {
 }
 
 function findWord(word,str) {
+	if (ciEquals(word,`Test`) && ciEquals(str,`Test of High Sorcery`))
+		return false;
 	return RegExp('\\b'+ word +'\\b', 'i').test(str)
+}
+
+function ciEquals(a, b) {
+	return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0 : a === b;
 }
 
 async function sleep(ms) {
