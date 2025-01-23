@@ -1,4 +1,4 @@
-const v=2.07;
+const v=2.08;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -272,12 +272,21 @@ async function displayFeatsData(wrapper,details,defs) {
 			continue;
 		if (!unlockedChampIDs.includes(feat.hero_id))
 			continue;
-		let avail = feat.properties.is_available;
-		if (avail!=undefined&&!avail)
+		if (findWord(`TBD`, feat.name) || findWord(`Test`, feat.name))
 			continue;
-		avail = feat.properties.available_at_time;
-		if (avail!=undefined&&avail>now)
-			continue;
+		let test = localStorage.scTestDontFilterFeatsByDate;
+		if (test==undefined||test==0) {
+			console.log(`Filtering by date.`);
+			let avail = feat.properties.is_available;
+			if (avail!=undefined&&!avail)
+				continue;
+			avail = feat.properties.available_at_time;
+			if (avail!=undefined&&avail>now)
+				continue;
+			avail = feat.properties.available_for_gems_at_time;
+			if (avail!=undefined&&avail>now)
+				continue;
+		}
 		for (let source of feat.sources) {
 			if (source.source=="gems") {
 				if (source.cost <= 50000)
@@ -952,6 +961,10 @@ function compress(input) {
 
 function decompress(input) {
 	return LZString.decompress(input);
+}
+
+function findWord(word,str) {
+	return RegExp('\\b'+ word +'\\b', 'i').test(str)
 }
 
 async function sleep(ms) {
