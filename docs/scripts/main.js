@@ -1,4 +1,4 @@
-const v=2.10;
+const v=2.11;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -843,6 +843,12 @@ async function saveModron(coreId,gameInstanceId,buffs) {
     call += `&buffs=${buffsStr}`;
     call += `&checkin_timestamp=${checkinTimestamp}`;
     call += `&properties=${properties}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function useSummonScroll(heroId) {
+    let call = `${PARAM_CALL}=usesummonscoll`;
+    call += `&hero_id=${heroId}`;
     return await sendServerCall(SERVER,call,true,true);
 }
 
