@@ -196,10 +196,25 @@ async function deleteFormationSaves() {
 		if (!form.checked) continue;
 		count++;
 		let id = Number(form.id.replaceAll("form_",""));
+		let autosaveError = false;
 		if (form.name == `___AUTO___SAVE___`) {
+			if (autosaveError) {
+				form.parentNode.style.display=`none`;
+				form.checked = false;
+				continue;
+			}
 			// Can't delete the autosaves atm. So have to rename them first.
-			let campId = form.dataset.campid
-			let result = await saveFormation(id,campId,`renameAutoSaveToDeleteIt`)
+			let campId = form.dataset.campid;
+			let result = await saveFormation(id,campId,`renameAutoSaveToDeleteIt`);
+			if (result[FR] == `Invalid or incomplete parameters`) {
+				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
+				autosaveError = true;
+				form.parentNode.style.display=`none`;
+				form.checked = false;
+				formsDeleter.innerHTML = c;
+				sleep(200);
+				continue;
+			}
 			sleep(200)
 		}
 		let result = await deleteFormationSave(id);
@@ -881,7 +896,7 @@ async function sendServerCall(server,call,addUserData,addInstanceId) {
 	let limit = 0;
 	while ((response[SPS]!=undefined||!response['success'])&&limit<RETRIES) {
 		if (response[SPS]) {
-			SERVER = response[SPS];
+			SERVER = response[SPS].replace(`http://`, `https://`);
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
 			if (response[FR]==OII) {
@@ -894,7 +909,8 @@ async function sendServerCall(server,call,addUserData,addInstanceId) {
 				response = await sendOutgoingCall(server,call);
 			} else {
 				// Unknown error.
-				console.log(`Unknown Error: ${response[FR]}`);
+				console.log(`${server}post.php?${call}`);
+				console.log(` - Unknown Error: ${response[FR]}`);
 				return response;
 			}
 		}
