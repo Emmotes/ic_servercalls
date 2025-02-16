@@ -1,4 +1,4 @@
-const v=2.11;
+const v=2.12;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -864,6 +864,26 @@ async function saveModron(coreId,gameInstanceId,buffs) {
 async function useSummonScroll(heroId) {
     let call = `${PARAM_CALL}=usesummonscoll`;
     call += `&hero_id=${heroId}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function getDismantleData() {
+    let call = `${PARAM_CALL}=getredistributehero`;
+    return await sendServerCall(SERVER,call,true,true);
+	
+}
+
+async function dismantleHero(heroId,redistId) {
+    let call = `${PARAM_CALL}=redistributehero`;
+    call += `&hero_id=${heroId}`;
+	call += `&redistribute_id=${redistId}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function saveInstanceName(name,instanceId) {
+    let call = `${PARAM_CALL}=saveinstancename`;
+    call += `&name=${name}`;
+	call += `&game_instance_id=${instanceId}`;
     return await sendServerCall(SERVER,call,true,true);
 }
 
