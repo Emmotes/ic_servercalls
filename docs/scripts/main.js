@@ -887,6 +887,24 @@ async function saveInstanceName(name,instanceId) {
     return await sendServerCall(SERVER,call,true,true);
 }
 
+async function buySoftCurrencyChest(chestId,count) {
+    let call = `${PARAM_CALL}=buysoftcurrencychest`;
+    call += `&chest_type_id=${chestId}`;
+	call += `&count=${count}`;
+	if (chestId > 2)
+		call += `&spend_event_v2_tokens=1`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
+async function openGenericChest(chestId,count) {
+    let call = `${PARAM_CALL}=opengenericchest`;
+	call += `&gold_per_second=0`;
+	call += `&checksum=4c5f019b6fc6eefa4d47d21cfaf1bc68`;
+    call += `&chest_type_id=${chestId}`;
+	call += `&count=${count}`;
+    return await sendServerCall(SERVER,call,true,true);
+}
+
 function appendUserData() {
 	return `&${PARAM_USERID}=${userIdent[0]}&${PARAM_USERHASH}=${userIdent[1]}`;
 }
