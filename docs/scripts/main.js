@@ -572,7 +572,7 @@ async function displayChestCollectDataPhase1(wrapper,details) {
 	for (let buff of details.details.buffs) {
 		if (!Object.keys(buffValues).includes(""+buff.buff_id))
 			continue;
-        buffs[buff.buff_id] = buff.inventory_amount;
+		buffs[buff.buff_id] = buff.inventory_amount;
 	}
 	chestDataBefore = {'chests':chests,'buffs':buffs};//,'loot':loot};
 	let txt=``;
@@ -597,7 +597,7 @@ async function displayChestCollectDataPhase2(wrapper,details) {
 	for (let buff of details.details.buffs) {
 		if (!Object.keys(buffValues).includes(""+buff.buff_id))
 			continue;
-        buffs[buff.buff_id] = buff.inventory_amount;
+		buffs[buff.buff_id] = buff.inventory_amount;
 	}
 	let chestDataAfter = {'chests':chests,'buffs':buffs};//,'loot':loot};
 	
@@ -776,16 +776,16 @@ async function deleteFormationSave(id) {
 }
 
 async function purchaseFeat(id) {
-    let call = `${PARAM_CALL}=purchasefeat`;
-    call += `&feat_id=${id}`;
-    return await sendServerCall(SERVER,call,true,true);
+	let call = `${PARAM_CALL}=purchasefeat`;
+	call += `&feat_id=${id}`;
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function upgradeLegendary(heroId,slotId) {
 	let call = `${PARAM_CALL}=upgradelegendaryitem`;
 	call += `&hero_id=${heroId}`;
 	call += `&slot_id=${slotId}`;
-    return await sendServerCall(SERVER,call,true,true);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function trialsRefreshData() {
@@ -832,77 +832,77 @@ async function saveFormation(formId,campId,name,fav,formation,familiars,specs,fe
 }
 
 async function purchasePatronShopItem(patronId,shopItemId,count) {
-    let call = `${PARAM_CALL}=purchasepatronshopitem`;
-    call += `&patron_id=${patronId}`;
-    call += `&shop_item_id=${shopItemId}`;
-    call += `&count=${count}`;
-    return await sendServerCall(SERVER,call,true,true);
+	let call = `${PARAM_CALL}=purchasepatronshopitem`;
+	call += `&patron_id=${patronId}`;
+	call += `&shop_item_id=${shopItemId}`;
+	call += `&count=${count}`;
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function saveModron(coreId,gameInstanceId,buffs) {
-    let userDetails = await getUserDetails();
-    let modronSave = userDetails.details.modron_saves[coreId];
-    let grid = JSON.stringify(modronSave.grid);
-    let formationSaves = JSON.stringify(modronSave.formation_saves);
-    let areaGoal = modronSave.area_goal;
-    let buffsStr = JSON.stringify(buffs);
-    let checkinTimestamp = (Date.now() / 1000) + 604800;
-    let properties = JSON.stringify(modronSave.properties);
-    
-    let call = `${PARAM_CALL}=saveModron`;
-    call += `&core_id=${coreId}`;
-    call += `&grid=${grid}`;
-    call += `&game_instance_id=${gameInstanceId}`;
-    call += `&formation_saves=${formationSaves}`;
-    call += `&area_goal=${areaGoal}`;
-    call += `&buffs=${buffsStr}`;
-    call += `&checkin_timestamp=${checkinTimestamp}`;
-    call += `&properties=${properties}`;
-    return await sendServerCall(SERVER,call,true,true);
+	let userDetails = await getUserDetails();
+	let modronSave = userDetails.details.modron_saves[coreId];
+	let grid = JSON.stringify(modronSave.grid);
+	let formationSaves = JSON.stringify(modronSave.formation_saves);
+	let areaGoal = modronSave.area_goal;
+	let buffsStr = JSON.stringify(buffs);
+	let checkinTimestamp = (Date.now() / 1000) + 604800;
+	let properties = JSON.stringify(modronSave.properties);
+	
+	let call = `${PARAM_CALL}=saveModron`;
+	call += `&core_id=${coreId}`;
+	call += `&grid=${grid}`;
+	call += `&game_instance_id=${gameInstanceId}`;
+	call += `&formation_saves=${formationSaves}`;
+	call += `&area_goal=${areaGoal}`;
+	call += `&buffs=${buffsStr}`;
+	call += `&checkin_timestamp=${checkinTimestamp}`;
+	call += `&properties=${properties}`;
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function useSummonScroll(heroId) {
-    let call = `${PARAM_CALL}=usesummonscoll`;
-    call += `&hero_id=${heroId}`;
-    return await sendServerCall(SERVER,call,true,true);
+	let call = `${PARAM_CALL}=usesummonscoll`;
+	call += `&hero_id=${heroId}`;
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function getDismantleData() {
-    let call = `${PARAM_CALL}=getredistributehero`;
-    return await sendServerCall(SERVER,call,true,true);
+	let call = `${PARAM_CALL}=getredistributehero`;
+	return await sendServerCall(SERVER,call,true,true);
 	
 }
 
 async function dismantleHero(heroId,redistId) {
-    let call = `${PARAM_CALL}=redistributehero`;
-    call += `&hero_id=${heroId}`;
+	let call = `${PARAM_CALL}=redistributehero`;
+	call += `&hero_id=${heroId}`;
 	call += `&redistribute_id=${redistId}`;
-    return await sendServerCall(SERVER,call,true,true);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function saveInstanceName(name,instanceId) {
-    let call = `${PARAM_CALL}=saveinstancename`;
-    call += `&name=${name}`;
+	let call = `${PARAM_CALL}=saveinstancename`;
+	call += `&name=${name}`;
 	call += `&game_instance_id=${instanceId}`;
-    return await sendServerCall(SERVER,call,true,true);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function buySoftCurrencyChest(chestId,count) {
-    let call = `${PARAM_CALL}=buysoftcurrencychest`;
-    call += `&chest_type_id=${chestId}`;
+	let call = `${PARAM_CALL}=buysoftcurrencychest`;
+	call += `&chest_type_id=${chestId}`;
 	call += `&count=${count}`;
 	let tokens=(chestId==1||chestId==2?0:1);
 	call += `&spend_event_v2_tokens=${tokens}`;
-    return await sendServerCall(SERVER,call,true,true);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 async function openGenericChest(chestId,count) {
-    let call = `${PARAM_CALL}=opengenericchest`;
+	let call = `${PARAM_CALL}=opengenericchest`;
 	call += `&gold_per_second=0`;
 	call += `&checksum=4c5f019b6fc6eefa4d47d21cfaf1bc68`;
-    call += `&chest_type_id=${chestId}`;
+	call += `&chest_type_id=${chestId}`;
 	call += `&count=${count}`;
-    return await sendServerCall(SERVER,call,true,true);
+	return await sendServerCall(SERVER,call,true,true);
 }
 
 function appendUserData() {
@@ -970,31 +970,31 @@ function nf(number) {
 }
 
 async function monitorElectrums(minSleep,maxSleep) {
-    let first = true;
-    while (true) {
-        if (!first)
-            getPlayServerFromMaster();
-        let current = (await getUserDetails()).details.chests[282];
-        let time = new Date();
-        let output = `${dateFormat(time)} -> Electrums: ${current}`;
-        let sleep = randInt(minSleep*60, maxSleep*60);
-        time.setSeconds(time.getSeconds() + sleep);
-        output += `    (Sleeping until: ${dateFormat(time)})`;
-        console.log(output);
-        if (first)
-            first = false;
-        await new Promise(r => setTimeout(r, sleep*1000));
-    }
+	let first = true;
+	while (true) {
+		if (!first)
+			getPlayServerFromMaster();
+		let current = (await getUserDetails()).details.chests[282];
+		let time = new Date();
+		let output = `${dateFormat(time)} -> Electrums: ${current}`;
+		let sleep = randInt(minSleep*60, maxSleep*60);
+		time.setSeconds(time.getSeconds() + sleep);
+		output += `	(Sleeping until: ${dateFormat(time)})`;
+		console.log(output);
+		if (first)
+			first = false;
+		await new Promise(r => setTimeout(r, sleep*1000));
+	}
 }
 
 function randInt(min, max) {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+	const minCeiled = Math.ceil(min);
+	const maxFloored = Math.floor(max);
+	return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
 }
 
 function dateFormat(input) {
-    return Intl.DateTimeFormat("en-GB", {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
+	return Intl.DateTimeFormat("en-GB", {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
 }
 
 function getDisplayTime(time) {
