@@ -891,8 +891,8 @@ async function buySoftCurrencyChest(chestId,count) {
     let call = `${PARAM_CALL}=buysoftcurrencychest`;
     call += `&chest_type_id=${chestId}`;
 	call += `&count=${count}`;
-	if (chestId > 2)
-		call += `&spend_event_v2_tokens=1`;
+	let tokens=(chestId==1||chestId==2?0:1);
+	call += `&spend_event_v2_tokens=${tokens}`;
     return await sendServerCall(SERVER,call,true,true);
 }
 
