@@ -742,6 +742,8 @@ async function getPlayServerFromMaster() {
 
 async function getUserDetails() {
 	let call = `${PARAM_CALL}=getuserdetails`;
+	call += `&supports_chunked_defs=0`;
+	call += `&new_achievements=1`;
 	return await sendServerCall(SERVER,call,true);
 }
 
