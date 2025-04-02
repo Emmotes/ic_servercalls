@@ -212,13 +212,13 @@ async function deleteFormationSaves() {
 				form.parentNode.style.display=`none`;
 				form.checked = false;
 				formsDeleter.innerHTML = c;
-				sleep(200);
+				await sleep(200);
 				continue;
 			}
-			sleep(200)
+			await sleep(200)
 		}
 		let result = await deleteFormationSave(id);
-		sleep(200);
+		await sleep(200);
 		let extras = form.dataset.extras;
 		let successType = ``;
 		if (result['success']&&result['okay'])
@@ -376,7 +376,7 @@ async function buyFeats() {
 		count++;
 		let id = Number(feat.id.replaceAll("feat_",""));
 		let result = await purchaseFeat(id);
-		sleep(200);
+		await sleep(200);
 		let cost = feat.dataset.cost;
 		let successType = ``;
 		if (result['success']&&result['okay'])
