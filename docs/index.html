@@ -145,6 +145,46 @@
 				</span>
 			</div>
 			<!-- END: Buy Feats Tab -->
+			<!-- START: Buy Event Chests Calculator Tab -->
+			<input onClick="setHash('buyEventsTab')" type="radio" class="tabsRadio" name="serverTabs" id="buyEventsTab">
+			<label for="buyEventsTab" class="tabsLabel">Buy Event Chests</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Buy Event Chest Packs</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						This page will let you buy chest packs with event tokens for champions you have flexed.
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullBuyEventsData()" name="buyEventsPullButton" id="buyEventsPullButton" value="Pull Event Chest Data" style="min-width:175px">
+						<span id="buyEventsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="buyEventsWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc falc w100 fje mr2" id="buyEventsBuyer">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Buy Event Chests Calculator Tab -->
 			<!-- START: Shinies Calculator Tab -->
 			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
 			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
