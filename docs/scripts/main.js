@@ -1,4 +1,4 @@
-const v=2.13;
+const v=2.14;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -588,7 +588,7 @@ async function buyEvents() {
 		let cost = ``;
 		if (result['success']&&result['okay']) {
 			successType = `Successfully bought`;
-			cost = ` for ${nf(result.currency_spent)} Tokens (${nf(Math.round(result.currency_remaining))} Remaining)`;
+			cost = ` for ${nf(result.currency_spent)} Tokens (${nf(Math.round(result.currency_remaining))} Tokens Remaining)`;
 			amount -= toBuy;
 		} else
 			successType = `Failed to buy`;
