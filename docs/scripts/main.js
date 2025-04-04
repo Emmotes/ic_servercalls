@@ -1,4 +1,4 @@
-const v=2.14;
+const v=2.2;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -487,18 +487,23 @@ async function pullBuyEventsData() {
 	let wrapper = document.getElementById(`buyEventsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
-		let details = (await getUserDetails()).details;
+		let tokens = (await getUserDetails()).details.events_details.tokens;
+		if (tokens < 7500) {
+			wrapper.innerHTML = `&nbsp;`;
+			document.getElementById(`buyEventsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough tokens to buy any chest packs.</span>`
+			return;
+		}
 		await sleep(100);
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await sleep(100);
 		let shop = (await getShop()).shop_data.items.chest;
-		await displayBuyEventsData(wrapper,details,chests,shop);
+		await displayBuyEventsData(wrapper,tokens,chests,shop);
 	} catch {
 		wrapper.innerHTML = BADDATA;
 	}
 }
 
-async function displayBuyEventsData(wrapper,details,chests,shop) {
+async function displayBuyEventsData(wrapper,tokens,chests,shop) {
 	let buyEventsBuyer = document.getElementById(`buyEventsBuyer`);
 	let eventChestIds = [];
 	for (let chest of shop)
@@ -520,13 +525,7 @@ async function displayBuyEventsData(wrapper,details,chests,shop) {
 		buyEventsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Error found when parsing chest ids. Cannot continue.</span>`
 		return;
 	}
-	let tokens = details.events_details.tokens;
 	let chestPacks = Math.floor(tokens/7500);
-	if (chestPacks==0) {
-		wrapper.innerHTML = `&nbsp;`;
-		buyEventsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough tokens to buy any chest packs.</span>`
-		return;
-	}
 	
 	let col1 = `width:25%;min-width:200px;`;
 	let col2 = `width:35%;min-width:250px;`;
