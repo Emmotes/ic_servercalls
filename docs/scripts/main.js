@@ -1,4 +1,4 @@
-const v=2.21;
+const v=2.22;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -547,8 +547,11 @@ async function displayBuyChestsData(wrapper,gems,tokens,chests,shop) {
 		s+=`<option value="-1">Not enough gems.</option>`;
 	s+=`</optgroup><optgroup label="Event Chest Packs">`;
 	if (tokens >= 7500) {
-		for (let i=0; i<eventChestIds.length; i++)
-			s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
+		if (eventChestIds.length > 0) {
+			for (let i=0; i<eventChestIds.length; i++)
+				s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
+		} else
+			s+=`<option value="-1">No event chests packs available.</option>`;
 	} else
 		s+=`<option value="-1">Not enough event tokens.</option>`;
 	s+=`</optgroup></select>`;
