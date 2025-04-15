@@ -1,4 +1,4 @@
-const v=2.22;
+const v=2.23;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -53,6 +53,7 @@ async function pullFormationSaves() {
 	let wrapper = document.getElementById(`formsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
+		wrapper.innerHTML = `Waiting for formation saves data...`;
 		let forms = await getFormationSaves();
 		await displayFormationSaves(wrapper,forms);
 	} catch {
@@ -249,9 +250,11 @@ async function pullFeatsData() {
 	let wrapper = document.getElementById(`featsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
-		let defs = await getDefinitions("hero_defines,hero_feat_defines");
-		await sleep(100);
+		wrapper.innerHTML = `Waiting for user data...`;
 		let details = await getUserDetails();
+		await sleep(100);
+		wrapper.innerHTML = `Waiting for definitions...`;
+		let defs = await getDefinitions("hero_defines,hero_feat_defines");
 		await displayFeatsData(wrapper,details,defs);
 	} catch {
 		wrapper.innerHTML = BADDATA;
@@ -408,6 +411,7 @@ async function pullShiniesData() {
 	let wrapper = document.getElementById(`shiniesWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
+		wrapper.innerHTML = `Waiting for user data...`;
 		let userData = await getUserDetails();
 		await displayShiniesData(wrapper,userData.details);
 	} catch {
@@ -487,6 +491,7 @@ async function pullBuyChestsData() {
 	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
+		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
 		let gems = details.red_rubies;
 		let tokens = details.events_details.tokens;
@@ -496,8 +501,10 @@ async function pullBuyChestsData() {
 			return;
 		}
 		await sleep(100);
+		wrapper.innerHTML = `Waiting for definitions...`;
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await sleep(100);
+		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
 		await displayBuyChestsData(wrapper,gems,tokens,chests,shop);
 	} catch {
@@ -659,6 +666,7 @@ async function pullAeonData() {
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
+		wrapper.innerHTML = `Waiting for patron data...`;
 		let details = await getPatronDetails();
 		await displayAeonData(wrapper,details);
 	} catch {
@@ -727,6 +735,7 @@ async function pullChestCollectData() {
 	let wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
+		wrapper.innerHTML = `Waiting for user data...`;
 		let details = await getUserDetails();
 		if (chestDataBefore==``)
 			await displayChestCollectDataPhase1(wrapper,details);
