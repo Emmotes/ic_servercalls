@@ -1,4 +1,4 @@
-const v=2.2;
+const v=2.21;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -474,125 +474,172 @@ function addShiniesRow(left,right,left2,right2) {
 	return txt;
 }
 
-async function pullBuyEventsData() {
+async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`buyEventsPullButton`);
-	let message = document.getElementById(`buyEventsPullButtonDisabled`);
+	let button = document.getElementById(`buyChestsPullButton`);
+	let message = document.getElementById(`buyChestsPullButtonDisabled`);
 	button.hidden = true;
 	message.hidden = false;
 	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
-	let wrapper = document.getElementById(`buyEventsWrapper`);
+	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
-		let tokens = (await getUserDetails()).details.events_details.tokens;
-		if (tokens < 7500) {
+		let details = (await getUserDetails()).details;
+		let gems = details.red_rubies;
+		let tokens = details.events_details.tokens;
+		if (gems < 50 && tokens < 7500) {
 			wrapper.innerHTML = `&nbsp;`;
-			document.getElementById(`buyEventsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough tokens to buy any chest packs.</span>`
+			document.getElementById(`buyChestsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough gems or tokens to buy any chests.</span>`
 			return;
 		}
 		await sleep(100);
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await sleep(100);
 		let shop = (await getShop()).shop_data.items.chest;
-		await displayBuyEventsData(wrapper,tokens,chests,shop);
+		await displayBuyChestsData(wrapper,gems,tokens,chests,shop);
 	} catch {
 		wrapper.innerHTML = BADDATA;
 	}
 }
 
-async function displayBuyEventsData(wrapper,tokens,chests,shop) {
-	let buyEventsBuyer = document.getElementById(`buyEventsBuyer`);
+async function displayBuyChestsData(wrapper,gems,tokens,chests,shop) {
+	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let eventChestIds = [];
 	for (let chest of shop)
 		if (chest.tags.includes('event'))
 			eventChestIds.push(chest.type_id);
-	if (eventChestIds.length==0) {
-		wrapper.innerHTML = `&nbsp;`;
-		buyEventsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">No chests are purchasable for event tokens at the moment.</span>`
-		return;
-	}
 	eventChestIds.sort((a, b) => a - b);
 	let eventChestNames = [];
-	for (let chestId of eventChestIds)
-		for (let chest of chests)
-			if (chest.id == chestId)
+	for (let chestId of eventChestIds) {
+		for (let chest of chests) {
+			if (chest.id == chestId) {
 				eventChestNames.push(chest.name.replace("Gold ", "") + " Pack");
+				break;
+			}
+		}
+	}
 	if (eventChestIds.length!=eventChestNames.length||eventChestNames.includes(undefined)) {
 		wrapper.innerHTML = `&nbsp;`;
-		buyEventsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Error found when parsing chest ids. Cannot continue.</span>`
+		buyChestsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Error found when parsing chest ids. Cannot continue.</span>`
 		return;
 	}
+	let silverChests = Math.floor(gems/50);
+	let goldChests = Math.floor(gems/500);
 	let chestPacks = Math.floor(tokens/7500);
 	
 	let col1 = `width:25%;min-width:200px;`;
 	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
-	txt+=addAeonRow(`Available Event Tokens:`,nf(tokens));
-	txt+=addAeonRow(`Maximum Chest Packs:`,nf(chestPacks));
+	txt+=addAeonRow(`Available Gems:`,nf(gems));
+	txt+=addAeonRow(`Maximum Silver Chests:`,`${nf(silverChests)}<input type="hidden" id="buyChestsSilver" name="buyChestsSilver" value="${silverChests}">`);
+	txt+=addAeonRow(`Maximum Gold Chests:`,`${nf(goldChests)}<input type="hidden" id="buyChestsGold" name="buyChestsGold" value="${goldChests}">`);
 	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
-	let s=`<select name="buyEventsBuyList" id="buyEventsBuyList" oninput="displayBuyEventsBuyButton(this.value);"><option value="-1" selected>-</option>`;
-	for (let i=0; i<eventChestIds.length; i++)
-		s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
-	s+=`</select>`;
+	txt+=addAeonRow(`Available Event Tokens:`,nf(tokens));
+	txt+=addAeonRow(`Maximum Chest Packs:`,`${nf(chestPacks)}<input type="hidden" id="buyChestsEvent" name="buyChestsEvent" value="${chestPacks}">`);
+	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
+	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="displayBuyChestsBuyButton(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests">`;
+	if (gems >= 50)
+		s+=`<option value="1">Silver Chest</option><option value="2">Gold Chest</option>`;
+	else
+		s+=`<option value="-1">Not enough gems.</option>`;
+	s+=`</optgroup><optgroup label="Event Chest Packs">`;
+	if (tokens >= 7500) {
+		for (let i=0; i<eventChestIds.length; i++)
+			s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
+	} else
+		s+=`<option value="-1">Not enough event tokens.</option>`;
+	s+=`</optgroup></select>`;
 	txt+=addAeonRow(`What to Buy:`,s);
-	let r=`<input type="range" min="1" max="${chestPacks}" step="1" value="1" name="buyEventsBuyAmount" id="buyEventsBuyAmount" oninput="updateBuyEventsSliderValue(this.value);"><label style="padding-left:10px" for="buyEventsBuyAmount" id="buyEventsSliderValue">1</label>`;
+	let r=`<input type="range" min="0" max="0" step="1" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updatebuyChestsSliderValue(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
 	txt+=addAeonRow(`Amount to Buy:`,r);
 	wrapper.innerHTML = txt;
-	displayBuyEventsBuyButton();
+	displayBuyChestsBuyButton();
 }
 
-function displayBuyEventsBuyButton(val) {
-	let buyEventsBuyer = document.getElementById(`buyEventsBuyer`);
+function displayBuyChestsBuyButton(val) {
+	let buyChestsSilver = document.getElementById(`buyChestsSilver`);
+	let buyChestsGold = document.getElementById(`buyChestsGold`);
+	let buyChestsEvent = document.getElementById(`buyChestsEvent`);
+	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
+	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
+	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let be = ``;
-	if (val==undefined||val=="-1")
-		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a chest type has been selected.</span>`;
-	else
-		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyEventsRow"><input type="button" onClick="buyEvents()" name="buyEventsButton" id="buyEventsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest Packs"></span></span>`;
-	buyEventsBuyer.innerHTML = be;
+	if (val==undefined||val=="-1") {
+		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type has been selected.</span>`;
+		buyChestsBuyAmount.max = 0;
+		buyChestsBuyAmount.min = 0;
+		buyChestsBuyAmount.value = 0;
+		buyChestsSliderValue.innerHTML = nf(0);
+	} else {
+		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${val>2?` Pack`:``}s"></span></span>`;
+		buyChestsBuyAmount.min = 1;
+		buyChestsBuyAmount.value = 1;
+		buyChestsSliderValue.innerHTML = nf(1);
+		if (val==1)
+			buyChestsBuyAmount.max = Number(buyChestsSilver.value);
+		else if (val==2)
+			buyChestsBuyAmount.max = Number(buyChestsGold.value);
+		else
+			buyChestsBuyAmount.max = Number(buyChestsEvent.value);
+	}
+	buyChestsBuyer.innerHTML = be;
 }
 
-function updateBuyEventsSliderValue(val) {
-	document.getElementById('buyEventsSliderValue').innerHTML=val;
+function updatebuyChestsSliderValue(val) {
+	document.getElementById('buyChestsSliderValue').innerHTML=nf(val);
 }
 
-async function buyEvents() {
-	let buyEventsBuyer = document.getElementById(`buyEventsBuyer`);
-	let buyEventsBuyList = document.getElementById("buyEventsBuyList");
-	let buyEventsBuyAmount = document.getElementById("buyEventsBuyAmount");
+async function buyChests() {
+	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
+	let buyChestsBuyList = document.getElementById(`buyChestsBuyList`);
+	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
+	buyChestsBuyList.disabled = true;
+	buyChestsBuyAmount.disabled = true;
 	let txt=``;
-	if (buyEventsBuyList==undefined||buyEventsBuyAmount==undefined) {
+	if (buyChestsBuyList==undefined||buyChestsBuyAmount==undefined) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Unknown error. Didn't buy any chest packs.</span>`;
-		buyEventsBuyer.innerHTML = txt;
+		buyChestsBuyer.innerHTML = txt;
 		return;
 	}
-	let chestId = buyEventsBuyList.value;
-	let chestName = buyEventsBuyList.options[buyEventsBuyList.selectedIndex].text;
-	let amount = buyEventsBuyAmount.value;
+	let chestId = buyChestsBuyList.value;
+	let chestName = buyChestsBuyList.options[buyChestsBuyList.selectedIndex].text;
+	let amount = buyChestsBuyAmount.value;
 	
 	txt+=`<span class="f fr w100 p5">Buying ${nf(amount)} ${chestName}s:</span>`;
-	buyEventsBuyer.innerHTML = txt;
+	buyChestsBuyer.innerHTML = txt;
 	if (amount==0) {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
-		buyEventsBuyer.innerHTML = txt;
+		buyChestsBuyer.innerHTML = txt;
 		return;
 	}
-	while (amount > 0) {
+	let numFails=0;
+	while (amount > 0 && numFails < RETRIES) {
 		let toBuy = Math.min(250,amount);
 		await sleep(200);
 		let result = await buySoftCurrencyChest(chestId,toBuy);
-		let successType = ``;
+		let successType = `Failed to buy`;
 		let cost = ``;
+		if (JSON.stringify(result).includes(`Failure: Not enough`)) {
+			failureType = chestId > 2 ? `tokens` : `gems`;
+			txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Not enough ${failureType}.</span></span>`;
+			buyChestsBuyer.innerHTML = txt;
+			return;
+		}
 		if (result['success']&&result['okay']) {
 			successType = `Successfully bought`;
 			cost = ` for ${nf(result.currency_spent)} Tokens (${nf(Math.round(result.currency_remaining))} Tokens Remaining)`;
 			amount -= toBuy;
 		} else
-			successType = `Failed to buy`;
+			numFails++;
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} Chest Packs${cost}</span></span>`;
-		buyEventsBuyer.innerHTML = txt;
+		buyChestsBuyer.innerHTML = txt;
+	}
+	if (numFails >= RETRIES) {
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Stopping:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Got too many failures.</span></span>`;
+		buyChestsBuyer.innerHTML = txt;
 	}
 }
 
@@ -995,7 +1042,6 @@ async function useSummonScroll(heroId) {
 async function getDismantleData() {
 	let call = `${PARAM_CALL}=getredistributehero`;
 	return await sendServerCall(SERVER,call,true,true);
-	
 }
 
 async function dismantleHero(heroId,redistId) {
