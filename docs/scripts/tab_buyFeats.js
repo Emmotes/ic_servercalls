@@ -1,4 +1,4 @@
-const vbf=1.0;
+const vbf=1.1;
 
 async function pullFeatsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -11,6 +11,8 @@ async function pullFeatsData() {
 	message.hidden = false;
 	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`featsWrapper`);
+	wrapper.className = `f falc fje mr2`;
+	wrapper.style = `flex-direction:column;`;
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
@@ -88,6 +90,8 @@ async function displayFeatsData(wrapper,details,defs) {
 		txt += `<span class="formsCampaignSelect"><input type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
 	let featsBuyer = document.getElementById(`featsBuyer`);
+	wrapper.className = `formsWrapper`;
+	wrapper.style = ``;
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
 		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;

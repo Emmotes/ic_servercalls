@@ -1,4 +1,4 @@
-const vbc=1.0;
+const vbc=1.1;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -57,8 +57,6 @@ async function displayBuyChestsData(wrapper,gems,tokens,chests,shop) {
 	let goldChests = Math.floor(gems/500);
 	let chestPacks = Math.floor(tokens/7500);
 	
-	let col1 = `width:25%;min-width:200px;`;
-	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
 	txt+=addChestsRow(`Available Gems:`,nf(gems));
 	txt+=addChestsRow(`Maximum Silver Chests:`,`${nf(silverChests)}<input type="hidden" id="buyChestsSilver" name="buyChestsSilver" value="${silverChests}">`);
