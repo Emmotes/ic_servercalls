@@ -1,4 +1,4 @@
-const vpm=1.1;
+const vpm=1.2;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -27,14 +27,13 @@ async function pullPartyData() {
 
 async function displayPartyData(wrapper,gameInstances,adventures) {
 	let txt = ``;
-	let counter = 0;
 	for (let gameInstance of gameInstances) {
-		counter++;
+		let id = gameInstance.game_instance_id;
 		let adventureId = gameInstance.current_adventure_id;
 		if (adventureId == undefined)
 			continue;
 		let adventure = adventureId > 0 ? getAdventure(adventureId,adventures) : undefined;
-		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${counter}</span><span class="formsCampaign" id="${counter}">`
+		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}</span><span class="formsCampaign" id="${id}">`
 		if (adventureId == -1 || adventure == undefined) {
 			txt+=addPartyRow(`Chilling on the map screen.`);
 			txt+=`</span></span>`;
@@ -56,7 +55,7 @@ async function displayPartyData(wrapper,gameInstances,adventures) {
 		txt+=addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
 		if (areaGoal != undefined)
 			txt+=addPartyRow(`Area Goal`,`z${areaGoal}`);
-		txt+=`<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${counter}"><input type="button" onClick="partyEndAdventure(${counter})" value="End Party ${counter}"></span>`;
+		txt+=`<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="partyEndAdventure(${id})" value="End Party ${id}"></span>`;
 		txt+=`</span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,2);
