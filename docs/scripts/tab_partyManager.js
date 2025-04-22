@@ -1,4 +1,4 @@
-const vpm=1.0;
+const vpm=1.1;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -52,7 +52,7 @@ async function displayPartyData(wrapper,gameInstances,adventures) {
 		txt+=addPartyRow(`Adventure`,adv);
 		txt+=addPartyRow(`Campaign`,camp);
 		if (gameInstance.current_patron_id > 0)
-			txt+=addPartyRow(`Patron`,patronIds[gameInstance.current_patron_id]);
+			txt+=addPartyRow(`Patron`,getPatronNameById(gameInstance.current_patron_id));
 		txt+=addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
 		if (areaGoal != undefined)
 			txt+=addPartyRow(`Area Goal`,`z${areaGoal}`);

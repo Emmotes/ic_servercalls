@@ -1,4 +1,4 @@
-const v=3.2;
+const v=3.3;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -38,11 +38,11 @@ function init() {
 
 function getPatronNameById(id) {
 	switch (id) {
-		case 1: return `Mirt`;
-		case 2: return `Vajra`;
-		case 3: return `Strahd`;
-		case 4: return `Zariel`
-		case 5: return `Elminster`
+		case 1: return paronAdvIds["1100000"];
+		case 2: return paronAdvIds["1200000"];
+		case 3: return paronAdvIds["1300000"];
+		case 4: return paronAdvIds["1400000"];
+		case 5: return paronAdvIds["1500000"];
 		default: return `??? (id: ${id})`;
 	}
 }
