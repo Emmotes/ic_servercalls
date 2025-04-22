@@ -1,4 +1,4 @@
-const vdf=1.2;
+const vdf=1.3;
 
 async function pullFormationSaves() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -41,7 +41,7 @@ async function displayFormationSaves(wrapper,saves) {
 		if (id > 1000 && id < 1000000)
 			campName = formObj.campaign_name;
 		if (campName==undefined) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron==0?``:patronIds[`${patron}`];
+		let patronName = patron==0?``:paronAdvIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;

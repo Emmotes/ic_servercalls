@@ -1,4 +1,4 @@
-const v=3.1;
+const v=3.2;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -120,6 +120,9 @@ function setFormsWrapperFormat(wrapper,type) {
 		wrapper.style = `flex-direction:column;`;
 	} else if (type == 1) {
 		wrapper.className = `formsWrapper`;
+		wrapper.style = ``;
+	} else if (type == 2) {
+		wrapper.className = `partiesWrapper`;
 		wrapper.style = ``;
 	}
 }

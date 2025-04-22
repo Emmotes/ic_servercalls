@@ -409,8 +409,6 @@ input[type="checkbox"]:checked::before {
 .formsCampaign {
 	display: flex;
 	flex-direction: column;
-	min-width: 280px;
-	max-width: 280px;
 	padding: 10px;
 	border-radius: 5px;
 	background-color: hsl(calc(var(--dark1hue)*0.95),var(--dark1sat),calc(var(--dark1lig)*1.3));
@@ -499,4 +497,21 @@ input[type="checkbox"]:checked::before {
 
 .greenButton input[type="button"]:focus {
 	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--darken)*var(--darken)));
+}
+
+.partiesWrapper {
+	display: grid;
+	grid-template-columns: repeat(auto-fill,375px);
+	column-gap: 10px;
+	row-gap: 10px;
+	font-size: 0.875rem;
+}
+.partiesLeft {
+	width: 25%;
+	margin-right:5px;
+}
+.partiesRight {
+	width: 75%;
+	margin-left: 5px;
+	text-wrap-style: pretty;
 }

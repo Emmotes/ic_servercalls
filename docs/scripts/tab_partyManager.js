@@ -1,0 +1,96 @@
+const vpm=1.0;
+
+async function pullPartyData() {
+	if (userIdent[0]==``||userIdent[1]==``) {
+		init();
+		return;
+	}
+	let button = document.getElementById(`partyPullButton`);
+	let message = document.getElementById(`partyPullButtonDisabled`);
+	button.hidden = true;
+	message.hidden = false;
+	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	let wrapper = document.getElementById(`partyWrapper`);
+	setFormsWrapperFormat(wrapper,0);
+	wrapper.innerHTML = `Waiting for response...`;
+	try {
+		wrapper.innerHTML = `Waiting for user data...`;
+		let gameInstances = (await getUserDetails()).details.game_instances;
+		wrapper.innerHTML = `Waiting for definitions...`;
+		let adventures = (await getDefinitions("adventure_defines")).adventure_defines;
+		await displayPartyData(wrapper,gameInstances,adventures);
+	} catch {
+	setFormsWrapperFormat(wrapper,0);
+		wrapper.innerHTML = BADDATA;
+	}
+}
+
+async function displayPartyData(wrapper,gameInstances,adventures) {
+	let txt = ``;
+	let counter = 0;
+	for (let gameInstance of gameInstances) {
+		counter++;
+		let adventureId = gameInstance.current_adventure_id;
+		if (adventureId == undefined)
+			continue;
+		let adventure = adventureId > 0 ? getAdventure(adventureId,adventures) : undefined;
+		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${counter}</span><span class="formsCampaign" id="${counter}">`
+		if (adventureId == -1 || adventure == undefined) {
+			txt+=addPartyRow(`Chilling on the map screen.`);
+			txt+=`</span></span>`;
+			continue;
+		}
+		let name = adventure.name;
+		let adv = gameInstance.defines.adventure_defines.slice(-1)[0].name;
+		let camp = campaignIds[adventure.campaign_id];
+		let areaGoal;
+		if (gameInstance.defines.adventure_defines.length > 0 && gameInstance.defines.adventure_defines[0].objectives.length > 0)
+			areaGoal = gameInstance.defines.adventure_defines[0].objectives[0].area;
+		
+		if (name != adv)
+			txt+=addPartyRow(`Name`,name);
+		txt+=addPartyRow(`Adventure`,adv);
+		txt+=addPartyRow(`Campaign`,camp);
+		if (gameInstance.current_patron_id > 0)
+			txt+=addPartyRow(`Patron`,patronIds[gameInstance.current_patron_id]);
+		txt+=addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
+		if (areaGoal != undefined)
+			txt+=addPartyRow(`Area Goal`,`z${areaGoal}`);
+		txt+=`<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${counter}"><input type="button" onClick="partyEndAdventure(${counter})" value="End Party ${counter}"></span>`;
+		txt+=`</span></span>`;
+	}
+	setFormsWrapperFormat(wrapper,2);
+	wrapper.innerHTML = txt;
+}
+
+function getAdventure(adventureId,adventures) {
+	for (let adventure of adventures)
+		if (adventure.id == adventureId)
+			return adventure;
+	return undefined;
+}
+
+async function partyEndAdventure(partyId) {
+	let span = document.getElementById(`partyEndAdventureSpan${partyId}`);
+	let txt=``;
+	txt+=`Ending Party...`;
+	span.innerHTML = txt;
+	let result = await endCurrentObjective(partyId);
+	if (result['success']) {
+		span.innerHTML = `<strong>Ended Successfully</strong>`;
+		span.style = `color:var(--good1)`;
+	} else {
+		span.innerHTML = `<strong>Failed to End</strong>`;
+		span.style = `color:var(--warning1)`;
+	}
+}
+
+function addPartyRow(left,right) {
+	let txt = `<span class="formsCampaignFormation"><span class="f fr falc fjs p5 w100">`;
+	if (right==undefined)
+		txt+=`<span class="f falc fjs w100">${left}</span>`;
+	else
+		txt+=`<span class="f falc fje partiesLeft"><strong>${left}</strong>:</span><span class="f falc fjs partiesRight">${right}</span>`;
+	txt+=`</span></span>`;
+	return txt;
+}
