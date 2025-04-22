@@ -1,4 +1,4 @@
-const vdf=1.1;
+const vdf=1.2;
 
 async function pullFormationSaves() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -11,14 +11,14 @@ async function pullFormationSaves() {
 	message.hidden = false;
 	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
 	let wrapper = document.getElementById(`formsWrapper`);
-	wrapper.className = `f falc fje mr2`;
-	wrapper.style = `flex-direction:column;`;
+	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		let forms = await getFormationSaves();
 		await displayFormationSaves(wrapper,forms);
 	} catch {
+		setFormsWrapperFormat(wrapper,0);
 		wrapper.innerHTML = BADDATA;
 	}
 }
@@ -63,8 +63,7 @@ async function displayFormationSaves(wrapper,saves) {
 		}
 		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
-	wrapper.className = `formsWrapper`;
-	wrapper.style = ``;
+	setFormsWrapperFormat(wrapper,1);
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
 	let fd = ``;

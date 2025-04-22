@@ -1,4 +1,4 @@
-const v=3.0;
+const v=3.1;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -112,6 +112,16 @@ function setHash(hash) {
 		history.replaceState(null, null, hash);
 	else
 		window.location.hash = hash;
+}
+
+function setFormsWrapperFormat(wrapper,type) {
+	if (type == 0) {
+		wrapper.className = `f falc fje mr2`;
+		wrapper.style = `flex-direction:column;`;
+	} else if (type == 1) {
+		wrapper.className = `formsWrapper`;
+		wrapper.style = ``;
+	}
 }
 
 function nf(number) {
