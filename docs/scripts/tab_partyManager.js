@@ -1,4 +1,4 @@
-const vpm=1.2;
+const vpm=1.3;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -33,7 +33,10 @@ async function displayPartyData(wrapper,gameInstances,adventures) {
 		if (adventureId == undefined)
 			continue;
 		let adventure = adventureId > 0 ? getAdventure(adventureId,adventures) : undefined;
-		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}</span><span class="formsCampaign" id="${id}">`
+		let customName = gameInstance.custom_name;
+		if (customName!=``)
+			customName = `: ${customName}`;
+		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}${customName}</span><span class="formsCampaign" id="${id}">`
 		if (adventureId == -1 || adventure == undefined) {
 			txt+=addPartyRow(`Chilling on the map screen.`);
 			txt+=`</span></span>`;
