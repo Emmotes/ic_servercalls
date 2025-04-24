@@ -1,4 +1,4 @@
-const vbc=1.1;
+const vbc=1.2;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -22,29 +22,32 @@ async function pullBuyChestsData() {
 			document.getElementById(`buyChestsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough gems or tokens to buy any chests.</span>`
 			return;
 		}
+		let eventActive = details.events_details.active_events.length > 0 ? true : false;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
-		await displayBuyChestsData(wrapper,gems,tokens,chests,shop);
+		await displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
 	} catch {
 		wrapper.innerHTML = BADDATA;
 	}
 }
 
-async function displayBuyChestsData(wrapper,gems,tokens,chests,shop) {
+async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop) {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let eventChestIds = [];
-	for (let chest of shop)
-		if (chest.tags.includes('event'))
-			eventChestIds.push(chest.type_id);
-	eventChestIds.sort((a, b) => a - b);
 	let eventChestNames = [];
-	for (let chestId of eventChestIds) {
-		for (let chest of chests) {
-			if (chest.id == chestId) {
-				eventChestNames.push(chest.name.replace("Gold ", "") + " Pack");
-				break;
+	if (eventActive) {
+		for (let chest of shop)
+			if (chest.tags.includes('event'))
+				eventChestIds.push(chest.type_id);
+		eventChestIds.sort((a, b) => a - b);
+		for (let chestId of eventChestIds) {
+			for (let chest of chests) {
+				if (chest.id == chestId) {
+					eventChestNames.push(chest.name.replace("Gold ", "") + " Pack");
+					break;
+				}
 			}
 		}
 	}
@@ -71,14 +74,14 @@ async function displayBuyChestsData(wrapper,gems,tokens,chests,shop) {
 	else
 		s+=`<option value="-1">Not enough gems.</option>`;
 	s+=`</optgroup><optgroup label="Event Chest Packs">`;
-	if (tokens >= 7500) {
-		if (eventChestIds.length > 0) {
+	if (eventChestIds.length > 0) {
+		if (tokens >= 7500) {
 			for (let i=0; i<eventChestIds.length; i++)
 				s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
 		} else
-			s+=`<option value="-1">No event chests packs available.</option>`;
+			s+=`<option value="-1">Not enough event tokens.</option>`;
 	} else
-		s+=`<option value="-1">Not enough event tokens.</option>`;
+		s+=`<option value="-1">No event chests packs available.</option>`;
 	s+=`</optgroup></select>`;
 	txt+=addChestsRow(`What to Buy:`,s);
 	let r=`<input type="range" min="0" max="0" step="1" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updatebuyChestsSliderValue(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
