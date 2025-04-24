@@ -1,15 +1,11 @@
-const vbf=1.2;
+const vbf=1.003;
 
 async function pullFeatsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`featsPullButton`);
-	let message = document.getElementById(`featsPullButtonDisabled`);
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`featsWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;

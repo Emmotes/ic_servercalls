@@ -1,4 +1,4 @@
-const v=3.3;
+const v=3.004;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -112,6 +112,22 @@ function setHash(hash) {
 		history.replaceState(null, null, hash);
 	else
 		window.location.hash = hash;
+}
+
+function temporarilyDisableAllPullButtons() {
+	let names = [`formations`,`feats`,`buyChests`,`shinies`,`party`,`aeon`,`chestCollect`];
+	
+	let eles = [];
+	for (let name of names) {
+		let button = document.getElementById(`${name}PullButton`);
+		let message = document.getElementById(`${name}PullButtonDisabled`);
+		if (button==undefined||message==undefined)
+			continue;
+		button.hidden = true;
+		message.hidden = false;
+		eles.push([button,message]);
+	}
+	setTimeout(function(){for(let ele of eles){ele[0].hidden=false;ele[1].hidden=true;}},10000);
 }
 
 function setFormsWrapperFormat(wrapper,type) {

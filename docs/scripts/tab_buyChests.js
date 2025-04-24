@@ -1,15 +1,11 @@
-const vbc=1.2;
+const vbc=1.003;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`buyChestsPullButton`);
-	let message = document.getElementById(`buyChestsPullButtonDisabled`);
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {

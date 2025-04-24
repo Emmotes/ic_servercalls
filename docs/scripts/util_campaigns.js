@@ -1,4 +1,4 @@
-const vc=1.2;
+const vc=1.003;
 campaignIds = {
 	 "1": "Grand Tour of the Sword Coast",
 	 "2": "Tomb of Annihilation",

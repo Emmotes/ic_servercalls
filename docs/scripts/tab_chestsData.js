@@ -1,4 +1,4 @@
-const vcd=1.0;
+const vcd=1.001;
 var chestDataBefore=``;
 
 async function pullChestCollectData() {
@@ -6,13 +6,7 @@ async function pullChestCollectData() {
 		init();
 		return;
 	}
-	let button = document.getElementById(`chestCollectPullButton`);
-	let message = document.getElementById(`chestCollectPullButtonDisabled`);
-	if (chestDataBefore!=``)
-		document.getElementById(`chestCollectData2`).innerHTML = `&nbsp;`;
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {

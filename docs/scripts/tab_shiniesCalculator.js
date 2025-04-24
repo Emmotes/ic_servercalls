@@ -1,15 +1,11 @@
-const vsc=1.0;
+const vsc=1.001;
 
 async function pullShiniesData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`shiniesPullButton`);
-	let message = document.getElementById(`shiniesPullButtonDisabled`);
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`shiniesWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {

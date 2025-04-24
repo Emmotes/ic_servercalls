@@ -1,15 +1,11 @@
-const vad=1.0;
+const vad=1.001;
 
 async function pullAeonData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`aeonPullButton`);
-	let message = document.getElementById(`aeonPullButtonDisabled`);
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {

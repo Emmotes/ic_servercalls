@@ -1,4 +1,4 @@
-const vb=1.0;
+const vb=1.001;
 const buffValues = {
 	"1": "Small Potion of Giant's Strength",
 	"2": "Medium Potion of Giant's Strength",

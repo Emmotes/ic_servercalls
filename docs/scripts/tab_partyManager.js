@@ -1,15 +1,11 @@
-const vpm=1.3;
+const vpm=1.004;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	let button = document.getElementById(`partyPullButton`);
-	let message = document.getElementById(`partyPullButtonDisabled`);
-	button.hidden = true;
-	message.hidden = false;
-	setTimeout (function(){message.hidden = true;button.hidden = false;},20000);
+	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`partyWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
