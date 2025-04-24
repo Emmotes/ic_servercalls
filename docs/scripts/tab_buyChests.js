@@ -1,4 +1,4 @@
-const vbc=1.003;
+const vbc=1.004;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -149,18 +149,20 @@ async function buyChests() {
 		let successType = `Failed to buy`;
 		let cost = ``;
 		if (JSON.stringify(result).includes(`Failure: Not enough`)) {
-			failureType = chestId > 2 ? `tokens` : `gems`;
+			let failureType = chestId > 2 ? `tokens` : `gems`;
 			txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Not enough ${failureType}.</span></span>`;
 			buyChestsBuyer.innerHTML = txt;
 			return;
 		}
 		if (result['success']&&result['okay']) {
 			successType = `Successfully bought`;
-			cost = ` for ${nf(result.currency_spent)} Tokens (${nf(Math.round(result.currency_remaining))} Tokens Remaining)`;
+			let currencyType = chestId > 2 ? `Tokens` : `Gems`;
+			cost = ` for ${nf(result.currency_spent)} ${currencyType} (${nf(Math.round(result.currency_remaining))} ${currencyType} Remaining)`;
 			amount -= toBuy;
 		} else
 			numFails++;
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} Chest Packs${cost}</span></span>`;
+		let chestName = chestId > 2 ? `Chest Packs` : chestId == 1 ? `Silver Chests` : `Gold Chests`;
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} ${chestName}${cost}</span></span>`;
 		buyChestsBuyer.innerHTML = txt;
 	}
 	if (numFails >= RETRIES) {
