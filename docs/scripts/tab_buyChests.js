@@ -77,7 +77,7 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 		} else
 			s+=`<option value="-1">Not enough event tokens.</option>`;
 	} else
-		s+=`<option value="-1">No event chests packs available.</option>`;
+		s+=`<option value="-1">No event chest packs available.</option>`;
 	s+=`</optgroup></select>`;
 	txt+=addChestsRow(`What to Buy:`,s);
 	let r=`<input type="range" min="0" max="0" step="1" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updatebuyChestsSliderValue(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
