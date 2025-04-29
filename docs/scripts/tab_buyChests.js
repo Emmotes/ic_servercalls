@@ -1,4 +1,4 @@
-const vbc=1.004;
+const vbc=1.005;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -125,6 +125,7 @@ async function buyChests() {
 	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
+	let buying=``;
 	let txt=``;
 	if (buyChestsBuyList==undefined||buyChestsBuyAmount==undefined) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Unknown error. Didn't buy any chest packs.</span>`;
@@ -133,16 +134,19 @@ async function buyChests() {
 	}
 	let chestId = buyChestsBuyList.value;
 	let chestName = buyChestsBuyList.options[buyChestsBuyList.selectedIndex].text;
+	let genChest = chestId > 2 ? `Chest Pack` : chestId == 1 ? `Silver Chest` : `Gold Chest`;
 	let amount = buyChestsBuyAmount.value;
+	let initAmount = amount;
 	
-	txt+=`<span class="f fr w100 p5">Buying ${nf(amount)} ${chestName}s:</span>`;
 	buyChestsBuyer.innerHTML = txt;
+	buying=makeBuyingRow(amount,chestName,initAmount);
 	if (amount==0) {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
-		buyChestsBuyer.innerHTML = txt;
+		buyChestsBuyer.innerHTML = buying + txt;
 		return;
 	}
 	let numFails=0;
+	buyChestsBuyer.innerHTML = buying + txt;
 	while (amount > 0 && numFails < RETRIES) {
 		let toBuy = Math.min(250,amount);
 		let result = await buySoftCurrencyChest(chestId,toBuy);
@@ -151,7 +155,8 @@ async function buyChests() {
 		if (JSON.stringify(result).includes(`Failure: Not enough`)) {
 			let failureType = chestId > 2 ? `tokens` : `gems`;
 			txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Not enough ${failureType}.</span></span>`;
-			buyChestsBuyer.innerHTML = txt;
+			buying=makeBuyingRow(0,chestName,initAmount);
+			buyChestsBuyer.innerHTML = buying + txt;
 			return;
 		}
 		if (result['success']&&result['okay']) {
@@ -161,13 +166,16 @@ async function buyChests() {
 			amount -= toBuy;
 		} else
 			numFails++;
-		let chestName = chestId > 2 ? `Chest Packs` : chestId == 1 ? `Silver Chests` : `Gold Chests`;
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} ${chestName}${cost}</span></span>`;
-		buyChestsBuyer.innerHTML = txt;
+		buying=makeBuyingRow(amount,chestName,initAmount);
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} ${genChest}${cost}</span></span>`;
+		buyChestsBuyer.innerHTML = buying + txt;
 	}
+	buying=makeBuyingRow(amount,chestName,initAmount);
+	buyChestsBuyer.innerHTML = buying + txt;
 	if (numFails >= RETRIES) {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Stopping:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Got too many failures.</span></span>`;
-		buyChestsBuyer.innerHTML = txt;
+		buying=makeBuyingRow(0,chestName,initAmount);
+		buyChestsBuyer.innerHTML = buying + txt;
 	}
 }
 
@@ -175,4 +183,8 @@ function addChestsRow(left,right) {
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
 	txt += `</span>`;
 	return txt;
+}
+
+function makeBuyingRow(amount,name,initAmount) {
+	return `<span class="f fr w100 p5">${amount==0?`Finished `:``}Buying ${nf(amount==0?initAmount:amount)} ${name}s:</span>`;
 }

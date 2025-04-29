@@ -369,7 +369,6 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 		}
 		limit++;
 	}
-	await sleep(200);
 	return response;
 }
 
@@ -378,5 +377,6 @@ async function sendOutgoingCall(server,call) {
 	let response = await fetch(url)
 		.then(response => response.text())
 		.catch(err => console.log(err));
+	await sleep(200);
 	return await JSON.parse(response);
 }
