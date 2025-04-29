@@ -1,4 +1,4 @@
-const vbc=1.005;
+const vbc=1.006;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -141,7 +141,7 @@ async function buyChests() {
 	buyChestsBuyer.innerHTML = txt;
 	buying=makeBuyingRow(amount,chestName,initAmount);
 	if (amount==0) {
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
+		txt += addChestResultRow(`- None`);
 		buyChestsBuyer.innerHTML = buying + txt;
 		return;
 	}
@@ -154,7 +154,7 @@ async function buyChests() {
 		let cost = ``;
 		if (JSON.stringify(result).includes(`Failure: Not enough`)) {
 			let failureType = chestId > 2 ? `tokens` : `gems`;
-			txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Not enough ${failureType}.</span></span>`;
+			txt += addChestResultRow(`- ${successType}:`,`Not enough ${failureType}.`);
 			buying=makeBuyingRow(0,chestName,initAmount);
 			buyChestsBuyer.innerHTML = buying + txt;
 			return;
@@ -167,22 +167,29 @@ async function buyChests() {
 		} else
 			numFails++;
 		buying=makeBuyingRow(amount,chestName,initAmount);
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${toBuy} ${genChest}${cost}</span></span>`;
+		txt += addChestResultRow(`- ${successType}:`,`${toBuy} ${genChest}${cost}`);
 		buyChestsBuyer.innerHTML = buying + txt;
 	}
 	buying=makeBuyingRow(amount,chestName,initAmount);
+	txt += addChestResultRow(`Finished.`);
 	buyChestsBuyer.innerHTML = buying + txt;
 	if (numFails >= RETRIES) {
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Stopping:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Got too many failures.</span></span>`;
+		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
 		buying=makeBuyingRow(0,chestName,initAmount);
 		buyChestsBuyer.innerHTML = buying + txt;
 	}
 }
 
 function addChestsRow(left,right) {
-	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
-	txt += `</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span></span>`;
 	return txt;
+}
+
+function addChestResultRow(left,right) {
+	let rightAdd = ``;
+	if (right!=undefined)
+		rightAdd = `<span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${right}</span>`;
+	return `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">${left}</span>${rightAdd}</span>`;
 }
 
 function makeBuyingRow(amount,name,initAmount) {
