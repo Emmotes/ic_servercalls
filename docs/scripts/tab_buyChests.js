@@ -1,4 +1,10 @@
-const vbc=1.006;
+const vbc=1.007;
+let chestPackCost=7500;
+let silverChestCost=50;
+let goldChestCost=500;
+let silverChestOpt=`<option value="1">Silver Chest</option>`;
+let notEnoughGems=`<option value="-1">Not enough gems.</option>`;
+let notEnoughEventTokens=`<option value="-1">Not enough event tokens.</option>`;
 
 async function pullBuyChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -13,7 +19,7 @@ async function pullBuyChestsData() {
 		let details = (await getUserDetails()).details;
 		let gems = details.red_rubies;
 		let tokens = details.events_details.tokens;
-		if (gems < 50 && tokens < 7500) {
+		if (gems < 50 && tokens < chestPackCost) {
 			wrapper.innerHTML = `&nbsp;`;
 			document.getElementById(`buyChestsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough gems or tokens to buy any chests.</span>`
 			return;
@@ -52,30 +58,30 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 		buyChestsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Error found when parsing chest ids. Cannot continue.</span>`
 		return;
 	}
-	let silverChests = Math.floor(gems/50);
-	let goldChests = Math.floor(gems/500);
-	let chestPacks = Math.floor(tokens/7500);
+	let silverChests = Math.floor(gems/silverChestCost);
+	let goldChests = Math.floor(gems/goldChestCost);
+	let chestPacks = Math.floor(tokens/chestPackCost);
 	
 	let txt = ``;
-	txt+=addChestsRow(`Available Gems:`,nf(gems));
-	txt+=addChestsRow(`Maximum Silver Chests:`,`${nf(silverChests)}<input type="hidden" id="buyChestsSilver" name="buyChestsSilver" value="${silverChests}">`);
-	txt+=addChestsRow(`Maximum Gold Chests:`,`${nf(goldChests)}<input type="hidden" id="buyChestsGold" name="buyChestsGold" value="${goldChests}">`);
+	txt+=addChestsRow(`Available Gems:`,nf(gems),`buyChestsGems`,gems);
+	txt+=addChestsRow(`Maximum Silver Chests:`,nf(silverChests),`buyChestsSilver`,silverChests);
+	txt+=addChestsRow(`Maximum Gold Chests:`,nf(goldChests),`buyChestsGold`,goldChests);
 	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	txt+=addChestsRow(`Available Event Tokens:`,nf(tokens));
-	txt+=addChestsRow(`Maximum Chest Packs:`,`${nf(chestPacks)}<input type="hidden" id="buyChestsEvent" name="buyChestsEvent" value="${chestPacks}">`);
+	txt+=addChestsRow(`Available Event Tokens:`,nf(tokens),`buyChestsTokens`,tokens);
+	txt+=addChestsRow(`Maximum Chest Packs:`,nf(chestPacks),`buyChestsEvent`,chestPacks);
 	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="displayBuyChestsBuyButton(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests">`;
-	if (gems >= 50)
-		s+=`<option value="1">Silver Chest</option><option value="2">Gold Chest</option>`;
+	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="displayBuyChestsBuyButton(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
+	if (gems >= silverChestCost)
+		s+=`${silverChestOpt}<option value="2">Gold Chest</option>`;
 	else
-		s+=`<option value="-1">Not enough gems.</option>`;
-	s+=`</optgroup><optgroup label="Event Chest Packs">`;
+		s+=notEnoughGems;
+	s+=`</optgroup><optgroup label="Event Chest Packs" id="tokenChestsOpt">`;
 	if (eventChestIds.length > 0) {
-		if (tokens >= 7500) {
+		if (tokens >= chestPackCost) {
 			for (let i=0; i<eventChestIds.length; i++)
 				s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
 		} else
-			s+=`<option value="-1">Not enough event tokens.</option>`;
+			s+=notEnoughEventTokens;
 	} else
 		s+=`<option value="-1">No event chest packs available.</option>`;
 	s+=`</optgroup></select>`;
@@ -94,23 +100,25 @@ function displayBuyChestsBuyButton(val) {
 	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let be = ``;
-	if (val==undefined||val=="-1") {
+	let valueToUse = 0;
+	if (val==1)
+		valueToUse = Number(buyChestsSilver.value);
+	else if (val==2)
+		valueToUse = Number(buyChestsGold.value);
+	else
+		valueToUse = Number(buyChestsEvent.value);
+	if (val==undefined||val=="-1"||valueToUse==0) {
 		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type has been selected.</span>`;
 		buyChestsBuyAmount.max = 0;
 		buyChestsBuyAmount.min = 0;
 		buyChestsBuyAmount.value = 0;
-		buyChestsSliderValue.innerHTML = nf(0);
+		updatebuyChestsSliderValue(0);
 	} else {
 		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${val>2?` Pack`:``}s"></span></span>`;
+		buyChestsBuyAmount.max = valueToUse;
 		buyChestsBuyAmount.min = 1;
 		buyChestsBuyAmount.value = 1;
-		buyChestsSliderValue.innerHTML = nf(1);
-		if (val==1)
-			buyChestsBuyAmount.max = Number(buyChestsSilver.value);
-		else if (val==2)
-			buyChestsBuyAmount.max = Number(buyChestsGold.value);
-		else
-			buyChestsBuyAmount.max = Number(buyChestsEvent.value);
+		updatebuyChestsSliderValue(1);
 	}
 	buyChestsBuyer.innerHTML = be;
 }
@@ -123,6 +131,7 @@ async function buyChests() {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let buyChestsBuyList = document.getElementById(`buyChestsBuyList`);
 	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
+	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
 	let buying=``;
@@ -137,6 +146,11 @@ async function buyChests() {
 	let genChest = chestId > 2 ? `Chest Pack` : chestId == 1 ? `Silver Chest` : `Gold Chest`;
 	let amount = buyChestsBuyAmount.value;
 	let initAmount = amount;
+	
+	
+	let buyChestsCurrencyDisplay = document.getElementById(chestId > 2 ? `buyChestsTokensDisplay` : `buyChestsGemsDisplay`);
+	let buyChestsMaxType = document.getElementById(chestId == 1 ? `buyChestsTokensDisplay` : `buyChestsGemsDisplay`);
+	let buyChestsMaxTypeDisplay;
 	
 	buyChestsBuyer.innerHTML = txt;
 	buying=makeBuyingRow(amount,chestName,initAmount);
@@ -162,8 +176,19 @@ async function buyChests() {
 		if (result['success']&&result['okay']) {
 			successType = `Successfully bought`;
 			let currencyType = chestId > 2 ? `Tokens` : `Gems`;
-			cost = ` for ${nf(result.currency_spent)} ${currencyType} (${nf(Math.round(result.currency_remaining))} ${currencyType} Remaining)`;
+			let currencyRemaining = Math.floor(result.currency_remaining);
+			cost = ` for ${nf(result.currency_spent)} ${currencyType} (${nf(currencyRemaining)} ${currencyType} Remaining)`;
 			amount -= toBuy;
+			if (chestId > 2) {
+				applyValueToElementAndDisplay(`buyChestsTokens`,currencyRemaining);
+				applyValueToElementAndDisplay(`buyChestsEvent`,Math.floor(currencyRemaining / chestPackCost));
+			} else {
+				applyValueToElementAndDisplay(`buyChestsGems`,currencyRemaining);
+				applyValueToElementAndDisplay(`buyChestsSilver`,Math.floor(currencyRemaining / silverChestCost));
+				applyValueToElementAndDisplay(`buyChestsGold`,Math.floor(currencyRemaining / goldChestCost));
+			}
+			buyChestsBuyAmount.value -= toBuy;
+			updatebuyChestsSliderValue(buyChestsBuyAmount.value);
 		} else
 			numFails++;
 		buying=makeBuyingRow(amount,chestName,initAmount);
@@ -177,11 +202,38 @@ async function buyChests() {
 		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
 		buying=makeBuyingRow(0,chestName,initAmount);
 		buyChestsBuyer.innerHTML = buying + txt;
+		return;
 	}
+	let gemsValue = document.getElementById(`buyChestsGems`).value;
+	if (gemsValue<silverChestCost) {
+		document.getElementById(`gemChestsOpt`).innerHTML=notEnoughGems;
+	} else if (gemsValue<goldChestCost) {
+		document.getElementById(`gemChestsOpt`).innerHTML=silverChestOpt;
+	}
+	if (document.getElementById(`buyChestsTokens`).value<chestPackCost)
+		document.getElementById(`tokenChestsOpt`).innerHTML=notEnoughEventTokens;
+	buyChestsBuyAmount.max = 0;
+	buyChestsBuyAmount.min = 0;
+	buyChestsBuyAmount.value = 0;
+	updatebuyChestsSliderValue(0);
+	buyChestsBuyList.value = "-1";
+	buyChestsBuyList.disabled = false;
+	buyChestsBuyAmount.disabled = false;
 }
 
-function addChestsRow(left,right) {
-	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span></span>`;
+function applyValueToElementAndDisplay(eleName,value) {
+	document.getElementById(`${eleName}Display`).innerHTML = nf(value);
+	document.getElementById(eleName).value = value;
+}
+
+function addChestsRow(left,right,hiddenInput,hiddenValue) {
+	let hiddenField=``;
+	let hiddenId=``;
+	if (hiddenInput!=undefined&&hiddenValue!=undefined) {
+		hiddenField = `<input type="hidden" id="${hiddenInput}" name="${hiddenInput}" value="${hiddenValue}">`
+		hiddenId = ` id="${hiddenInput}Display" name="${hiddenInput}Display"`;
+	}
+	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;"${hiddenId}>${right}</span>${hiddenField}</span>`;
 	return txt;
 }
 
