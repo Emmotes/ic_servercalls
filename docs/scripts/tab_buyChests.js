@@ -1,4 +1,4 @@
-const vbc=1.007;
+const vbc=1.008;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -14,6 +14,9 @@ async function pullBuyChestsData() {
 	temporarilyDisableAllPullButtons();
 	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
+	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
+	if (buyChestsBuyer.innerHTML.includes('buyChestsButton'))
+		buyChestsBuyer.innerHTML = `&nbsp;`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
@@ -21,7 +24,7 @@ async function pullBuyChestsData() {
 		let tokens = details.events_details.tokens;
 		if (gems < 50 && tokens < chestPackCost) {
 			wrapper.innerHTML = `&nbsp;`;
-			document.getElementById(`buyChestsBuyer`).innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough gems or tokens to buy any chests.</span>`
+			buyChestsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You do not have enough gems or tokens to buy any chests.</span>`
 			return;
 		}
 		let eventActive = details.events_details.active_events.length > 0 ? true : false;
