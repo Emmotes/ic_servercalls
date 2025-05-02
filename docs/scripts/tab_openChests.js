@@ -1,4 +1,4 @@
-const voc=1.001;
+const voc=1.002;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -58,7 +58,7 @@ async function displayOpenChestsData(wrapper,chestsHave,chestsDefs) {
 		let name = chestNames[id][0];
 		let plural = chestNames[id][1];
 		let amount = chestsHave[id];
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="1" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChest${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<label style="margin-left:5px" id="openChests${id}LabelMax">${amount}</label></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="1" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChest${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``)
@@ -82,6 +82,7 @@ async function openChests(id) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let openChestsSlider = document.getElementById(`openChests${id}Slider`);
 	let openChestsLabel = document.getElementById(`openChests${id}Label`);
+	let openChestsLabelMax = document.getElementById(`openChests${id}LabelMax`);
 	let openChestsButton = document.getElementById(`openChests${id}Button`);
 	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
 	openChestsSlider.disabled = true;
@@ -123,6 +124,7 @@ async function openChests(id) {
 				openChestsOpener.innerHTML = opening + txt;
 				openChestsSlider.min = 0;
 				openChestsSlider.max = 0;
+				openChestsLabelMax.innerHTML = nf(0);
 				openChestsSlider.value = 0;
 				openChestsLabel.innerHTML = nf(openChestsSlider.value);
 				openChestsButton.value = `Open 0 ${plural}`;
@@ -134,9 +136,10 @@ async function openChests(id) {
 				txt += addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
 				currAmount -= open;
 				openChestsSlider.max = remaining;
+				openChestsLabelMax.innerHTML = nf(remaining);
 				openChestsSlider.value -= open;
 				openChestsLabel.innerHTML = nf(openChestsSlider.value);
-				opening=makeOpeningRow(open,(open==1?name:plural),amount);
+				opening=makeOpeningRow(currAmount,(open==1?name:plural),amount);
 				openChestsButton.value = `Open ${openChestsSlider.value} ${openChestsSlider.value==1?name:plural}`;
 			} else {
 				txt += addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
