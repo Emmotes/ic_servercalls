@@ -1,4 +1,4 @@
-const voc=1.000;
+const voc=1.001;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -9,31 +9,46 @@ async function pullOpenChestsData() {
 	let wrapper = document.getElementById(`openChestsWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
-	//try {
+	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let chestsHave = (await getUserDetails()).details.chests;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let chestsDefs = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await displayOpenChestsData(wrapper,chestsHave,chestsDefs);
-	//} catch {
-	//	setFormsWrapperFormat(wrapper,0);
-	//	wrapper.innerHTML = BADDATA;
-	//}
+	} catch {
+		setFormsWrapperFormat(wrapper,0);
+		wrapper.innerHTML = BADDATA;
+	}
 }
 
 async function displayOpenChestsData(wrapper,chestsHave,chestsDefs) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let chestIds = chestsHave!=undefined ? Object.keys(chestsHave) : [];
-	if (chestIds.length==0) {
 		wrapper.innerHTML = `&nbsp;`;
-		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any chests to open.</span>`
+	if (chestIds.length==0) {
+		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any chests to open.</span>`;
+		return;
+	}
+	let hiddenChestIds = getHiddenChestIds();
+	for (let i=chestIds.length-1; i>=0; i--)
+		if (hiddenChestIds.includes(chestIds[i]))
+			chestIds.splice(chestIds.indexOf(chestIds[i]),1);
+	if (chestIds.length==0) {
+		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
 		return;
 	}
 	let chestNames = {};
 	for (let chest of chestsDefs)
-		chestNames[chest.id] = [chest.name, chest.name_plural];
-	
-	let hiddenChestIds = getHiddenChestIds();
+		if (chestIds.includes(`${chest.id}`))
+			chestNames[chest.id] = [chest.name, chest.name_plural, (chest.hero_ids==undefined?[]:chest.hero_ids)];
+	if (hiddenChestIds.includes(174)||hiddenChestIds.includes(175))
+		for (let i=chestIds.length-1; i>=0; i--)
+			if (chestNames[`${chestIds[i]}`][2].includes(58))
+				chestIds.splice(chestIds.indexOf(chestIds[i]),1);
+	if (chestIds.length==0) {
+		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
+		return;
+	}
 	
 	let txt = ``;
 	for (let id of chestIds) {
