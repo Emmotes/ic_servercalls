@@ -183,6 +183,60 @@
 				</span>
 			</div>
 			<!-- END: Buy Chests Tab -->
+			<!-- START: Open Chests Tab -->
+			<input onClick="setHash('openChestsTab')" type="radio" class="tabsRadio" name="serverTabs" id="openChestsTab">
+			<label for="openChestsTab" class="tabsLabel">Open Chests</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Open Chests</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%;position:relative">
+						This page will let you open any of the chests that you currently own.
+						<span class="f fc" style="position:absolute;bottom:-40px;right:0">
+							<span class="f fr falc">
+								<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="toggleHideOpenChests(this)"> Hide Briv Chests
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="openChestsHideModron" data-ids="[230]" onclick="toggleHideOpenChests(this)"> Hide Modron Component Chests
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="openChestsHideElectrum" data-ids="[282]" onclick="toggleHideOpenChests(this)"> Hide Electrum Chests
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="openChestsHideBahamut" data-ids="[323]" onclick="toggleHideOpenChests(this)"> Hide Glory of Bahamut Chests
+							</span>
+						</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullOpenChestsData()" name="openChestsPullButton" id="openChestsPullButton" value="Pull Chest Data" style="min-width:175px">
+						<span id="openChestsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="openChestsWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc falc w100 fje mr2" id="openChestsOpener">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Open Chests Tab -->
 			<!-- START: Shinies Calculator Tab -->
 			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
 			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
@@ -365,6 +419,7 @@
 	<script type="text/javascript" src="scripts/tab_deleteFormations.js?vdf=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_buyFeats.js?vbf=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.008"></script>
+	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.001"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.001"></script>

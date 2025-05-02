@@ -33,6 +33,7 @@ function init() {
 	window.addEventListener('hashchange',() =>{
 		swapTab();
 	});
+	initOpenChestsHideChests();
 	swapTab();
 }
 
