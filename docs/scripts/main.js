@@ -1,4 +1,4 @@
-const v=3.004;
+const v=3.005;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -116,7 +116,9 @@ function setHash(hash) {
 }
 
 function temporarilyDisableAllPullButtons() {
-	let names = [`formations`,`feats`,`buyChests`,`shinies`,`party`,`aeon`,`chestCollect`];
+	let names = [];
+	for (let obj of document.querySelectorAll('[name$="PullButton"]'))
+		names.push(obj.name.replace(`PullButton`,``));
 	
 	let eles = [];
 	for (let name of names) {
