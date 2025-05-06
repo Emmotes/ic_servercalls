@@ -1,4 +1,4 @@
-const v=3.005;
+const v=3.006;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -193,6 +193,10 @@ function findWord(word,str) {
 
 function ciEquals(a, b) {
 	return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0 : a === b;
+}
+
+function numSort(arr,reverse) {
+	arr.sort((a, b) => (reverse ? b - a : a - b));
 }
 
 async function sleep(ms) {

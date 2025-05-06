@@ -187,6 +187,7 @@ input[type="range"] {
 	-webkit-appearance: none;
 	width: 80%;
 	height: 10px;
+	border: 1px solid var(--Boulder);
 	border-radius: 5px;
 	background: var(--dark4);
 	outline: none;
@@ -223,11 +224,21 @@ input[type="button"] {
 	border-radius: 6px;
 }
 
+input[type="number"] {
+	width: 80%;
+	background-color: var(--dark4);
+	color: var(--light1);
+	padding: 3px;
+	border: 1px solid var(--Boulder);
+	border-radius: 6px;
+}
+
 select {
 	width: 80%;
 	background: var(--dark4);
 	color: currentColor;
 	height: 25px;
+	border: 1px solid var(--Boulder);
 	border-radius: 5px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -378,6 +389,7 @@ input[type="checkbox"]:checked::before {
 	display: none;
 	background-color: var(--dark1);
 	padding: 12px 20px 0 20px;
+	margin-bottom: 20px;
 	border-radius: 0 5px 5px 5px;
 }
 
@@ -514,4 +526,16 @@ input[type="checkbox"]:checked::before {
 	width: 75%;
 	margin-left: 5px;
 	text-wrap-style: pretty;
+}
+
+.bscMethodGrid {
+	display: grid;
+	grid-template-columns: max-content auto;
+	grid-template-rows: max-content max-content;
+	column-gap: 10px;
+	row-gap: 15px;
+	width: 90%;
+	text-wrap-style: pretty;
+	padding: 20px;
+	font-size: 0.9em;
 }
