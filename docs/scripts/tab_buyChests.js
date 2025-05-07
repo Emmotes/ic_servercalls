@@ -1,4 +1,4 @@
-const vbc=1.009;
+const vbc=1.010;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -44,7 +44,7 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 	let eventChestNames = [];
 	if (eventActive) {
 		for (let chest of shop)
-			if (chest.tags.includes('event'))
+			if (chest.tags.includes('event')||chest.tags.includes('event_v2'))
 				eventChestIds.push(chest.type_id);
 		numSort(eventChestIds);
 		for (let chestId of eventChestIds) {
