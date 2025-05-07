@@ -1,4 +1,4 @@
-const voc=1.003;
+const voc=1.004;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -83,7 +83,7 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		let max = chestPacksById[id].total - chestPacksById[id].opened;
 		let min = Math.min(chestPacksById[id].have,max);
 		let canOpen = min >= max;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder">`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder">`;
 		if (canOpen)
 			txt += `<input type="button" id="openChests${id}Button" onClick="openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="width:80%">`;
 		else
@@ -253,7 +253,7 @@ async function openChestPack(id,packId,amount) {
 	}
 	opening=makeOpeningRow(currAmount,(amount==1?name:plural),amount);
 	txt += addChestResultRow(`Finished.`);
-	document.getElementById(id).innerHTML = `&nbsp;`;
+	document.getElementById(`${id}Pack`).innerHTML = `&nbsp;`;
 	openChestsOpener.innerHTML = opening + txt;
 	if (numFails >= RETRIES) {
 		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
