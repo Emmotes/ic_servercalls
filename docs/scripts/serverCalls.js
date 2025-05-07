@@ -1,4 +1,4 @@
-const vs=2.001;
+const vs=2.002;
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
@@ -208,13 +208,15 @@ async function buySoftCurrencyChest(chestId,count) {
 	return await sendServerCall(SERVER,'buysoftcurrencychest',params,true,true);
 }
 
-async function openGenericChest(chestId,count) {
+async function openGenericChest(chestId,count,packId) {
 	let params = [
 		['gold_per_second',0],
 		['checksum','4c5f019b6fc6eefa4d47d21cfaf1bc68'],
 		['chest_type_id',chestId],
 		['count',count]
 	];
+	if (packId!=undefined)
+		params.push(['pack_id',packId]);
 	return await sendServerCall(SERVER,'opengenericchest',params,true,true);
 }
 
