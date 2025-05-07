@@ -1,4 +1,4 @@
-const voc=1.005;
+const voc=1.006;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -149,7 +149,7 @@ async function openChests(id) {
 		let initMsg = `${open} ${open==1?name:plural}`;
 		if (result.success) {
 			let remaining = result.chests_remaining;
-			if (remaining==0&&curramount>0) {
+			if (remaining==0&&currAmount>0) {
 				txt += addChestResultRow(`- Stopping:`,`Server Said 0 ${plural} Remaining.`);
 				opening=makeOpeningRow(0,plural,amount);
 				openChestsOpener.innerHTML = opening + txt;
