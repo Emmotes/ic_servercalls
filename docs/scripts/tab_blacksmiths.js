@@ -1,4 +1,4 @@
-const vbs=1.000;
+const vbs=1.001;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -64,6 +64,7 @@ async function displayBSCData(wrapper,details,defs) {
 
 function displayBSCType(val) {
 	let wrapper = document.getElementById(`bscWrapperType`);
+	let bscSpender = document.getElementById(`bscSpender`);
 	let txt=`&nbsp;`;
 	if (val == `general`)
 		txt=displayBSCGeneral(wrapper);
@@ -71,6 +72,10 @@ function displayBSCType(val) {
 		txt=displayBSCAverage(wrapper);
 	else if (val == `specific`)
 		txt=displayBSCSpecific(wrapper);
+	else {
+		wrapper.innerHTML = txt;
+		bscSpender.innerHTML = txt;
+	}
 	wrapper.style.visibility = ``;
 }
 
