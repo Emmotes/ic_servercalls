@@ -1,4 +1,4 @@
-const vbs=1.001;
+const vbs=1.002;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -259,7 +259,7 @@ function displayBSCSpendAverageButton() {
 		if (needed <= 0) {
 			txt+=`<span class="f w100 p5" style="padding-left:10%">You already have more than that (${nf(currAvg)}).</span>`;
 		} else if (needed > canSpend) {
-			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal.</span>`;
+			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal. ${nf(needed)} ilvl${needed==1?' is':'s are'} required.</span>`;
 		} else {
 			txt+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="bscSpenderRow"><input type="button" onClick="bscSpendAverage(${needed})" name="bscSpendAverageButton" id="bscSpendAverageButton" style="font-size:0.9em;min-width:180px" value="Spend ${nf(needed)} iLvls on ${ownedChamps[bscChampionList.value]} to Reach Goal"></span></span>`;
 		}
@@ -413,7 +413,7 @@ function displayBSCSpendSpecificButton() {
 		if (needed <= 0) {
 			txt+=`<span class="f w100 p5" style="padding-left:10%">You already have more than that (${nf(currItem)}).</span>`;
 		} else if (expected > canSpend) {
-			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal.</span>`;
+			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal. Expected cost is roughly ${nf(expected)} ilvl${expected==1?'':'s'}.</span>`;
 		} else {
 			txt+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="bscSpenderRow"><input type="button" onClick="bscSpendSpecific(${needed})" name="bscSpendSpecificButton" id="bscSpendSpecificButton" style="font-size:0.9em;min-width:180px" value="Spend Roughly ${nf(expected)} iLvls on ${ownedChamps[bscChampionList.value]} to Reach Goal"></span></span>`;
 		}
