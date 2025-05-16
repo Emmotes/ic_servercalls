@@ -1,4 +1,4 @@
-const vbs=1.002;
+const vbs=1.003;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -387,12 +387,26 @@ function displayBSCSpecific(wrapper) {
 	let a=`<input type="number" value="0" name="bscContractSpecific" id="bscContractSpecific" oninput="displayBSCSpendSpecificButton();">`;
 	txt+=addBlacksmithsRow(`Champion:`,bscGenerateChampionSelect(type));
 	txt+=addBlacksmithsRow(`Item:`,bscGenerateSpecificSlotList());
+	txt+=addBlacksmithsRow(`Current Specific iLvl:`,`-`,`bscCurrentSpecific`,-1);
 	txt+=addBlacksmithsRow(`Specific iLvl Goal:`,a);
 	txt+=addBlacksmithsRow(`It is recommended that you have a bunch of Tiny and Small Blacksmithing Contracts available when using this method.`).replace(`width:60%;min-width:250px;font-size:1.2em`,`min-width:250px;color:var(--TangerineYellow)`);
 	txt+=addBlacksmithsRow(`This method is slow because I don't trust the accuracy of the responses from the blacksmiths server calls and so will regularly require a fresh pull of user data to confirm iLvls. To avoid spamming the server this has a 10 second wait attached to it.<br>Also - in order to not risk going over the iLvl goal - this method never spends more in iLvls than the item would need to get to the goal.<br>It will repeat this cycle of getting user data and spending as many times as it needs to to reach the iLvl goal.`).replace(`width:60%;min-width:250px;font-size:1.2em`,`min-width:250px;color:var(--Cascara)`);
 	wrapper.innerHTML = txt;
 	displayBSCSpendSpecificButton();
 	return txt;
+}
+
+function displayCurrentSpecific(champId,slotId) {
+	let bscCurrentSpecific = document.getElementById(`bscCurrentSpecific`);
+	if (champId==undefined||slotId==undefined||champId=="-1"||slotId=="-1") {
+		bscCurrentSpecific.innerHTML = `-`;
+		bscCurrentSpecific.dataset.value = -1;
+		bscContractAverage.value = 0;
+	} else {
+		let currSpec = champLoot[champId][slotId];
+		bscCurrentSpecific.innerHTML = nf(currSpec);
+		bscCurrentSpecific.dataset.value = currSpec;
+	}
 }
 
 function displayBSCSpendSpecificButton() {
@@ -426,6 +440,7 @@ async function bscSpendSpecific(toSpend) {
 	let bscMethodList = document.getElementById(`bscMethodList`);
 	let bscChampionList = document.getElementById(`bscChampionList`);
 	let bscSlotList = document.getElementById(`bscSlotList`);
+	let bscCurrentSpecific = document.getElementById(`bscCurrentSpecific`);
 	let bscContractSpecific = document.getElementById(`bscContractSpecific`);
 	let spending=``;
 	let txt=``;
@@ -493,7 +508,6 @@ async function bscSpendSpecific(toSpend) {
 					successType = `Successfully spent`;
 					let remaining = result.buffs_remaining;
 					amount -= toSpend;
-					// TODO
 					bscMainLabel.innerHTML = nf(remaining);
 					bscMainLabel.dataset.value = remaining;
 					let spendValue = toSpend * blacksmiths[bscId].iLvls;
@@ -504,6 +518,9 @@ async function bscSpendSpecific(toSpend) {
 					bscTotaliLvls.innerHTML = nf(totalAmountOfiLvls);
 					bscTotaliLvls.dataset.value = totalAmountOfiLvls;
 					newLoot = parseActions(result.actions,champId,newLoot);
+					let lootSpec = newLoot[Number(bscSlotList.value)-1];
+					bscCurrentSpecific.dataset.value = lootSpec;
+					bscCurrentSpecific.innerHTML = nf(lootSpec);
 					lootTxt = addChampioniLvlsRows(champId,champName,bscSlotList.value,newLoot);
 				} else
 					numFails++;
@@ -512,8 +529,6 @@ async function bscSpendSpecific(toSpend) {
 				bscSpender.innerHTML = lootTxt + spending + txt;
 			}
 		}
-		// TODO Pull latest user data - updating spending line and iLvls curr and all blacksmith amounts.
-		// Sleep for 10 seconds.
 		spending=`<span class="f fr w100 p5">Refreshing user data...</span>`;
 		bscSpender.innerHTML = lootTxt + spending;
 		
@@ -525,6 +540,9 @@ async function bscSpendSpecific(toSpend) {
 		for (let slot of Object.keys(champLoot[champId]))
 			newLoot[Number(slot)-1] = champLoot[champId][slot];
 		iLvlsCurr = champLoot[bscChampionList.value][bscSlotList.value];
+		let lootSpec = champLoot[bscChampionList.value][bscSlotList.value];
+		bscCurrentSpecific.dataset.value = lootSpec;
+		bscCurrentSpecific.innerHTML = nf(lootSpec);
 		champLoot = oldChampLoot;
 		lootTxt = addChampioniLvlsRows(champId,champName,bscSlotList.value,newLoot,true);
 		bscSpender.innerHTML = lootTxt + spending + txt;
@@ -594,7 +612,7 @@ function bscGenerateChampionSelect(type) {
 }
 
 function bscGenerateSpecificSlotList(champId) {
-	let s=`<select name="bscSlotList" id="bscSlotList" oninput="displayCurrentItemSpecific(${champId});displayBSCSpend${type}Button();"><option value="-1">-</option>`;
+	let s=`<select name="bscSlotList" id="bscSlotList" oninput="displayCurrentItemSpecific(${champId});displayCurrentSpecific(${champId},this.value);displayBSCSpend${type}Button();"><option value="-1">-</option>`;
 	if (champId!=undefined&&champId!="-1")
 		for (let i=1;i<=6;i++)
 			if (!lootDefs[champId][i].capped)
@@ -703,8 +721,8 @@ function parseLootDefs(defs) {
 
 function countCappedItems(champId) {
 	let count = 0;
-	for (let gear of Object.keys(lootDefs[champId]))
-		if (gear.capped)
+	for (let slotId of Object.keys(lootDefs[champId]))
+		if (lootDefs[champId][slotId].capped)
 			count++;
 	return count;
 }
