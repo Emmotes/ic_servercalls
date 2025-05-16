@@ -1,4 +1,4 @@
-const vbs=1.003;
+const vbs=1.004;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -401,7 +401,6 @@ function displayCurrentSpecific(champId,slotId) {
 	if (champId==undefined||slotId==undefined||champId=="-1"||slotId=="-1") {
 		bscCurrentSpecific.innerHTML = `-`;
 		bscCurrentSpecific.dataset.value = -1;
-		bscContractAverage.value = 0;
 	} else {
 		let currSpec = champLoot[champId][slotId];
 		bscCurrentSpecific.innerHTML = nf(currSpec);
@@ -589,12 +588,16 @@ function displayItemSlotSpecific(champId) {
 }
 
 function displayCurrentItemSpecific(champId) {
+	let bscCurrentSpecific = document.getElementById(`bscCurrentSpecific`)
 	let bscContractSpecific = document.getElementById(`bscContractSpecific`);
 	let bscSlotList = document.getElementById(`bscSlotList`);
-	if (bscSlotList==undefined||bscSlotList.value=="-1")
+	if (bscSlotList==undefined||bscSlotList.value=="-1") {
+		displayCurrentSpecific();
 		bscContractSpecific.value = ``;
-	else
+	} else {
+		displayCurrentSpecific(champId,bscSlotList.value);
 		bscContractSpecific.value = champLoot[champId][bscSlotList.value];
+	}
 }
 
 function bscGenerateChampionSelect(type) {
@@ -602,7 +605,7 @@ function bscGenerateChampionSelect(type) {
 	if (type=="Average")
 		sel = sel.replace(`oninput="display`,`oninput="displayCurrentAverage(this.value);display`);
 	else if (type=="Specific")
-		sel = sel.replace(`oninput="display`,`oninput="displayItemSlotSpecific(this.value);display`);
+		sel = sel.replace(`oninput="display`,`oninput="displayItemSlotSpecific(this.value);displayCurrentItemSpecific(this.value);display`);
 	let names = Object.keys(ownedChampsByName);
 	names.sort();
 	for (let name of names)
