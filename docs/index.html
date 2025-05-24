@@ -153,8 +153,25 @@
 					</span>
 				</span>
 				<span class="f fr w100 p5">
-					<span class="f falc fjs ml2" style="width:100%">
+					<span class="f falc fjs ml2" style="width:100%;position:relative">
 						This page will let you buy Silver or Gold chests for gems as well as chest packs for event tokens for champions you have flexed.
+						<span class="f fc" style="position:absolute;top:-80px;right:0;align-items:center;text-align:center">
+							<span class="f fr falc">
+								<label class="p5" for="buyChestsSliderFidelity">Amount to Buy Slider Fidelity:</label>
+								<select name="buyChestsSliderFidelity" id="buyChestsSliderFidelity" oninput="toggleBuyChestsSliderFidelity(this.value);" style="width:70px">
+									<option value="1" selected>1</option>
+									<option value="10">10</option>
+									<option value="25">25</option>
+									<option value="50">50</option>
+									<option value="100">100</option>
+									<option value="250">250</option>
+									<option value="1000">1000</option>
+								</select>
+							</span>
+							<span class="f fr falc" style="font-size:0.8em">
+								Note: If the fidelity is larger than the maximum<br>amount you can buy - it will use a fidelity of 1.
+							</span>
+						</span>
 					</span>
 				</span>
 				<span class="f fr w100 p5">
@@ -195,7 +212,7 @@
 				<span class="f fr w100 p5">
 					<span class="f falc fjs ml2" style="width:100%;position:relative">
 						This page will let you open any of the chests that you currently own.
-						<span class="f fc" style="position:absolute;bottom:-40px;right:0">
+						<span class="f fc" style="position:absolute;top:-80px;right:0">
 							<span class="f fr falc">
 								<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="toggleHideOpenChests(this)"> Hide All Briv Gear Chests
 							</span>
@@ -207,6 +224,23 @@
 							</span>
 							<span class="f fr falc">
 								<input type="checkbox" id="openChestsHideBahamut" data-ids="[323]" onclick="toggleHideOpenChests(this)"> Hide Glory of Bahamut Chests
+							</span>
+							<span class="f fc falc" style="text-align:center">
+								<span class="f fr falc">
+									<label class="p5" for="openChestsSliderFidelity">Open Amount Slider Fidelity:</label>
+									<select name="openChestsSliderFidelity" id="openChestsSliderFidelity" oninput="toggleOpenChestsSliderFidelity(this.value);" style="width:70px">
+										<option value="1" selected>1</option>
+										<option value="10">10</option>
+										<option value="25">25</option>
+										<option value="50">50</option>
+										<option value="100">100</option>
+										<option value="250">250</option>
+										<option value="1000">1000</option>
+									</select>
+								</span>
+								<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+									Note: If the fidelity is larger than the maximum<br>amount you can open - it will use a fidelity of 1.
+								</span>
 							</span>
 						</span>
 					</span>
@@ -472,14 +506,14 @@
 	<script type="text/javascript" src="scripts/util_buffs.js?vb=1.001"></script>
 	<script type="text/javascript" src="scripts/tab_deleteFormations.js?vdf=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_buyFeats.js?vbf=1.003"></script>
-	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.010"></script>
-	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.007"></script>
+	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.011"></script>
+	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.008"></script>
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.001"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.001"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.001"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=2.002"></script>
-	<script type="text/javascript" src="scripts/main.js?v=3.006"></script>
+	<script type="text/javascript" src="scripts/main.js?v=3.007"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const v=3.006;
+const v=3.007;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -33,6 +33,8 @@ function init() {
 	window.addEventListener('hashchange',() =>{
 		swapTab();
 	});
+	initBuyChestsSliderFidelity();
+	initOpenChestsSliderFidelity();
 	initOpenChestsHideChests();
 	swapTab();
 }

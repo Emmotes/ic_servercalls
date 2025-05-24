@@ -1,4 +1,4 @@
-const vbc=1.010;
+const vbc=1.011;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -73,7 +73,7 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 	txt+=addChestsRow(`Available Event Tokens:`,nf(tokens),`buyChestsTokens`,tokens);
 	txt+=addChestsRow(`Maximum Chest Packs:`,nf(chestPacks),`buyChestsEvent`,chestPacks);
 	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="displayBuyChestsBuyButton(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
+	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="modifyBuyChestsBuyAmountSlider(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
 	if (gems >= silverChestCost)
 		s+=`${silverChestOpt}<option value="2">Gold Chest</option>`;
 	else
@@ -89,13 +89,13 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 		s+=`<option value="-1">No event chest packs available.</option>`;
 	s+=`</optgroup></select>`;
 	txt+=addChestsRow(`What to Buy:`,s);
-	let r=`<input type="range" min="0" max="0" step="1" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updatebuyChestsSliderValue(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
+	let r=`<input type="range" min="0" max="0" step="0" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updateBuyChestsSliderValue(this.value);displayBuyChestsBuyButton(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
 	txt+=addChestsRow(`Amount to Buy:`,r);
 	wrapper.innerHTML = txt;
-	displayBuyChestsBuyButton();
+	modifyBuyChestsBuyAmountSlider();
 }
 
-function displayBuyChestsBuyButton(val) {
+function modifyBuyChestsBuyAmountSlider(val) {
 	let buyChestsSilver = document.getElementById(`buyChestsSilver`);
 	let buyChestsGold = document.getElementById(`buyChestsGold`);
 	let buyChestsEvent = document.getElementById(`buyChestsEvent`);
@@ -103,30 +103,41 @@ function displayBuyChestsBuyButton(val) {
 	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let be = ``;
-	let valueToUse = 0;
-	if (val==1)
-		valueToUse = Number(buyChestsSilver.value);
+	let maximumToUse;
+	if (val==undefined)
+		maximumToUse = 0;
+	else if (val==1)
+		maximumToUse = Number(buyChestsSilver.value);
 	else if (val==2)
-		valueToUse = Number(buyChestsGold.value);
+		maximumToUse = Number(buyChestsGold.value);
 	else
-		valueToUse = Number(buyChestsEvent.value);
-	if (val==undefined||val=="-1"||valueToUse==0) {
-		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type has been selected.</span>`;
-		buyChestsBuyAmount.max = 0;
-		buyChestsBuyAmount.min = 0;
-		buyChestsBuyAmount.value = 0;
-		updatebuyChestsSliderValue(0);
-	} else {
-		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${val>2?` Pack`:``}s"></span></span>`;
-		buyChestsBuyAmount.max = valueToUse;
-		buyChestsBuyAmount.min = 1;
-		buyChestsBuyAmount.value = 1;
-		updatebuyChestsSliderValue(1);
-	}
+		maximumToUse = Number(buyChestsEvent.value);
+	
+	buyChestsBuyAmount.max = maximumToUse;
+	buyChestsBuyAmount.min = 0;
+	buyChestsBuyAmount.value = 0;
+	let fidelity = getBuyChestsSliderFidelity();
+	buyChestsBuyAmount.step = fidelity > maximumToUse ? 1 : fidelity;
+	updateBuyChestsSliderValue(0);
+	displayBuyChestsBuyButton(0);
+}
+
+function displayBuyChestsBuyButton(amount) {
+	let buyChestsBuyList = document.getElementById(`buyChestsBuyList`);
+	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
+	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
+	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
+	let be = ``;
+	let chestId = Number(buyChestsBuyList.value);
+	
+	if (chestId<=0||amount==undefined||amount<=0)
+		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type and amount has been selected.</span>`;
+	else
+		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${chestId>2?` Pack`:``}s"></span></span>`;
 	buyChestsBuyer.innerHTML = be;
 }
 
-function updatebuyChestsSliderValue(val) {
+function updateBuyChestsSliderValue(val) {
 	document.getElementById('buyChestsSliderValue').innerHTML=nf(val);
 }
 
@@ -191,7 +202,7 @@ async function buyChests() {
 				applyValueToElementAndDisplay(`buyChestsGold`,Math.floor(currencyRemaining / goldChestCost));
 			}
 			buyChestsBuyAmount.value -= toBuy;
-			updatebuyChestsSliderValue(buyChestsBuyAmount.value);
+			updateBuyChestsSliderValue(buyChestsBuyAmount.value);
 		} else
 			numFails++;
 		buying=makeBuyingRow(amount,chestName,initAmount);
@@ -218,7 +229,7 @@ async function buyChests() {
 	buyChestsBuyAmount.max = 0;
 	buyChestsBuyAmount.min = 0;
 	buyChestsBuyAmount.value = 0;
-	updatebuyChestsSliderValue(0);
+	updateBuyChestsSliderValue(0);
 	buyChestsBuyList.value = "-1";
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
@@ -249,4 +260,36 @@ function addChestResultRow(left,right) {
 
 function makeBuyingRow(amount,name,initAmount) {
 	return `<span class="f fr w100 p5">${amount==0?`Finished `:``}Buying ${nf(amount==0?initAmount:amount)} ${name}s:</span>`;
+}
+
+function initBuyChestsSliderFidelity() {
+	let fidelity = getBuyChestsSliderFidelity();
+	if (![1,10,25,50,100,250,1000].includes(fidelity)) {
+		toggleBuyChestsSliderFidelity(1);
+		fidelity = 1;
+	}
+	document.getElementById(`buyChestsSliderFidelity`).value = fidelity;
+}
+
+function toggleBuyChestsSliderFidelity(fidelity) {
+	if (fidelity==1&&localStorage.scBuyChestsSliderFidelity!=undefined)
+		localStorage.removeItem(`scBuyChestsSliderFidelity`);
+	else if (fidelity!=1)
+		saveBuyChestsSliderFidelity(fidelity);
+	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
+	if (buyChestsBuyAmount!=null) {
+		buyChestsBuyAmount.step = fidelity;
+		buyChestsBuyAmount.value = 0;
+		modifyBuyChestsBuyAmountSlider(document.getElementById(`buyChestsBuyList`).value);
+	}
+}
+
+function getBuyChestsSliderFidelity() {
+	if (localStorage.scBuyChestsSliderFidelity!=undefined)
+		return Number(localStorage.scBuyChestsSliderFidelity);
+	return 1
+}
+
+function saveBuyChestsSliderFidelity(fidelity) {
+	localStorage.scBuyChestsSliderFidelity = fidelity;
 }
