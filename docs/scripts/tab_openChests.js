@@ -1,4 +1,4 @@
-const voc=1.008;
+const voc=1.009;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -119,9 +119,8 @@ async function openChests(id) {
 	let openChestsLabelMax = document.getElementById(`openChests${id}LabelMax`);
 	let openChestsButton = document.getElementById(`openChests${id}Button`);
 	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
-	openChestsSlider.disabled = true;
-	openChestsButton.disabled = true;
-	openChestsButtonHolder.className = `formsCampaignSelect`;
+	let slidersButtonsAndHoldersIds = [];
+	disableSlidersButtonsAndHolders(true);
 	
 	let name = openChestsButton.dataset.name;
 	let plural = openChestsButton.dataset.plural;
@@ -203,9 +202,8 @@ async function openChests(id) {
 	}
 	opening=makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
-	openChestsSlider.disabled = false;
-	openChestsButton.disabled = false;
-	openChestsButtonHolder.className = `formsCampaignSelect greenButton`;
+	disableSlidersButtonsAndHolders(false);
+	toggleOpenChestsSliderFidelity();
 	if (openChestsSlider.value==0)
 		openChestsButton.style.visibility = `hidden`;
 }
@@ -219,8 +217,7 @@ async function openChestPack(id,packId,amount) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let openChestsButton = document.getElementById(`openChests${id}Button`);
 	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
-	openChestsButton.disabled = true;
-	openChestsButtonHolder.className = `formsCampaignSelect`;
+	disableSlidersButtonsAndHolders(true);
 	
 	let name = openChestsButton.dataset.name;
 	let plural = openChestsButton.dataset.plural;
@@ -266,6 +263,8 @@ async function openChestPack(id,packId,amount) {
 	}
 	opening=makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
+	disableSlidersButtonsAndHolders(false);
+	toggleOpenChestsSliderFidelity();
 }
 
 function makeOpeningRow(amount,name,initAmount) {
@@ -325,6 +324,8 @@ function initOpenChestsSliderFidelity() {
 }
 
 function toggleOpenChestsSliderFidelity(fidelity) {
+	if (fidelity==undefined)
+		fidelity = getOpenChestsSliderFidelity();
 	if (fidelity==1&&localStorage.scOpenChestsSliderFidelity!=undefined)
 		localStorage.removeItem(`scOpenChestsSliderFidelity`);
 	else if (fidelity!=1)
@@ -335,6 +336,17 @@ function toggleOpenChestsSliderFidelity(fidelity) {
 		ele.value = 0;
 		ele.step = fidelity > max ? 1 : fidelity;
 		updateOpenChestsSliderValue(id,ele.value);
+	}
+}
+
+function disableSlidersButtonsAndHolders(disable) {
+	if (disable == undefined)
+		disable = true;
+	for (let ele of document.querySelectorAll('input[id^="openChests"][id$="Slider"]')) {
+		let id = Number(ele.id.replace(/[^0-9]/g,``));
+		ele.disabled = disable;
+		document.getElementById(`openChests${id}Button`).disabled = disable;
+		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect` : `formsCampaignSelect greenButton`;
 	}
 }
 
