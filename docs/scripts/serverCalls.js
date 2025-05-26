@@ -1,4 +1,4 @@
-const vs=2.002;
+const vs=2.003;
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
@@ -14,7 +14,9 @@ async function getUserDetails() {
 		['supports_chunked_defs',0],
 		['new_achievements',1]
 	];
-	return await sendServerCall(SERVER,'getuserdetails',params,true);
+	let deets = await sendServerCall(SERVER,'getuserdetails',params,true);
+	getUpdatedInstanceId(deets);
+	return deets;
 }
 
 async function getUpdatedInstanceId(deets) {
@@ -294,6 +296,24 @@ async function claimSaleBonus(premiumId) {
 		['prioritize_item_category','recommend']
 	];
 	return await sendServerCall(SERVER,'claimsalebonus',params,true,true);
+}
+
+async function convertContracts(sourceBuffId,resultBuffId,count,toEventTokens) {
+	let params = [
+		['source_buff_id',sourceBuffId],
+		['result_buff_id',resultBuffId],
+		['count',count],
+		['to_event_tokens',toEventTokens?1:0]
+	];
+	return await sendServerCall(SERVER,'convertcontracts',params,true,true);
+}
+
+async function purchaseNotaryChestBundle(chestId,count) {
+	let params = [
+		['chest_type_id',chestId],
+		['count',count]
+	];
+	return await sendServerCall(SERVER,'purchasenotarychestbundle',params,true,true);
 }
 
 function appendUserData() {
