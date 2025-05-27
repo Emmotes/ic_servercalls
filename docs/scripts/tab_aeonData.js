@@ -1,4 +1,4 @@
-const vad=1.001;
+const vad=1.002;
 
 async function pullAeonData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -12,8 +12,8 @@ async function pullAeonData() {
 		wrapper.innerHTML = `Waiting for patron data...`;
 		let details = await getPatronDetails();
 		await displayAeonData(wrapper,details);
-	} catch {
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		handleError(wrapper,error);
 	}
 }
 

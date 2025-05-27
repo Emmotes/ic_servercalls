@@ -1,4 +1,4 @@
-const vcd=1.001;
+const vcd=1.002;
 var chestDataBefore=``;
 
 async function pullChestCollectData() {
@@ -16,8 +16,8 @@ async function pullChestCollectData() {
 			await displayChestCollectDataPhase1(wrapper,details);
 		else
 			await displayChestCollectDataPhase2(wrapper,details);
-	} catch {
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		handleError(wrapper,error);
 	}
 }
 

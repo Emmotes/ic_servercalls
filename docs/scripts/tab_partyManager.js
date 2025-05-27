@@ -1,4 +1,4 @@
-const vpm=1.004;
+const vpm=1.005;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -15,9 +15,9 @@ async function pullPartyData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let adventures = (await getDefinitions("adventure_defines")).adventure_defines;
 		await displayPartyData(wrapper,gameInstances,adventures);
-	} catch {
-	setFormsWrapperFormat(wrapper,0);
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		setFormsWrapperFormat(wrapper,0);
+		handleError(wrapper,error);
 	}
 }
 

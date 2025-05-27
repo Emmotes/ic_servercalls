@@ -1,4 +1,13 @@
-const vs=2.003;
+const vs=2.004;
+const M=`https://master.idlechampions.com/~idledragons/`;
+const SPS=`switch_play_server`;
+const FR=`failure_reason`;
+const OII=`Outdated instance id`;
+const PARAM_CALL=`call`;
+const PARAM_INSTANCEID=`instance_id`;
+const PARAM_USERID=`user_id`;
+const PARAM_USERHASH=`hash`;
+const RETRIES=4;
 var SERVER=``;
 var userIdent=[``,``];
 var instanceId=``;
@@ -374,6 +383,7 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 			SERVER = response[SPS].replace(`http://`, `https://`);
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
+			console.log(response);
 			if (response[FR]==OII) {
 				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
@@ -382,11 +392,13 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 				call = call.replace(oldII,instanceId);
 				console.log(`New: ${call}`)
 				response = await sendOutgoingCall(server,call);
+			} else if (response[FR].includes(`Security hash failure`)) {
+				throw new Error(`Your user data is incorrect`);
 			} else {
 				// Unknown error.
 				console.log(`${server}post.php?${call}`);
 				console.log(` - Unknown Error: ${response[FR]}`);
-				return response;
+				throw new Error(`response`);
 			}
 		}
 		limit++;
@@ -396,9 +408,21 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 
 async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
-	let response = await fetch(url)
-		.then(response => response.text())
-		.catch(err => console.log(err));
-	await sleep(200);
-	return await JSON.parse(response);
+	try {
+		let response = await fetch(url);
+		await sleep(200);
+		if (response.ok) {
+			let txt = await response.text();
+			console.log(txt);
+			return await JSON.parse(txt);
+		} else {
+			if (response.status === 500) throw new Error(`Server appears to be dead`);
+			if (response.status === 404) throw new Error(`Server appears to be dead`);
+			throw new Error(response.status);
+		}
+	} catch (error) {
+		console.error('Fetch', error);
+		throw error;
+	}
+	return `Unknown error`;
 }

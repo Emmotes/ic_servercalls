@@ -1,4 +1,4 @@
-const vbf=1.003;
+const vbf=1.004;
 
 async function pullFeatsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -15,9 +15,9 @@ async function pullFeatsData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let defs = await getDefinitions("hero_defines,hero_feat_defines");
 		await displayFeatsData(wrapper,details,defs);
-	} catch {
+	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
-		wrapper.innerHTML = BADDATA;
+		handleError(wrapper,error);
 	}
 }
 

@@ -1,4 +1,4 @@
-const vdf=1.004;
+const vdf=1.005;
 
 async function pullFormationSaves() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -13,9 +13,9 @@ async function pullFormationSaves() {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		let forms = await getFormationSaves();
 		await displayFormationSaves(wrapper,forms);
-	} catch {
+	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
-		wrapper.innerHTML = BADDATA;
+		handleError(wrapper,error);
 	}
 }
 

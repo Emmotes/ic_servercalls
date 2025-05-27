@@ -1,4 +1,4 @@
-const vsc=1.001;
+const vsc=1.002;
 
 async function pullShiniesData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -12,8 +12,8 @@ async function pullShiniesData() {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let userData = await getUserDetails();
 		await displayShiniesData(wrapper,userData.details);
-	} catch {
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		handleError(wrapper,error);
 	}
 }
 

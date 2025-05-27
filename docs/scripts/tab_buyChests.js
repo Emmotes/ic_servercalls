@@ -1,4 +1,4 @@
-const vbc=1.011;
+const vbc=1.012;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -33,8 +33,8 @@ async function pullBuyChestsData() {
 		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
 		await displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
-	} catch {
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		handleError(wrapper,error);
 	}
 }
 

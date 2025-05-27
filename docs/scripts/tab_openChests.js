@@ -1,4 +1,4 @@
-const voc=1.009;
+const voc=1.010;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -17,9 +17,9 @@ async function pullOpenChestsData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let chestsDefs = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs);
-	} catch {
+	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
-		wrapper.innerHTML = BADDATA;
+		handleError(wrapper,error);
 	}
 }
 

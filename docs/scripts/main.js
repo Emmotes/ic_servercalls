@@ -1,4 +1,4 @@
-const v=3.007;
+const v=3.008;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -8,16 +8,6 @@ const settingsSave=document.getElementById(`settingsMenuButtonSave`);
 const settingsClose=document.getElementById(`settingsMenuButtonClose`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
-const M=`https://master.idlechampions.com/~idledragons/`;
-const SPS=`switch_play_server`;
-const FR=`failure_reason`;
-const OII=`Outdated instance id`;
-const PARAM_CALL=`call`;
-const PARAM_INSTANCEID=`instance_id`;
-const PARAM_USERID=`user_id`;
-const PARAM_USERHASH=`hash`;
-const RETRIES=4;
-const BADDATA = `Response: Your user data is incorrect. Server call failed.`;
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
 
 function init() {
@@ -146,6 +136,10 @@ function setFormsWrapperFormat(wrapper,type) {
 		wrapper.className = `partiesWrapper`;
 		wrapper.style = ``;
 	}
+}
+
+function handleError(wrapper,error) {
+	wrapper.innerHTML = `${error}. Server call failed.`;
 }
 
 function nf(number) {

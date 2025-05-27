@@ -1,4 +1,4 @@
-const vbs=1.004;
+const vbs=1.005;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -24,8 +24,8 @@ async function pullBSCData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let defs = (await getDefinitions("hero_defines,buff_defines,loot_defines"));
 		await displayBSCData(wrapper,details,defs);
-	} catch {
-		wrapper.innerHTML = BADDATA;
+	} catch (error) {
+		handleError(wrapper,error);
 	}
 }
 
