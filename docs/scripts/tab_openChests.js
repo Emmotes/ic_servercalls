@@ -1,4 +1,4 @@
-const voc=1.010;
+const voc=1.011;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -346,7 +346,7 @@ function disableSlidersButtonsAndHolders(disable) {
 		let id = Number(ele.id.replace(/[^0-9]/g,``));
 		ele.disabled = disable;
 		document.getElementById(`openChests${id}Button`).disabled = disable;
-		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect` : `formsCampaignSelect greenButton`;
+		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect greyButton` : `formsCampaignSelect greenButton`;
 	}
 }
 

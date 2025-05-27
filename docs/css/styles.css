@@ -539,3 +539,8 @@ input[type="checkbox"]:checked::before {
 	padding: 20px;
 	font-size: 0.9em;
 }
+
+.greyButton input[type="button"] {
+	color: #555555;
+	background-color: var(--good2);
+}
