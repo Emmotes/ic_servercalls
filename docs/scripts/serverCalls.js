@@ -1,4 +1,4 @@
-const vs=2.004;
+const vs=2.005;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -383,7 +383,6 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 			SERVER = response[SPS].replace(`http://`, `https://`);
 			response = await sendOutgoingCall(SERVER,call);
 		} else if (!response['success']) {
-			console.log(response);
 			if (response[FR]==OII) {
 				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
@@ -411,11 +410,9 @@ async function sendOutgoingCall(server,call) {
 	try {
 		let response = await fetch(url);
 		await sleep(200);
-		if (response.ok) {
-			let txt = await response.text();
-			console.log(txt);
-			return await JSON.parse(txt);
-		} else {
+		if (response.ok)
+			return await JSON.parse(await response.text());
+		else {
 			if (response.status === 500) throw new Error(`Server appears to be dead`);
 			if (response.status === 404) throw new Error(`Server appears to be dead`);
 			throw new Error(response.status);
