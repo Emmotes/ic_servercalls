@@ -1,4 +1,4 @@
-const v=3.008;
+const v=3.009;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -140,6 +140,8 @@ function setFormsWrapperFormat(wrapper,type) {
 
 function handleError(wrapper,error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
+	if (error.toString().includes(`appears to be dead`))
+		SERVER = ``;
 }
 
 function nf(number) {
