@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link rel="stylesheet" href="css/colours.css?v=1.1">
-	<link rel="stylesheet" href="css/styles.css?v=1.2">
+	<link rel="stylesheet" href="css/styles.css?v=1.3">
 	<link rel="apple-touch-icon" sizes="60x60" href="/ic_servercalls/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/ic_servercalls/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/ic_servercalls/favicon-16x16.png">
@@ -155,7 +155,7 @@
 				<span class="f fr w100 p5">
 					<span class="f falc fjs ml2" style="width:100%;position:relative">
 						This page will let you buy Silver or Gold chests for gems as well as chest packs for event tokens for champions you have flexed.
-						<span class="f fc" style="position:absolute;top:-80px;right:0;align-items:center;text-align:center">
+						<span class="f fc" style="position:absolute;top:-80px;right:0;align-items:center;text-align:center;z-index:1">
 							<span class="f fr falc">
 								<label class="p5" for="buyChestsSliderFidelity">Amount to Buy Slider Fidelity:</label>
 								<select name="buyChestsSliderFidelity" id="buyChestsSliderFidelity" oninput="toggleBuyChestsSliderFidelity(this.value);" style="width:70px">
@@ -212,7 +212,7 @@
 				<span class="f fr w100 p5">
 					<span class="f falc fjs ml2" style="width:100%;position:relative">
 						This page will let you open any of the chests that you currently own.
-						<span class="f fc" style="position:absolute;top:-80px;right:0">
+						<span class="f fc" style="position:absolute;top:-80px;right:0;z-index:1">
 							<span class="f fr falc">
 								<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="toggleHideOpenChests(this)"> Hide All Briv Gear Chests
 							</span>
