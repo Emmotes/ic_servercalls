@@ -1,4 +1,4 @@
-const voc=1.011;
+const voc=1.012;
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -54,10 +54,13 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 	for (let chest of chestsDefs)
 		if (chestIds.includes(`${chest.id}`))
 			chestNames[chest.id] = [chest.name, chest.name_plural, chest.hc_name, chest.hc_name_plural, (chest.hero_ids==undefined?[]:chest.hero_ids)];
-	if (hiddenChestIds.includes(174)||hiddenChestIds.includes(175))
+	if (hiddenChestIds.includes(174)||hiddenChestIds.includes(175)) {
 		for (let i=chestIds.length-1; i>=0; i--)
 			if (chestNames[`${chestIds[i]}`][4].includes(58))
 				chestIds.splice(chestIds.indexOf(chestIds[i]),1);
+		// Manual chest ids for patron chests:
+		chestIds = chestIds.filter((el)=>![152,153,311].includes(el))
+	}
 	if (chestIds.length==0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
 		return;
