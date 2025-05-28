@@ -1,4 +1,4 @@
-const vs=2.006;
+const vs=2.007;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -19,11 +19,7 @@ async function getPlayServerFromMaster() {
 }
 
 async function getUserDetails() {
-	let params = [
-		['supports_chunked_defs',0],
-		['new_achievements',1]
-	];
-	let deets = await sendServerCall(SERVER,'getuserdetails',params,true);
+	let deets = await sendServerCall(SERVER,'getuserdetails',undefined,true);
 	getUpdatedInstanceId(deets);
 	return deets;
 }
@@ -35,11 +31,15 @@ async function getUpdatedInstanceId(deets) {
 }
 
 async function getDefinitions(filter) {
-	let params = undefined;
-	if (filter!=undefined&&filter!="")
-		params = [
+	let params = [
+		['supports_chunked_defs',0],
+		['new_achievements',1],
+		['challenge_sets_no_deltas',0]
+	];
+	if (filter!=undefined&&filter!=``)
+		params.push(
 			['filter',filter]
-		];
+		);
 	return await sendServerCall(SERVER,'getdefinitions',params);
 }
 
