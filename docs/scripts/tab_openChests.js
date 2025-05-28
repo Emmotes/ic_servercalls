@@ -1,4 +1,5 @@
-const voc=1.012;
+const voc=1.013;
+var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -58,8 +59,7 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		for (let i=chestIds.length-1; i>=0; i--)
 			if (chestNames[`${chestIds[i]}`][4].includes(58))
 				chestIds.splice(chestIds.indexOf(chestIds[i]),1);
-		// Manual chest ids for patron chests:
-		chestIds = chestIds.filter((el)=>![152,153,311].includes(el))
+		chestIds = chestIds.filter((e)=>!brivPatronChests.includes(e));
 	}
 	if (chestIds.length==0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
