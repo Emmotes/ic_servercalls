@@ -1,4 +1,4 @@
-const vs=2.008;
+const vs=2.009;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -409,7 +409,7 @@ async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
 	try {
 		let response = await fetch(url);
-		await sleep(1000);
+		await sleep(200);
 		if (response.ok)
 			return await JSON.parse(await response.text());
 		else {
