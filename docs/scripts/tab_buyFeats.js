@@ -1,4 +1,4 @@
-const vbf=1.004;
+const vbf=1.005;
 
 async function pullFeatsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -83,7 +83,7 @@ async function displayFeatsData(wrapper,details,defs) {
 		for (let feat of champs[id].feats) {
 			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-cost="${feat.cost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
 		}
-		txt += `<span class="formsCampaignSelect"><input type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
+		txt += `<span class="formsCampaignSelect"><input id="feat_selectAll_${id}" type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input id="feat_selectNone_${id}" type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
 	let featsBuyer = document.getElementById(`featsBuyer`);
 	setFormsWrapperFormat(wrapper,1);
@@ -130,6 +130,7 @@ function featsSelectAll(id,check) {
 }
 
 async function buyFeats() {
+	disableAllFeatButtonsAndCheckboxes(true);
 	let featsBuyer = document.getElementById(`featsBuyer`);
 	let txt = `<span class="f fr w100 p5">Buying Feats:</span>`;
 	featsBuyer.innerHTML = txt;
@@ -156,4 +157,19 @@ async function buyFeats() {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		featsBuyer.innerHTML = txt;
 	}
+	disableAllFeatButtonsAndCheckboxes(false);
+}
+
+function disableAllFeatButtonsAndCheckboxes(disable) {
+	if (disable) {
+		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="feat"]`)) {
+			ele.disabled = disable;
+			ele.style = disable ? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
+		}
+		for (let ele of document.querySelectorAll(`input[type="button"][id^="feat_select"]`)) {
+			ele.disabled = disable;
+			ele.style = disable ? `color:#555555;background-color:var(--good2)` : ``;
+		}
+	}
+	temporarilyDisableAllPullButtons(disable);
 }

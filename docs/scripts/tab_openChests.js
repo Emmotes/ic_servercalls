@@ -1,4 +1,4 @@
-const voc=1.013;
+const voc=1.014;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -351,6 +351,7 @@ function disableSlidersButtonsAndHolders(disable) {
 		document.getElementById(`openChests${id}Button`).disabled = disable;
 		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect greyButton` : `formsCampaignSelect greenButton`;
 	}
+	temporarilyDisableAllPullButtons(disable);
 }
 
 function getOpenChestsSliderFidelity() {

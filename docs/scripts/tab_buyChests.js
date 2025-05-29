@@ -1,4 +1,4 @@
-const vbc=1.012;
+const vbc=1.013;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -148,6 +148,7 @@ async function buyChests() {
 	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
+	temporarilyDisableAllPullButtons(true);
 	let buying=``;
 	let txt=``;
 	if (buyChestsBuyList==undefined||buyChestsBuyAmount==undefined) {
@@ -233,6 +234,7 @@ async function buyChests() {
 	buyChestsBuyList.value = "-1";
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
+	temporarilyDisableAllPullButtons(false);
 }
 
 function applyValueToElementAndDisplay(eleName,value) {

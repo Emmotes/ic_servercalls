@@ -1,4 +1,4 @@
-const vdf=1.005;
+const vdf=1.006;
 
 async function pullFormationSaves() {
 	if (userIdent[0]==``||userIdent[1]==``) {
@@ -57,7 +57,7 @@ async function displayFormationSaves(wrapper,saves) {
 			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
 			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${camp}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 		}
-		c += `<span class="formsCampaignSelect"><input type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
+		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,1);
 	wrapper.innerHTML = c;
@@ -147,6 +147,7 @@ function toggleSelectAutosaveForms() {
 }
 
 async function deleteFormationSaves() {
+	disableAllFormationsButtonsAndCheckboxes(true);
 	let formsDeleter = document.getElementById(`formsDeleter`);
 	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
 	formsDeleter.innerHTML = c;
@@ -191,4 +192,19 @@ async function deleteFormationSaves() {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}
+	disableAllFormationsButtonsAndCheckboxes(false);
+}
+
+function disableAllFormationsButtonsAndCheckboxes(disable) {
+	if (disable) {
+		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="form"]`)) {
+			ele.disabled = disable;
+			ele.style = disable ? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
+		}
+		for (let ele of document.querySelectorAll(`input[type="button"][id^="forms_select"]`)) {
+			ele.disabled = disable;
+			ele.style = disable ? `color:#555555;background-color:var(--good2)` : ``;
+		}
+	}
+	temporarilyDisableAllPullButtons(disable);
 }

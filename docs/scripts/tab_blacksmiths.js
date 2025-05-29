@@ -1,4 +1,4 @@
-const vbs=1.005;
+const vbs=1.006;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -128,6 +128,7 @@ async function bscSpendGeneral() {
 	bscChampionList.disabled = true;
 	bscContractList.disabled = true;
 	bscContractSlider.disabled = true;
+	temporarilyDisableAllPullButtons(true);
 	
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
@@ -189,6 +190,7 @@ async function bscSpendGeneral() {
 	bscChampionList.disabled = false;
 	bscContractList.disabled = false;
 	bscContractSlider.disabled = false;
+	temporarilyDisableAllPullButtons(false);
 	
 	if (numFails >= RETRIES) {
 		txt += addBlacksmithsResultRow(`- Stopping:`,`Got too many failures.`);
@@ -198,7 +200,6 @@ async function bscSpendGeneral() {
 		return;
 	}
 	
-	temporarilyDisableAllPullButtons();
 	let oldChampLoot = champLoot;
 	let details = (await getUserDetails()).details;
 	parseLoot(details.loot);
@@ -608,8 +609,11 @@ function bscGenerateChampionSelect(type) {
 		sel = sel.replace(`oninput="display`,`oninput="displayItemSlotSpecific(this.value);displayCurrentItemSpecific(this.value);display`);
 	let names = Object.keys(ownedChampsByName);
 	names.sort();
-	for (let name of names)
-		sel+=`<option value="${ownedChampsByName[name]}">${name}</option>`;
+	for (let name of names) {
+		let id = ownedChampsByName[name];
+		if (champLoot[id]!=undefined&&Object.keys(champLoot[id]).length==6)
+			sel+=`<option value="${ownedChampsByName[name]}">${name}</option>`;
+	}
 	sel+=`</select>`;
 	return sel;
 }
@@ -691,7 +695,7 @@ function parseBlacksmiths(userBuffs,defsBuffs) {
 				let value = Number(buff.effect.replace(`level_up_loot,`,``));
 				if (isNaN(value))
 					continue;
-				bs[buff.id] = {iLvls:value,name:buff.name,sname:buff.name.replace(" Blacksmithing Contract", "")};
+				bs[buff.id] = {iLvls:value,name:buff.name,sname:buff.name.replace(" Blacksmithing Contract", ""),amount:0};
 			}
 		}
 		blacksmiths = bs;
@@ -699,7 +703,7 @@ function parseBlacksmiths(userBuffs,defsBuffs) {
 	let keys = Object.keys(blacksmiths);
 	for (let buff of userBuffs)
 		if (keys.includes(`${buff.buff_id}`))
-			blacksmiths[buff.buff_id][`amount`] = buff.inventory_amount;
+			blacksmiths[buff.buff_id][`amount`] = Number(buff.inventory_amount);
 }
 
 function parseLootDefs(defs) {

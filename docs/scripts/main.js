@@ -1,4 +1,4 @@
-const v=3.009;
+const v=3.010;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -9,6 +9,7 @@ const settingsClose=document.getElementById(`settingsMenuButtonClose`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
+var disablePullButtons=false;
 
 function init() {
 	if (localStorage.scUserIdent!=undefined&&localStorage.scUserIdent!=``) {
@@ -107,7 +108,7 @@ function setHash(hash) {
 		window.location.hash = hash;
 }
 
-function temporarilyDisableAllPullButtons() {
+function temporarilyDisableAllPullButtons(permanent) {
 	let names = [];
 	for (let obj of document.querySelectorAll('[name$="PullButton"]'))
 		names.push(obj.name.replace(`PullButton`,``));
@@ -118,11 +119,19 @@ function temporarilyDisableAllPullButtons() {
 		let message = document.getElementById(`${name}PullButtonDisabled`);
 		if (button==undefined||message==undefined)
 			continue;
-		button.hidden = true;
-		message.hidden = false;
-		eles.push([button,message]);
+		if (permanent!=undefined) {
+			disablePullButtons = permanent;
+			button.hidden = permanent;
+			message.hidden = !permanent;
+			button.className = permanent ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);
+		} else {
+			button.hidden = true;
+			message.hidden = false;
+			eles.push([button,message]);
+		}
 	}
-	setTimeout(function(){for(let ele of eles){ele[0].hidden=false;ele[1].hidden=true;}},10000);
+	if (eles.length>0)
+		setTimeout(function(){for(let ele of eles){if(!disablePullButtons){ele[0].hidden=false;ele[1].hidden=true;}}},10000);
 }
 
 function setFormsWrapperFormat(wrapper,type) {
