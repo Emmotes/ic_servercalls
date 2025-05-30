@@ -1,4 +1,4 @@
-const vs=2.009;
+const vs=2.010;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -63,6 +63,10 @@ async function openTimeGate(heroId) {
 		['champion_id',heroId]
 	];
 	return await sendServerCall(SERVER,'opentimegate',params,true,true);
+}
+
+async function closeTimeGate() {
+	return await sendServerCall(SERVER,'closetimegate',undefined,true,true);
 }
 
 async function purchaseFeat(featId) {
