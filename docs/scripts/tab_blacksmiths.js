@@ -1,4 +1,4 @@
-const vbs=1.007;
+const vbs=1.008;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -435,7 +435,7 @@ function displayBSCSpendSpecificButton() {
 		let canSpend = calculateTotaliLvlsCanSpend();
 		if (needed <= 0)
 			txt+=`<span class="f w100 p5" style="padding-left:10%">You already have more than that (${nf(curriLvl)}).</span>`;
-		else if (iLvlGoal > cappedValue)
+		else if (capped && iLvlGoal > cappedValue)
 			txt+=`<span class="f w100 p5" style="padding-left:10%">This item caps at ${nf(cappedValue)} ilvls for your current gilding.</span>`;
 		else if (expected > canSpend)
 			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal. Expected cost is roughly ${nf(expected)} ilvl${expected==1?'':'s'}.</span>`;
