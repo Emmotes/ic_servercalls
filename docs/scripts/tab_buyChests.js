@@ -1,4 +1,4 @@
-const vbc=1.013;
+const vbc=1.014;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -73,7 +73,7 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 	txt+=addChestsRow(`Available Event Tokens:`,nf(tokens),`buyChestsTokens`,tokens);
 	txt+=addChestsRow(`Maximum Chest Packs:`,nf(chestPacks),`buyChestsEvent`,chestPacks);
 	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="modifyBuyChestsBuyAmountSlider(this.value);"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
+	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="modifyBuyChestsBuyAmountSlider(this.value);" style="width:100%"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
 	if (gems >= silverChestCost)
 		s+=`${silverChestOpt}<option value="2">Gold Chest</option>`;
 	else
@@ -89,7 +89,7 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 		s+=`<option value="-1">No event chest packs available.</option>`;
 	s+=`</optgroup></select>`;
 	txt+=addChestsRow(`What to Buy:`,s);
-	let r=`<input type="range" min="0" max="0" step="0" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updateBuyChestsSliderValue(this.value);displayBuyChestsBuyButton(this.value);"><label style="padding-left:10px" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
+	let r=`<input type="range" min="0" max="0" step="0" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updateBuyChestsSliderValue(this.value);displayBuyChestsBuyButton(this.value);" style="width:100%"></span><span class="f falc fjs ml2"><label style="padding-left:10px;text-wrap-style: pretty" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
 	txt+=addChestsRow(`Amount to Buy:`,r);
 	wrapper.innerHTML = txt;
 	modifyBuyChestsBuyAmountSlider();
@@ -138,7 +138,11 @@ function displayBuyChestsBuyButton(amount) {
 }
 
 function updateBuyChestsSliderValue(val) {
-	document.getElementById('buyChestsSliderValue').innerHTML=nf(val);
+	let chestId = Number(document.getElementById('buyChestsBuyList').value);
+	let txt = nf(val);
+	if (chestId > 2)
+		txt += ` Gold + ${nf(val*2)} Silver (${nf(val*3)} Total)`;
+	document.getElementById('buyChestsSliderValue').innerHTML=txt;
 }
 
 async function buyChests() {
@@ -249,7 +253,7 @@ function addChestsRow(left,right,hiddenInput,hiddenValue) {
 		hiddenField = `<input type="hidden" id="${hiddenInput}" name="${hiddenInput}" value="${hiddenValue}">`
 		hiddenId = ` id="${hiddenInput}Display" name="${hiddenInput}Display"`;
 	}
-	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;"${hiddenId}>${right}</span>${hiddenField}</span>`;
+	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:28%;min-width:200px;"${hiddenId}>${right}</span>${hiddenField}</span>`;
 	return txt;
 }
 
