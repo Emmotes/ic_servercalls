@@ -1,4 +1,4 @@
-const vs=2.010;
+const vs=2.011;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -418,6 +418,7 @@ async function sendOutgoingCall(server,call) {
 			return await JSON.parse(await response.text());
 		else {
 			let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
+			if (response.status === 502) throw new Error(errTxt);
 			if (response.status === 500) throw new Error(errTxt);
 			if (response.status === 404) throw new Error(errTxt);
 			throw new Error(response.status);
