@@ -1,4 +1,4 @@
-const vs=2.011;
+const vs=2.012;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -92,10 +92,11 @@ async function upgradeLegendary(heroId,slotId) {
 	return await sendServerCall(SERVER,'upgradelegendaryitem',params,true,true);
 }
 
-async function useServerBuff(buffId,heroId,count) {
+async function useServerBuff(buffId,heroId,slotId,count) {
 	let params = [
 		['buff_id',buffId],
 		['hero_id',heroId],
+		['slot_id',slotId],
 		['num_uses',count]
 	];
 	return await sendServerCall(SERVER,'useServerBuff',params,true,true);

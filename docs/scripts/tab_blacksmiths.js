@@ -1,4 +1,4 @@
-const vbs=1.008;
+const vbs=1.009;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -152,7 +152,7 @@ async function bscSpendGeneral() {
 	bscSpender.innerHTML = lootTxt + spending + txt;
 	while (amount > 0 && numFails < RETRIES) {
 		let toSpend = Math.min(1000,amount);
-		let result = await useServerBuff(bscId,champId,toSpend);
+		let result = await useServerBuff(bscId,champId,0,toSpend);
 		let successType = `Failed to spend`;
 		if (JSON.stringify(result).includes(`You do not have enough`)) {
 			txt += addBlacksmithsResultRow(`- ${successType}:`,`Not enough contracts.`);
@@ -318,7 +318,7 @@ async function bscSpendAverage(amountToSpend) {
 		bscSpender.innerHTML = lootTxt + spending + txt;
 		while (amount > 0 && numFails < RETRIES) {
 			let toSpend = Math.min(1000,amount);
-			let result = await useServerBuff(bscId,champId,toSpend);
+			let result = await useServerBuff(bscId,champId,0,toSpend);
 			let successType = `Failed to spend`;
 			if (JSON.stringify(result).includes(`You do not have enough`)) {
 				txt += addBlacksmithsResultRow(`- ${successType}:`,`Not enough contracts.`);
@@ -508,7 +508,7 @@ async function bscSpendSpecific(toSpend) {
 			bscSpender.innerHTML = lootTxt + spending + txt;
 			while (amount > 0 && numFails < RETRIES) {
 				let toSpend = Math.min(1000,amount);
-				let result = await useServerBuff(bscId,champId,toSpend);
+				let result = await useServerBuff(bscId,champId,0,toSpend);
 				let successType = `Failed to spend`;
 				if (JSON.stringify(result).includes(`You do not have enough`)) {
 					txt += addBlacksmithsResultRow(`- ${successType}:`,`Not enough contracts.`);
