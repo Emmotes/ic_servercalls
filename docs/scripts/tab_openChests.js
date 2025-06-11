@@ -1,4 +1,4 @@
-const voc=1.015;
+const voc=1.016;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -84,6 +84,8 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<label style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</label></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChest${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
 	for (let id of chestPackIds) {
+		if (hiddenChestIds.includes(Number(id)))
+			continue;
 		let chestPack = chestPacksById[id];
 		let name = chestNames[id][2];
 		let plural = chestNames[id][3];
