@@ -1,4 +1,4 @@
-const voc=1.014;
+const voc=1.015;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -6,7 +6,7 @@ async function pullOpenChestsData() {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`openChestsWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
@@ -18,6 +18,7 @@ async function pullOpenChestsData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let chestsDefs = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		await displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs);
+		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
 		handleError(wrapper,error);
@@ -351,7 +352,10 @@ function disableSlidersButtonsAndHolders(disable) {
 		document.getElementById(`openChests${id}Button`).disabled = disable;
 		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect greyButton` : `formsCampaignSelect greenButton`;
 	}
-	temporarilyDisableAllPullButtons(disable);
+	if (disable)
+		disablePullButtons(true);
+	else
+		codeEnablePullButtons();
 }
 
 function getOpenChestsSliderFidelity() {

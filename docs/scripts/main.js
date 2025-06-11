@@ -1,4 +1,4 @@
-const v=3.010;
+const v=3.011;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -9,7 +9,9 @@ const settingsClose=document.getElementById(`settingsMenuButtonClose`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
-var disablePullButtons=false;
+var pbNames;
+var pbCodeRunning;
+var pbTimerRunning;
 
 function init() {
 	if (localStorage.scUserIdent!=undefined&&localStorage.scUserIdent!=``) {
@@ -24,10 +26,19 @@ function init() {
 	window.addEventListener('hashchange',() =>{
 		swapTab();
 	});
+	initPullButtonStuff();
 	initBuyChestsSliderFidelity();
 	initOpenChestsSliderFidelity();
 	initOpenChestsHideChests();
 	swapTab();
+}
+
+function initPullButtonStuff() {
+	pbNames=[];
+	for (let obj of document.querySelectorAll('[name$="PullButton"]'))
+		pbNames.push(obj.name.replace(`PullButton`,``));
+	pbCodeRunning = false;
+	pbTimerRunning = false;
 }
 
 function getPatronNameById(id) {
@@ -108,30 +119,35 @@ function setHash(hash) {
 		window.location.hash = hash;
 }
 
-function temporarilyDisableAllPullButtons(permanent) {
-	let names = [];
-	for (let obj of document.querySelectorAll('[name$="PullButton"]'))
-		names.push(obj.name.replace(`PullButton`,``));
+function togglePullButtons(disable) {
+	if (pbCodeRunning||pbTimerRunning)
+		return;
 	
-	let eles = [];
-	for (let name of names) {
+	for (let name of pbNames) {
 		let button = document.getElementById(`${name}PullButton`);
 		let message = document.getElementById(`${name}PullButtonDisabled`);
 		if (button==undefined||message==undefined)
 			continue;
-		if (permanent!=undefined) {
-			disablePullButtons = permanent;
-			button.hidden = permanent;
-			message.hidden = !permanent;
-			button.className = permanent ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);
-		} else {
-			button.hidden = true;
-			message.hidden = false;
-			eles.push([button,message]);
-		}
+		button.hidden = disable;
+		message.hidden = !disable;
+		button.className = disable ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);
 	}
-	if (eles.length>0)
-		setTimeout(function(){for(let ele of eles){if(!disablePullButtons){ele[0].hidden=false;ele[1].hidden=true;}}},10000);
+}
+
+function disablePullButtons(skipTimer) {
+	togglePullButtons(true);
+	pbCodeRunning = true;
+	if (skipTimer)
+		pbTimerRunning = false;
+	else {
+		pbTimerRunning = true;
+		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},10000);
+	}
+}
+
+function codeEnablePullButtons() {
+	pbCodeRunning = false;
+	togglePullButtons(false);
 }
 
 function setFormsWrapperFormat(wrapper,type) {

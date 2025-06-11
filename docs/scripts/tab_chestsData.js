@@ -1,4 +1,4 @@
-const vcd=1.002;
+const vcd=1.003;
 var chestDataBefore=``;
 
 async function pullChestCollectData() {
@@ -6,7 +6,7 @@ async function pullChestCollectData() {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
@@ -16,6 +16,7 @@ async function pullChestCollectData() {
 			await displayChestCollectDataPhase1(wrapper,details);
 		else
 			await displayChestCollectDataPhase2(wrapper,details);
+		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}

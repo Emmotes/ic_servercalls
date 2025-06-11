@@ -1,11 +1,11 @@
-const vdf=1.006;
+const vdf=1.007;
 
 async function pullFormationSaves() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`formsWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
@@ -13,6 +13,7 @@ async function pullFormationSaves() {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		let forms = await getFormationSaves();
 		await displayFormationSaves(wrapper,forms);
+		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
 		handleError(wrapper,error);
@@ -197,6 +198,7 @@ async function deleteFormationSaves() {
 
 function disableAllFormationsButtonsAndCheckboxes(disable) {
 	if (disable) {
+		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="form"]`)) {
 			ele.disabled = disable;
 			ele.style = disable ? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
@@ -205,6 +207,6 @@ function disableAllFormationsButtonsAndCheckboxes(disable) {
 			ele.disabled = disable;
 			ele.style = disable ? `color:#555555;background-color:var(--good2)` : ``;
 		}
-	}
-	temporarilyDisableAllPullButtons(disable);
+	} else
+		codeEnablePullButtons();
 }

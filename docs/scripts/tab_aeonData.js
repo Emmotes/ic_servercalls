@@ -1,17 +1,18 @@
-const vad=1.002;
+const vad=1.003;
 
 async function pullAeonData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for patron data...`;
 		let details = await getPatronDetails();
 		await displayAeonData(wrapper,details);
+		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}

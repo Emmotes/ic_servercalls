@@ -1,4 +1,4 @@
-const vbs=1.009;
+const vbs=1.010;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -10,7 +10,7 @@ async function pullBSCData() {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`bscWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	let bscSpender = document.getElementById(`bscSpender`);
@@ -24,6 +24,7 @@ async function pullBSCData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let defs = (await getDefinitions("hero_defines,buff_defines,loot_defines"));
 		await displayBSCData(wrapper,details,defs);
+		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
@@ -128,7 +129,7 @@ async function bscSpendGeneral() {
 	bscChampionList.disabled = true;
 	bscContractList.disabled = true;
 	bscContractSlider.disabled = true;
-	temporarilyDisableAllPullButtons(true);
+	disablePullButtons(true);
 	
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
@@ -190,7 +191,7 @@ async function bscSpendGeneral() {
 	bscChampionList.disabled = false;
 	bscContractList.disabled = false;
 	bscContractSlider.disabled = false;
-	temporarilyDisableAllPullButtons(false);
+	codeEnablePullButtons();
 	
 	if (numFails >= RETRIES) {
 		txt += addBlacksmithsResultRow(`- Stopping:`,`Got too many failures.`);
@@ -284,6 +285,7 @@ async function bscSpendAverage(amountToSpend) {
 	bscMethodList.disabled = true;
 	bscChampionList.disabled = true;
 	bscContractAverage.disabled = true;
+	disablePullButtons(true);
 	
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
@@ -368,7 +370,7 @@ async function bscSpendAverage(amountToSpend) {
 		return;
 	}
 	
-	temporarilyDisableAllPullButtons();
+	codeEnablePullButtons();
 	let oldChampLoot = champLoot;
 	let details = (await getUserDetails()).details;
 	parseLoot(details.loot);
@@ -463,6 +465,7 @@ async function bscSpendSpecific(toSpend) {
 	bscChampionList.disabled = true;
 	bscSlotList.disabled = true;
 	bscContractSpecific.disabled = true;
+	disablePullButtons(true);
 	
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
@@ -545,7 +548,7 @@ async function bscSpendSpecific(toSpend) {
 		bscSpender.innerHTML = lootTxt + spending;
 		
 		let oldChampLoot = champLoot;
-		temporarilyDisableAllPullButtons();
+		codeEnablePullButtons();
 		details = (await getUserDetails()).details;
 		parseLoot(details.loot);
 		parseBlacksmiths(details.buffs);
@@ -583,7 +586,7 @@ async function bscSpendSpecific(toSpend) {
 		return;
 	}
 	
-	temporarilyDisableAllPullButtons();
+	codeEnablePullButtons();
 	let oldChampLoot = champLoot;
 	details = (await getUserDetails()).details;
 	parseLoot(details.loot);

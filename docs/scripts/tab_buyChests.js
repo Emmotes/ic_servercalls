@@ -1,4 +1,4 @@
-const vbc=1.014;
+const vbc=1.015;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -11,7 +11,7 @@ async function pullBuyChestsData() {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
@@ -33,6 +33,7 @@ async function pullBuyChestsData() {
 		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
 		await displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
+		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
@@ -152,7 +153,7 @@ async function buyChests() {
 	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
-	temporarilyDisableAllPullButtons(true);
+	disablePullButtons(true);
 	let buying=``;
 	let txt=``;
 	if (buyChestsBuyList==undefined||buyChestsBuyAmount==undefined) {
@@ -238,7 +239,7 @@ async function buyChests() {
 	buyChestsBuyList.value = "-1";
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
-	temporarilyDisableAllPullButtons(false);
+	codeEnablePullButtons();
 }
 
 function applyValueToElementAndDisplay(eleName,value) {

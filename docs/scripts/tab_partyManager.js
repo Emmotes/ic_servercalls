@@ -1,11 +1,11 @@
-const vpm=1.005;
+const vpm=1.006;
 
 async function pullPartyData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`partyWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
@@ -15,6 +15,7 @@ async function pullPartyData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let adventures = (await getDefinitions("adventure_defines")).adventure_defines;
 		await displayPartyData(wrapper,gameInstances,adventures);
+		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
 		handleError(wrapper,error);

@@ -1,17 +1,18 @@
-const vsc=1.002;
+const vsc=1.003;
 
 async function pullShiniesData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`shiniesWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let userData = await getUserDetails();
 		await displayShiniesData(wrapper,userData.details);
+		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}

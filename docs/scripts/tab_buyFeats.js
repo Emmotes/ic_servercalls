@@ -1,11 +1,11 @@
-const vbf=1.005;
+const vbf=1.006;
 
 async function pullFeatsData() {
 	if (userIdent[0]==``||userIdent[1]==``) {
 		init();
 		return;
 	}
-	temporarilyDisableAllPullButtons();
+	disablePullButtons();
 	let wrapper = document.getElementById(`featsWrapper`);
 	setFormsWrapperFormat(wrapper,0);
 	wrapper.innerHTML = `Waiting for response...`;
@@ -15,6 +15,7 @@ async function pullFeatsData() {
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let defs = await getDefinitions("hero_defines,hero_feat_defines");
 		await displayFeatsData(wrapper,details,defs);
+		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
 		handleError(wrapper,error);
@@ -162,6 +163,7 @@ async function buyFeats() {
 
 function disableAllFeatButtonsAndCheckboxes(disable) {
 	if (disable) {
+		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="feat"]`)) {
 			ele.disabled = disable;
 			ele.style = disable ? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
@@ -170,6 +172,6 @@ function disableAllFeatButtonsAndCheckboxes(disable) {
 			ele.disabled = disable;
 			ele.style = disable ? `color:#555555;background-color:var(--good2)` : ``;
 		}
-	}
-	temporarilyDisableAllPullButtons(disable);
+	} else
+		codeEnablePullButtons();
 }
