@@ -90,7 +90,7 @@ async function displayFeatsData(wrapper,details,defs) {
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
-		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
+		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="featsSelectAllTheFeatsRow">&nbsp;</span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
 		featsRecalcCost();
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
@@ -110,7 +110,9 @@ function featsRecalcCost() {
 	let wrapGemsCost = document.getElementById("featsBuyCost");
 	if (wrapGemsCost != undefined)
 		wrapGemsCost.innerHTML = `Total Gems Cost: ${nf(cost)}`;
+	let featsSelectAllTheFeatsRow = document.getElementById("featsSelectAllTheFeatsRow");
 	let featsBuyRow = document.getElementById("featsBuyRow");
+	featsSelectAllTheFeatsRow.innerHTML = `<input type="button" onClick="featsSelectAllTheFeats()" name="featsSelectAllTheFeatsButton" id="featsSelectAllTheFeatsButton" style="font-size:0.9em;min-width:180px" value="Select All Unowned Feats">`;
 	if (featsBuyRow != undefined) {
 		if (cost > availableGems) {
 			featsBuyRow.style.color = `var(--warning1)`;
@@ -123,11 +125,17 @@ function featsRecalcCost() {
 }
 
 function featsSelectAll(id,check) {
-	let container = document.getElementById(id);
-	let cbs = container.querySelectorAll('input[type="checkbox"]');
-	for (let cb of cbs)
-		cb.checked = check;
+	for (let ele of document.getElementById(id).querySelectorAll(`input[type="checkbox"]`))
+		ele.checked = check;
 	featsRecalcCost();
+}
+
+function featsSelectAllTheFeats() {
+	let check = !document.getElementById(`featsSelectAllTheFeatsButton`).value.includes(`Deselect`);
+	for (let ele of document.querySelectorAll(`[type="checkbox"][id^="feat_"]`))
+		ele.checked = check;
+	featsRecalcCost();
+	document.getElementById(`featsSelectAllTheFeatsButton`).value = `${check?"Deselect":"Select"} All Unowned Feats`;
 }
 
 async function buyFeats() {
