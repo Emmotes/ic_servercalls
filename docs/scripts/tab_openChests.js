@@ -1,4 +1,4 @@
-const voc=1.017;
+const voc=1.018;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -81,7 +81,7 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		let fidelity = getOpenChestsSliderFidelity();
 		if (fidelity > amount)
 			fidelity = 1;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<label style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</label></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</span></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
 	for (let id of chestPackIds) {
 		if (hiddenChestIds.includes(Number(id)))
