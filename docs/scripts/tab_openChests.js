@@ -1,11 +1,9 @@
-const voc=1.018;
+const voc=1.019;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`openChestsWrapper`);
 	setFormsWrapperFormat(wrapper,0);

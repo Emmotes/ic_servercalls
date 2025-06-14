@@ -22,16 +22,37 @@
 	<div class="menuPopupContainer">
 		<div class="menuPopup" id="settingsMenu">
 			<div class="f fr w100 p5">
+				<div class="f falc fje mr2" style="width:40%"><label for="userId">Account Name:</label></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userName" id="userName" placeholder="Required"></div>
+			</div>
+			<div class="f fr w100 p5">
 				<div class="f falc fje mr2" style="width:40%"><label for="userId">User ID:</label></div>
-				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userId" id="userId"></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userId" id="userId" placeholder="Required"></div>
 			</div>
 			<div class="f fr w100 p5">
 				<div class="f falc fje mr2" style="width:40%"><label for="userHash">User Hash:</label></div>
-				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash"></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash" placeholder="Required"></div>
 			</div>
 			<div class="f fr w100 p5">	
 				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
 				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
+			</div>
+			<div class="f fr w100 p5">
+				&nbsp;
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f falc fjs ml2" style="width:100%">Accounts:</div>
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f falc fjc ml2" style="width:100%">
+					<select id="settingsMenuAccountsList">
+						<option value="" selected>-</option>
+					</select>
+				</div>
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="loadUserAccount()" id="settingsMenuButtonLoadAccount" value="Load"></div>
+				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="deleteUserAccount()" id="settingsMenuButtonDeleteAccount" value="Delete"></div>
 			</div>
 			<div class="f fr w100 p5">
 				&nbsp;
@@ -598,18 +619,18 @@
 
 	<script type="text/javascript" src="scripts/util_campaigns.js?vc=1.003"></script>
 	<script type="text/javascript" src="scripts/util_buffs.js?vb=1.001"></script>
-	<script type="text/javascript" src="scripts/tab_deleteFormations.js?vdf=1.008"></script>
+	<script type="text/javascript" src="scripts/tab_deleteFormations.js?vdf=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_buyFeats.js?vbf=1.007"></script>
-	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.015"></script>
-	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.018"></script>
-	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.010"></script>
-	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.003"></script>
-	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.006"></script>
-	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.000"></script>
-	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.000"></script>
-	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.003"></script>
-	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.003"></script>
-	<script type="text/javascript" src="scripts/serverCalls.js?vs=2.013"></script>
-	<script type="text/javascript" src="scripts/main.js?v=3.012"></script>
+	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.016"></script>
+	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.019"></script>
+	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.011"></script>
+	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.004"></script>
+	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.007"></script>
+	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.001"></script>
+	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.001"></script>
+	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.004"></script>
+	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.004"></script>
+	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.000"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.000"></script>
 </body>
 </html>

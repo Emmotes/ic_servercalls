@@ -1,4 +1,4 @@
-const vs=2.013;
+const vs=3.000;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -8,8 +8,8 @@ const PARAM_INSTANCEID=`instance_id`;
 const PARAM_USERID=`user_id`;
 const PARAM_USERHASH=`hash`;
 const RETRIES=4;
+var currAccount = undefined;
 var SERVER=``;
-var userIdent=[``,``];
 var instanceId=``;
 var boilerplate=``;
 
@@ -340,8 +340,8 @@ async function purchaseNotaryChestBundle(chestId,count) {
 
 function appendUserData() {
 	return buildParams([
-		[PARAM_USERID,userIdent[0]],
-		[PARAM_USERHASH,userIdent[1]]
+		[PARAM_USERID,currAccount.id],
+		[PARAM_USERHASH,currAccount.hash]
 	]);
 }
 

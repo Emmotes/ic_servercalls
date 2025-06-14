@@ -1,11 +1,9 @@
-const vcd=1.003;
+const vcd=1.004;
 var chestDataBefore=``;
 
 async function pullChestCollectData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;

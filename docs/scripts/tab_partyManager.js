@@ -1,10 +1,8 @@
-const vpm=1.006;
+const vpm=1.007;
 
 async function pullPartyData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`partyWrapper`);
 	setFormsWrapperFormat(wrapper,0);

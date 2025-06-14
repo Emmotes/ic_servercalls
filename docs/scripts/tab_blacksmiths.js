@@ -1,4 +1,4 @@
-const vbs=1.010;
+const vbs=1.011;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -6,10 +6,8 @@ var blacksmiths={};
 var lootDefs={};
 
 async function pullBSCData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`bscWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;

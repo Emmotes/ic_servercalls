@@ -1,11 +1,15 @@
-const v=3.012;
+const v=4.00;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
+const settingsUserName=document.getElementById(`userName`);
 const settingsUserId=document.getElementById(`userId`);
 const settingsUserHash=document.getElementById(`userHash`);
 const settingsSave=document.getElementById(`settingsMenuButtonSave`);
 const settingsClose=document.getElementById(`settingsMenuButtonClose`);
+const settingsList=document.getElementById(`settingsMenuAccountsList`);
+const settingsLoad=document.getElementById(`settingsMenuButtonLoadAccount`);
+const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
@@ -13,16 +17,43 @@ var pbNames;
 var pbCodeRunning;
 var pbTimerRunning;
 
+function isBadUserData() {
+	if (currAccount==undefined||currAccount.name==undefined||currAccount.id==undefined||currAccount.hash==undefined) {
+		init();
+		return true;
+	}
+	return false;
+}
+
 function init() {
-	if (localStorage.scUserIdent!=undefined&&localStorage.scUserIdent!=``) {
-		settingsClose.hidden = false;
-		userIdent = JSON.parse(localStorage.scUserIdent);
-	} else {
+	// Deal with account migration.
+	if (localStorage.scUserIdent!=undefined) {
+		let userIdent = JSON.parse(localStorage.scUserIdent);
+		settingsUserName.value = ``;
+		settingsUserId.value = userIdent[0];
+		settingsUserHash.value = userIdent[1];
+		
 		disabledUntilData.hidden = false;
 		tabsContainer.hidden = true;
 		settingsClose.hidden = true;
+		currAccount = undefined;
+		localStorage.removeItem(`scUserIdent`);
 		settingsToggle();
+		settingsUserName.focus();
+	} else {
+		let accountData = getUserAccounts();
+		if (accountData==undefined||accountData.current==undefined||accountData.accounts==undefined||Object.keys(accountData.current).length==0||Object.keys(accountData.accounts)==0) {
+			currAccount = undefined;
+			disabledUntilData.hidden = false;
+			tabsContainer.hidden = true;
+			settingsClose.hidden = true;
+			settingsToggle();
+		} else {
+			settingsClose.hidden = false;
+			currAccount = accountData.current;
+		}
 	}
+	refreshSettingsList();
 	window.addEventListener('hashchange',() =>{
 		swapTab();
 	});
@@ -32,6 +63,32 @@ function init() {
 	initOpenChestsHideChests();
 	initDismantleHideOptions();
 	swapTab();
+}
+
+function settingsToggle() {
+	if (currAccount==undefined) {
+		settingsMenu.style.display = `flex`;
+		return;
+	}
+	if (settingsMenu.style.display==`none`||settingsMenu.style.display==``) {
+		if (currAccount.name==undefined||currAccount.id==undefined||currAccount.has==undefined) {
+			refreshSettingsList();
+			if (settingsList.value!=`-`) {
+				loadUserAccount();
+			} else {
+				userName.value = ``;
+				userId.value = ``;
+				userHash.value = ``;
+			}
+		} else {
+			userName.value = currAccount.name;
+			userId.value = currAccount.id;
+			userHash.value = currAccount.hash;
+		}
+		settingsMenu.style.display = `flex`;
+	} else {
+		settingsMenu.style.display = `none`;
+	}
 }
 
 function initPullButtonStuff() {
@@ -53,27 +110,14 @@ function getPatronNameById(id) {
 	}
 }
 
-function settingsToggle() {
-	if (localStorage.scUserIdent==undefined||localStorage.scUserIdent==``) {
-		settingsMenu.style.display = `flex`;
-		return;
-	}
-	if (settingsMenu.style.display==`none`||settingsMenu.style.display==``) {
-		userId.value = userIdent[0];
-		userHash.value = userIdent[1];
-		settingsMenu.style.display = `flex`;
-	} else {
-		settingsMenu.style.display = `none`;
-	}
-}
-
 async function saveUserData() {
+	let userName = settingsUserName.value || ``;
 	let userId = settingsUserId.value || ``;
 	let userHash = settingsUserHash.value || ``;
-	if (userId!=``&&userHash!=``) {
-		userIdent[0] = userId;
-		userIdent[1] = userHash;
-		localStorage.scUserIdent = JSON.stringify(userIdent);
+	if (userName!=``&&userId!=``&&userHash!=``) {
+		let newAccount = {name:userName,id:userId,hash:userHash};
+		addUserAccount(newAccount);
+		currAccount = newAccount;
 		settingsSave.value = `SAVED`;
 		if (settingsClose.hidden)
 			settingsClose.hidden = false;
@@ -81,13 +125,12 @@ async function saveUserData() {
 			tabsContainer.hidden = false;
 		if (!disabledUntilData.hidden)
 			disabledUntilData.hidden = true;
-		await new Promise(r => setTimeout(r, 2000));
-		settingsSave.value = `Save`;
+		setTimeout(function(){settingsSave.value=`Save`;},2000);
 	} else {
 		settingsSave.value = `ERROR`;
-		await new Promise(r => setTimeout(r, 2000));
-		settingsSave.value = `Save`;
+		setTimeout(function(){settingsSave.value=`Save`;},2000);
 	}
+	refreshSettingsList();
 }
 
 async function supportUrlSaveData() {
@@ -97,13 +140,62 @@ async function supportUrlSaveData() {
 	try {
 		let userId = Number(url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=",""));
 		let userHash = url.match(/&device_hash=[A-Za-z0-9]+/g)[0].replace("&device_hash=","");
+		settingsUserName.value = ``;
 		settingsUserId.value = userId;
 		settingsUserHash.value = userHash;
 		supportUrl.value = ``;
-		await saveUserData();
+		settingsUserName.focus();
 	} catch {
 		supportUrl.value = `Couldn't find user data in url.`;
 	}
+}
+
+async function loadUserAccount() {
+	let accounts = getUserAccounts();
+	let accountChoice = settingsList.value;
+	if (accounts.accounts[accountChoice]==undefined) {
+		settingsLoad.value = `ERROR`;
+		setTimeout(function(){settingsLoad.value=`Load`;},2000);
+		for (var i=settingsList.length-1; i>=0; i--)
+			if (settingsList.options[i].value == accountChoice)
+				settingsList.remove(i);
+	} else {
+		currAccount = accounts.accounts[accountChoice];
+		accounts.current = currAccount;
+		saveUserAccounts(accounts);
+		userName.value = currAccount.name;
+		userId.value = currAccount.id;
+		userHash.value = currAccount.hash;
+		SERVER=``;
+		instanceId=``;
+		boilerplate=``;
+	}
+}
+
+async function deleteUserAccount() {
+	removeUserAccount(settingsList.value);
+	refreshSettingsList();
+	if (settingsList.value!=`-`)
+		loadUserAccount();
+	else {
+		userName.value = ``;
+		userId.value = ``;
+		userHash.value = ``;
+		disabledUntilData.hidden = false;
+		tabsContainer.hidden = true;
+		settingsClose.hidden = true;
+		settingsToggle();
+	}
+}
+
+async function refreshSettingsList() {
+	let userAccounts = getUserAccounts();
+	let select = ``;
+	for (let name of Object.keys(userAccounts.accounts))
+		select += `<option value="${name}"${currAccount!=undefined&&currAccount.name!=undefined&&currAccount.name==name?` selected`:``}>${name}</option>`;
+	if (select==``)
+		select += `<option value="-" selected>-</option>`;
+	settingsList.innerHTML = select;
 }
 
 function swapTab() {
@@ -232,4 +324,32 @@ function numSort(arr,reverse) {
 
 async function sleep(ms) {
 	await new Promise(r => setTimeout(r, ms));
+}
+
+function getUserAccounts() {
+	if (localStorage.scAccounts==undefined)
+		return {accounts:{}};
+	return JSON.parse(localStorage.scAccounts);
+}
+
+function saveUserAccounts(accounts) {
+	localStorage.scAccounts = JSON.stringify(accounts);
+}
+
+function addUserAccount(account) {
+	let userAccounts = getUserAccounts();
+	userAccounts.accounts[account.name] = account;
+	userAccounts.current = account;
+	saveUserAccounts(userAccounts);
+}
+
+function removeUserAccount(name) {
+	let userAccounts = getUserAccounts();
+	if (Object.keys(userAccounts.accounts).includes(name))
+		delete userAccounts.accounts[name];
+	if (userAccounts.current.name==name) {
+		userAccounts.current = {};
+		currAccount = undefined;
+	}
+	saveUserAccounts(userAccounts);
 }

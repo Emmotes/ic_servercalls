@@ -1,10 +1,8 @@
-const vad=1.003;
+const vad=1.004;
 
 async function pullAeonData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;

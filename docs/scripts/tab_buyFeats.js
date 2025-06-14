@@ -1,10 +1,8 @@
-const vbf=1.006;
+const vbf=1.007;
 
 async function pullFeatsData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`featsWrapper`);
 	setFormsWrapperFormat(wrapper,0);

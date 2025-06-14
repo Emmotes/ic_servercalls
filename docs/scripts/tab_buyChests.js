@@ -1,4 +1,4 @@
-const vbc=1.015;
+const vbc=1.016;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -7,10 +7,8 @@ let notEnoughGems=`<option value="-1">Not enough gems.</option>`;
 let notEnoughEventTokens=`<option value="-1">Not enough event tokens.</option>`;
 
 async function pullBuyChestsData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`buyChestsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;

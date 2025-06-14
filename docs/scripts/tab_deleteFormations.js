@@ -1,10 +1,8 @@
-const vdf=1.008;
+const vdf=1.009;
 
 async function pullFormationSaves() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`formsWrapper`);
 	setFormsWrapperFormat(wrapper,0);

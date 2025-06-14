@@ -1,10 +1,8 @@
-const vcc=1.000;
+const vcc=1.001;
 
 async function pullCelebrationsData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`celebrationsWrapper`);
 	setFormsWrapperFormat(wrapper,0);

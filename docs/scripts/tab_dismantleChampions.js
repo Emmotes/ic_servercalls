@@ -1,10 +1,8 @@
-const vdc=1.000;
+const vdc=1.001;
 
 async function pullDismantleData() {
-	if (userIdent[0]==``||userIdent[1]==``) {
-		init();
+	if (isBadUserData())
 		return;
-	}
 	disablePullButtons();
 	let wrapper = document.getElementById(`dismantleWrapper`);
 	setFormsWrapperFormat(wrapper,0);
