@@ -399,6 +399,59 @@
 				</span>
 			</div>
 			<!-- END: Party Tab -->
+			<!-- START: Dismantle Champions Tab -->
+			<input onClick="setHash('dismantleTab')" type="radio" class="tabsRadio" name="serverTabs" id="dismantleTab">
+			<label for="dismantleTab" class="tabsLabel">Dismantle</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Dismantle Champions</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+						<p>This page will let you dismantle champions if a dismantle period is running.</p>
+						<span class="f fc" style="position:absolute;top:-80px;right:0;z-index:1">
+							<span class="f fr falc">
+								<input type="checkbox" id="dismantleHideOption6Legs" data-type="6legs" onclick="toggleDismantleHideOptions(this)"> Hide Has 6 Legendaries
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="dismantleHideOptionReforges" data-type="reforges" onclick="toggleDismantleHideOptions(this)"> Hide Has Reforged
+							</span>
+							<span class="f fc falc" style="text-align:center">
+								<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+									Note: These options only apply<br>to Legendary dismantles.
+								</span>
+							</span>
+						</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullDismantleData()" name="dismantlePullButton" id="dismantlePullButton" value="Pull Dismantle Data" style="min-width:175px">
+						<span id="dismantlePullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="dismantleWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc falc w100 fje mr2" id="dismantleDismantler">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Dismantle Champions Tab -->
 			<!-- START: Celebration Codes Tab -->
 			<input onClick="setHash('celebrationsTab')" type="radio" class="tabsRadio" name="serverTabs" id="celebrationsTab">
 			<label for="celebrationsTab" class="tabsLabel">Celebrations</label>
@@ -552,10 +605,11 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.006"></script>
+	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.003"></script>
-	<script type="text/javascript" src="scripts/serverCalls.js?vs=2.012"></script>
-	<script type="text/javascript" src="scripts/main.js?v=3.011"></script>
+	<script type="text/javascript" src="scripts/serverCalls.js?vs=2.013"></script>
+	<script type="text/javascript" src="scripts/main.js?v=3.012"></script>
 </body>
 </html>

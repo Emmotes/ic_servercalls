@@ -1,4 +1,4 @@
-const v=3.011;
+const v=3.012;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -30,6 +30,7 @@ function init() {
 	initBuyChestsSliderFidelity();
 	initOpenChestsSliderFidelity();
 	initOpenChestsHideChests();
+	initDismantleHideOptions();
 	swapTab();
 }
 
@@ -167,6 +168,13 @@ function handleError(wrapper,error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
 	if (error.toString().includes(`appears to be dead`))
 		SERVER = ``;
+}
+
+function getDefsNames(defs) {
+    let names = {};
+    for (let def of defs)
+        names[def.id] = def.name;
+    return names;
 }
 
 function nf(number) {
