@@ -399,6 +399,47 @@
 				</span>
 			</div>
 			<!-- END: Party Tab -->
+			<!-- START: Celebration Codes Tab -->
+			<input onClick="setHash('celebrationsTab')" type="radio" class="tabsRadio" name="serverTabs" id="celebrationsTab">
+			<label for="celebrationsTab" class="tabsLabel">Celebrations</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Claim Celebration Codes</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%">
+						<p>This page will let you claim celebration codes for the current day.</p>
+						<p><em>Note: This will not tell you what's in any of the rewards - so if you care about that - redeem the combinations via some other tool that will.</em></p>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="pullCelebrationsData()" name="celebrationsPullButton" id="celebrationsPullButton" value="Pull Celebrations Data" style="min-width:175px">
+						<span id="celebrationsPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="celebrationsWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc falc w100 fje mr2" id="celebrationsClaimer">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Celebration Codes Tab -->
 			<!-- START: Aeon Tab -->
 			<input onClick="setHash('aeonTab')" type="radio" class="tabsRadio" name="serverTabs" id="aeonTab">
 			<label for="aeonTab" class="tabsLabel">Aeon</label>
@@ -511,6 +552,7 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.006"></script>
+	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.003"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=2.012"></script>
