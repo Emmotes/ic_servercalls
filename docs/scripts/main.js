@@ -1,4 +1,4 @@
-const v=4.00;
+const v=4.01;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -71,7 +71,7 @@ function settingsToggle() {
 		return;
 	}
 	if (settingsMenu.style.display==`none`||settingsMenu.style.display==``) {
-		if (currAccount.name==undefined||currAccount.id==undefined||currAccount.has==undefined) {
+		if (currAccount.name==undefined||currAccount.id==undefined||currAccount.hash==undefined) {
 			refreshSettingsList();
 			if (settingsList.value!=`-`) {
 				loadUserAccount();
@@ -131,6 +131,7 @@ async function saveUserData() {
 		setTimeout(function(){settingsSave.value=`Save`;},2000);
 	}
 	refreshSettingsList();
+	cleanup();
 }
 
 async function supportUrlSaveData() {
@@ -170,6 +171,7 @@ async function loadUserAccount() {
 		instanceId=``;
 		boilerplate=``;
 	}
+	cleanup();
 }
 
 async function deleteUserAccount() {
@@ -186,6 +188,7 @@ async function deleteUserAccount() {
 		settingsClose.hidden = true;
 		settingsToggle();
 	}
+	cleanup();
 }
 
 async function refreshSettingsList() {
@@ -202,6 +205,11 @@ function swapTab() {
 	let hash = window.location.hash.substring(1);
 	if (hash != "" && document.getElementById(hash) != undefined)
 		document.getElementById(hash).click();
+}
+
+function cleanup() {
+	for (let ele of [...document.querySelectorAll(`div[class="tabsContent"] > span`)].filter(e=>e.id!=""))
+		ele.innerHTML = `&nbsp;`;
 }
 
 function setHash(hash) {
