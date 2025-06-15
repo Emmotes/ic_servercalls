@@ -1,4 +1,4 @@
-const vs=3.000;
+const vs=3.001;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -245,7 +245,13 @@ async function openGenericChest(chestId,count,packId) {
 }
 
 async function getShop() {
-	return await sendServerCall(SERVER,'getshop',undefined,true,true);
+	let params = [
+		['return_all_items_live',1],
+		['return_all_items_ever',0],
+		['show_hard_currency',1],
+		['prioritize_item_category','recommend']
+	];
+	return await sendServerCall(SERVER,'getshop',params,true,true);
 }
 
 async function setCurrentObjective(instanceId,adventureId,patronId) {
