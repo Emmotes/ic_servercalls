@@ -1,6 +1,7 @@
-const v=4.01;
+const v=4.02;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
+const settingsIconName=document.getElementById(`settingsIconName`);
 const settingsMenu=document.getElementById(`settingsMenu`);
 const settingsUserName=document.getElementById(`userName`);
 const settingsUserId=document.getElementById(`userId`);
@@ -40,10 +41,12 @@ function init() {
 		localStorage.removeItem(`scUserIdent`);
 		settingsToggle();
 		settingsUserName.focus();
+		settingsIconName.innerHTML = `&nbsp;`;
 	} else {
 		let accountData = getUserAccounts();
 		if (accountData==undefined||accountData.current==undefined||accountData.accounts==undefined||Object.keys(accountData.current).length==0||Object.keys(accountData.accounts)==0) {
 			currAccount = undefined;
+			settingsIconName.innerHTML = `&nbsp;`;
 			disabledUntilData.hidden = false;
 			tabsContainer.hidden = true;
 			settingsClose.hidden = true;
@@ -51,6 +54,7 @@ function init() {
 		} else {
 			settingsClose.hidden = false;
 			currAccount = accountData.current;
+			settingsIconName.innerHTML = currAccount.name;
 		}
 	}
 	refreshSettingsList();
@@ -79,11 +83,13 @@ function settingsToggle() {
 				userName.value = ``;
 				userId.value = ``;
 				userHash.value = ``;
+				settingsIconName.innerHTML = `&nbsp;`;
 			}
 		} else {
 			userName.value = currAccount.name;
 			userId.value = currAccount.id;
 			userHash.value = currAccount.hash;
+			settingsIconName.innerHTML = currAccount.name;
 		}
 		settingsMenu.style.display = `flex`;
 	} else {
@@ -118,6 +124,7 @@ async function saveUserData() {
 		let newAccount = {name:userName,id:userId,hash:userHash};
 		addUserAccount(newAccount);
 		currAccount = newAccount;
+		settingsIconName.innerHTML = currAccount.name;
 		settingsSave.value = `SAVED`;
 		if (settingsClose.hidden)
 			settingsClose.hidden = false;
@@ -167,6 +174,7 @@ async function loadUserAccount() {
 		userName.value = currAccount.name;
 		userId.value = currAccount.id;
 		userHash.value = currAccount.hash;
+		settingsIconName.innerHTML = currAccount.name;
 		SERVER=``;
 		instanceId=``;
 		boilerplate=``;
@@ -358,6 +366,7 @@ function removeUserAccount(name) {
 	if (userAccounts.current.name==name) {
 		userAccounts.current = {};
 		currAccount = undefined;
+		settingsIconName.innerHTML = `&nbsp;`;
 	}
 	saveUserAccounts(userAccounts);
 }
