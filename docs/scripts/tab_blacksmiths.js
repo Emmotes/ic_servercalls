@@ -1,4 +1,4 @@
-const vbs=1.011;
+const vbs=1.012;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -157,6 +157,7 @@ async function bscSpendGeneral() {
 			txt += addBlacksmithsResultRow(`- ${successType}:`,`Not enough contracts.`);
 			spending=makeSpendingRow(0,bscName,champName,initAmount);
 			bscSpender.innerHTML = lootTxt + spending + txt;
+			codeEnablePullButtons();
 			return;
 		}
 		if (result['success']&&result['okay']) {
@@ -258,9 +259,9 @@ function displayBSCSpendAverageButton() {
 		bscCurrentAverage.dataset.value = currAvg;
 		if (needed <= 0) {
 			txt+=`<span class="f w100 p5" style="padding-left:10%">You already have more than that (${nf(currAvg)}).</span>`;
-		} else if (needed > canSpend) {
-			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal. ${nf(needed)} ilvl${needed==1?' is':'s are'} required.</span>`;
 		} else {
+			if (needed > canSpend)
+				txt+=`<span class="f w100 p5" style="padding-left:10%;color:var(--TangerineYellow)">Not enough contracts to reach this goal. ${nf(needed)} ilvl${needed==1?' is':'s are'} required.</span>`;
 			txt+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="bscSpenderRow"><input type="button" onClick="bscSpendAverage(${needed})" name="bscSpendAverageButton" id="bscSpendAverageButton" style="font-size:0.9em;min-width:180px" value="Spend ${nf(needed)} iLvls on ${ownedChamps[bscChampionList.value]} to Reach Goal"></span></span>`;
 		}
 	}
@@ -269,6 +270,7 @@ function displayBSCSpendAverageButton() {
 
 async function bscSpendAverage(amountToSpend) {
 	let bscSpender = document.getElementById(`bscSpender`);
+	let bscTotaliLvls = document.getElementById(`bscTotaliLvls`);
 	let bscMethodList = document.getElementById(`bscMethodList`);
 	let bscChampionList = document.getElementById(`bscChampionList`);
 	let bscCurrentAverage = document.getElementById(`bscCurrentAverage`);
@@ -287,9 +289,13 @@ async function bscSpendAverage(amountToSpend) {
 	
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
-	let bscTotaliLvls = document.getElementById(`bscTotaliLvls`);
+	let totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
+	bscTotaliLvls.innerHTML = nf(totalAmountOfiLvls);
+	bscTotaliLvls.dataset.value = totalAmountOfiLvls;
 	
+	amountToSpend = Math.min(totalAmountOfiLvls,amountToSpend);
 	let bscsToUse = parseBlacksmithsToUse(amountToSpend);
+	
 	if (bscsToUse==undefined) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Couldn't calculate a combination of blacksmiths to use to reach the average perfectly. Please make sure you have some of the smaller blacksmith contracts available.</span>`;
 		bscSpender.innerHTML = txt;
@@ -299,6 +305,7 @@ async function bscSpendAverage(amountToSpend) {
 	let currSpend = amountToSpend;
 	let bscIds = Object.keys(bscsToUse);
 	numSort(bscIds,true);
+		
 	
 	let lootTxt=addChampioniLvlsRows(champId,champName,-1);
 	let numFails=0;
@@ -324,6 +331,7 @@ async function bscSpendAverage(amountToSpend) {
 				txt += addBlacksmithsResultRow(`- ${successType}:`,`Not enough contracts.`);
 				spending=makeSpendingRow(0,bscName,champName,initAmount);
 				bscSpender.innerHTML = lootTxt + spending + txt;
+				codeEnablePullButtons();
 				return;
 			}
 			if (result['success']&&result['okay']) {
@@ -338,7 +346,7 @@ async function bscSpendAverage(amountToSpend) {
 				bscCurrentAverage.innerHTML = nf(newAvg);
 				bscCurrentAverage.dataset.value = newAvg;
 				blacksmiths[bscId].amount = remaining;
-				let totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
+				totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
 				bscTotaliLvls.innerHTML = nf(totalAmountOfiLvls);
 				bscTotaliLvls.dataset.value = totalAmountOfiLvls;
 				let newLoot = parseActions(result.actions,champId);
@@ -349,6 +357,13 @@ async function bscSpendAverage(amountToSpend) {
 			let plural=toSpend==1?``:`s`;
 			txt += addBlacksmithsResultRow(`- ${successType}:`,`${toSpend} ${bscName}${plural} on ${champName}`);
 			bscSpender.innerHTML = lootTxt + spending + txt;
+			if (totalAmountOfiLvls==0) {
+				txt += addBlacksmithsResultRow(`- Failed to spend:`,`Ran out of contracts.`);
+				txt=`<span class="f w100 p5" style="padding-left:10%">You have no more blacksmith ilvls left to spend.</span>`+txt;
+				bscSpender.innerHTML = lootTxt + txt;
+				codeEnablePullButtons();
+				return;
+			}
 		}
 	}
 	
@@ -359,6 +374,7 @@ async function bscSpendAverage(amountToSpend) {
 	bscMethodList.disabled = false;
 	bscChampionList.disabled = false;
 	bscContractAverage.disabled = false;
+	codeEnablePullButtons();
 	
 	if (numFails >= RETRIES) {
 		txt += addBlacksmithsResultRow(`- Stopping:`,`Got too many failures.`);
@@ -368,7 +384,6 @@ async function bscSpendAverage(amountToSpend) {
 		return;
 	}
 	
-	codeEnablePullButtons();
 	let oldChampLoot = champLoot;
 	let details = (await getUserDetails()).details;
 	parseLoot(details.loot);
@@ -437,16 +452,18 @@ function displayBSCSpendSpecificButton() {
 			txt+=`<span class="f w100 p5" style="padding-left:10%">You already have more than that (${nf(curriLvl)}).</span>`;
 		else if (capped && iLvlGoal > cappedValue)
 			txt+=`<span class="f w100 p5" style="padding-left:10%">This item caps at ${nf(cappedValue)} ilvls for your current gilding.</span>`;
-		else if (expected > canSpend)
-			txt+=`<span class="f w100 p5" style="padding-left:10%">Not enough contracts to reach this goal. Expected cost is roughly ${nf(expected)} ilvl${expected==1?'':'s'}.</span>`;
-		else
+		else {
+			if (expected > canSpend)
+				txt+=`<span class="f w100 p5" style="padding-left:10%;color:var(--TangerineYellow)">Not enough contracts to reach this goal. Expected cost is roughly ${nf(expected)} ilvl${expected==1?'':'s'}.</span>`;
 			txt+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="bscSpenderRow"><input type="button" onClick="bscSpendSpecific(${needed})" name="bscSpendSpecificButton" id="bscSpendSpecificButton" style="font-size:0.9em;min-width:180px" value="Spend Roughly ${nf(expected)} iLvls on ${ownedChamps[champId]} to Reach Goal"></span></span>`;
+		}
 	}
 	bscSpender.innerHTML = txt;
 }
 
 async function bscSpendSpecific(toSpend) {
 	let bscSpender = document.getElementById(`bscSpender`);
+	let bscTotaliLvls = document.getElementById(`bscTotaliLvls`);
 	let bscMethodList = document.getElementById(`bscMethodList`);
 	let bscChampionList = document.getElementById(`bscChampionList`);
 	let bscSlotList = document.getElementById(`bscSlotList`);
@@ -468,8 +485,11 @@ async function bscSpendSpecific(toSpend) {
 	let champId = bscChampionList.value;
 	let champName = ownedChamps[champId];
 	let slotId = bscSlotList.value;
-	let bscTotaliLvls = document.getElementById(`bscTotaliLvls`);
 	let capVal = getCapValue(champId,slotId);
+	
+	let totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
+	bscTotaliLvls.innerHTML = nf(totalAmountOfiLvls);
+	bscTotaliLvls.dataset.value = totalAmountOfiLvls;
 	
 	let iLvlsGoal = bscContractSpecific.value;
 	let iLvlsInit = champLoot[champId][slotId].ilvl;
@@ -482,11 +502,13 @@ async function bscSpendSpecific(toSpend) {
 	let numFails=0;
 	let details = undefined;
 	while (iLvlsCurr < iLvlsGoal) {
-		amountToSpend = iLvlsGoal - iLvlsCurr;
+		amountToSpend = Math.min(totalAmountOfiLvls,iLvlsGoal - iLvlsCurr);
+		
 		let bscsToUse = parseBlacksmithsToUse(amountToSpend);
 		if (bscsToUse==undefined) {
 			txt+=`<span class="f w100 p5" style="padding-left:10%">Couldn't calculate a combination of blacksmiths to use to reach the average perfectly. Please make sure you have some of the smaller blacksmith contracts available.</span>`;
 			bscSpender.innerHTML = txt;
+			codeEnablePullButtons();
 			return;
 		}
 		
@@ -527,7 +549,7 @@ async function bscSpendSpecific(toSpend) {
 					currSpend -= spendValue;
 					amountSpent += spendValue;
 					blacksmiths[bscId].amount = remaining;
-					let totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
+					totalAmountOfiLvls = calculateTotaliLvlsCanSpend();
 					bscTotaliLvls.innerHTML = nf(totalAmountOfiLvls);
 					bscTotaliLvls.dataset.value = totalAmountOfiLvls;
 					newLoot = parseActions(result.actions,champId,newLoot);
@@ -546,7 +568,6 @@ async function bscSpendSpecific(toSpend) {
 		bscSpender.innerHTML = lootTxt + spending;
 		
 		let oldChampLoot = champLoot;
-		codeEnablePullButtons();
 		details = (await getUserDetails()).details;
 		parseLoot(details.loot);
 		parseBlacksmiths(details.buffs);
@@ -559,6 +580,12 @@ async function bscSpendSpecific(toSpend) {
 		champLoot = oldChampLoot;
 		lootTxt = addChampioniLvlsRows(champId,champName,slotId,newLoot,true);
 		bscSpender.innerHTML = lootTxt + spending + txt;
+		if (totalAmountOfiLvls==0) {
+			txt+=`<span class="f w100 p5" style="padding-left:10%">You have no more blacksmith ilvls left to spend.</span>`;
+			bscSpender.innerHTML = lootTxt + txt;
+			codeEnablePullButtons();
+			return;
+		}
 		if (iLvlsCurr < iLvlsGoal) {
 			for (let i=10;i>0;i--) {
 				spending=`<span class="f fr w100 p5">Sleeping for ${i} second${i==1?'':'s'} to avoid server spam.</span>`;
