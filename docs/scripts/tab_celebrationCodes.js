@@ -1,4 +1,4 @@
-const vcc=1.001;
+const vcc=1.002;
 
 async function pullCelebrationsData() {
 	if (isBadUserData())
@@ -28,6 +28,7 @@ async function displayCelebrationsData(wrapper,customNotes) {
 		idents[customNote.identifier] = {};
 	let identKeys = Object.keys(idents);
 	
+	let celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
 	if (identKeys.length == 0) {
 		wrapper.innerHTML = `&nbsp;`;
 		celebrationsClaimer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">There are no celebrations running at the moment.</span>`;
@@ -69,7 +70,6 @@ async function displayCelebrationsData(wrapper,customNotes) {
 		}
 		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
 	}
-	let celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
