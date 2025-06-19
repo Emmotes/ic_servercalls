@@ -1,4 +1,4 @@
-const vbf=1.007;
+const vbf=1.008;
 
 async function pullFeatsData() {
 	if (isBadUserData())
@@ -80,7 +80,7 @@ async function displayFeatsData(wrapper,details,defs) {
 		let name = champs[id].name;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${id}">`;
 		for (let feat of champs[id].feats) {
-			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-cost="${feat.cost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
+			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-champ="${name}" data-cost="${feat.cost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
 		}
 		txt += `<span class="formsCampaignSelect"><input id="feat_selectAll_${id}" type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input id="feat_selectNone_${id}" type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
@@ -155,7 +155,7 @@ async function buyFeats() {
 			successType = `Successfully bought`;
 		else
 			successType = `Failed to buy`;
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} (${nf(Number(cost))} gems)</span></span>`;
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} (${feat.dataset.champ} / ${nf(Number(cost))} gems)</span></span>`;
 		feat.parentNode.style.display=`none`;
 		feat.checked = false;
 		featsBuyer.innerHTML = txt;
