@@ -155,7 +155,7 @@ async function buyFeats() {
 			successType = `Successfully bought`;
 		else
 			successType = `Failed to buy`;
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} (${feat.dataset.champ} / ${nf(Number(cost))} gems)</span></span>`;
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${feat.name} for ${feat.dataset.champ} (${nf(Number(cost))} gems)</span></span>`;
 		feat.parentNode.style.display=`none`;
 		feat.checked = false;
 		featsBuyer.innerHTML = txt;
