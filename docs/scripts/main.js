@@ -1,4 +1,4 @@
-const v=4.02;
+const v=4.03;
 const tabsContainer=document.getElementById(`tabsContainer`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const settingsIconName=document.getElementById(`settingsIconName`);
@@ -19,6 +19,8 @@ var pbCodeRunning;
 var pbTimerRunning;
 
 function isBadUserData() {
+	if (pbCodeRunning||pbTimerRunning)
+		return true;
 	if (currAccount==undefined||currAccount.name==undefined||currAccount.id==undefined||currAccount.hash==undefined) {
 		init();
 		return true;
