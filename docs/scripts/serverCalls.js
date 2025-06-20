@@ -1,4 +1,4 @@
-const vs=3.002;
+const vs=3.003;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -365,6 +365,15 @@ async function brewPotions(buffId,count) {
 		['count',count]
 	];
 	return await sendServerCall(SERVER,'brewpotions',params,true,true);
+}
+
+async function enhancePotions(sourceBuffId,resultBuffId,count) {
+	let params = [
+		['source_buff_id',sourceBuffId],
+		['result_buff_id',resultBuffId],
+		['count',count]
+	];
+	return await sendServerCall(SERVER,'enhancepotions',params,true,true);
 }
 
 function appendUserData() {
