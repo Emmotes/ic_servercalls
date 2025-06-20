@@ -1,4 +1,4 @@
-const vs=3.001;
+const vs=3.002;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -139,6 +139,13 @@ async function trialsPickRoleHero(roleId,heroId,costChoice) {
 		['cost_choice',costChoice]
 	];
 	return await sendServerCall(SERVER,'trialspickrolehero',params,true,true);
+}
+
+async function trialsClaimRewards() {
+	let params = [
+		['campaign_id',25]
+	];
+	return await sendServerCall(SERVER,'trialsclaimrewards',params,true,true);
 }
 
 async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats,overwrite) {
@@ -342,6 +349,22 @@ async function purchaseNotaryChestBundle(chestId,count) {
 		['count',count]
 	];
 	return await sendServerCall(SERVER,'purchasenotarychestbundle',params,true,true);
+}
+
+async function distillPotions(pots) {
+	// {"id":amount,"id":amount,etc..
+	let params = [
+		['to_distill',JSON.stringify(pots)]
+	];
+	return await sendServerCall(SERVER,'distillpotions',params,true,true);
+}
+
+async function brewPotions(buffId,count) {
+	let params = [
+		['buff_id',buffId],
+		['count',count]
+	];
+	return await sendServerCall(SERVER,'brewpotions',params,true,true);
 }
 
 function appendUserData() {
