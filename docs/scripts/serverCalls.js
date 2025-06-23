@@ -1,4 +1,4 @@
-const vs=3.003;
+const vs=3.004;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -141,9 +141,9 @@ async function trialsPickRoleHero(roleId,heroId,costChoice) {
 	return await sendServerCall(SERVER,'trialspickrolehero',params,true,true);
 }
 
-async function trialsClaimRewards() {
+async function trialsClaimRewards(campaignId) {
 	let params = [
-		['campaign_id',25]
+		['campaign_id',campaignId]
 	];
 	return await sendServerCall(SERVER,'trialsclaimrewards',params,true,true);
 }
