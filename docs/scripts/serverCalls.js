@@ -1,4 +1,4 @@
-const vs=3.004;
+const vs=3.005;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -124,19 +124,19 @@ async function trialsCreateCampaign(difficultyId,isPrivate,costChoice,autoStart)
 	return await sendServerCall(SERVER,'trialsopencampaign',params,true,true);
 }
 
-async function trialsJoinCampaign(joinKey,playerIndex) {
+async function trialsJoinCampaign(joinKey) {
 	let params = [
 		['join_key',joinKey],
-		['player_index',playerIndex]
+		['player_index',0]
 	];
 	return await sendServerCall(SERVER,'trialsjoincampaign',params,true,true);
 }
 
-async function trialsPickRoleHero(roleId,heroId,costChoice) {
+async function trialsPickRoleHero(roleId,heroId,prismatic) {
 	let params = [
 		['role_id',roleId],
 		['hero_id',heroId],
-		['cost_choice',costChoice]
+		['cost_choice',prismatic?1:0]
 	];
 	return await sendServerCall(SERVER,'trialspickrolehero',params,true,true);
 }
