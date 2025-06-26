@@ -1,9 +1,4 @@
-const vtm=1.000;
-const trialsStatus=`Trials Status:`;
-const trialsInact=`Inactive`;
-const trialsSil=`Sitting in Lobby`;
-const trialsRun=`Running`;
-const trialsRew=`Rewards:`;
+const vtm=1.001;
 var roles;
 var champsById;
 var champsByName;
@@ -17,7 +12,7 @@ async function tm_pullData() {
 	disablePullButtons();
 	let wrapper = document.getElementById(`trialsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	//try {
+	try {
 		wrapper.innerHTML = `Waiting for trials data...`;
 		let trialsData = (await trialsRefreshData()).trials_data;
 		wrapper.innerHTML = `Waiting for definitions...`;
@@ -27,9 +22,9 @@ async function tm_pullData() {
 		let champDefs = defs.hero_defines;
 		await tm_displayData(wrapper,trialsData,trialsRoles,trialsDiffs,champDefs);
 		codeEnablePullButtons();
-	//} catch (error) {
-	//	handleError(wrapper,error);
-	//}
+	} catch (error) {
+		handleError(wrapper,error);
+	}
 }
 
 async function tm_displayData(wrapper,trialsData,trialsRoles,trialsDiffs,champDefs) {
