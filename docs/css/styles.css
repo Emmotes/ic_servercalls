@@ -234,6 +234,15 @@ input[type="number"] {
 	border-radius: 6px;
 }
 
+input[type="text"],input[type="text"].focus {
+	width: 80%;
+	background-color: var(--dark4);
+	color: var(--light1);
+	padding: 3px;
+	border: 1px solid var(--Boulder);
+	border-radius: 6px;
+}
+
 select {
 	width: 80%;
 	background: var(--dark4);
@@ -510,6 +519,10 @@ input[type="checkbox"]:checked::before {
 
 .greenButton input[type="button"]:focus {
 	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--darken)*var(--darken)));
+}
+
+.greenCheckbox input[type="checkbox"]:checked {
+	background-color: hsl(calc(var(--dark1hue)*1.95),calc(var(--dark1sat)*14),calc(var(--dark1lig)*0.9));
 }
 
 .partiesWrapper {
