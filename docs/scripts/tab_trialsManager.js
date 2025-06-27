@@ -1,4 +1,4 @@
-const vtm=1.001;
+const vtm=1.002;
 var roles;
 var champsById;
 var champsByName;
@@ -574,7 +574,7 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	txt += tm_addRow(`Tiamat HP:`,nf(tiamatHP));
 	txt += tm_addRow(`Current DPS:`,nf(dps));
 	txt += tm_addRow(`Estimated Time to Die:`,`<span id="trialsRunningSpan">${timeToDieMsg}</span>`);
-	txt += tm_addRow(`&nbsp;`,`&nbsp;`);
+	txt += tm_addRow(`&nbsp;`,`<span style="font-size:0.9em;color:var(--Boulder)">^ Based on last time you pulled data.</span>`);
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
 	for (let roleId of playersByRoleKeys) {
 		let roleName = roles[roleId];
