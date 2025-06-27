@@ -7,6 +7,8 @@ var trialsTimer;
 var trialsTimerAim = 0;
 
 async function tm_pullData() {
+	clearInterval(trialsTimer);
+	trialsTimerAim = 0;
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -187,7 +189,7 @@ function tm_displayJoinCreateCampaign(wrapper,trialsInfo,trialsData,timeUntilNex
 		txt += tm_addRow(`&nbsp;`,tm_createCreateButton());
 	wrapper.innerHTML = txt;
 	
-	if (timeUntilNext > 0) {
+	if (timeMS > 0) {
 		trialsTimerAim = new Date().getTime() + timeMS;
 		trialsTimer = setInterval(() => {
 			let eleJoin = document.getElementById('trialsJoinCannotJoinSpan');
@@ -240,9 +242,10 @@ function tm_buildDifficultySelect(highestDifficulty) {
 async function tm_joinTrial() {
 	let trialsInfo = document.getElementById(`trialsInfo`);
 	let trialsJoinKey = document.getElementById(`trialsJoinKey`);
+	let trialsJoinButton = document.getElementById(`trialsJoinButton`);
 	
 	trialsJoinKey.disabled = true;
-	document.getElementById(`trialsJoinButton`).disabled = true;
+	trialsJoinButton.disabled = true;
 	disablePullButtons(true);
 	
 	let txt = trialsInfo.innerHTML;
@@ -265,11 +268,9 @@ async function tm_joinTrial() {
 		txt += tm_addInfoRow(`- ${successType}:`,`&nbsp;`);
 	trialsInfo.innerHTML = txt;
 	trialsJoinKey.disabled = false;
-	try {
-		document.getElementById(`trialsJoinButton`).disabled = false;
-	} catch (error) {
-		// Do nothing
-	}
+	trialsJoinButton = document.getElementById(`trialsJoinButton`);
+	if (trialsJoinButton != null)
+		trialsJoinButton.disabled = false;
 	codeEnablePullButtons();
 	
 	if (response.success&response.okay)
@@ -281,11 +282,12 @@ async function tm_createTrial() {
 	let trialsDifficultySelect = document.getElementById(`trialsDifficultySelect`);
 	let trialsPrivateCheckbox = document.getElementById(`trialsPrivateCheckbox`);
 	let trialsAutostartCheckbox = document.getElementById(`trialsAutostartCheckbox`);
+	let trialsCreateButton = document.getElementById(`trialsCreateButton`);
 	
 	trialsDifficultySelect.disabled = true;
 	trialsPrivateCheckbox.disabled = true;
 	trialsAutostartCheckbox.disabled = true;
-	document.getElementById(`trialsCreateButton`).disabled = true;
+	trialsCreateButton.disabled = true;
 	disablePullButtons(true);
 	
 	let txt = trialsInfo.innerHTML;
@@ -309,11 +311,9 @@ async function tm_createTrial() {
 	trialsDifficultySelect.disabled = false;
 	trialsPrivateCheckbox.disabled = false;
 	trialsAutostartCheckbox.disabled = false;
-	try {
-		document.getElementById(`trialsCreateButton`).disabled = false;
-	} catch (error) {
-		// Do nothing
-	}
+	trialsCreateButton = document.getElementById(`trialsCreateButton`);
+	if (trialsCreateButton != null)
+		trialsCreateButton.disabled = false;
 	codeEnablePullButtons();
 	
 	if (response.success&response.okay)
@@ -518,9 +518,8 @@ async function tm_trialsLeaveLobby(playerIndex,joinKey) {
 	
 	let response = await trialsKickPlayer(playerIndex);
 	let successType = `Failed to leave`;
-	if (response.success&response.okay) {
+	if (response.success&response.okay)
 		successType = `Successfully left`;
-	}
 	txt += tm_addInfoRow(`- ${successType}:`,`${joinKey}`);
 	trialsInfo.innerHTML = txt;
 	codeEnablePullButtons();
@@ -539,9 +538,8 @@ async function tm_trialsStartTrial(campaignId) {
 	
 	let response = await trialsStartCampaign(campaignId);
 	let successType = `Failed to start`;
-	if (response.success&response.okay) {
+	if (response.success&response.okay)
 		successType = `Successfully started`;
-	}
 	txt += tm_addInfoRow(`- ${successType}`,`&nbsp;`);
 	trialsInfo.innerHTML = txt;
 	codeEnablePullButtons();
@@ -567,13 +565,15 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	let dps = 0;
 	for (let roleId of playersByRoleKeys)
 		dps += playersByRole[roleId].dps;
+	let timeToDie = dps == 0 ? 0 : (tiamatHP/dps)*1000;
+	let timeToDieMsg = timeToDie > 0 ? getDisplayTime(timeToDie) : `Never`;
 	
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`,`${tier} (${tierName})`);
 	txt += tm_addRow(`Day:`,`${day} (Ends in: ${dayEnds})`);
 	txt += tm_addRow(`Tiamat HP:`,nf(tiamatHP));
 	txt += tm_addRow(`Current DPS:`,nf(dps));
-	txt += tm_addRow(`Estimated Time to Die:`,dps==0?`Never`:`${getDisplayTime((tiamatHP/dps)*1000)}`);
+	txt += tm_addRow(`Estimated Time to Die:`,`<span id="trialsRunningSpan">${timeToDieMsg}</span>`);
 	txt += tm_addRow(`&nbsp;`,`&nbsp;`);
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
 	for (let roleId of playersByRoleKeys) {
@@ -585,6 +585,27 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 			txt += tm_addRow(`${roleName}:`,player.name,`DPS:`,nf(player.dps));
 	}
 	wrapper.innerHTML = txt;
+	
+	if (timeToDie > 0) {
+		trialsTimerAim = new Date().getTime() + timeToDie;
+		trialsTimer = setInterval(() => {
+			let ele = document.getElementById('trialsRunningSpan');
+			if (ele == null) {
+				clearInterval(trialsTimer);
+				trialsTimerAim = 0;
+				return;
+			}
+			let remaining = trialsTimerAim - new Date().getTime();
+			let displayTime = `${getDisplayTime(remaining)}`;
+			ele.innerHTML = displayTime;
+			
+			if (remaining < 0) {
+				clearInterval(trialsTimer);
+				trialsTimerAim = 0;
+				ele.outerHTML = `Dead`;
+			}
+		}, 1000);
+	}
 }
 
 /* ======================
