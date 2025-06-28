@@ -1,14 +1,12 @@
-const vtm=1.002;
+const vtm=1.003;
 var roles;
 var champsById;
 var champsByName;
 var diffs;
-var trialsTimer;
-var trialsTimerAim = 0;
+var tm_Timers = {};
 
 async function tm_pullData() {
-	clearInterval(trialsTimer);
-	trialsTimerAim = 0;
+	clearTimers();
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -190,27 +188,32 @@ function tm_displayJoinCreateCampaign(wrapper,trialsInfo,trialsData,timeUntilNex
 	wrapper.innerHTML = txt;
 	
 	if (timeMS > 0) {
-		trialsTimerAim = new Date().getTime() + timeMS;
-		trialsTimer = setInterval(() => {
+		joinTimerAim = new Date().getTime() + timeMS;
+		joinTimer = setInterval(() => {
 			let eleJoin = document.getElementById('trialsJoinCannotJoinSpan');
 			let eleCreate = document.getElementById('trialsCreateCannotCreateSpan');
-			if (eleJoin == null || eleCreate == null) {
-				clearInterval(trialsTimer);
-				trialsTimerAim = 0;
+			let timerJson = tm_Timers["join"];
+			if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
+				delete tm_Timers["join"];
+				return;
+			} else if (eleJoin == null || eleCreate == null) {
+				clearInterval(tm_Timers["join"].interval);
+				delete tm_Timers["join"];
 				return;
 			}
-			let remaining = trialsTimerAim - new Date().getTime();
+			let remaining = timerJson.aim - new Date().getTime();
 			let displayTime = `Available in ${getDisplayTime(remaining)}`;
 			eleJoin.innerHTML = displayTime;
 			eleCreate.innerHTML = displayTime;
 			
 			if (remaining < 0) {
-				clearInterval(trialsTimer);
-				trialsTimerAim = 0;
+				clearInterval(tm_Timers["join"].interval);
+				delete tm_Timers["join"];
 				eleJoin.outerHTML = tm_createJoinButton();
 				eleCreate.outerHTML = tm_createCreateButton();
 			}
 		}, 1000);
+		tm_Timers["join"] = {aim:joinTimerAim,interval:joinTimer};
 	}
 	
 	trialsInfo.innerHTML = `&nbsp;`;
@@ -560,7 +563,10 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	let diff = diffs[tier];
 	let tierName = diff.name;
 	let day = campaign.current_day;
-	let dayEnds = getDisplayTime(campaign.day_ends_in*1000);
+	let completed = false;
+	if (campaign.dps_bonuses_earned!=undefined&&campaign.dps_bonuses_earned[day]!=undefined&&day>0)
+		completed = campaign.dps_bonuses_earned[day-1] == 1;
+	let dayEnds = campaign.day_ends_in*1000;
 	let tiamatHP = diff.hp - campaign.total_damage_done
 	let dps = 0;
 	for (let roleId of playersByRoleKeys)
@@ -570,11 +576,11 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`,`${tier} (${tierName})`);
-	txt += tm_addRow(`Day:`,`${day} (Ends in: ${dayEnds})`);
+	txt += tm_addRow(`Day:`,`${day} (<span style="color:var(--${completed?'AlienArmpit':'Cascara'});padding-right:4px">${completed?'Completed':'Incomplete'}</span>-<span id="trialsRunningDaySpan" style="padding-left:4px">Ends in: ${getDisplayTime(dayEnds)}</span>)`);
 	txt += tm_addRow(`Tiamat HP:`,nf(tiamatHP));
 	txt += tm_addRow(`Current DPS:`,nf(dps));
-	txt += tm_addRow(`Estimated Time to Die:`,`<span id="trialsRunningSpan">${timeToDieMsg}</span>`);
-	txt += tm_addRow(`&nbsp;`,`<span style="font-size:0.9em;color:var(--Boulder)">^ Based on last time you pulled data.</span>`);
+	txt += tm_addRow(`Estimated Time to Die:`,`<span id="trialsRunningDieSpan">${timeToDieMsg}</span>`);
+	txt += tm_addRow(`&nbsp;`,`<span style="font-size:0.9em;color:var(--Boulder)">Active timers are based on the last time you pulled data.</span>`);
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
 	for (let roleId of playersByRoleKeys) {
 		let roleName = roles[roleId];
@@ -586,26 +592,36 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	}
 	wrapper.innerHTML = txt;
 	
-	if (timeToDie > 0) {
-		trialsTimerAim = new Date().getTime() + timeToDie;
-		trialsTimer = setInterval(() => {
-			let ele = document.getElementById('trialsRunningSpan');
-			if (ele == null) {
-				clearInterval(trialsTimer);
-				trialsTimerAim = 0;
-				return;
-			}
-			let remaining = trialsTimerAim - new Date().getTime();
-			let displayTime = `${getDisplayTime(remaining)}`;
-			ele.innerHTML = displayTime;
-			
-			if (remaining < 0) {
-				clearInterval(trialsTimer);
-				trialsTimerAim = 0;
-				ele.outerHTML = `Dead`;
-			}
-		}, 1000);
-	}
+	tm_createRunningTimers(dayEnds,`dayends`,`trialsRunningDaySpan`,`Ended`,`Ends in: `);
+	tm_createRunningTimers(timeToDie,`todie`,`trialsRunningDieSpan`,`Dead`,``);
+}
+
+function tm_createRunningTimers(timeAim,timeName,eleName,endMsg,prefix) {
+	if (timeAim <= 0)
+		return;
+	timeToDieAim = new Date().getTime() + timeAim;
+	timeToDieTimer = setInterval(() => {
+		let ele = document.getElementById(eleName);
+		let timerJson = tm_Timers[timeName];
+		if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
+			delete tm_Timers[timeName];
+			return;
+		} else if (ele == null) {
+			clearInterval(tm_Timers[timeName].interval);
+			delete tm_Timers[timeName];
+			return;
+		}
+		let remaining = timerJson.aim - new Date().getTime();
+		let displayTime = `${prefix}${getDisplayTime(remaining)}`;
+		ele.innerHTML = displayTime;
+		
+		if (remaining < 0) {
+			clearInterval(tm_Timers[timeName].interval);
+			delete tm_Timers[timeName];
+			ele.outerHTML = endMsg;
+		}
+	}, 1000);
+	tm_Timers[timeName] = {aim:timeToDieAim,interval:timeToDieTimer};
 }
 
 /* ======================
@@ -687,4 +703,11 @@ function tm_addInfoRow(left,right) {
 
 function tm_addGenericButton(colour,clicky,name,val,extras) {
 	return `<span class="f fr w100 p5"><span class="f falc fje mr2${colour!=""?" "+colour+"Button":""}" style="width:50%"><input type="button" onClick="${clicky}" name="${name}" id="${name}" style="font-size:0.9em;min-width:180px" value="${val}"${extras!=undefined?extras:''}></span></span>`;
+}
+
+function clearTimers() {
+	for (let name of Object.keys(tm_Timers))
+		if (tm_Timers[name].interval != undefined)
+			clearInterval(tm_Timers[name].interval);
+	tm_Timers = {};
 }
