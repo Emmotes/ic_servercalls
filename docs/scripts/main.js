@@ -1,6 +1,7 @@
-const v=4.03;
-const tabsContainer=document.getElementById(`tabsContainer`);
+const v=4.04;
+const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
+const tabsContainer=document.getElementById(`tabsContainer`);
 const settingsIconName=document.getElementById(`settingsIconName`);
 const settingsMenu=document.getElementById(`settingsMenu`);
 const settingsUserName=document.getElementById(`userName`);
@@ -29,6 +30,8 @@ function isBadUserData() {
 }
 
 function init() {
+	disabledUntilInit.hidden = true;
+	tabsContainer.hidden = false;
 	// Deal with account migration.
 	if (localStorage.scUserIdent!=undefined) {
 		let userIdent = JSON.parse(localStorage.scUserIdent);

@@ -77,11 +77,15 @@
 		<label for="settingsIcon" id="settingsIconName" style="padding-right:5px">&nbsp;</label>
 	</div>
 	
+	<div id="disabledUntilInit" style="position:absolute;top:50px;left:50px;width:calc(100% - 435px)">
+		Loading...
+	</div>
+	
 	<div id="disabledUntilData" style="position:absolute;top:50px;left:50px;width:calc(100% - 435px)" hidden>
 		This page will populate once you've input your user data.
 	</div>
 	
-	<div class="tabsContainer" id="tabsContainer">
+	<div class="tabsContainer" id="tabsContainer" hidden>
 		<div class="tabs">
 			<!-- START: Delete Formations Tab -->
 			<input onClick="setHash('formationsTab')" type="radio" class="tabsRadio" name="serverTabs" id="formationsTab" checked>
@@ -672,6 +676,6 @@
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.004"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.006"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.003"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.004"></script>
 </body>
 </html>
