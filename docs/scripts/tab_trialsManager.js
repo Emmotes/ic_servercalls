@@ -1,4 +1,4 @@
-const vtm=1.003;
+const vtm=1.004;
 var roles;
 var champsById;
 var champsByName;
@@ -567,6 +567,7 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	if (campaign.dps_bonuses_earned!=undefined&&campaign.dps_bonuses_earned[day]!=undefined&&day>0)
 		completed = campaign.dps_bonuses_earned[day-1] == 1;
 	let dayEnds = campaign.day_ends_in*1000;
+	let trialEnds = campaign.ends_in*1000;
 	let tiamatHP = diff.hp - campaign.total_damage_done
 	let dps = 0;
 	for (let roleId of playersByRoleKeys)
@@ -577,6 +578,8 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`,`${tier} (${tierName})`);
 	txt += tm_addRow(`Day:`,`${day} (<span style="color:var(--${completed?'AlienArmpit':'Cascara'});padding-right:4px">${completed?'Completed':'Incomplete'}</span>-<span id="trialsRunningDaySpan" style="padding-left:4px">Ends in: ${getDisplayTime(dayEnds)}</span>)`);
+	if (trialEnds > 0)
+		txt += tm_addRow(`Trial Ends:`,`<span id="trialsRunningEndSpan">${getDisplayTime(trialEnds)}</span>`);
 	txt += tm_addRow(`Tiamat HP:`,nf(tiamatHP));
 	txt += tm_addRow(`Current DPS:`,nf(dps));
 	txt += tm_addRow(`Estimated Time to Die:`,`<span id="trialsRunningDieSpan">${timeToDieMsg}</span>`);
@@ -594,6 +597,7 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	
 	tm_createRunningTimers(dayEnds,`dayends`,`trialsRunningDaySpan`,`Ended`,`Ends in: `);
 	tm_createRunningTimers(timeToDie,`todie`,`trialsRunningDieSpan`,`Dead`,``);
+	tm_createRunningTimers(trialEnds,`trialends`,`trialsRunningEndSpan`,`Ended`,``);
 }
 
 function tm_createRunningTimers(timeAim,timeName,eleName,endMsg,prefix) {
