@@ -1,4 +1,4 @@
-const vpm=1.007;
+const vpm=1.008;
 
 async function pullPartyData() {
 	if (isBadUserData())
@@ -40,16 +40,32 @@ async function displayPartyData(wrapper,gameInstances,adventures) {
 		let name = adventure.name;
 		let adv = gameInstance.defines.adventure_defines.slice(-1)[0].name;
 		let camp = campaignIds[adventure.campaign_id];
+		let patronId = Number(gameInstance.current_patron_id || 0);
 		let areaGoal;
-		if (gameInstance.defines.adventure_defines.length > 0 && gameInstance.defines.adventure_defines[0].objectives.length > 0)
-			areaGoal = gameInstance.defines.adventure_defines[0].objectives[0].area;
+		if (gameInstance.defines.adventure_defines.length > 0) {
+			let advDef = gameInstance.defines.adventure_defines[0];
+			if (patronId == 0 && advDef.objectives.length > 0) {
+				areaGoal = advDef.objectives[0].area;
+			} else if (advDef.patron_objectives!=undefined&&Object.keys(advDef.patron_objectives).includes(`${patronId}`)) {
+				let patObj = advDef.patron_objectives[patronId];
+				outerLoop:
+				for (let patObjKey of Object.keys(patObj)) {
+					for (let patObjIn of patObj[patObjKey]) {
+						if (patObjIn.condition!=undefined&&patObjIn.condition==`complete_area`&&patObjIn.area!=undefined) {
+							areaGoal = Number(patObjIn.area);
+							break outerLoop;
+						}
+					}
+				}
+			}
+		}
 		
 		if (name != adv)
 			txt+=addPartyRow(`Name`,name);
 		txt+=addPartyRow(`Adventure`,adv);
 		txt+=addPartyRow(`Campaign`,camp);
-		if (gameInstance.current_patron_id > 0)
-			txt+=addPartyRow(`Patron`,getPatronNameById(gameInstance.current_patron_id));
+		if (patronId > 0)
+			txt+=addPartyRow(`Patron`,getPatronNameById(patronId));
 		txt+=addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
 		if (areaGoal != undefined)
 			txt+=addPartyRow(`Area Goal`,`z${areaGoal}`);
