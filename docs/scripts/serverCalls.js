@@ -1,4 +1,4 @@
-const vs=3.006;
+const vs=3.007;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -458,11 +458,13 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 				response = await sendOutgoingCall(server,call);
 			} else if (response[FR].includes(`Security hash failure`)) {
 				throw new Error(`Your user data is incorrect`);
+			} else if (response[FR].includes(`non-atomic`)) {
+				throw new Error(`Interrupted by non-atomic action`);
 			} else {
 				// Unknown error.
 				console.log(`${server}post.php?${call}`);
 				console.log(` - Unknown Error: ${response[FR]}`);
-				throw new Error(`response`);
+				throw new Error(response);
 			}
 		}
 		limit++;

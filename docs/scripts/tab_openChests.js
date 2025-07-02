@@ -1,4 +1,4 @@
-const voc=1.019;
+const voc=1.020;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -150,8 +150,17 @@ async function openChests(id) {
 	}
 	while (currAmount > 0 && numFails < RETRIES) {
 		let open = Math.min(1000,currAmount);
-		result = await openGenericChest(id,open);
 		let successType = `Failed to open`;
+		try {
+			result = await openGenericChest(id,open);
+		} catch (error) {
+			txt += addChestResultRow(`- ${successType}:`,`${error.replace("Error: ",""}`);
+			opening=makeOpeningRow(0,plural,amount);
+			openChestsOpener.innerHTML = opening + txt;
+			openChestsButton.value = `Open 0 ${plural}`;
+			numFails++;
+			continue;
+		}
 		let initMsg = `${open} ${open==1?name:plural}`;
 		if (result.success) {
 			let remaining = result.chests_remaining;
@@ -230,6 +239,7 @@ async function openChestPack(id,packId,amount) {
 	let currAmount = amount;
 	let numFails=0;
 	let opening=``;
+	let result;
 	let txt=``;
 	opening=makeOpeningRow(currAmount,(currAmount==1?name:plural),amount);
 	openChestsOpener.innerHTML = opening + txt;
@@ -240,8 +250,17 @@ async function openChestPack(id,packId,amount) {
 	}
 	while (currAmount > 0 && numFails < RETRIES) {
 		let open = Math.min(1000,currAmount);
-		let result = await openGenericChest(id,open,packId);
 		let successType = `Failed to open`;
+		try {
+			result = await openGenericChest(id,open,packId);
+		} catch (error) {
+			txt += addChestResultRow(`- ${successType}:`,`${error.replace("Error: ",""}`);
+			opening=makeOpeningRow(0,plural,amount);
+			openChestsOpener.innerHTML = opening + txt;
+			openChestsButton.value = `Open 0 ${plural}`;
+			numFails++;
+			continue;
+		}
 		let initMsg = `${open} ${open==1?name:plural}`;
 		if (result.success&&result.loot_details) {
 			successType = `Successfully opened`;
