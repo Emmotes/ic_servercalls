@@ -1,4 +1,4 @@
-const vtm=1.004;
+const vtm=1.005;
 var roles;
 var champsById;
 var champsByName;
@@ -568,10 +568,13 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 		completed = campaign.dps_bonuses_earned[day-1] == 1;
 	let dayEnds = campaign.day_ends_in*1000;
 	let trialEnds = campaign.ends_in*1000;
-	let tiamatHP = diff.hp - campaign.total_damage_done
 	let dps = 0;
-	for (let roleId of playersByRoleKeys)
+	let totalDamage = 0;
+	for (let roleId of playersByRoleKeys) {
 		dps += playersByRole[roleId].dps;
+		totalDamage += playersByRole[roleId].tot;
+	}
+	let tiamatHP = diff.hp - totalDamage;
 	let timeToDie = dps == 0 ? 0 : (tiamatHP/dps)*1000;
 	let timeToDieMsg = timeToDie > 0 ? getDisplayTime(timeToDie) : `Never`;
 	
@@ -675,7 +678,7 @@ function tm_parsePlayers(campaign) {
 	for (let player of campaign.players) {
 		if (player.role_id==0)
 			continue;
-		players[player.role_id] = {name:player.name,dps:Number(player.dps),empty:false,hero:Number(player.hero_id)};
+		players[player.role_id] = {name:player.name,dps:Number(player.dps),tot:Number(player.total_damage),empty:false,hero:Number(player.hero_id)};
 	}
 	return players;
 }
