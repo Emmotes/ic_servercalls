@@ -1,4 +1,4 @@
-const vtm=1.005;
+const vtm=1.006;
 var roles;
 var champsById;
 var champsByName;
@@ -674,7 +674,7 @@ function tm_parsePlayers(campaign) {
 	let players = {};
 	let roleIds = Object.keys(roles);
 	for (let roleId of roleIds)
-		players[roleId] = {name:``,dps:0,empty:true,hero:0};
+		players[roleId] = {name:``,dps:0,tot:0,empty:true,hero:0};
 	for (let player of campaign.players) {
 		if (player.role_id==0)
 			continue;
