@@ -1,4 +1,4 @@
-const vdc=1.002;
+const vdc=1.003;
 
 async function dc_pullData() {
 	clearTimers(`dc_`);
@@ -99,7 +99,7 @@ async function dc_displayData(wrapper,dismantleData,details,heroDefs,buffDefs) {
 			if (rewardKeys.length==0)
 				continue;
 			if (!addedHeader) {
-				txt+=`<p style="grid-column:1/-1;font-size:1.3em" id="dismantle${type}Ends">${type} Dismantle - Ends in ${getDisplayTime(time)}</p>`;
+				txt+=`<p style="grid-column:1/-1;font-size:1.3em"><span id="dismantle${type}Ends">${type} Dismantle - Ends in ${getDisplayTime(time)}</span></p>`;
 				dismantleTimers[type] = time;
 				addedHeader = true;
 			}
