@@ -1,4 +1,4 @@
-const vs=3.007;
+const vs=3.008;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -8,7 +8,7 @@ const PARAM_INSTANCEID=`instance_id`;
 const PARAM_USERID=`user_id`;
 const PARAM_USERHASH=`hash`;
 const RETRIES=4;
-var currAccount = undefined;
+var currAccount=undefined;
 var SERVER=``;
 var instanceId=``;
 var boilerplate=``;
@@ -169,11 +169,11 @@ async function saveFormation(formId,campId,name,fav,formation,familiars,specs,fe
 		['formation_save_id',formId],
 		['campaign_id',campId],
 		['name',name],
-		['favorite',(fav == undefined ? 0 : fav)],
-		['formation',(formation == undefined ? "[]" : formation)],
-		['familiars',(familiars == undefined ? "{}" : familiars)],
-		['specializations',(specs == undefined ? "{}" : specs)],
-		['feats',(feats == undefined ? "{}" : feats)]
+		['favorite',fav || 0],
+		['formation',formation || "[]"],
+		['familiars',familiars || "{}"],
+		['specializations',specs || "{}"],
+		['feats',feats || "{}"]
 	];
 	return await sendServerCall(SERVER,'SaveFormation',params,true,true);
 }
@@ -445,8 +445,8 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 	let limit = 0;
 	while ((response[SPS]!=undefined||!response['success'])&&limit<RETRIES) {
 		if (response[SPS]) {
-			SERVER = response[SPS].replace(`http://`, `https://`);
-			response = await sendOutgoingCall(SERVER,call);
+			server = SERVER = response[SPS].replace(`http://`, `https://`);
+			response = await sendOutgoingCall(server,call);
 		} else if (!response['success']) {
 			if (response[FR]==OII) {
 				console.log(`Got outdated instance id.`);

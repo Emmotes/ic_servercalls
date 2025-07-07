@@ -1,4 +1,4 @@
-const v=4.05;
+const v=4.06;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const tabsContainer=document.getElementById(`tabsContainer`);
@@ -393,8 +393,7 @@ function createTimer(timeLength,timerName,eleName,endMsg,prefix) {
 			return;
 		}
 		let remaining = timerJson.aim - new Date().getTime();
-		let displayTime = `${prefix || ''}${getDisplayTime(remaining)}`;
-		ele.innerHTML = displayTime;
+		ele.innerHTML = `${prefix || ''}${getDisplayTime(remaining)}`;
 		
 		if (remaining < 0) {
 			clearInterval(timerList[timerName].interval);
