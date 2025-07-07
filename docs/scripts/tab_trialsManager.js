@@ -1,12 +1,11 @@
-const vtm=1.006;
+const vtm=1.007;
 var roles;
 var champsById;
 var champsByName;
 var diffs;
-var tm_Timers = {};
 
 async function tm_pullData() {
-	clearTimers();
+	clearTimers(`tm_`);
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -187,34 +186,8 @@ function tm_displayJoinCreateCampaign(wrapper,trialsInfo,trialsData,timeUntilNex
 		txt += tm_addRow(`&nbsp;`,tm_createCreateButton());
 	wrapper.innerHTML = txt;
 	
-	if (timeMS > 0) {
-		joinTimerAim = new Date().getTime() + timeMS;
-		joinTimer = setInterval(() => {
-			let eleJoin = document.getElementById('trialsJoinCannotJoinSpan');
-			let eleCreate = document.getElementById('trialsCreateCannotCreateSpan');
-			let timerJson = tm_Timers["join"];
-			if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
-				delete tm_Timers["join"];
-				return;
-			} else if (eleJoin == null || eleCreate == null) {
-				clearInterval(tm_Timers["join"].interval);
-				delete tm_Timers["join"];
-				return;
-			}
-			let remaining = timerJson.aim - new Date().getTime();
-			let displayTime = `Available in ${getDisplayTime(remaining)}`;
-			eleJoin.innerHTML = displayTime;
-			eleCreate.innerHTML = displayTime;
-			
-			if (remaining < 0) {
-				clearInterval(tm_Timers["join"].interval);
-				delete tm_Timers["join"];
-				eleJoin.outerHTML = tm_createJoinButton();
-				eleCreate.outerHTML = tm_createCreateButton();
-			}
-		}, 1000);
-		tm_Timers["join"] = {aim:joinTimerAim,interval:joinTimer};
-	}
+	createTimer(timeMS,`tm_cooldownJoin`,`trialsJoinCannotJoinSpan`,tm_createJoinButton(),`Available in `);
+	createTimer(timeMS,`tm_cooldownCreate`,`trialsCreateCannotCreateSpan`,tm_createCreateButton(),`Available in `);
 	
 	trialsInfo.innerHTML = `&nbsp;`;
 }
@@ -598,37 +571,9 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	}
 	wrapper.innerHTML = txt;
 	
-	tm_createRunningTimers(dayEnds,`dayends`,`trialsRunningDaySpan`,`Ended`,`Ends in: `);
-	tm_createRunningTimers(timeToDie,`todie`,`trialsRunningDieSpan`,`Dead`,``);
-	tm_createRunningTimers(trialEnds,`trialends`,`trialsRunningEndSpan`,`Ended`,``);
-}
-
-function tm_createRunningTimers(timeAim,timeName,eleName,endMsg,prefix) {
-	if (timeAim <= 0)
-		return;
-	timeToDieAim = new Date().getTime() + timeAim;
-	timeToDieTimer = setInterval(() => {
-		let ele = document.getElementById(eleName);
-		let timerJson = tm_Timers[timeName];
-		if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
-			delete tm_Timers[timeName];
-			return;
-		} else if (ele == null) {
-			clearInterval(tm_Timers[timeName].interval);
-			delete tm_Timers[timeName];
-			return;
-		}
-		let remaining = timerJson.aim - new Date().getTime();
-		let displayTime = `${prefix}${getDisplayTime(remaining)}`;
-		ele.innerHTML = displayTime;
-		
-		if (remaining < 0) {
-			clearInterval(tm_Timers[timeName].interval);
-			delete tm_Timers[timeName];
-			ele.outerHTML = endMsg;
-		}
-	}, 1000);
-	tm_Timers[timeName] = {aim:timeToDieAim,interval:timeToDieTimer};
+	createTimer(dayEnds,`tm_dayends`,`trialsRunningDaySpan`,`Ended`,`Ends in: `);
+	createTimer(timeToDie,`tm_todie`,`trialsRunningDieSpan`,`Dead`);
+	createTimer(trialEnds,`tm_trialends`,`trialsRunningEndSpan`,`Ended`);
 }
 
 /* ======================
@@ -710,11 +655,4 @@ function tm_addInfoRow(left,right) {
 
 function tm_addGenericButton(colour,clicky,name,val,extras) {
 	return `<span class="f fr w100 p5"><span class="f falc fje mr2${colour!=""?" "+colour+"Button":""}" style="width:50%"><input type="button" onClick="${clicky}" name="${name}" id="${name}" style="font-size:0.9em;min-width:180px" value="${val}"${extras!=undefined?extras:''}></span></span>`;
-}
-
-function clearTimers() {
-	for (let name of Object.keys(tm_Timers))
-		if (tm_Timers[name].interval != undefined)
-			clearInterval(tm_Timers[name].interval);
-	tm_Timers = {};
 }

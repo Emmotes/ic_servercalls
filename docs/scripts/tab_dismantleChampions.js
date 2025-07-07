@@ -1,6 +1,7 @@
-const vdc=1.001;
+const vdc=1.002;
 
-async function pullDismantleData() {
+async function dc_pullData() {
+	clearTimers(`dc_`);
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -24,7 +25,7 @@ async function pullDismantleData() {
 		let defs = await getDefinitions("hero_defines,buff_defines");
 		let heroDefs = defs.hero_defines;
 		let buffDefs = defs.buff_defines;
-		await displayDismantleData(wrapper,dismantleData,details,heroDefs,buffDefs);
+		await dc_displayData(wrapper,dismantleData,details,heroDefs,buffDefs);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -32,7 +33,7 @@ async function pullDismantleData() {
 	}
 }
 
-async function displayDismantleData(wrapper,dismantleData,details,heroDefs,buffDefs) {
+async function dc_displayData(wrapper,dismantleData,details,heroDefs,buffDefs) {
 	if (details==undefined||heroDefs==undefined) {
 		wrapper.innerHTML = `Error.`;
 		return;
@@ -71,15 +72,16 @@ async function displayDismantleData(wrapper,dismantleData,details,heroDefs,buffD
 		}
 		let feats = champ.feat_ids_to_remove!=undefined&&champ.feat_ids_to_remove.length>0;
 		redists[type].champs[champId] = {id:champ.redistribute_id,rewards:rewards,feats:feats};
-		redists[type].champs[champId].legs = dismantleParseLegendaries(details,Number(champId));
+		redists[type].champs[champId].legs = dc_dismantleParseLegendaries(details,Number(champId));
 	}
-	let hideOptions = getDismantleHideOptions();
+	let hideOptions = dc_getDismantleHideOptions();
 	let types = Object.keys(redists);
 	types.sort();
 	let txt=``;
+	let dismantleTimers = {};
 	for (let type of types) {
 		let dismantle = redists[type];
-		let time = dismantle.time;
+		let time = Number(dismantle.time) * 1000;
 		let champs = dismantle.champs;
 		let addedHeader = false;
 		for (let champId of Object.keys(champs)) {
@@ -97,38 +99,42 @@ async function displayDismantleData(wrapper,dismantleData,details,heroDefs,buffD
 			if (rewardKeys.length==0)
 				continue;
 			if (!addedHeader) {
-				txt+=`<p style="grid-column:1/-1;font-size:1.3em">${type} Dismantle - Ends in ${getDisplayTime(time*1000)}</p>`;
+				txt+=`<p style="grid-column:1/-1;font-size:1.3em" id="dismantle${type}Ends">${type} Dismantle - Ends in ${getDisplayTime(time)}</p>`;
+				dismantleTimers[type] = time;
 				addedHeader = true;
 			}
 			txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle" style="font-size:1.2em">${name}</span><span class="formsCampaign" id="${champId}">`;
-			txt += addDismantleRow(`${numLegs}`,`Legendar${numLegs==1?'y':'ies'}`);
-			txt += addDismantleRow(`&nbsp;`,hasBeenReforged ? `HAS BEEN REFORGED` : `&nbsp;`);
-			txt += addDismantleRow(`&nbsp;`);
-			txt += addDismantleRow(`<u>Rewards</u>:`);
+			txt += dc_addRow(`${numLegs}`,`Legendar${numLegs==1?'y':'ies'}`);
+			txt += dc_addRow(`&nbsp;`,hasBeenReforged ? `HAS BEEN REFORGED` : `&nbsp;`);
+			txt += dc_addRow(`&nbsp;`);
+			txt += dc_addRow(`<u>Rewards</u>:`);
 			for (let buffId of rewardKeys) {
 				let buffName = buffNames[buffId];
 				let amount = champ.rewards[buffId];
-				txt += addDismantleRow(`${amount}`,simplifyBuffName(buffName));
+				txt += dc_addRow(`${amount}`,dc_simplifyBuffName(buffName));
 			}
 			if (champ.feats)
-				txt += addDismantleRow(`&nbsp;`,`Some Feats`);
-			txt += addDismantleRow(`&nbsp;`);
-			txt += `<span class="formsCampaignSelect"><span class="f fr falc" style="flex-grow:1"><input type="checkbox" id="dismantle_${champId}" name="dismantle_${champId}" data-reforged="${hasBeenReforged}" data-heroid="${champId}" data-redistid="${champ.id}" data-name="${name}" onclick="recalculateDismantle()"><label class="cblabel" for="dismantle_${champId}">Dismantle ${name}</label></span></span></span></span>`;
+				txt += dc_addRow(`&nbsp;`,`Some Feats`);
+			txt += dc_addRow(`&nbsp;`);
+			txt += `<span class="formsCampaignSelect"><span class="f fr falc" style="flex-grow:1"><input type="checkbox" id="dismantle_${champId}" name="dismantle_${champId}" data-reforged="${hasBeenReforged}" data-heroid="${champId}" data-redistid="${champ.id}" data-name="${name}" onclick="dc_recalculate()"><label class="cblabel" for="dismantle_${champId}">Dismantle ${name}</label></span></span></span></span>`;
 		}
 	}
 	let dismantleDismantler = document.getElementById(`dismantleDismantler`);
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
-		dismantleDismantler.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:10px" id="dismantleSelectAllRow"><input type="button" onClick="dismantleSelectAll()" name="dismantleSelectAll" id="dismantleSelectAll" style="font-size:0.9em;min-width:180px" value="Select All Champions"></span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:15px;color:var(--TangerineYellow)" id="dismantleDismantleWarningRow">&nbsp;</span><span class="f fc falc fje mr2 redButton" style="width:50%" id="dismantleDismantleRow">&nbsp;</span></span>`;
-		recalculateDismantle();
+		dismantleDismantler.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:10px" id="dc_selectAllRow"><input type="button" onClick="dc_selectAll()" name="dc_selectAll" id="dc_selectAll" style="font-size:0.9em;min-width:180px" value="Select All Champions"></span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:15px;color:var(--TangerineYellow)" id="dismantleDismantleWarningRow">&nbsp;</span><span class="f fc falc fje mr2 redButton" style="width:50%" id="dismantleDismantleRow">&nbsp;</span></span>`;
+		dc_recalculate();
+		
+		for (let timerType of Object.keys(dismantleTimers))
+			createTimer(dismantleTimers[timerType],`dc_${timerType}`,`dismantle${timerType}Ends`,`${timerType} Dismantle - Ended`,`${timerType} Dismantle - Ends in `);
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
 		dismantleDismantler.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any non-hidden champions that can be dismantled.</span>`
 	}
 }
 
-function addDismantleRow(str1,str2) {
+function dc_addRow(str1,str2) {
 	let style=``;
 	if (str2==`HAS BEEN REFORGED`)
 		style+=`color:var(--TangerineYellow);`;
@@ -143,7 +149,7 @@ function addDismantleRow(str1,str2) {
 	}
 }
 
-function recalculateDismantle() {
+function dc_recalculate() {
 	let query = document.querySelectorAll(`[type="checkbox"][id^="dismantle_"]`);
 	let totalSelected = 0;
 	let reforgedSelected = 0;
@@ -157,22 +163,22 @@ function recalculateDismantle() {
 	document.getElementById(`dismantleDismantleWarningRow`).innerHTML = reforgedSelected>0 ? `${reforgedSelected} reforged champion${reforgedSelected==1?' has':'s have'} been selected.` : `&nbsp;`;
 	let txt=``;
 	if (totalSelected>0)
-		txt=`<input type="button" onClick="dismantleDismantle()" name="dismantleDismantleButton" id="dismantleDismantleButton" style="font-size:0.9em;min-width:180px" value="Dismantle ${totalSelected} Champion${totalSelected==1?'':'s'}">`;
+		txt=`<input type="button" onClick="dc_dismantleDismantle()" name="dismantleDismantleButton" id="dismantleDismantleButton" style="font-size:0.9em;min-width:180px" value="Dismantle ${totalSelected} Champion${totalSelected==1?'':'s'}">`;
 	else
 		txt=`Can't dismantle until at least one champion is selected.`;
 	document.getElementById(`dismantleDismantleRow`).innerHTML = txt;
 }
 
-function dismantleSelectAll() {
-	let check = !document.getElementById(`dismantleSelectAll`).value.includes(`Deselect`);
+function dc_selectAll() {
+	let check = !document.getElementById(`dc_selectAll`).value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(`[type="checkbox"][id^="dismantle_"]`))
 		ele.checked = check;
-	document.getElementById(`dismantleSelectAll`).value = `${check?"Deselect":"Select"} All Champions`;
-	recalculateDismantle();
+	document.getElementById(`dc_selectAll`).value = `${check?"Deselect":"Select"} All Champions`;
+	dc_recalculate();
 }
 
-async function dismantleDismantle() {
-	disableAllDismantleButtonsAndCheckboxes(true);
+async function dc_dismantleDismantle() {
+	dc_disableAllDismantleButtonsAndCheckboxes(true);
 	let dismantleDismantler = document.getElementById(`dismantleDismantler`);
 	let txt = `<span class="f fr w100 p5">Dismantling Champions:</span>`;
 	dismantleDismantler.innerHTML = txt;
@@ -200,24 +206,24 @@ async function dismantleDismantle() {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		dismantleDismantler.innerHTML = txt;
 	}
-	disableAllDismantleButtonsAndCheckboxes(false);
+	dc_disableAllDismantleButtonsAndCheckboxes(false);
 }
 
-function disableAllDismantleButtonsAndCheckboxes(disable) {
+function dc_disableAllDismantleButtonsAndCheckboxes(disable) {
 	if (disable) {
 		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="dismantle_"]`)) {
 			ele.disabled = disable;
 			ele.style = disable ? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
 		}
-		let ele = document.getElementById(`dismantleSelectAll`);
+		let ele = document.getElementById(`dc_selectAll`);
 		ele.disabled = disable;
 		ele.style = disable ? `color:#555555;background-color:var(--good2)` : ``;
 	} else
 		codeEnablePullButtons();
 }
 
-function dismantleParseLegendaries(details,champId) {
+function dc_dismantleParseLegendaries(details,champId) {
 	let legs = details.legendary_details.legendary_items;
 	let amount = 0;
 	let reforged = false;
@@ -235,16 +241,16 @@ function dismantleParseLegendaries(details,champId) {
 	return {amount:amount,reforged:reforged};
 }
 
-function simplifyBuffName(buffName) {
+function dc_simplifyBuffName(buffName) {
 	let retName = buffName;
 	retName = retName.replace("Legendary Equipment", "Legendary");
 	return retName;
 }
 
-function initDismantleHideOptions() {
+function dc_initDismantleHideOptions() {
 	if (localStorage.scHideOpenChests==undefined)
 		return;
-	let hideOptions = getDismantleHideOptions();
+	let hideOptions = dc_getDismantleHideOptions();
 	if (hideOptions.length==0)
 		return;
 	for (let ele of document.querySelectorAll('[id^="dismantleHide"]'))
@@ -252,14 +258,14 @@ function initDismantleHideOptions() {
 			ele.checked = true;
 }
 
-function toggleDismantleHideOptions(ele) {
+function dc_toggleDismantleHideOptions(ele) {
 	let hideOption = ele.dataset.type;
 	if (localStorage.scHideDismantleOptions==undefined) {
-		setDismantleHideOptions([hideOption]);
+		dc_setDismantleHideOptions([hideOption]);
 		return;
 	}
 	let checked = ele.checked;
-	let hideOptions = getDismantleHideOptions();
+	let hideOptions = dc_getDismantleHideOptions();
 	if (checked&&!hideOptions.includes(hideOption))
 		hideOptions.push(hideOption);
 	else
@@ -267,15 +273,15 @@ function toggleDismantleHideOptions(ele) {
 	if (hideOptions.length==0)
 		localStorage.removeItem(`scHideDismantleOptions`);
 	else
-		setDismantleHideOptions(hideOptions);
+		dc_setDismantleHideOptions(hideOptions);
 }
 
-function getDismantleHideOptions() {
+function dc_getDismantleHideOptions() {
 	if (localStorage.scHideDismantleOptions!=undefined)
 		return JSON.parse(localStorage.scHideDismantleOptions);
 	return [];
 }
 
-function setDismantleHideOptions(opts) {
+function dc_setDismantleHideOptions(opts) {
 	localStorage.scHideDismantleOptions = JSON.stringify(opts);
 }

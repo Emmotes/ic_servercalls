@@ -1,4 +1,4 @@
-const v=4.04;
+const v=4.05;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const tabsContainer=document.getElementById(`tabsContainer`);
@@ -15,6 +15,7 @@ const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
+var timerList = {};
 var pbNames;
 var pbCodeRunning;
 var pbTimerRunning;
@@ -70,7 +71,7 @@ function init() {
 	initBuyChestsSliderFidelity();
 	initOpenChestsSliderFidelity();
 	initOpenChestsHideChests();
-	initDismantleHideOptions();
+	dc_initDismantleHideOptions();
 	swapTab();
 }
 
@@ -374,4 +375,43 @@ function removeUserAccount(name) {
 		settingsIconName.innerHTML = `&nbsp;`;
 	}
 	saveUserAccounts(userAccounts);
+}
+
+function createTimer(timeLength,timerName,eleName,endMsg,prefix) {
+	if (timeLength <= 0)
+		return;
+	timeAim = new Date().getTime() + timeLength;
+	timeInterval = setInterval(() => {
+		let ele = document.getElementById(eleName);
+		let timerJson = timerList[timerName];
+		if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
+			delete timerList[timerName];
+			return;
+		} else if (ele == null) {
+			clearInterval(timerList[timerName].interval);
+			delete timerList[timerName];
+			return;
+		}
+		let remaining = timerJson.aim - new Date().getTime();
+		let displayTime = `${prefix || ''}${getDisplayTime(remaining)}`;
+		ele.innerHTML = displayTime;
+		
+		if (remaining < 0) {
+			clearInterval(timerList[timerName].interval);
+			delete timerList[timerName];
+			ele.outerHTML = endMsg || ``;
+		}
+	}, 1000);
+	timerList[timerName] = {aim:timeAim,interval:timeInterval};
+}
+
+function clearTimers(prefix) {
+	for (let name of Object.keys(timerList)) {
+		if (prefix == undefined || name.startsWith(prefix)) {
+			if (timerList[name].interval != undefined) {
+				clearInterval(timerList[name].interval);
+				delete timerList[name];
+			}
+		}
+	}
 }
