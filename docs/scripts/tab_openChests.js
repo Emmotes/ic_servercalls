@@ -1,4 +1,4 @@
-const voc=1.021;
+const voc=1.022;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -154,7 +154,7 @@ async function openChests(id) {
 		try {
 			result = await openGenericChest(id,open);
 		} catch (error) {
-			txt += addChestResultRow(`- ${successType}:`,`${error.replace("Error: ","")}`);
+			txt += addChestResultRow(`- ${successType}:`,`${error}`).replace("Error: ","");
 			opening=makeOpeningRow(0,plural,amount);
 			openChestsOpener.innerHTML = opening + txt;
 			openChestsButton.value = `Open 0 ${plural}`;
