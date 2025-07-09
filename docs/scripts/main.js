@@ -1,4 +1,4 @@
-const v=4.06;
+const v=4.07;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const tabsContainer=document.getElementById(`tabsContainer`);
@@ -185,6 +185,7 @@ async function loadUserAccount() {
 		instanceId=``;
 		boilerplate=``;
 	}
+	clearTimers();
 	cleanup();
 }
 
