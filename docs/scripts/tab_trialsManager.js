@@ -1,4 +1,4 @@
-const vtm=1.007;
+const vtm=1.008;
 var roles;
 var champsById;
 var champsByName;
@@ -571,7 +571,7 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	}
 	wrapper.innerHTML = txt;
 	
-	createTimer(dayEnds,`tm_dayends`,`trialsRunningDaySpan`,`Ended`,`Ends in: `);
+	createTimer(dayEnds,`tm_dayends`,`trialsRunningDaySpan`,` Ended`,`Ends in: `);
 	createTimer(timeToDie,`tm_todie`,`trialsRunningDieSpan`,`Dead`);
 	createTimer(trialEnds,`tm_trialends`,`trialsRunningEndSpan`,`Ended`);
 }
