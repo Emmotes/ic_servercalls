@@ -1,4 +1,4 @@
-const vs=3.009;
+const vs=3.010;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -476,7 +476,7 @@ async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
 	let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
 	try {
-		let response = await fetchWithTimeout(url, {});
+		let response = await fetch(url, {signal:AbortSignal.timeout(15000)});
 		await sleep(200);
 		if (response.ok)
 			return await JSON.parse(await response.text());
@@ -493,16 +493,4 @@ async function sendOutgoingCall(server,call) {
 		throw error;
 	}
 	return `Unknown error`;
-}
-
-async function fetchWithTimeout(resource, options = {}) {
-	const { timeout = 20000 } = options;
-	const controller = new AbortController();
-	const id = setTimeout(() => controller.abort(), timeout);
-	const response = await fetch(resource, {
-		...options,
-		signal: controller.signal
-	});
-	clearTimeout(id);
-	return response;
 }
