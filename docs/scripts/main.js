@@ -1,4 +1,4 @@
-const v=4.07;
+const v=4.08;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const tabsContainer=document.getElementById(`tabsContainer`);
@@ -283,6 +283,7 @@ function handleError(wrapper,error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
 	if (error.toString().includes(`appears to be dead`))
 		SERVER = ``;
+	codeEnablePullButtons();
 }
 
 function getDefsNames(defs) {

@@ -1,4 +1,4 @@
-const vs=3.008;
+const vs=3.009;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -474,21 +474,35 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 
 async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
+	let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
 	try {
-		let response = await fetch(url);
+		let response = await fetchWithTimeout(url, {});
 		await sleep(200);
 		if (response.ok)
 			return await JSON.parse(await response.text());
 		else {
-			let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
 			if (response.status === 502) throw new Error(errTxt);
 			if (response.status === 500) throw new Error(errTxt);
 			if (response.status === 404) throw new Error(errTxt);
 			throw new Error(response.status);
 		}
 	} catch (error) {
+		if (error.name === 'AbortError')
+			throw new Error(`Timed out. ${errTxt}`);
 		console.error('Fetch', error);
 		throw error;
 	}
 	return `Unknown error`;
+}
+
+async function fetchWithTimeout(resource, options = {}) {
+	const { timeout = 20000 } = options;
+	const controller = new AbortController();
+	const id = setTimeout(() => controller.abort(), timeout);
+	const response = await fetch(resource, {
+		...options,
+		signal: controller.signal
+	});
+	clearTimeout(id);
+	return response;
 }
