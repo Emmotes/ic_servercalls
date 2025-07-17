@@ -1,4 +1,4 @@
-const vtm=1.008;
+const vtm=1.009;
 var roles;
 var champsById;
 var champsByName;
@@ -520,7 +520,7 @@ async function tm_trialsStartTrial(campaignId) {
 	trialsInfo.innerHTML = txt;
 	codeEnablePullButtons();
 	
-	if (response.success&response.okay)
+	if (response.success)
 		tm_pullData();
 }
 
