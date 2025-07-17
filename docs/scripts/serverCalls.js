@@ -1,4 +1,4 @@
-const vs=3.011;
+const vs=3.012;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -316,7 +316,7 @@ async function rerollWeeklyOffer(offerId) {
 	let params = [
 		['offer_id',offerId]
 	];
-	return await sendServerCall(SERVER,'rerollalacarteoffer',undefined,true,true);
+	return await sendServerCall(SERVER,'rerollalacarteoffer',params,true,true);
 }
 
 async function purchaseWeeklyOffer(offerId) {
