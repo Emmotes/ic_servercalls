@@ -1,4 +1,4 @@
-const voc=1.022;
+const voc=1.023;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -186,7 +186,7 @@ async function openChests(id) {
 				openChestsSlider.value -= open;
 				openChestsLabel.innerHTML = nf(openChestsSlider.value);
 				opening=makeOpeningRow(currAmount,(open==1?name:plural),amount);
-				openChestsButton.value = `Open ${openChestsSlider.value} ${openChestsSlider.value==1?name:plural}`;
+				openChestsButton.value = `Open ${nf(openChestsSlider.value)} ${openChestsSlider.value==1?name:plural}`;
 			} else {
 				txt += addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
 				opening=makeOpeningRow(0,plural,amount);
