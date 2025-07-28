@@ -1,4 +1,4 @@
-const vs=3.012;
+const vs=3.013;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -483,7 +483,7 @@ async function sendOutgoingCall(server,call) {
 	let url = `${server}post.php?${call}`;
 	let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
 	try {
-		let response = await fetch(url, {signal:AbortSignal.timeout(15000)});
+		let response = await fetch(url, {signal:AbortSignal.timeout(20000)});
 		await sleep(200);
 		if (response.ok)
 			return await JSON.parse(await response.text());
