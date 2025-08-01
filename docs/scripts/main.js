@@ -1,6 +1,8 @@
-const v=4.08;
+const v=4.009;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
+const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
+const updateContainer=document.getElementById(`updateContainer`);
 const tabsContainer=document.getElementById(`tabsContainer`);
 const settingsIconName=document.getElementById(`settingsIconName`);
 const settingsMenu=document.getElementById(`settingsMenu`);
@@ -15,6 +17,7 @@ const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
 const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
+var updateInterval;
 var timerList = {};
 var pbNames;
 var pbCodeRunning;
@@ -73,6 +76,7 @@ function init() {
 	initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
 	swapTab();
+	startUpdateCheckInterval(1800000);
 }
 
 function settingsToggle() {
@@ -109,6 +113,33 @@ function initPullButtonStuff() {
 		pbNames.push(obj.name.replace(`PullButton`,``));
 	pbCodeRunning = false;
 	pbTimerRunning = false;
+}
+
+async function startUpdateCheckInterval(delay) {
+	await sleep(delay);
+	updateInterval = setAsyncInterval(async () => {await checkUpdatedScriptsAvailable();},delay);
+}
+
+async function checkUpdatedScriptsAvailable() {
+	console.log("Checking for updates.");
+	for (let ele of [...document.querySelectorAll("script[type='text/javascript']")].reverse()) {
+		let filename = ele.src;
+		if (filename.includes("lz-string"))
+			continue;
+		let fileShort = filename.replace(/^.*?scripts\//g, '').replace(/\?.*?$/g, '');
+		let curr = Number(ele.src.replace(/^.*?\?v.*?=/g, '').match(/\d|\./g).join(''));
+		let latest = Number(getFirstLine(await (await fetch(filename,{headers:{'Cache-Control':'no-cache'}})).text()).replace(/[^\d.-]/g, ''));
+		console.log(`${fileShort}: ${curr} vs ${latest}`);
+		if (curr < latest) {
+			enableVersionUpdate();
+			return;
+		}
+	}
+}
+
+function enableVersionUpdate() {
+	updateContainer.style.display = '';
+	clearAsyncInterval(updateInterval);
 }
 
 function getPatronNameById(id) {
@@ -415,4 +446,11 @@ function clearTimers(prefix) {
 			}
 		}
 	}
+}
+
+function getFirstLine(text) {
+	var index = text.indexOf("\n")
+    if (index === -1)
+        index = undefined;
+    return text.substring(0, index);
 }

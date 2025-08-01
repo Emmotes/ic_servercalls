@@ -1,4 +1,4 @@
-const vbf=1.008;
+const vbf=1.009;
 
 async function pullFeatsData() {
 	if (isBadUserData())

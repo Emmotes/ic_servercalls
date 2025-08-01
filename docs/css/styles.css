@@ -135,6 +135,10 @@ pre {
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
+@-moz-keyframes spin180 { 0% { -moz-transform: rotate(0); } 100% { -moz-transform: rotate(180deg); } }
+@-webkit-keyframes spin180 { 0% { -webkit-transform: rotate(0); } 100% { -webkit-transform: rotate(180deg); } }
+@keyframes spin180 { 0% { transform: rotate(0); } 100% { transform: rotate(180deg); } }
+
 .menuPopupContainer {
 	position: absolute;
 	top: 75px;
@@ -319,7 +323,7 @@ input[type="checkbox"]:checked::before {
 	width: 100%;
 }
 
-.settingsContainer {
+.settingsContainer,.updateContainer {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -331,8 +335,13 @@ input[type="checkbox"]:checked::before {
 	width: max-content;
 	height: max-content;
 }
+.updateContainer {
+	flex-direction: row;
+	top: 12px;
+	left: 10px;
+}
 
-.setting {
+.setting,.update {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -342,18 +351,36 @@ input[type="checkbox"]:checked::before {
 	min-width: 48px;
 	min-height: 48px;
 }
+.update {
+	min-width: 44px;
+	min-height: 44px;
+}
 
 .setting svg {
 	fill: var(--light1);
 	stroke: black;
 }
 
+.update svg {
+	fill: var(--AlienArmpit);
+	-webkit-animation: spin180 1200ms ease-out infinite;
+	-moz-animation: spin180 1200ms ease-out infinite;
+	animation: spin180 1200ms ease-out infinite;
+}
+
 .setting:hover {
 	background-color: var(--highlightDark1);
 	transition: background-color 0.5s ease;
-	-webkit-animation:spin 10s linear infinite;
-	-moz-animation:spin 10s linear infinite;
-	animation:spin 10s linear infinite;
+	-webkit-animation: spin 10s linear infinite;
+	-moz-animation: spin 10s linear infinite;
+	animation: spin 10s linear infinite;
+	cursor: pointer;
+}
+
+.update:hover {
+	background-color: var(--highlightDark1);
+	transition: background-color 0.5s ease;
+	cursor: pointer;
 }
 
 .tabsContainer {

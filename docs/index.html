@@ -70,11 +70,21 @@
 	</div>
 
 	<div class="settingsContainer">
-		<div class="setting" id="settingsIcon"><svg onClick="settingsToggle()" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 64 64">
+		<div class="setting" id="settingsIcon">
+			<svg onClick="settingsToggle()" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 64 64">
 				<path d="M52.339,28.023C53.299,28.188,54,29.02,54,29.994v4.012c0,0.974-0.701,1.806-1.661,1.971l-3.464,0.596	c-0.395,1.461-0.969,2.846-1.707,4.129l2.026,2.868c0.562,0.795,0.469,1.88-0.219,2.568l-2.837,2.837	c-0.689,0.689-1.773,0.781-2.568,0.219l-2.868-2.025c-1.283,0.738-2.668,1.311-4.129,1.707l-0.596,3.464	C35.812,53.299,34.98,54,34.006,54h-4.012c-0.974,0-1.806-0.701-1.971-1.661l-0.596-3.464c-1.461-0.395-2.846-0.969-4.129-1.707	l-2.868,2.025c-0.795,0.562-1.88,0.469-2.568-0.219l-2.837-2.837c-0.688-0.689-0.781-1.773-0.219-2.568l2.026-2.868	c-0.738-1.283-1.312-2.668-1.707-4.129l-3.464-0.596C10.701,35.812,10,34.98,10,34.006v-4.012c0-0.974,0.701-1.806,1.661-1.971	l3.464-0.596c0.395-1.461,0.969-2.846,1.707-4.129l-2.026-2.868c-0.562-0.795-0.469-1.88,0.219-2.568l2.837-2.837	c0.689-0.688,1.773-0.781,2.568-0.219l2.868,2.026c1.283-0.738,2.668-1.311,4.129-1.707l0.596-3.464	C28.188,10.701,29.02,10,29.994,10h4.012c0.974,0,1.806,0.701,1.971,1.661l0.596,3.464c1.461,0.395,2.846,0.969,4.129,1.707	l2.868-2.026c0.795-0.562,1.88-0.469,2.568,0.219l2.837,2.837c0.688,0.688,0.781,1.773,0.219,2.568l-2.026,2.868	c0.738,1.283,1.312,2.668,1.707,4.129L52.339,28.023z M32,40c4.418,0,8-3.582,8-8s-3.582-8-8-8s-8,3.582-8,8S27.582,40,32,40z"></path>
 			</svg>
 		</div>
 		<label for="settingsIcon" id="settingsIconName" style="padding-right:5px">&nbsp;</label>
+	</div>
+	
+	<div class="updateContainer" id="updateContainer" style="display:none">
+		<div class="update" id="updateIcon">
+			<svg onClick="window.location.reload(true)" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="44" height="44" viewBox="0 0 20 20" >
+				<path d="M10.2 3.28c3.53 0 6.43 2.61 6.92 6h2.08l-3.5 4-3.5-4h2.32c-.45-1.97-2.21-3.45-4.32-3.45-1.45 0-2.73.71-3.54 1.78L4.95 5.66C6.23 4.2 8.11 3.28 10.2 3.28zm-.4 13.44c-3.52 0-6.43-2.61-6.92-6H.8l3.5-4c1.17 1.33 2.33 2.67 3.5 4H5.48c.45 1.97 2.21 3.45 4.32 3.45 1.45 0 2.73-.71 3.54-1.78l1.71 1.95c-1.28 1.46-3.15 2.38-5.25 2.38z"/>
+			</svg>
+		</div>
+		<label for="updateIcon" style="padding:5px 0 0 5px;cursor:pointer" onClick="window.location.reload(true)">Update!</label>
 	</div>
 	
 	<div id="disabledUntilInit" style="position:absolute;top:50px;left:50px;width:calc(100% - 435px)">
@@ -675,7 +685,8 @@
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.002"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.004"></script>
+	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.013"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.008"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.009"></script>
 </body>
 </html>
