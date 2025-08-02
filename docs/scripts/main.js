@@ -1,4 +1,4 @@
-const v=4.010;
+const v=4.011;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -76,7 +76,7 @@ function init() {
 	initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
 	swapTab();
-	startUpdateCheckInterval(1800000);
+	startUpdateCheckInterval(7200000); // 2 hours
 }
 
 function settingsToggle() {

@@ -377,10 +377,14 @@ input[type="checkbox"]:checked::before {
 	cursor: pointer;
 }
 
-.update:hover {
+.updateContainer:hover div {
 	background-color: var(--highlightDark1);
 	transition: background-color 0.5s ease;
 	cursor: pointer;
+}
+.updateContainer:hover label {
+	transition: color 0.5s ease;
+	color: var(--AlienArmpit);
 }
 
 .tabsContainer {
