@@ -1,4 +1,6 @@
-const voc=1.023;
+const voc=1.024;
+const hoc = `scHideOpenChests`
+const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
 
 async function pullOpenChestsData() {
@@ -295,46 +297,54 @@ function makeOpeningRow(amount,name,initAmount) {
 }
 
 function initOpenChestsHideChests() {
-	if (localStorage.scHideOpenChests==undefined)
+	if (localStorage.getItem(hoc)==undefined)
 		return;
 	let hideChests = getHiddenChestIds();
-	if (hideChests.length==0)
-		return;
 	for (let ele of document.querySelectorAll('[id^="openChestsHide"]')) {
 		let eleIds = JSON.parse(ele.dataset.ids);
 		if (eleIds.some(v => hideChests.includes(v)))
 			ele.checked = true;
+		else
+			ele.checked = false;
 	}
 }
 
-function toggleHideOpenChests(ele) {
-	let chestIds = JSON.parse(ele.dataset.ids);
-	if (localStorage.scHideOpenChests==undefined) {
-		saveHiddenChestIds(chestIds);
-		return;
-	}
-	let checked = ele.checked;
-	let hideChests = getHiddenChestIds();
-	for (let chestId of chestIds) {
-		if (checked&&!hideChests.includes(chestId))
-			hideChests.push(chestId);
-		else if (!checked&&hideChests.includes(chestId))
-			hideChests.splice(hideChests.indexOf(chestId),1);
-	}
-	if (hideChests.length==0)
-		localStorage.removeItem(`scHideOpenChests`);
-	else
-		saveHiddenChestIds(hideChests);
+function toggleHideOpenChests() {
+	let chestIds = [];
+	for (let ele of document.querySelectorAll("input[type='checkbox'][id^='openChestsHide'"))
+		if (ele.checked)
+			chestIds.push(...JSON.parse(ele.dataset.ids));
+	saveHiddenChestIds(chestIds);
 }
 
 function getHiddenChestIds() {
-	if (localStorage.scHideOpenChests!=undefined)
-		return JSON.parse(localStorage.scHideOpenChests);
+	let strg = localStorage.getItem(hoc);
+	if (strg!=undefined) {
+		strg = JSON.parse(localStorage.getItem(hoc));
+		// Detect migration required.
+		if (Array.isArray(strg)) {
+			saveHiddenChestIds(strg);
+			return strg;
+		}
+		if (strg[currAccount.name] != undefined)
+			return strg[currAccount.name];
+	}
 	return [];
 }
 
 function saveHiddenChestIds(chestIds) {
-	localStorage.scHideOpenChests = JSON.stringify(chestIds);
+	let strg = localStorage.getItem(hoc);
+	if (strg==undefined)
+		strg = {};
+	else
+		strg = JSON.parse(strg);
+	if (Array.isArray(strg))
+		strg = {};
+	if (chestIds.length == 0)
+		delete strg[currAccount.name];
+	else
+		strg[currAccount.name] = chestIds;
+	localStorage.setItem(hoc, JSON.stringify(strg));
 }
 
 function initOpenChestsSliderFidelity() {
@@ -349,8 +359,8 @@ function initOpenChestsSliderFidelity() {
 function toggleOpenChestsSliderFidelity(fidelity) {
 	if (fidelity==undefined)
 		fidelity = getOpenChestsSliderFidelity();
-	if (fidelity==1&&localStorage.scOpenChestsSliderFidelity!=undefined)
-		localStorage.removeItem(`scOpenChestsSliderFidelity`);
+	if (fidelity==1&&localStorage.getItem(ocsf)!=undefined)
+		localStorage.removeItem(ocsf);
 	else if (fidelity!=1)
 		saveOpenChestsSliderFidelity(fidelity);
 	for (let ele of document.querySelectorAll('input[id^="openChests"][id$="Slider"]')) {
@@ -378,8 +388,9 @@ function disableSlidersButtonsAndHolders(disable) {
 }
 
 function getOpenChestsSliderFidelity() {
-	if (localStorage.scOpenChestsSliderFidelity!=undefined)
-		return Number(localStorage.scOpenChestsSliderFidelity);
+	let strg = localStorage.getItem(ocsf);
+	if (strg!=undefined)
+		return Number(strg);
 	return 1
 }
 

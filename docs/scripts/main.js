@@ -1,4 +1,4 @@
-const v=4.009;
+const v=4.010;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -121,15 +121,12 @@ async function startUpdateCheckInterval(delay) {
 }
 
 async function checkUpdatedScriptsAvailable() {
-	console.log("Checking for updates.");
 	for (let ele of [...document.querySelectorAll("script[type='text/javascript']")].reverse()) {
 		let filename = ele.src;
 		if (filename.includes("lz-string"))
 			continue;
-		let fileShort = filename.replace(/^.*?scripts\//g, '').replace(/\?.*?$/g, '');
 		let curr = Number(ele.src.replace(/^.*?\?v.*?=/g, '').match(/\d|\./g).join(''));
 		let latest = Number(getFirstLine(await (await fetch(filename,{headers:{'Cache-Control':'no-cache'}})).text()).replace(/[^\d.-]/g, ''));
-		console.log(`${fileShort}: ${curr} vs ${latest}`);
 		if (curr < latest) {
 			enableVersionUpdate();
 			return;
@@ -215,6 +212,7 @@ async function loadUserAccount() {
 		SERVER=``;
 		instanceId=``;
 		boilerplate=``;
+		initOpenChestsHideChests();
 	}
 	clearTimers();
 	cleanup();
