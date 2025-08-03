@@ -1,107 +1,76 @@
 :root {
 	/* colour names from: https://www.color-name.com/ */
-	/* darks */
-	--dark1hue: 240;
-	--dark1sat: 15%;
-	--dark1lig: 16%;
-	--dark1: hsl(var(--dark1hue),var(--dark1sat),var(--dark1lig)); /* Dark Gunmetal */
-
-	--dark2hue: 307;
-	--dark2sat: 36%;
-	--dark2lig: 9%;
-	--dark2: hsl(var(--dark2hue),var(--dark2sat),var(--dark2lig));  /* Eerie Black */
-	
-	--dark3hue: 331;
-	--dark3sat: 37%;
-	--dark3lig: 25%;
-	--dark3: hsl(var(--dark3hue),var(--dark3sat),var(--dark3lig));  /* Old Mauve */
-	
-	--dark4hue: 240;
-	--dark4sat: 14%;
-	--dark4lig: 8%;
-	--dark4: hsl(var(--dark4hue),var(--dark4sat),var(--dark4lig));  /* Chinese Black */
-	
-	/* mids */
-	--mid1hue: 325;
-	--mid1sat: 24%;
-	--mid1lig: 56%;
-	--mid1: hsl(var(--mid1hue),var(--mid1sat),var(--mid1lig)); /* English Lavender */
-	
-	--mid2hue: 26;
-	--mid2sat: 12%;
-	--mid2lig: 53%;
-	--mid2: hsl(var(--mid2hue),var(--mid2sat),var(--mid2lig)); /* Mountbatten Pink */
-	
-	--mid3hue: 258;
-	--mid3sat: 21%;
-	--mid3lig: 41%;
-	--mid3: hsl(var(--mid3hue),var(--mid3sat),var(--mid3lig)); /* Purple Navy */
-	
-	/* lights */
-	--light1hue: 290;
-	--light1sat: 14%;
-	--light1lig: 83%;
-	--light1: hsl(var(--light1hue),var(--light1sat),var(--light1lig)); /* Languid Lavender */
-	
-	--light2hue: 289;
-	--light2sat: 17%;
-	--light2lig: 88%;
-	--light2: hsl(var(--light2hue),var(--light2sat),var(--light2lig)); /* Platinum */
-	
-	--light3hue: 289;
-	--light3sat: 44%;
-	--light3lig: 95%;
-	--light3: hsl(var(--light3hue),var(--light3sat),var(--light3lig)); /* Anti-Flash White */
-	
-	/* warnings */
-	--warning1hue: 0;
-	--warning1sat: 85%;
-	--warning1lig: 55%;
-	--warning1: hsl(var(--warning1hue),var(--warning1sat),var(--warning1lig));
-	
-	--warning2hue: 300;
-	--warning2sat: 38%;
-	--warning2lig: 3%;
-	--warning2: hsl(var(--warning2hue),var(--warning2sat),var(--warning2lig)); /* Maximal Red */
-	
-	/* goods */
-	--good1hue: 110;
-	--good1sat: 75%;
-	--good1lig: 55%;
-	--good1: hsl(var(--good1hue),var(--good1sat),var(--good1lig)); /* Lime Green */
-	
-	--good2hue: 110;
-	--good2sat: 38%;
-	--good2lig: 3%;
-	--good2: hsl(var(--good2hue),var(--good2sat),var(--good2lig)); /* Lime Green */
-	
-	/* highlight darks */
-	--highlightDark1: #38384A;
-	
-	--darken: 0.6;
-	--lighten: 1.4;
-	
+	/* or https://colors.artyclick.com/color-name-finder/ */
+	/* or https://chir.ag/projects/name-that-color/ */
+	/* or https://colornamer.robertcooper.me/ */
 	--AlienArmpit: #7BDF00;
-	--Concrete: #F2F2F2;
+	--Arsenic: #434343;
 	--Black: #000000;
+	--Blackout: #222222;
 	--Boulder: #767676;
-	--Sooty: #141414;
-	--Onyx: #101010;
-	--Silver: #CCCCCC;
-	--WhitecapFoam: #DEE3DE;
+	--Bouquet: #AA7594;
+	--CarminePink: #EE2B2B;
+	--Carrot: #FF8929;
 	--Cascara: #F04735;
-	--OffBlack: #313131;
-	--EerieBlack: #1c1c1c;
+	--Charade: #1c1c26;
+	--ChineseBlack: #121217;
+	--Chocolate: #330000;
 	--CodGrey: #1A1A1A;
-	--HeavyMetal: #181918;
+	--Concrete: #F2F2F2;
+	--CrystalBell: #EFEFEF;
+	--DarkGunmetal: #22222E;
+	--DrWhite: #FAFAFA;
+	--Eagle: #BBBBAA;
+	--EerieBlack: #1c1c1c;
 	--Eggshell: #F0E7D5;
+	--Emperor: #555555;
+	--Fire: #AA4400;
 	--Flavescent: #FFEB9B;
-	--Maroon: #770000;
+	--GordonsGreen: #0B1509;
+	--GoshawkGrey: #444444;
+	--Gunmetal: #2D2D3D;
+	--Gunpowder: #3B3B50;
+	--HeavyMetal: #181918;
+	--HunterGreen: #0F4900;
+	--LanguidLavender: #D7CDD9;
 	--Lead: #202020;
+	--Licorice: #150915;
+	--MamaAfrica: #551111;
+	--Maroon: #770000;
+	--Marshland: #020402;
+	--MeskiBlack: #200F1E;
+	--MidnightMoss: #060B05;
+	--MountbattenPink: #8E7895;
 	--Nero: #252525;
+	--OffBlack: #313131;
+	--OldMauve: #592940;
+	--Onyx: #101010;
+	--PastelGreen: #70E065;
+	--PurpleSky: #60537E;
+	--RavensCoat: #040204;
+	--RedOrange: #FF3333;
+	--RedOxide: #720000;
+	--RiverStyx: #191921;
 	--Saffron: #FBBA37;
+	--Sand: #F0C080;
+	--ScreaminGreen: #55FF55;
+	--SentimentalPink: #F6EDF8;
+	--Shark: #1F212A;
+	--ShipGrey: #38384A;
+	--Silver: #CCCCCC;
+	--Soap: #DDCCEE;
+	--Sooty: #141414;
+	--Spangle: #E3DAE5;
+	--SuperSilver: #EEEEEE;
 	--TangerineYellow: #FFCC00;
+	--ThamarBlack: #191919;
+	--TheEnd: #2A2A2A;
+	--ToxicGreen: #53E236;
 	--UltramarineBlue: #2955FF;
+	--VampireBlack: #0B050B;
 	--Violet: #8408EF;
-	--Wolfram: #B6B6B6
+	--White: #FFFFFF;
+	--WhitecapFoam: #DEE3DE;
+	--Wolfram: #B6B6B6;
+	--Woodsmoke: #0B0B0E;
 }

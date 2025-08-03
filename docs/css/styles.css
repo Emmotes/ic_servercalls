@@ -11,8 +11,8 @@ html {
 
 body {
 	font-family:'OpenSansSemibold', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-	color: var(--light1);
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*0.8));
+	color: var(--LanguidLavender);
+	background-color: var(--Charade);
 }
 
 h1{
@@ -41,17 +41,17 @@ h6{
 }
 h1,h2,h3 {
 	line-height: 1em;
-	color: var(--light3);
+	color: var(--SentimentalPink);
 }
 h4,h5 {
 	line-height: 1em;
 }
 h3,h4,h5 {
-	color: var(--light2);
+	color: var(--Spangle);
 }
 h6 {
 	line-height: 1em;
-	color: var(--light1);
+	color: var(--LanguidLavender);
 }
 ul {
 	padding-left: 3em;
@@ -76,44 +76,44 @@ table{
 th{
     text-align:left;
     padding:5px 10px;
-    border-bottom:1px solid #434343;
-    color:#b6b6b6;
+    border-bottom:1px solid var(--Arsenic);
+    color:var(--Wolfram);
     font-family:'OpenSansSemibold', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-weight:bold;
 }
 td{
     text-align:left;
     padding:5px 10px;
-    border-bottom:1px solid #434343;
+    border-bottom:1px solid var(--Arsenic);
 }
 
 a {
 	text-decoration: none;
-	color: var(--light2);
+	color: var(--Spangle);
 	transition: 0.6s;
 }
 
 a:hover {
-	color: var(--light3);
+	color: var(--SentimentalPink);
 }
 
 summary {
 	cursor: pointer;
-	color: var(--light2);
+	color: var(--Spangle);
 }
 summary:hover {
 	cursor: pointer;
-	color: var(--light3);
+	color: var(--SentimentalPink);
 }
 
 blockquote {
-	border-left: 4px solid var(--mid1);
+	border-left: 4px solid var(--Bouquet);
 	margin-left: 10px;
 }
 
 code {
 	font-family: monospace;
-	color: var(--mid1);
+	color: var(--Bouquet);
 	font-size: 1.15em;
 }
 
@@ -125,8 +125,8 @@ details {
 
 pre {
 	padding: 8px 15px;
-	background: #191919;
-	border: 1px solid black;
+	background: var(--ThamarBlack);
+	border: 1px solid var(--Black);
 	overflow: auto;
 	overflow-y: hidden;
 }
@@ -153,8 +153,8 @@ pre {
 	margin: auto;
 	width: fit-content;
 	height: fit-content;
-	background-color: var(--highlightDark1);
-	border: 1px solid black;
+	background-color: var(--ShipGrey);
+	border: 1px solid var(--Black);
 	border-radius: 20px;
 	display: none;
 	flex-direction: column;
@@ -180,8 +180,8 @@ pre {
 
 input[type="input"] {
 	width: 80%;
-	background-color: var(--dark1);
-	color: var(--light1);
+	background-color: var(--DarkGunmetal);
+	color: var(--LanguidLavender);
 	padding: 3px;
 	font-size: 0.9em;
 	border: 1px solid currentColor;
@@ -194,7 +194,7 @@ input[type="range"] {
 	height: 10px;
 	border: 1px solid var(--Boulder);
 	border-radius: 5px;
-	background: var(--dark4);
+	background: var(--ChineseBlack);
 	outline: none;
 	opacity: 0.7;
 	-webkit-transition: .2s;
@@ -207,7 +207,7 @@ input[type="range"]::-webkit-slider-thumb {
 	width: 15px;
 	height: 15px;
 	border-radius: 50%;
-	background: var(--light3);
+	background: var(--SentimentalPink);
 	cursor: pointer;
 }
 
@@ -215,14 +215,14 @@ input[type="range"]::-moz-range-thumb {
 	width: 25px;
 	height: 25px;
 	border-radius: 50%;
-	background: var(--light3);
+	background: var(--SentimentalPink);
 	cursor: pointer;
 }
 
 input[type="button"] {
 	width: 80%;
-	background-color: var(--dark4);
-	color: var(--light1);
+	background-color: var(--ChineseBlack);
+	color: var(--LanguidLavender);
 	padding: 3px;
 	font-size: 0.9em;
 	border: 1px solid currentColor;
@@ -231,8 +231,8 @@ input[type="button"] {
 
 input[type="number"] {
 	width: 80%;
-	background-color: var(--dark4);
-	color: var(--light1);
+	background-color: var(--ChineseBlack);
+	color: var(--LanguidLavender);
 	padding: 3px;
 	border: 1px solid var(--Boulder);
 	border-radius: 6px;
@@ -240,8 +240,8 @@ input[type="number"] {
 
 input[type="text"],input[type="text"].focus {
 	width: 80%;
-	background-color: var(--dark4);
-	color: var(--light1);
+	background-color: var(--ChineseBlack);
+	color: var(--LanguidLavender);
 	padding: 3px;
 	border: 1px solid var(--Boulder);
 	border-radius: 6px;
@@ -249,7 +249,7 @@ input[type="text"],input[type="text"].focus {
 
 select {
 	width: 80%;
-	background: var(--dark4);
+	background: var(--ChineseBlack);
 	color: currentColor;
 	height: 25px;
 	border: 1px solid var(--Boulder);
@@ -260,30 +260,30 @@ select {
 }
 
 input[type="button"]:hover {
-	background-color: hsl(var(--dark4hue),var(--dark4sat),calc(var(--dark4lig)*var(--lighten)));
+	background-color: var(--RiverStyx);
 }
 
 input[type="button"]:focus {
-	background-color: hsl(var(--dark4hue),var(--dark4sat),calc(var(--dark4lig)*var(--darken)));
+	background-color: var(--Woodsmoke);
 }
 
 .redButton input[type="button"] {
-	color: var(--warning1);
-	background-color: var(--warning2);
+	color: var(--CarminePink);
+	background-color: var(--VampireBlack);
 }
 
 .redButton input[type="button"]:hover {
-	background-color: hsl(var(--warning2hue),var(--warning2sat),calc(var(--warning2lig)*var(--lighten)*var(--lighten)));
+	background-color: var(--Licorice);
 }
 
 .redButton input[type="button"]:focus {
-	background-color: hsl(var(--warning2hue),var(--warning2sat),calc(var(--warning2lig)*var(--darken)*var(--darken)));
+	background-color: var(--RavensCoat);
 }
 
 input[type="checkbox"] {
 	-webkit-appearance: none;
 	appearance: none;
-	background-color: hsl(calc(var(--dark1hue)*0.95),var(--dark1sat),calc(var(--dark1lig)*0.9));
+	background-color: var(--Shark);
 	margin: 4px;
 	font: inherit;
 	color: currentColor;
@@ -310,7 +310,7 @@ input[type="checkbox"]::before {
 }
 
 input[type="checkbox"]:checked {
-	background-color: hsl(calc(var(--dark1hue)*1.5),calc(var(--dark1sat)*14),calc(var(--dark1lig)*1.4));
+	background-color: var(--RedOxide);
 }
 
 input[type="checkbox"]:checked::before {
@@ -357,8 +357,8 @@ input[type="checkbox"]:checked::before {
 }
 
 .setting svg {
-	fill: var(--light1);
-	stroke: black;
+	fill: var(--LanguidLavender);
+	stroke: var(--Black);
 }
 
 .update svg {
@@ -369,7 +369,7 @@ input[type="checkbox"]:checked::before {
 }
 
 .setting:hover {
-	background-color: var(--highlightDark1);
+	background-color: var(--ShipGrey);
 	transition: background-color 0.5s ease;
 	-webkit-animation: spin 10s linear infinite;
 	-moz-animation: spin 10s linear infinite;
@@ -378,7 +378,7 @@ input[type="checkbox"]:checked::before {
 }
 
 .updateContainer:hover div {
-	background-color: var(--highlightDark1);
+	background-color: var(--ShipGrey);
 	transition: background-color 0.5s ease;
 	cursor: pointer;
 }
@@ -413,36 +413,36 @@ input[type="checkbox"]:checked::before {
 .tabsLabel {
 	padding: 8px 10px;
 	cursor: pointer;
-	border-bottom: 2px ridge black;
+	border-bottom: 2px ridge var(--Black);
 	border-radius: 5px;
-	background-color: var(--dark1);
+	background-color: var(--DarkGunmetal);
 	font-size: 1.4em;
 	margin: 1px 1px 2px 1px;
 }
 
 .tabsLabel:hover {
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*1.3));
+	background-color: var(--Gunmetal);
 }
 
 .tabsContent {
 	order: 1;
 	width: 100%;
 	display: none;
-	background-color: var(--dark1);
+	background-color: var(--DarkGunmetal);
 	padding: 12px 20px 0 20px;
 	margin-bottom: 20px;
 	border-radius: 0 5px 5px 5px;
 }
 
 .tabsRadio:checked+.tabsLabel {
-	color: #efefef;
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*1.7));
-	border-bottom: 2px ridge #bbbbaa;
+	color: var(--CrystalBell);
+	background-color: var(--Gunpowder);
+	border-bottom: 2px ridge var(--Eagle);
 }
 
 .tabsRadio:focus+.tabsLabel {
-	color: #fafafa;
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*1.7));
+	color: var(--DrWhite);
+	background-color: var(--Gunpowder);
 }
 .tabsRadio:checked+.tabsLabel+.tabsContent {
 	display: initial;
@@ -464,7 +464,7 @@ input[type="checkbox"]:checked::before {
 	flex-direction: column;
 	padding: 10px;
 	border-radius: 5px;
-	background-color: hsl(calc(var(--dark1hue)*0.95),var(--dark1sat),calc(var(--dark1lig)*1.3));
+	background-color: var(--Gunmetal);
 	flex-grow: 1;
 	margin-bottom: 15px;
 }
@@ -506,7 +506,7 @@ input[type="checkbox"]:checked::before {
 	visibility: hidden;
 	padding: 25px;
 	border-radius: 5px;
-	background-color: hsl(var(--dark1hue),var(--dark1sat),calc(var(--dark1lig)*0.6));
+	background-color: var(--Sooty);
 	
 	display: flex;
 	justify-content: center;
@@ -517,7 +517,7 @@ input[type="checkbox"]:checked::before {
 	left: 0px;
 	bottom: 0px;
 	transform: translate(0px, -40px);
-	color: #f0e7d5;
+	color: var(--Eggshell);
 	pointer-events: none;
 	font-size: 1.1em;
 }
@@ -536,24 +536,24 @@ input[type="checkbox"]:checked::before {
 }
 
 .featsChampionList input[type="checkbox"]:checked {
-	background-color: hsl(calc(var(--dark1hue)*1.95),calc(var(--dark1sat)*14),calc(var(--dark1lig)*0.9));
+	background-color: var(--HunterGreen);
 }
 
 .greenButton input[type="button"] {
-	color: var(--good1);
-	background-color: var(--good2);
+	color: var(--ToxicGreen);
+	background-color: var(--MidnightMoss);
 }
 
 .greenButton input[type="button"]:hover {
-	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--lighten)*var(--lighten)));
+	background-color: var(--GordonsGreen);
 }
 
 .greenButton input[type="button"]:focus {
-	background-color: hsl(var(--good2hue),var(--good2sat),calc(var(--good2lig)*var(--darken)*var(--darken)));
+	background-color: var(--Marshland);
 }
 
 .greenCheckbox input[type="checkbox"]:checked {
-	background-color: hsl(calc(var(--dark1hue)*1.95),calc(var(--dark1sat)*14),calc(var(--dark1lig)*0.9));
+	background-color: var(--HunterGreen);
 }
 
 .partiesWrapper {
@@ -586,6 +586,6 @@ input[type="checkbox"]:checked::before {
 }
 
 .greyButton input[type="button"] {
-	color: #555555;
-	background-color: var(--good2);
+	color: var(--Emperor);
+	background-color: var(--MidnightMoss);
 }
