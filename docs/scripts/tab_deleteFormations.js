@@ -1,4 +1,4 @@
-const vdf=1.009;
+const vdf=1.010;
 
 async function pullFormationSaves() {
 	if (isBadUserData())
@@ -160,6 +160,11 @@ async function deleteFormationSaves() {
 			}
 			// Can't delete the autosaves atm. So have to rename them first.
 			let campId = form.dataset.campid;
+			// ===== EXCEPTION Start =====
+			// Deal with Umberto's broken campaign id.
+			if (form.dataset.camp.includes(`Umberto - Founders`) && campId == 17)
+				campId = 18;
+			// ===== EXCEPTION  End  =====
 			let result = await saveFormation(id,campId,`renameAutoSaveToDeleteIt`);
 			if (result[FR] == `Invalid or incomplete parameters`) {
 				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
