@@ -1,4 +1,4 @@
-const vtm=1.009;
+const vtm=1.010;
 var roles;
 var champsById;
 var champsByName;
@@ -537,7 +537,7 @@ function tm_displayRunningTrial(wrapper,trialsInfo,campaign) {
 	let tierName = diff.name;
 	let day = campaign.current_day;
 	let completed = false;
-	if (campaign.dps_bonuses_earned!=undefined&&campaign.dps_bonuses_earned[day]!=undefined&&day>0)
+	if (campaign.dps_bonuses_earned!=undefined&&campaign.dps_bonuses_earned[day-1]!=undefined&&day>0)
 		completed = campaign.dps_bonuses_earned[day-1] == 1;
 	let dayEnds = campaign.day_ends_in*1000;
 	let trialEnds = campaign.ends_in*1000;
