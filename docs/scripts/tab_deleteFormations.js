@@ -1,4 +1,4 @@
-const vdf=1.010;
+const vdf=1.011;
 
 async function pullFormationSaves() {
 	if (isBadUserData())
@@ -43,6 +43,7 @@ async function displayFormationSaves(wrapper,saves) {
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
+			let campId = Number(formation.campaign_id)
 			let formName = formation.name;
 			let formFav = Number(formation.favorite||0);
 			let formLet = (formFav==1?`Q`:(formFav==2?`W`:(formFav==3?`E`:``)));
@@ -55,7 +56,7 @@ async function displayFormationSaves(wrapper,saves) {
 			}
 			if (extras!=``) extras = ` (${extras})`;
 			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${camp}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
+			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${campId}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 			added++;
 		}
 		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
@@ -160,11 +161,6 @@ async function deleteFormationSaves() {
 			}
 			// Can't delete the autosaves atm. So have to rename them first.
 			let campId = form.dataset.campid;
-			// ===== EXCEPTION Start =====
-			// Deal with Umberto's broken campaign id.
-			if (form.dataset.camp.includes(`Umberto - Founders`) && campId == 17)
-				campId = 18;
-			// ===== EXCEPTION  End  =====
 			let result = await saveFormation(id,campId,`renameAutoSaveToDeleteIt`);
 			if (result[FR] == `Invalid or incomplete parameters`) {
 				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
