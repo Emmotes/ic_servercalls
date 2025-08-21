@@ -1,4 +1,4 @@
-const vdf=1.012;
+const vdf=1.013;
 
 async function df_pullFormationSaves() {
 	if (isBadUserData())
@@ -40,7 +40,7 @@ async function df_displayFormationSaves(wrapper,saves) {
 		let patronName = patron==0?``:paronAdvIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
-		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign">`;
+		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let campId = Number(formation.campaign_id)
@@ -128,7 +128,7 @@ function df_createFormationTooltip(name,champs,formation) {
 }
 
 function df_formsSelectAll(id,check) {
-	for (let ele of document.getElementById(id).querySelectorAll('input[type="checkbox"]'))
+	for (let ele of document.getElementById(`formsCamp_${id}`).querySelectorAll('input[type="checkbox"]'))
 		ele.checked = check;
 }
 

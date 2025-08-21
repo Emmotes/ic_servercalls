@@ -1,4 +1,4 @@
-const vbf=1.010;
+const vbf=1.011;
 
 async function bf_pullFeatsData() {
 	if (isBadUserData())
@@ -78,7 +78,7 @@ async function bf_displayFeatsData(wrapper,details,defs) {
 		if (feats.length == 0)
 			continue;
 		let name = champs[id].name;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign">`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="champFeats_${id}">`;
 		for (let feat of champs[id].feats) {
 			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-champ="${name}" data-cost="${feat.cost}" data-featid="${feat.id}" onClick="bf_featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
 		}
@@ -123,7 +123,7 @@ function bf_featsRecalcCost() {
 }
 
 function bf_featsSelectAll(id,check) {
-	for (let ele of document.getElementById(id).querySelectorAll(`input[type="checkbox"]`))
+	for (let ele of document.getElementById(`champFeats_${id}`).querySelectorAll(`input[type="checkbox"]`))
 		ele.checked = check;
 	bf_featsRecalcCost();
 }
