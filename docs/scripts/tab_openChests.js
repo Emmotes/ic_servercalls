@@ -1,4 +1,4 @@
-const voc=1.025;
+const voc=1.026;
 const hoc = `scHideOpenChests`
 const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
@@ -94,10 +94,10 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 		let canOpen = min >= max;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
 		if (canOpen)
-			txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value);" data-chestid="${id}"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span>`;
-		txt += `<span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder">`;
+			txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChestPacks${id}Slider" id="openChestPacks${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value,true);" data-chestid="${id}"><label class="cblabel" for="openChestPacks${id}Slider" id="openChestPacks${id}Label" style="width:20%;text-align:center">0</label></span>`;
+		txt += `<span class="formsCampaignSelect greenButton" id="openChestPacks${id}ButtonHolder">`;
 		if (canOpen)
-			txt += `<input type="button" id="openChests${id}Button" onClick="oc_openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="visibility:hidden;width:80%">`;
+			txt += `<input type="button" id="openChestPacks${id}Button" onClick="oc_openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="visibility:hidden;width:80%">`;
 		else
 			txt += `You don't have enough to open this pack.`;
 		txt += `</span></span></span>`;
@@ -110,9 +110,11 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 		wrapper.innerHTML = `&nbsp;`;
 }
 
-function oc_updateOpenChestsSliderValue(id,val) {
-	document.getElementById(`openChests${id}Label`).innerHTML=nf(val);
-	let button = document.getElementById(`openChests${id}Button`);
+function oc_updateOpenChestsSliderValue(id,val,pack) {
+	if (pack==undefined)
+		pack=false;
+	document.getElementById(`openChest${pack?'Pack':''}s${id}Label`).innerHTML=nf(val);
+	let button = document.getElementById(`openChest${pack?'Pack':''}s${id}Button`);
 	if (val > 0) {
 		if (button.value != `Open Chest Pack`)
 			button.value = `Open ${nf(val)} ${val==1?button.dataset.name:button.dataset.plural}`;
