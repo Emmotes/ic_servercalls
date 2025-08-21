@@ -1,4 +1,4 @@
-const voc=1.026;
+const voc=1.027;
 const hoc = `scHideOpenChests`
 const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
@@ -236,8 +236,8 @@ async function oc_openChestPack(id,packId,amount) {
 		return;
 	}
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
-	let openChestsButton = document.getElementById(`openChests${id}Button`);
-	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
+	let openChestsButton = document.getElementById(`openChestPacks${id}Button`);
+	let openChestsButtonHolder = document.getElementById(`openChestPacks${id}ButtonHolder`);
 	oc_disableSlidersButtonsAndHolders(true);
 	
 	let name = openChestsButton.dataset.name;
