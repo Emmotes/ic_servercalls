@@ -1,6 +1,6 @@
-const vpm=1.008;
+const vpm=1.009;
 
-async function pullPartyData() {
+async function pm_pullPartyData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -12,7 +12,7 @@ async function pullPartyData() {
 		let gameInstances = (await getUserDetails()).details.game_instances;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let adventures = (await getDefinitions("adventure_defines")).adventure_defines;
-		await displayPartyData(wrapper,gameInstances,adventures);
+		await pm_displayPartyData(wrapper,gameInstances,adventures);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -20,20 +20,20 @@ async function pullPartyData() {
 	}
 }
 
-async function displayPartyData(wrapper,gameInstances,adventures) {
+async function pm_displayPartyData(wrapper,gameInstances,adventures) {
 	let txt = ``;
 	for (let gameInstance of gameInstances) {
 		let id = gameInstance.game_instance_id;
 		let adventureId = gameInstance.current_adventure_id;
 		if (adventureId == undefined)
 			continue;
-		let adventure = adventureId > 0 ? getAdventure(adventureId,adventures) : undefined;
+		let adventure = adventureId > 0 ? pm_getAdventure(adventureId,adventures) : undefined;
 		let customName = gameInstance.custom_name;
-		if (customName!=``)
+		if (customName!=``&&customName!=undefined)
 			customName = `: ${customName}`;
-		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}${customName}</span><span class="formsCampaign" id="${id}">`
+		txt+=`<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}${customName}</span><span class="formsCampaign">`
 		if (adventureId == -1 || adventure == undefined) {
-			txt+=addPartyRow(`Chilling on the map screen.`);
+			txt+=pm_addPartyRow(`Chilling on the map screen.`);
 			txt+=`</span></span>`;
 			continue;
 		}
@@ -61,29 +61,29 @@ async function displayPartyData(wrapper,gameInstances,adventures) {
 		}
 		
 		if (name != adv)
-			txt+=addPartyRow(`Name`,name);
-		txt+=addPartyRow(`Adventure`,adv);
-		txt+=addPartyRow(`Campaign`,camp);
+			txt+=pm_addPartyRow(`Name`,name);
+		txt+=pm_addPartyRow(`Adventure`,adv);
+		txt+=pm_addPartyRow(`Campaign`,camp);
 		if (patronId > 0)
-			txt+=addPartyRow(`Patron`,getPatronNameById(patronId));
-		txt+=addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
+			txt+=pm_addPartyRow(`Patron`,getPatronNameById(patronId));
+		txt+=pm_addPartyRow(`Current Area`,`z${gameInstance.current_area}`);
 		if (areaGoal != undefined)
-			txt+=addPartyRow(`Area Goal`,`z${areaGoal}`);
-		txt+=`<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="partyEndAdventure(${id})" value="End Party ${id}"></span>`;
+			txt+=pm_addPartyRow(`Area Goal`,`z${areaGoal}`);
+		txt+=`<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="pm_partyEndAdventure(${id})" value="End Party ${id}"></span>`;
 		txt+=`</span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,2);
 	wrapper.innerHTML = txt;
 }
 
-function getAdventure(adventureId,adventures) {
+function pm_getAdventure(adventureId,adventures) {
 	for (let adventure of adventures)
 		if (adventure.id == adventureId)
 			return adventure;
 	return undefined;
 }
 
-async function partyEndAdventure(partyId) {
+async function pm_partyEndAdventure(partyId) {
 	let span = document.getElementById(`partyEndAdventureSpan${partyId}`);
 	let txt=``;
 	txt+=`Ending Party...`;
@@ -98,7 +98,7 @@ async function partyEndAdventure(partyId) {
 	}
 }
 
-function addPartyRow(left,right) {
+function pm_addPartyRow(left,right) {
 	let txt = `<span class="formsCampaignFormation"><span class="f fr falc fjs p5 w100">`;
 	if (right==undefined)
 		txt+=`<span class="f falc fjs w100">${left}</span>`;

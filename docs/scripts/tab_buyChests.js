@@ -1,4 +1,4 @@
-const vbc=1.016;
+const vbc=1.017;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -6,7 +6,7 @@ let silverChestOpt=`<option value="1">Silver Chest</option>`;
 let notEnoughGems=`<option value="-1">Not enough gems.</option>`;
 let notEnoughEventTokens=`<option value="-1">Not enough event tokens.</option>`;
 
-async function pullBuyChestsData() {
+async function bc_pullBuyChestsData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -30,14 +30,14 @@ async function pullBuyChestsData() {
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
-		await displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
+		await bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
 }
 
-async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop) {
+async function bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop) {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let eventChestIds = [];
 	let eventChestNames = [];
@@ -65,14 +65,14 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 	let chestPacks = Math.floor(tokens/chestPackCost);
 	
 	let txt = ``;
-	txt+=addChestsRow(`Available Gems:`,nf(gems),`buyChestsGems`,gems);
-	txt+=addChestsRow(`Maximum Silver Chests:`,nf(silverChests),`buyChestsSilver`,silverChests);
-	txt+=addChestsRow(`Maximum Gold Chests:`,nf(goldChests),`buyChestsGold`,goldChests);
-	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	txt+=addChestsRow(`Available Event Tokens:`,nf(tokens),`buyChestsTokens`,tokens);
-	txt+=addChestsRow(`Maximum Chest Packs:`,nf(chestPacks),`buyChestsEvent`,chestPacks);
-	txt+=addChestsRow(`&nbsp;`,`&nbsp;`);
-	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="modifyBuyChestsBuyAmountSlider(this.value);" style="width:100%"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
+	txt+=bc_addChestsRow(`Available Gems:`,nf(gems),`buyChestsGems`,gems);
+	txt+=bc_addChestsRow(`Maximum Silver Chests:`,nf(silverChests),`buyChestsSilver`,silverChests);
+	txt+=bc_addChestsRow(`Maximum Gold Chests:`,nf(goldChests),`buyChestsGold`,goldChests);
+	txt+=bc_addChestsRow(`&nbsp;`,`&nbsp;`);
+	txt+=bc_addChestsRow(`Available Event Tokens:`,nf(tokens),`buyChestsTokens`,tokens);
+	txt+=bc_addChestsRow(`Maximum Chest Packs:`,nf(chestPacks),`buyChestsEvent`,chestPacks);
+	txt+=bc_addChestsRow(`&nbsp;`,`&nbsp;`);
+	let s=`<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="bc_modifyBuyChestsBuyAmountSlider(this.value);" style="width:100%"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
 	if (gems >= silverChestCost)
 		s+=`${silverChestOpt}<option value="2">Gold Chest</option>`;
 	else
@@ -87,14 +87,14 @@ async function displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop)
 	} else
 		s+=`<option value="-1">No event chest packs available.</option>`;
 	s+=`</optgroup></select>`;
-	txt+=addChestsRow(`What to Buy:`,s);
-	let r=`<input type="range" min="0" max="0" step="0" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="updateBuyChestsSliderValue(this.value);displayBuyChestsBuyButton(this.value);" style="width:100%"></span><span class="f falc fjs ml2"><label style="padding-left:10px;text-wrap-style: pretty" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
-	txt+=addChestsRow(`Amount to Buy:`,r);
+	txt+=bc_addChestsRow(`What to Buy:`,s);
+	let r=`<input type="range" min="0" max="0" step="0" value="0" name="buyChestsBuyAmount" id="buyChestsBuyAmount" oninput="bc_updateBuyChestsSliderValue(this.value);bc_displayBuyChestsBuyButton(this.value);" style="width:100%"></span><span class="f falc fjs ml2"><label style="padding-left:10px;text-wrap-style: pretty" for="buyChestsBuyAmount" id="buyChestsSliderValue">0</label>`;
+	txt+=bc_addChestsRow(`Amount to Buy:`,r);
 	wrapper.innerHTML = txt;
-	modifyBuyChestsBuyAmountSlider();
+	bc_modifyBuyChestsBuyAmountSlider();
 }
 
-function modifyBuyChestsBuyAmountSlider(val) {
+function bc_modifyBuyChestsBuyAmountSlider(val) {
 	let buyChestsSilver = document.getElementById(`buyChestsSilver`);
 	let buyChestsGold = document.getElementById(`buyChestsGold`);
 	let buyChestsEvent = document.getElementById(`buyChestsEvent`);
@@ -115,13 +115,13 @@ function modifyBuyChestsBuyAmountSlider(val) {
 	buyChestsBuyAmount.max = maximumToUse;
 	buyChestsBuyAmount.min = 0;
 	buyChestsBuyAmount.value = 0;
-	let fidelity = getBuyChestsSliderFidelity();
+	let fidelity = bc_getBuyChestsSliderFidelity();
 	buyChestsBuyAmount.step = fidelity > maximumToUse ? 1 : fidelity;
-	updateBuyChestsSliderValue(0);
-	displayBuyChestsBuyButton(0);
+	bc_updateBuyChestsSliderValue(0);
+	bc_displayBuyChestsBuyButton(0);
 }
 
-function displayBuyChestsBuyButton(amount) {
+function bc_displayBuyChestsBuyButton(amount) {
 	let buyChestsBuyList = document.getElementById(`buyChestsBuyList`);
 	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	let buyChestsSliderValue = document.getElementById(`buyChestsSliderValue`);
@@ -132,11 +132,11 @@ function displayBuyChestsBuyButton(amount) {
 	if (chestId<=0||amount==undefined||amount<=0)
 		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type and amount has been selected.</span>`;
 	else
-		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${chestId>2?` Pack`:``}s"></span></span>`;
+		be+=`<span class="f fr w100 p5"><span class="f falc fje mr2 greenButton" style="width:50%" id="buyChestsRow"><input type="button" onClick="bc_buyChests()" name="buyChestsButton" id="buyChestsButton" style="font-size:0.9em;min-width:180px" value="Buy Chest${chestId>2?` Pack`:``}s"></span></span>`;
 	buyChestsBuyer.innerHTML = be;
 }
 
-function updateBuyChestsSliderValue(val) {
+function bc_updateBuyChestsSliderValue(val) {
 	let chestId = Number(document.getElementById('buyChestsBuyList').value);
 	let txt = nf(val);
 	if (chestId > 2)
@@ -144,7 +144,7 @@ function updateBuyChestsSliderValue(val) {
 	document.getElementById('buyChestsSliderValue').innerHTML=txt;
 }
 
-async function buyChests() {
+async function bc_buyChests() {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let buyChestsBuyList = document.getElementById(`buyChestsBuyList`);
 	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
@@ -171,9 +171,9 @@ async function buyChests() {
 	let buyChestsMaxTypeDisplay;
 	
 	buyChestsBuyer.innerHTML = txt;
-	buying=makeBuyingRow(amount,chestName,initAmount);
+	buying=bc_makeBuyingRow(amount,chestName,initAmount);
 	if (amount==0) {
-		txt += addChestResultRow(`- None`);
+		txt += bc_addChestResultRow(`- None`);
 		buyChestsBuyer.innerHTML = buying + txt;
 		return;
 	}
@@ -186,8 +186,8 @@ async function buyChests() {
 		let cost = ``;
 		if (JSON.stringify(result).includes(`Failure: Not enough`)) {
 			let failureType = chestId > 2 ? `tokens` : `gems`;
-			txt += addChestResultRow(`- ${successType}:`,`Not enough ${failureType}.`);
-			buying=makeBuyingRow(0,chestName,initAmount);
+			txt += bc_addChestResultRow(`- ${successType}:`,`Not enough ${failureType}.`);
+			buying=bc_makeBuyingRow(0,chestName,initAmount);
 			buyChestsBuyer.innerHTML = buying + txt;
 			return;
 		}
@@ -198,27 +198,27 @@ async function buyChests() {
 			cost = ` for ${nf(result.currency_spent)} ${currencyType} (${nf(currencyRemaining)} ${currencyType} Remaining)`;
 			amount -= toBuy;
 			if (chestId > 2) {
-				applyValueToElementAndDisplay(`buyChestsTokens`,currencyRemaining);
-				applyValueToElementAndDisplay(`buyChestsEvent`,Math.floor(currencyRemaining / chestPackCost));
+				bc_applyValueToElementAndDisplay(`buyChestsTokens`,currencyRemaining);
+				bc_applyValueToElementAndDisplay(`buyChestsEvent`,Math.floor(currencyRemaining / chestPackCost));
 			} else {
-				applyValueToElementAndDisplay(`buyChestsGems`,currencyRemaining);
-				applyValueToElementAndDisplay(`buyChestsSilver`,Math.floor(currencyRemaining / silverChestCost));
-				applyValueToElementAndDisplay(`buyChestsGold`,Math.floor(currencyRemaining / goldChestCost));
+				bc_applyValueToElementAndDisplay(`buyChestsGems`,currencyRemaining);
+				bc_applyValueToElementAndDisplay(`buyChestsSilver`,Math.floor(currencyRemaining / silverChestCost));
+				bc_applyValueToElementAndDisplay(`buyChestsGold`,Math.floor(currencyRemaining / goldChestCost));
 			}
 			buyChestsBuyAmount.value -= toBuy;
-			updateBuyChestsSliderValue(buyChestsBuyAmount.value);
+			bc_updateBuyChestsSliderValue(buyChestsBuyAmount.value);
 		} else
 			numFails++;
-		buying=makeBuyingRow(amount,chestName,initAmount);
-		txt += addChestResultRow(`- ${successType}:`,`${toBuy} ${genChest}${cost}`);
+		buying=bc_makeBuyingRow(amount,chestName,initAmount);
+		txt += bc_addChestResultRow(`- ${successType}:`,`${toBuy} ${genChest}${cost}`);
 		buyChestsBuyer.innerHTML = buying + txt;
 	}
-	buying=makeBuyingRow(amount,chestName,initAmount);
-	txt += addChestResultRow(`Finished.`);
+	buying=bc_makeBuyingRow(amount,chestName,initAmount);
+	txt += bc_addChestResultRow(`Finished.`);
 	buyChestsBuyer.innerHTML = buying + txt;
 	if (numFails >= RETRIES) {
-		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
-		buying=makeBuyingRow(0,chestName,initAmount);
+		txt += bc_addChestResultRow(`- Stopping:`,`Got too many failures.`);
+		buying=bc_makeBuyingRow(0,chestName,initAmount);
 		buyChestsBuyer.innerHTML = buying + txt;
 		return;
 	}
@@ -233,19 +233,19 @@ async function buyChests() {
 	buyChestsBuyAmount.max = 0;
 	buyChestsBuyAmount.min = 0;
 	buyChestsBuyAmount.value = 0;
-	updateBuyChestsSliderValue(0);
+	bc_updateBuyChestsSliderValue(0);
 	buyChestsBuyList.value = "-1";
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
 	codeEnablePullButtons();
 }
 
-function applyValueToElementAndDisplay(eleName,value) {
+function bc_applyValueToElementAndDisplay(eleName,value) {
 	document.getElementById(`${eleName}Display`).innerHTML = nf(value);
 	document.getElementById(eleName).value = value;
 }
 
-function addChestsRow(left,right,hiddenInput,hiddenValue) {
+function bc_addChestsRow(left,right,hiddenInput,hiddenValue) {
 	let hiddenField=``;
 	let hiddenId=``;
 	if (hiddenInput!=undefined&&hiddenValue!=undefined) {
@@ -256,45 +256,45 @@ function addChestsRow(left,right,hiddenInput,hiddenValue) {
 	return txt;
 }
 
-function addChestResultRow(left,right) {
+function bc_addChestResultRow(left,right) {
 	let rightAdd = ``;
 	if (right!=undefined)
 		rightAdd = `<span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${right}</span>`;
 	return `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">${left}</span>${rightAdd}</span>`;
 }
 
-function makeBuyingRow(amount,name,initAmount) {
+function bc_makeBuyingRow(amount,name,initAmount) {
 	return `<span class="f fr w100 p5">${amount==0?`Finished `:``}Buying ${nf(amount==0?initAmount:amount)} ${name}s:</span>`;
 }
 
-function initBuyChestsSliderFidelity() {
-	let fidelity = getBuyChestsSliderFidelity();
+function bc_initBuyChestsSliderFidelity() {
+	let fidelity = bc_getBuyChestsSliderFidelity();
 	if (![1,10,25,50,100,250,1000].includes(fidelity)) {
-		toggleBuyChestsSliderFidelity(1);
+		bc_toggleBuyChestsSliderFidelity(1);
 		fidelity = 1;
 	}
 	document.getElementById(`buyChestsSliderFidelity`).value = fidelity;
 }
 
-function toggleBuyChestsSliderFidelity(fidelity) {
+function bc_toggleBuyChestsSliderFidelity(fidelity) {
 	if (fidelity==1&&localStorage.scBuyChestsSliderFidelity!=undefined)
 		localStorage.removeItem(`scBuyChestsSliderFidelity`);
 	else if (fidelity!=1)
-		saveBuyChestsSliderFidelity(fidelity);
+		bc_saveBuyChestsSliderFidelity(fidelity);
 	let buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	if (buyChestsBuyAmount!=null) {
 		buyChestsBuyAmount.step = fidelity;
 		buyChestsBuyAmount.value = 0;
-		modifyBuyChestsBuyAmountSlider(document.getElementById(`buyChestsBuyList`).value);
+		bc_modifyBuyChestsBuyAmountSlider(document.getElementById(`buyChestsBuyList`).value);
 	}
 }
 
-function getBuyChestsSliderFidelity() {
+function bc_getBuyChestsSliderFidelity() {
 	if (localStorage.scBuyChestsSliderFidelity!=undefined)
 		return Number(localStorage.scBuyChestsSliderFidelity);
 	return 1
 }
 
-function saveBuyChestsSliderFidelity(fidelity) {
+function bc_saveBuyChestsSliderFidelity(fidelity) {
 	localStorage.scBuyChestsSliderFidelity = fidelity;
 }

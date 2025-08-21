@@ -1,6 +1,6 @@
-const vsc=1.004;
+const vsc=1.005;
 
-async function pullShiniesData() {
+async function sc_pullShiniesData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -9,14 +9,14 @@ async function pullShiniesData() {
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let userData = await getUserDetails();
-		await displayShiniesData(wrapper,userData.details);
+		await sc_displayShiniesData(wrapper,userData.details);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
 }
 
-async function displayShiniesData(wrapper,details) {
+async function sc_displayShiniesData(wrapper,details) {
 	let tokens = Number(details.stats.event_v2_tokens);
 	let chestPacks = tokens / 7500;
 	let chests = tokens / 2500;
@@ -49,25 +49,25 @@ async function displayShiniesData(wrapper,details) {
 	let shiniesB = chestsB / 1000;
 	let txt = ``;
 	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Without Bounties:</span>`;
-	txt+=addShiniesRow(`Tokens:`,nf(tokens));
-	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacks));
-	txt+=addShiniesRow(`Total Chests:`,nf(chests));
-	txt+=addShiniesRow(`Avg Shinies:`,nf(shinies));
+	txt+=sc_addShiniesRow(`Tokens:`,nf(tokens));
+	txt+=sc_addShiniesRow(`Chest Packs:`,nf(chestPacks));
+	txt+=sc_addShiniesRow(`Total Chests:`,nf(chests));
+	txt+=sc_addShiniesRow(`Avg Shinies:`,nf(shinies));
 	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
 	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">With Bounties:</span>`;
-	txt+=addShiniesRow(`Tiny Bounty Contracts:`,nf(bcC),`Tokens:`,nf(bcCT));
-	txt+=addShiniesRow(`Small Bounty Contracts:`,nf(bcU),`Tokens:`,nf(bcUT));
-	txt+=addShiniesRow(`Medium Bounty Contracts:`,nf(bcR),`Tokens:`,nf(bcRT));
-	txt+=addShiniesRow(`Large Bounty Contracts:`,nf(bcE),`Tokens:`,nf(bcET));
+	txt+=sc_addShiniesRow(`Tiny Bounty Contracts:`,nf(bcC),`Tokens:`,nf(bcCT));
+	txt+=sc_addShiniesRow(`Small Bounty Contracts:`,nf(bcU),`Tokens:`,nf(bcUT));
+	txt+=sc_addShiniesRow(`Medium Bounty Contracts:`,nf(bcR),`Tokens:`,nf(bcRT));
+	txt+=sc_addShiniesRow(`Large Bounty Contracts:`,nf(bcE),`Tokens:`,nf(bcET));
 	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
-	txt+=addShiniesRow(`Tokens:`,nf(tokensB));
-	txt+=addShiniesRow(`Chest Packs:`,nf(chestPacksB));
-	txt+=addShiniesRow(`Total Chests:`,nf(chestsB));
-	txt+=addShiniesRow(`Avg Shinies:`,nf(shiniesB));
+	txt+=sc_addShiniesRow(`Tokens:`,nf(tokensB));
+	txt+=sc_addShiniesRow(`Chest Packs:`,nf(chestPacksB));
+	txt+=sc_addShiniesRow(`Total Chests:`,nf(chestsB));
+	txt+=sc_addShiniesRow(`Avg Shinies:`,nf(shiniesB));
 	wrapper.innerHTML = txt;
 }
 
-function addShiniesRow(left,right,left2,right2) {
+function sc_addShiniesRow(left,right,left2,right2) {
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
 	if (left2!=undefined&&right2!=undefined)
 		txt += `<span class="f falc fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;

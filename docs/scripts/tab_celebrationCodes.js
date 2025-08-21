@@ -1,6 +1,6 @@
-const vcc=1.002;
+const vcc=1.003;
 
-async function pullCelebrationsData() {
+async function cc_pullCelebrationsData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -10,7 +10,7 @@ async function pullCelebrationsData() {
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let customNotes = (await getUserDetails()).details.custom_notifications;
-		await displayCelebrationsData(wrapper,customNotes);
+		await cc_displayCelebrationsData(wrapper,customNotes);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -18,7 +18,7 @@ async function pullCelebrationsData() {
 	}
 }
 
-async function displayCelebrationsData(wrapper,customNotes) {
+async function cc_displayCelebrationsData(wrapper,customNotes) {
 	if (customNotes==undefined) {
 		wrapper.innerHTML = `Error.`;
 		return;
@@ -66,14 +66,14 @@ async function displayCelebrationsData(wrapper,customNotes) {
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${ident}">`;
 		for (let i=0; i<codes.length; i++) {
 			let code = codes[i];
-			txt += `<span class="featsChampionList"><input type="checkbox" id="celeb_${ident}_${i}" name="celeb_${ident}_${i}" data-name="${name}" data-ident="${ident}" data-code="${code}"><label class="cblabel" for="celeb_${ident}_${i}" style="font-family:monospace;font-size:1.1em">${displayCode(code)}</label></span>`;
+			txt += `<span class="featsChampionList"><input type="checkbox" id="celeb_${ident}_${i}" name="celeb_${ident}_${i}" data-name="${name}" data-ident="${ident}" data-code="${code}"><label class="cblabel" for="celeb_${ident}_${i}" style="font-family:monospace;font-size:1.1em">${cc_displayCode(code)}</label></span>`;
 		}
-		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
+		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
-		celebrationsClaimer.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="celebrationsSelectAllTheCelebrationsRow"><input type="button" onClick="celebrationsSelectAllTheCelebrations()" name="celebrationsSelectAllTheCelebrationsButton" id="celebrationsSelectAllTheCelebrationsButton" style="font-size:0.9em;min-width:180px" value="Select All Codes"></span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="celebrationsBuyRow"><input type="button" onClick="claimCelebrations()" name="celebrationsBuyButton" id="celebrationsBuyButton" style="font-size:0.9em;min-width:180px" value="Claim Selected Codes"></span></span>`;
+		celebrationsClaimer.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="celebrationsSelectAllTheCelebrationsRow"><input type="button" onClick="cc_celebrationsSelectAllTheCelebrations()" name="celebrationsSelectAllTheCelebrationsButton" id="celebrationsSelectAllTheCelebrationsButton" style="font-size:0.9em;min-width:180px" value="Select All Codes"></span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="celebrationsBuyRow"><input type="button" onClick="cc_claimCelebrations()" name="celebrationsBuyButton" id="celebrationsBuyButton" style="font-size:0.9em;min-width:180px" value="Claim Selected Codes"></span></span>`;
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
 		let timerText = timer==-1 ? `` : ` Check again in ${getDisplayTime(timer*1000)}.`;
@@ -81,20 +81,20 @@ async function displayCelebrationsData(wrapper,customNotes) {
 	}
 }
 
-function celebrationsSelectAll(ident,check) {
+function cc_celebrationsSelectAll(ident,check) {
 	for (let ele of document.getElementById(ident).querySelectorAll(`input[type="checkbox"]`))
 		ele.checked = check;
 }
 
-function celebrationsSelectAllTheCelebrations() {
+function cc_celebrationsSelectAllTheCelebrations() {
 	let check = !document.getElementById(`celebrationsSelectAllTheCelebrationsButton`).value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(`[type="checkbox"][id^="celeb_"]`))
 		ele.checked = check;
 	document.getElementById(`celebrationsSelectAllTheCelebrationsButton`).value = `${check?"Deselect":"Select"} All Codes`;
 }
 
-async function claimCelebrations() {
-	disableAllCelebrationButtonsAndCheckboxes(true);
+async function cc_claimCelebrations() {
+	cc_disableAllCelebrationButtonsAndCheckboxes(true);
 	let celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
 	let txt = `<span class="f fr w100 p5">Claiming Celebrations Codes:</span>`;
 	celebrationsClaimer.innerHTML = txt;
@@ -113,10 +113,10 @@ async function claimCelebrations() {
 			successType = `Successfully claimed`;
 		else {
 			if (result.failure_reason!=undefined)
-				console.log(`Code ${displayCode(code)} failed to claim. Server gave reason: ${result.failure_reason}`);
+				console.log(`Code ${cc_displayCode(code)} failed to claim. Server gave reason: ${result.failure_reason}`);
 			successType = `Failed to claim`;
 		}
-		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${displayCode(code)} in ${name}</span></span>`;
+		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${cc_displayCode(code)} in ${name}</span></span>`;
 		ele.parentNode.style.display=`none`;
 		ele.checked = false;
 		celebrationsClaimer.innerHTML = txt;
@@ -125,10 +125,10 @@ async function claimCelebrations() {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		celebrationsClaimer.innerHTML = txt;
 	}
-	disableAllCelebrationButtonsAndCheckboxes(false);
+	cc_disableAllCelebrationButtonsAndCheckboxes(false);
 }
 
-function disableAllCelebrationButtonsAndCheckboxes(disable) {
+function cc_disableAllCelebrationButtonsAndCheckboxes(disable) {
 	if (disable) {
 		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="celeb"]`)) {
@@ -143,7 +143,7 @@ function disableAllCelebrationButtonsAndCheckboxes(disable) {
 		codeEnablePullButtons();
 }
 
-function displayCode(code) {
+function cc_displayCode(code) {
 	let ret = code;
     for (let i=4; i<code.length; i+=5)
         ret = ret.slice(0, i) + `-` + ret.slice(i);

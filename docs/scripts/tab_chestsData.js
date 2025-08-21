@@ -1,7 +1,7 @@
-const vcd=1.004;
+const vcd=1.005;
 var chestDataBefore=``;
 
-async function pullChestCollectData() {
+async function cd_pullChestCollectData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -11,16 +11,16 @@ async function pullChestCollectData() {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = await getUserDetails();
 		if (chestDataBefore==``)
-			await displayChestCollectDataPhase1(wrapper,details);
+			await cd_displayChestCollectDataPhase1(wrapper,details);
 		else
-			await displayChestCollectDataPhase2(wrapper,details);
+			await cd_displayChestCollectDataPhase2(wrapper,details);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
 }
 
-async function displayChestCollectDataPhase1(wrapper,details) {
+async function cd_displayChestCollectDataPhase1(wrapper,details) {
 	document.getElementById(`chestCollectPullButton`).value = `Snapshot the 'After' Chest Data`;
 	let chests = details.details.chests;
 	//let loot = details.details.loot;
@@ -40,12 +40,12 @@ async function displayChestCollectDataPhase1(wrapper,details) {
 	}
 	wrapper.innerHTML = txt;
 	txt=`<span class="f falc fje mr2" style="width:50%;">
-			<input type="button" onClick="pullChestCollectData()" name="chestCollectPullButton2" id="chestCollectPullButton2" value="Snapshot the 'After' Chest Data" style="min-width:175px">
+			<input type="button" onClick="cd_pullChestCollectData()" name="chestCollectPullButton2" id="chestCollectPullButton2" value="Snapshot the 'After' Chest Data" style="min-width:175px">
 		</span>`;
 	document.getElementById(`chestCollectData2`).innerHTML = txt;
 }
 
-async function displayChestCollectDataPhase2(wrapper,details) {
+async function cd_displayChestCollectDataPhase2(wrapper,details) {
 	document.getElementById(`chestCollectPullButton`).value = `Snapshot the 'Before' Chest Data`;
 	let chests = details.details.chests;
 	//let loot = details.details.loot;

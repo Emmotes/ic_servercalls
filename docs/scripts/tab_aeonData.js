@@ -1,6 +1,6 @@
-const vad=1.004;
+const vad=1.005;
 
-async function pullAeonData() {
+async function ad_pullAeonData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -9,14 +9,14 @@ async function pullAeonData() {
 	try {
 		wrapper.innerHTML = `Waiting for patron data...`;
 		let details = await getPatronDetails();
-		await displayAeonData(wrapper,details);
+		await ad_displayAeonData(wrapper,details);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
 }
 
-async function displayAeonData(wrapper,details) {
+async function ad_displayAeonData(wrapper,details) {
 	let aeonData = details.aeon_data;
 	let millisecondsTilRollover = Number(aeonData.seconds_until_patron_rollover) * 1000;
 	let currPatronId = Number(aeonData.current_patron_id);
@@ -48,15 +48,15 @@ async function displayAeonData(wrapper,details) {
 	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
 	txt+=`<span class="f fr w100 p5" style="font-size:1.2em">Aeon Patron Data:</span>`;
-	txt+=addAeonRow(`Current Patron:`,currPatron);
-	txt+=addAeonRow(`${currPatron} Weekly Chores:`,choreInfo);
-	txt+=addAeonRow(`&nbsp;`,`&nbsp;`);
-	txt+=addAeonRow(`Next Patron:`,nextPatron);
-	txt+=addAeonRow(`Time 'til Switch:`,getDisplayTime(millisecondsTilRollover));
+	txt+=ad_addAeonRow(`Current Patron:`,currPatron);
+	txt+=ad_addAeonRow(`${currPatron} Weekly Chores:`,choreInfo);
+	txt+=ad_addAeonRow(`&nbsp;`,`&nbsp;`);
+	txt+=ad_addAeonRow(`Next Patron:`,nextPatron);
+	txt+=ad_addAeonRow(`Time 'til Switch:`,getDisplayTime(millisecondsTilRollover));
 	wrapper.innerHTML = txt;
 }
 
-function addAeonRow(left,right) {
+function ad_addAeonRow(left,right) {
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
 	txt += `</span>`;
 	return txt;

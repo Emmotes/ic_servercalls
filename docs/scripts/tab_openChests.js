@@ -1,9 +1,9 @@
-const voc=1.024;
+const voc=1.025;
 const hoc = `scHideOpenChests`
 const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
 
-async function pullOpenChestsData() {
+async function oc_pullOpenChestsData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -17,7 +17,7 @@ async function pullOpenChestsData() {
 		let chestPacks = details.chest_packs;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let chestsDefs = (await getDefinitions("chest_type_defines")).chest_type_defines;
-		await displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs);
+		await oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -25,7 +25,7 @@ async function pullOpenChestsData() {
 	}
 }
 
-async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
+async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let chestIds = chestsHave!=undefined ? Object.keys(chestsHave) : [];
 	let chestPacksById = {};
@@ -44,7 +44,7 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any chests to open.</span>`;
 		return;
 	}
-	let hiddenChestIds = getHiddenChestIds();
+	let hiddenChestIds = oc_getHiddenChestIds();
 	for (let i=chestIds.length-1; i>=0; i--)
 		if (hiddenChestIds.includes(chestIds[i]))
 			chestIds.splice(chestIds.indexOf(chestIds[i]),1);
@@ -78,10 +78,10 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 			amount -= chestPacksById[id].total - chestPacksById[id].opened;
 		if (amount <= 0)
 			continue;
-		let fidelity = getOpenChestsSliderFidelity();
+		let fidelity = oc_getOpenChestsSliderFidelity();
 		if (fidelity > amount)
 			fidelity = 1;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</span></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="updateOpenChestsSliderValue(${id},this.value);"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</span></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value);" data-chestid="${id}"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="oc_openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
 	for (let id of chestPackIds) {
 		if (hiddenChestIds.includes(Number(id)))
@@ -92,9 +92,12 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		let max = chestPacksById[id].total - chestPacksById[id].opened;
 		let min = Math.min(chestPacksById[id].have,max);
 		let canOpen = min >= max;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder">`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
 		if (canOpen)
-			txt += `<input type="button" id="openChests${id}Button" onClick="openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="width:80%">`;
+			txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value);" data-chestid="${id}"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span>`;
+		txt += `<span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder">`;
+		if (canOpen)
+			txt += `<input type="button" id="openChests${id}Button" onClick="oc_openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="visibility:hidden;width:80%">`;
 		else
 			txt += `You don't have enough to open this pack.`;
 		txt += `</span></span></span>`;
@@ -107,18 +110,19 @@ async function displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs) {
 		wrapper.innerHTML = `&nbsp;`;
 }
 
-function updateOpenChestsSliderValue(id,val) {
+function oc_updateOpenChestsSliderValue(id,val) {
 	document.getElementById(`openChests${id}Label`).innerHTML=nf(val);
 	let button = document.getElementById(`openChests${id}Button`);
 	if (val > 0) {
-		button.value = `Open ${nf(val)} ${val==1?button.dataset.name:button.dataset.plural}`;
+		if (button.value != `Open Chest Pack`)
+			button.value = `Open ${nf(val)} ${val==1?button.dataset.name:button.dataset.plural}`;
 		button.style.visibility = ``;
 	} else {
 		button.style.visibility = `hidden`;
 	}
 }
 
-async function openChests(id) {
+async function oc_openChests(id) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let openChestsSlider = document.getElementById(`openChests${id}Slider`);
 	let openChestsLabel = document.getElementById(`openChests${id}Label`);
@@ -126,7 +130,7 @@ async function openChests(id) {
 	let openChestsButton = document.getElementById(`openChests${id}Button`);
 	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
 	let slidersButtonsAndHoldersIds = [];
-	disableSlidersButtonsAndHolders(true);
+	oc_disableSlidersButtonsAndHolders(true);
 	
 	let name = openChestsButton.dataset.name;
 	let plural = openChestsButton.dataset.plural;
@@ -143,10 +147,10 @@ async function openChests(id) {
 	let numFails=0;
 	let opening=``;
 	let txt=``;
-	opening=makeOpeningRow(currAmount,(currAmount==1?name:plural),amount);
+	opening=oc_makeOpeningRow(currAmount,(currAmount==1?name:plural),amount);
 	openChestsOpener.innerHTML = opening + txt;
 	if (currAmount==0) {
-		txt += addChestResultRow(`- None`);
+		txt += bc_addChestResultRow(`- None`);
 		openChestsOpener.innerHTML = opening + txt;
 		return;
 	}
@@ -156,8 +160,8 @@ async function openChests(id) {
 		try {
 			result = await openGenericChest(id,open);
 		} catch (error) {
-			txt += addChestResultRow(`- ${successType}:`,`${error}`).replace("Error: ","");
-			opening=makeOpeningRow(0,plural,amount);
+			txt += bc_addChestResultRow(`- ${successType}:`,`${error}`).replace("Error: ","");
+			opening=oc_makeOpeningRow(0,plural,amount);
 			openChestsOpener.innerHTML = opening + txt;
 			openChestsButton.value = `Open 0 ${plural}`;
 			numFails++;
@@ -167,8 +171,8 @@ async function openChests(id) {
 		if (result.success) {
 			let remaining = result.chests_remaining;
 			if (remaining==0&&currAmount>open) {
-				txt += addChestResultRow(`- Stopping:`,`Server Said 0 ${plural} Remaining.`);
-				opening=makeOpeningRow(0,plural,amount);
+				txt += bc_addChestResultRow(`- Stopping:`,`Server Said 0 ${plural} Remaining.`);
+				opening=oc_makeOpeningRow(0,plural,amount);
 				openChestsOpener.innerHTML = opening + txt;
 				openChestsSlider.min = 0;
 				openChestsSlider.max = 0;
@@ -181,49 +185,49 @@ async function openChests(id) {
 			}
 			if (result.loot_details) {
 				successType = `Successfully opened`;
-				txt += addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
+				txt += bc_addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
 				currAmount -= open;
 				openChestsSlider.max = remaining;
 				openChestsLabelMax.innerHTML = nf(remaining);
 				openChestsSlider.value -= open;
 				openChestsLabel.innerHTML = nf(openChestsSlider.value);
-				opening=makeOpeningRow(currAmount,(open==1?name:plural),amount);
+				opening=oc_makeOpeningRow(currAmount,(open==1?name:plural),amount);
 				openChestsButton.value = `Open ${nf(openChestsSlider.value)} ${openChestsSlider.value==1?name:plural}`;
 			} else {
-				txt += addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
-				opening=makeOpeningRow(0,plural,amount);
+				txt += bc_addChestResultRow(`- ${successType}:`,`${initMsg} (${remaining} Remaining)`);
+				opening=oc_makeOpeningRow(0,plural,amount);
 				openChestsButton.value = `Open 0 ${plural}`;
 				numFails++;
 			}
 			openChestsOpener.innerHTML = opening + txt;
 		} else {
-			txt += addChestResultRow(`- ${successType}:`,`${initMsg}`);
-			opening=makeOpeningRow(0,plural,amount);
+			txt += bc_addChestResultRow(`- ${successType}:`,`${initMsg}`);
+			opening=oc_makeOpeningRow(0,plural,amount);
 			openChestsOpener.innerHTML = opening + txt;
 			openChestsButton.value = `Open 0 ${plural}`;
 			numFails++;
 		}
 	}
-	opening=makeOpeningRow(currAmount,(amount==1?name:plural),amount);
-	txt += addChestResultRow(`Finished.`);
+	opening=oc_makeOpeningRow(currAmount,(amount==1?name:plural),amount);
+	txt += bc_addChestResultRow(`Finished.`);
 	openChestsOpener.innerHTML = opening + txt;
 	openChestsButton.value = `Open ${openChestsSlider.value} ${plural}`;
 	if (numFails >= RETRIES) {
-		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
-		opening=makeOpeningRow(0,plural,amount);
+		txt += bc_addChestResultRow(`- Stopping:`,`Got too many failures.`);
+		opening=oc_makeOpeningRow(0,plural,amount);
 		openChestsOpener.innerHTML = opening + txt;
 		openChestsButton.value = `Open 0 ${plural}`;
 		return;
 	}
-	opening=makeOpeningRow(0,plural,amount);
+	opening=oc_makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
-	disableSlidersButtonsAndHolders(false);
-	toggleOpenChestsSliderFidelity();
+	oc_disableSlidersButtonsAndHolders(false);
+	oc_toggleOpenChestsSliderFidelity();
 	if (openChestsSlider.value==0)
 		openChestsButton.style.visibility = `hidden`;
 }
 
-async function openChestPack(id,packId,amount) {
+async function oc_openChestPack(id,packId,amount) {
 	if (amount == undefined) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
 		openChestsOpener.innerHTML = txt;
@@ -232,7 +236,7 @@ async function openChestPack(id,packId,amount) {
 	let openChestsOpener = document.getElementById(`openChestsOpener`);
 	let openChestsButton = document.getElementById(`openChests${id}Button`);
 	let openChestsButtonHolder = document.getElementById(`openChests${id}ButtonHolder`);
-	disableSlidersButtonsAndHolders(true);
+	oc_disableSlidersButtonsAndHolders(true);
 	
 	let name = openChestsButton.dataset.name;
 	let plural = openChestsButton.dataset.plural;
@@ -243,10 +247,10 @@ async function openChestPack(id,packId,amount) {
 	let opening=``;
 	let result;
 	let txt=``;
-	opening=makeOpeningRow(currAmount,(currAmount==1?name:plural),amount);
+	opening=oc_makeOpeningRow(currAmount,(currAmount==1?name:plural),amount);
 	openChestsOpener.innerHTML = opening + txt;
 	if (currAmount==0) {
-		txt += addChestResultRow(`- None`);
+		txt += bc_addChestResultRow(`- None`);
 		openChestsOpener.innerHTML = opening + txt;
 		return;
 	}
@@ -256,8 +260,8 @@ async function openChestPack(id,packId,amount) {
 		try {
 			result = await openGenericChest(id,open,packId);
 		} catch (error) {
-			txt += addChestResultRow(`- ${successType}:`,`${error.replace("Error: ","")}`);
-			opening=makeOpeningRow(0,plural,amount);
+			txt += bc_addChestResultRow(`- ${successType}:`,`${error.replace("Error: ","")}`);
+			opening=oc_makeOpeningRow(0,plural,amount);
 			openChestsOpener.innerHTML = opening + txt;
 			openChestsButton.value = `Open 0 ${plural}`;
 			numFails++;
@@ -267,39 +271,39 @@ async function openChestPack(id,packId,amount) {
 		if (result.success&&result.loot_details) {
 			successType = `Successfully opened`;
 			currAmount -= open;
-			txt += addChestResultRow(`- ${successType}:`,`${initMsg}`);
+			txt += bc_addChestResultRow(`- ${successType}:`,`${initMsg}`);
 			openChestsOpener.innerHTML = opening + txt;
 		} else {
-			txt += addChestResultRow(`- ${successType}:`,`${initMsg}`);
-			opening=makeOpeningRow(0,plural,amount);
+			txt += bc_addChestResultRow(`- ${successType}:`,`${initMsg}`);
+			opening=oc_makeOpeningRow(0,plural,amount);
 			openChestsOpener.innerHTML = opening + txt;
 			numFails++;
 		}
 	}
-	opening=makeOpeningRow(currAmount,(amount==1?name:plural),amount);
-	txt += addChestResultRow(`Finished.`);
+	opening=oc_makeOpeningRow(currAmount,(amount==1?name:plural),amount);
+	txt += bc_addChestResultRow(`Finished.`);
 	document.getElementById(`${id}Pack`).innerHTML = `&nbsp;`;
 	openChestsOpener.innerHTML = opening + txt;
 	if (numFails >= RETRIES) {
-		txt += addChestResultRow(`- Stopping:`,`Got too many failures.`);
-		opening=makeOpeningRow(0,plural,amount);
+		txt += bc_addChestResultRow(`- Stopping:`,`Got too many failures.`);
+		opening=oc_makeOpeningRow(0,plural,amount);
 		openChestsOpener.innerHTML = opening + txt;
 		return;
 	}
-	opening=makeOpeningRow(0,plural,amount);
+	opening=oc_makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
-	disableSlidersButtonsAndHolders(false);
-	toggleOpenChestsSliderFidelity();
+	oc_disableSlidersButtonsAndHolders(false);
+	oc_toggleOpenChestsSliderFidelity();
 }
 
-function makeOpeningRow(amount,name,initAmount) {
+function oc_makeOpeningRow(amount,name,initAmount) {
 	return `<span class="f fr w100 p5">${amount==0?`Finished `:``}Opening ${nf(amount==0?initAmount:amount)} ${name}:</span>`;
 }
 
-function initOpenChestsHideChests() {
+function oc_initOpenChestsHideChests() {
 	if (localStorage.getItem(hoc)==undefined)
 		return;
-	let hideChests = getHiddenChestIds();
+	let hideChests = oc_getHiddenChestIds();
 	for (let ele of document.querySelectorAll('[id^="openChestsHide"]')) {
 		let eleIds = JSON.parse(ele.dataset.ids);
 		if (eleIds.some(v => hideChests.includes(v)))
@@ -309,21 +313,21 @@ function initOpenChestsHideChests() {
 	}
 }
 
-function toggleHideOpenChests() {
+function oc_toggleHideOpenChests() {
 	let chestIds = [];
 	for (let ele of document.querySelectorAll("input[type='checkbox'][id^='openChestsHide'"))
 		if (ele.checked)
 			chestIds.push(...JSON.parse(ele.dataset.ids));
-	saveHiddenChestIds(chestIds);
+	oc_saveHiddenChestIds(chestIds);
 }
 
-function getHiddenChestIds() {
+function oc_getHiddenChestIds() {
 	let strg = localStorage.getItem(hoc);
 	if (strg!=undefined) {
 		strg = JSON.parse(localStorage.getItem(hoc));
 		// Detect migration required.
 		if (Array.isArray(strg)) {
-			saveHiddenChestIds(strg);
+			oc_saveHiddenChestIds(strg);
 			return strg;
 		}
 		if (strg[currAccount.name] != undefined)
@@ -332,7 +336,7 @@ function getHiddenChestIds() {
 	return [];
 }
 
-function saveHiddenChestIds(chestIds) {
+function oc_saveHiddenChestIds(chestIds) {
 	let strg = localStorage.getItem(hoc);
 	if (strg==undefined)
 		strg = {};
@@ -347,36 +351,38 @@ function saveHiddenChestIds(chestIds) {
 	localStorage.setItem(hoc, JSON.stringify(strg));
 }
 
-function initOpenChestsSliderFidelity() {
-	let fidelity = getOpenChestsSliderFidelity();
+function oc_initOpenChestsSliderFidelity() {
+	let fidelity = oc_getOpenChestsSliderFidelity();
 	if (![1,10,25,50,100,250,1000].includes(fidelity)) {
-		toggleOpenChestsSliderFidelity(1);
+		oc_toggleOpenChestsSliderFidelity(1);
 		fidelity = 1;
 	}
 	document.getElementById(`openChestsSliderFidelity`).value = fidelity;
 }
 
-function toggleOpenChestsSliderFidelity(fidelity) {
+function oc_toggleOpenChestsSliderFidelity(fidelity) {
 	if (fidelity==undefined)
-		fidelity = getOpenChestsSliderFidelity();
+		fidelity = oc_getOpenChestsSliderFidelity();
 	if (fidelity==1&&localStorage.getItem(ocsf)!=undefined)
 		localStorage.removeItem(ocsf);
 	else if (fidelity!=1)
-		saveOpenChestsSliderFidelity(fidelity);
+		oc_saveOpenChestsSliderFidelity(fidelity);
 	for (let ele of document.querySelectorAll('input[id^="openChests"][id$="Slider"]')) {
-		let id = Number(ele.id.replace(/[^0-9]/g,``));
-		let max = Number(ele.max);
+		let id = ele.dataset.chestid;
+		if (document.getElementById(`openChests${id}Button`).value != `Open Chest Pack`) {
+			let max = Number(ele.max);
+			ele.step = fidelity > max ? 1 : fidelity;
+		}
 		ele.value = 0;
-		ele.step = fidelity > max ? 1 : fidelity;
-		updateOpenChestsSliderValue(id,ele.value);
+		oc_updateOpenChestsSliderValue(id,ele.value);
 	}
 }
 
-function disableSlidersButtonsAndHolders(disable) {
+function oc_disableSlidersButtonsAndHolders(disable) {
 	if (disable == undefined)
 		disable = true;
 	for (let ele of document.querySelectorAll('input[id^="openChests"][id$="Slider"]')) {
-		let id = Number(ele.id.replace(/[^0-9]/g,``));
+		let id = ele.dataset.chestid;
 		ele.disabled = disable;
 		document.getElementById(`openChests${id}Button`).disabled = disable;
 		document.getElementById(`openChests${id}ButtonHolder`).className = disable ? `formsCampaignSelect greyButton` : `formsCampaignSelect greenButton`;
@@ -387,13 +393,13 @@ function disableSlidersButtonsAndHolders(disable) {
 		codeEnablePullButtons();
 }
 
-function getOpenChestsSliderFidelity() {
+function oc_getOpenChestsSliderFidelity() {
 	let strg = localStorage.getItem(ocsf);
 	if (strg!=undefined)
 		return Number(strg);
 	return 1
 }
 
-function saveOpenChestsSliderFidelity(fidelity) {
+function oc_saveOpenChestsSliderFidelity(fidelity) {
 	localStorage.scOpenChestsSliderFidelity = fidelity;
 }

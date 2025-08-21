@@ -1,6 +1,6 @@
-const vdf=1.011;
+const vdf=1.012;
 
-async function pullFormationSaves() {
+async function df_pullFormationSaves() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -10,7 +10,7 @@ async function pullFormationSaves() {
 	try {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		let forms = await getFormationSaves();
-		await displayFormationSaves(wrapper,forms);
+		await df_displayFormationSaves(wrapper,forms);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -18,7 +18,7 @@ async function pullFormationSaves() {
 	}
 }
 
-async function displayFormationSaves(wrapper,saves) {
+async function df_displayFormationSaves(wrapper,saves) {
 	if (saves==undefined||saves.all_saves==undefined) {
 		wrapper.innerHTML = `Error.`;
 		return;
@@ -40,7 +40,7 @@ async function displayFormationSaves(wrapper,saves) {
 		let patronName = patron==0?``:paronAdvIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
-		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="${key}">`;
+		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign">`;
 		for (let formation of all[key]) {
 			let formId = formation.formation_save_id;
 			let campId = Number(formation.campaign_id)
@@ -55,26 +55,26 @@ async function displayFormationSaves(wrapper,saves) {
 				extras += "Has Feats";
 			}
 			if (extras!=``) extras = ` (${extras})`;
-			let tt=createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
+			let tt=df_createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
 			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${campId}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 			added++;
 		}
-		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
+		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="df_formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="df_formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	setFormsWrapperFormat(wrapper,1);
 	wrapper.innerHTML = c;
 	let formsDeleter = document.getElementById(`formsDeleter`);
 	let fd = ``;
 	if (document.querySelectorAll('input[name="___AUTO___SAVE___"]').length > 0)
-		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
+		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="df_toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
 	if (added>0)
-		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
+		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="df_deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
 	else
 		fd+=`<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow">You have no formations to delete.</span></span>`;
 	formsDeleter.innerHTML = fd;
 }
 
-function createFormationTooltip(name,champs,formation) {
+function df_createFormationTooltip(name,champs,formation) {
 	let formObj = ``;
 	for (let currForm of formation.game_change_data) {
 		if (currForm.type!=undefined&&currForm.type==`formation`) {
@@ -127,12 +127,12 @@ function createFormationTooltip(name,champs,formation) {
 	return `<span class="tooltipContents">${name}${svg}</span>`;
 }
 
-function formsSelectAll(id,check) {
+function df_formsSelectAll(id,check) {
 	for (let ele of document.getElementById(id).querySelectorAll('input[type="checkbox"]'))
 		ele.checked = check;
 }
 
-function toggleSelectAutosaveForms() {
+function df_toggleSelectAutosaveForms() {
 	let button = document.getElementById(`toggleSelectAutosaveFormsButton`);
 	let check = !button.value.includes(`Deselect`);
 	let counter=0;
@@ -141,8 +141,8 @@ function toggleSelectAutosaveForms() {
 	button.value = `${check?`Deselect`:`Select`} All Autosaved Formations`;
 }
 
-async function deleteFormationSaves() {
-	disableAllFormationsButtonsAndCheckboxes(true);
+async function df_deleteFormationSaves() {
+	df_disableAllFormationsButtonsAndCheckboxes(true);
 	let formsDeleter = document.getElementById(`formsDeleter`);
 	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
 	formsDeleter.innerHTML = c;
@@ -187,10 +187,10 @@ async function deleteFormationSaves() {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}
-	disableAllFormationsButtonsAndCheckboxes(false);
+	df_disableAllFormationsButtonsAndCheckboxes(false);
 }
 
-function disableAllFormationsButtonsAndCheckboxes(disable) {
+function df_disableAllFormationsButtonsAndCheckboxes(disable) {
 	if (disable) {
 		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="form"]`)) {

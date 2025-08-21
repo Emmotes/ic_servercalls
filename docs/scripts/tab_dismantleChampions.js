@@ -1,4 +1,4 @@
-const vdc=1.003;
+const vdc=1.004;
 
 async function dc_pullData() {
 	clearTimers(`dc_`);
@@ -103,7 +103,7 @@ async function dc_displayData(wrapper,dismantleData,details,heroDefs,buffDefs) {
 				dismantleTimers[type] = time;
 				addedHeader = true;
 			}
-			txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle" style="font-size:1.2em">${name}</span><span class="formsCampaign" id="${champId}">`;
+			txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle" style="font-size:1.2em">${name}</span><span class="formsCampaign">`;
 			txt += dc_addRow(`${numLegs}`,`Legendar${numLegs==1?'y':'ies'}`);
 			txt += dc_addRow(`&nbsp;`,hasBeenReforged ? `HAS BEEN REFORGED` : `&nbsp;`);
 			txt += dc_addRow(`&nbsp;`);

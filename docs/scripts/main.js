@@ -1,4 +1,4 @@
-const v=4.011;
+const v=4.012;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -71,12 +71,12 @@ function init() {
 		swapTab();
 	});
 	initPullButtonStuff();
-	initBuyChestsSliderFidelity();
-	initOpenChestsSliderFidelity();
-	initOpenChestsHideChests();
+	bc_initBuyChestsSliderFidelity();
+	oc_initOpenChestsSliderFidelity();
+	oc_initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
 	swapTab();
-	startUpdateCheckInterval(7200000); // 2 hours
+	startUpdateCheckInterval(1800000); // 30 mins
 }
 
 function settingsToggle() {
@@ -121,17 +121,12 @@ async function startUpdateCheckInterval(delay) {
 }
 
 async function checkUpdatedScriptsAvailable() {
-	for (let ele of [...document.querySelectorAll("script[type='text/javascript']")].reverse()) {
-		let filename = ele.src;
-		if (filename.includes("lz-string"))
-			continue;
-		let curr = Number(ele.src.replace(/^.*?\?v.*?=/g, '').match(/\d|\./g).join(''));
-		let latest = Number(getFirstLine(await (await fetch(filename,{headers:{'Cache-Control':'no-cache'}})).text()).replace(/[^\d.-]/g, ''));
-		if (curr < latest) {
-			enableVersionUpdate();
-			return;
-		}
-	}
+	let newDocum = new DOMParser().parseFromString(await (await fetch(window.location.href,{headers:{'Cache-Control':'no-cache'}})).text(), "text/html");
+	let oldList = [...document.querySelectorAll("script[type='text/javascript']")].map(ele=>ele.src);
+	let newList = [...newDocum.querySelectorAll("script[type='text/javascript']")].map(ele=>ele.src);
+	if (oldList.length === newList.length && oldList.every((value, index) => value === newList[index]))
+		return;
+	enableVersionUpdate();
 }
 
 function enableVersionUpdate() {
@@ -212,7 +207,7 @@ async function loadUserAccount() {
 		SERVER=``;
 		instanceId=``;
 		boilerplate=``;
-		initOpenChestsHideChests();
+		oc_initOpenChestsHideChests();
 	}
 	clearTimers();
 	cleanup();

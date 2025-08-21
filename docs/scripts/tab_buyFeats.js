@@ -1,6 +1,6 @@
-const vbf=1.009;
+const vbf=1.010;
 
-async function pullFeatsData() {
+async function bf_pullFeatsData() {
 	if (isBadUserData())
 		return;
 	disablePullButtons();
@@ -12,7 +12,7 @@ async function pullFeatsData() {
 		let details = await getUserDetails();
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let defs = await getDefinitions("hero_defines,hero_feat_defines");
-		await displayFeatsData(wrapper,details,defs);
+		await bf_displayFeatsData(wrapper,details,defs);
 		codeEnablePullButtons();
 	} catch (error) {
 		setFormsWrapperFormat(wrapper,0);
@@ -20,7 +20,7 @@ async function pullFeatsData() {
 	}
 }
 
-async function displayFeatsData(wrapper,details,defs) {
+async function bf_displayFeatsData(wrapper,details,defs) {
 	if (details==undefined||defs==undefined) {
 		wrapper.innerHTML = `Error.`;
 		return;
@@ -78,25 +78,25 @@ async function displayFeatsData(wrapper,details,defs) {
 		if (feats.length == 0)
 			continue;
 		let name = champs[id].name;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${id}">`;
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign">`;
 		for (let feat of champs[id].feats) {
-			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-champ="${name}" data-cost="${feat.cost}" onClick="featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
+			txt += `<span class="featsChampionList"><input type="checkbox" id="feat_${feat.id}" name="${feat.name}" data-champ="${name}" data-cost="${feat.cost}" data-featid="${feat.id}" onClick="bf_featsRecalcCost()"><label class="cblabel" for="feat_${feat.id}">${feat.name} ${nf(feat.cost)}</label></span>`;
 		}
-		txt += `<span class="formsCampaignSelect"><input id="feat_selectAll_${id}" type="button" onClick="featsSelectAll('${id}',true)" value="Select All"><input id="feat_selectNone_${id}" type="button" onClick="featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
+		txt += `<span class="formsCampaignSelect"><input id="feat_selectAll_${id}" type="button" onClick="bf_featsSelectAll('${id}',true)" value="Select All"><input id="feat_selectNone_${id}" type="button" onClick="bf_featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
 	let featsBuyer = document.getElementById(`featsBuyer`);
 	setFormsWrapperFormat(wrapper,1);
 	if (txt!=``) {
 		wrapper.innerHTML = txt;
 		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="featsSelectAllTheFeatsRow">&nbsp;</span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;
-		featsRecalcCost();
+		bf_featsRecalcCost();
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
 		featsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Congratulations. You have every available feat.</span>`
 	}
 }
 
-function featsRecalcCost() {
+function bf_featsRecalcCost() {
 	let wrapper = document.getElementById("featsWrapper");
 	let availableGems = Number(wrapper.dataset.gems);
 	let checked = wrapper.querySelectorAll('input[type="checkbox"]:checked');
@@ -110,34 +110,34 @@ function featsRecalcCost() {
 		wrapGemsCost.innerHTML = `Total Gems Cost: ${nf(cost)}`;
 	let featsSelectAllTheFeatsRow = document.getElementById("featsSelectAllTheFeatsRow");
 	let featsBuyRow = document.getElementById("featsBuyRow");
-	featsSelectAllTheFeatsRow.innerHTML = `<input type="button" onClick="featsSelectAllTheFeats()" name="featsSelectAllTheFeatsButton" id="featsSelectAllTheFeatsButton" style="font-size:0.9em;min-width:180px" value="Select All Unowned Feats">`;
+	featsSelectAllTheFeatsRow.innerHTML = `<input type="button" onClick="bf_featsSelectAllTheFeats()" name="featsSelectAllTheFeatsButton" id="featsSelectAllTheFeatsButton" style="font-size:0.9em;min-width:180px" value="Select All Unowned Feats">`;
 	if (featsBuyRow != undefined) {
 		if (cost > availableGems) {
 			featsBuyRow.style.color = `var(--warning1)`;
 			featsBuyRow.innerHTML = `You don't have enough gems to buy the selected feats.`;
 		} else {
 			featsBuyRow.style.color = ``;
-			featsBuyRow.innerHTML = `<input type="button" onClick="buyFeats()" name="featsBuyButton" id="featsBuyButton" style="font-size:0.9em;min-width:180px" value="Buy Selected Feats">`;
+			featsBuyRow.innerHTML = `<input type="button" onClick="bf_buyFeats()" name="featsBuyButton" id="featsBuyButton" style="font-size:0.9em;min-width:180px" value="Buy Selected Feats">`;
 		}
 	}
 }
 
-function featsSelectAll(id,check) {
+function bf_featsSelectAll(id,check) {
 	for (let ele of document.getElementById(id).querySelectorAll(`input[type="checkbox"]`))
 		ele.checked = check;
-	featsRecalcCost();
+	bf_featsRecalcCost();
 }
 
-function featsSelectAllTheFeats() {
+function bf_featsSelectAllTheFeats() {
 	let check = !document.getElementById(`featsSelectAllTheFeatsButton`).value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(`[type="checkbox"][id^="feat_"]`))
 		ele.checked = check;
-	featsRecalcCost();
+	bf_featsRecalcCost();
 	document.getElementById(`featsSelectAllTheFeatsButton`).value = `${check?"Deselect":"Select"} All Unowned Feats`;
 }
 
-async function buyFeats() {
-	disableAllFeatButtonsAndCheckboxes(true);
+async function bf_buyFeats() {
+	bf_disableAllFeatButtonsAndCheckboxes(true);
 	let featsBuyer = document.getElementById(`featsBuyer`);
 	let txt = `<span class="f fr w100 p5">Buying Feats:</span>`;
 	featsBuyer.innerHTML = txt;
@@ -147,7 +147,7 @@ async function buyFeats() {
 		if (!feat.checked)
 			continue;
 		count++;
-		let id = Number(feat.id.replaceAll("feat_",""));
+		let id = Number(feat.dataset.featid);
 		let result = await purchaseFeat(id);
 		let cost = feat.dataset.cost;
 		let successType = ``;
@@ -164,10 +164,10 @@ async function buyFeats() {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		featsBuyer.innerHTML = txt;
 	}
-	disableAllFeatButtonsAndCheckboxes(false);
+	bf_disableAllFeatButtonsAndCheckboxes(false);
 }
 
-function disableAllFeatButtonsAndCheckboxes(disable) {
+function bf_disableAllFeatButtonsAndCheckboxes(disable) {
 	if (disable) {
 		disablePullButtons(true);
 		for (let ele of document.querySelectorAll(`input[type="checkbox"][id^="feat"]`)) {
