@@ -589,3 +589,22 @@ input[type="checkbox"]:checked::before {
 	color: var(--Emperor);
 	background-color: var(--MidnightMoss);
 }
+
+.svgEventTier0 {
+	fill: none;
+}
+.svgEventTier1 {
+	fill: var(--WhitecapFoam);
+}
+.svgEventTier2 {
+	fill: var(--AlienArmpit);
+}
+.svgEventTier3 {
+	fill: var(--UltramarineBlue);
+}
+.svgEventTier4 {
+	fill: var(--Violet);
+}
+.svgEventTier5 {
+	fill: var(--Saffron);
+}

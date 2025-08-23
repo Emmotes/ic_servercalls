@@ -437,6 +437,43 @@
 				</span>
 			</div>
 			<!-- END: Shinies Calculator Tab -->
+			<!-- START: Event Tiers Tab -->
+			<input onClick="setHash('eventTiersTab')" type="radio" class="tabsRadio" name="serverTabs" id="eventTiersTab">
+			<label for="eventTiersTab" class="tabsLabel">Event Tiers</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Event Tiers</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%">
+						<p>This page will simply tell you what event tier you've gotten your champions to.</p>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="et_pullEventTiersData()" name="eventTiersPullButton" id="eventTiersPullButton" value="Pull EventTiers Data" style="min-width:175px">
+						<span id="eventTiersPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="eventTiersWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Event Tiers Tab -->
 			<!-- START: Party Tab -->
 			<input onClick="setHash('partyTab')" type="radio" class="tabsRadio" name="serverTabs" id="partyTab">
 			<label for="partyTab" class="tabsLabel">Parties</label>
@@ -680,13 +717,14 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.013"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
+	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.005"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.005"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
-	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.014"></script>
+	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.015"></script>
 	<script type="text/javascript" src="scripts/main.js?v=4.012"></script>
 </body>
 </html>
