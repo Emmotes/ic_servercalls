@@ -1,4 +1,4 @@
-const vet=1.000;
+const vet=1.001;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 
 async function et_pullEventTiersData() {
@@ -49,7 +49,8 @@ async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
 				} else
 					tiersCompleted.push(0);
 			}
-			ownedChampIdTiers[heroId] = tiersCompleted.reduce((a,b)=>Math.min(a,b));
+			if (tiersCompleted.length>0)
+				ownedChampIdTiers[heroId] = tiersCompleted.reduce((a,b)=>Math.min(a,b));
 		}
 	}
 	
