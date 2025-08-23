@@ -1,4 +1,4 @@
-const vet=1.001;
+const vet=1.002;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 
 async function et_pullEventTiersData() {
@@ -26,6 +26,10 @@ async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
 	let ownedById = owned[0];
 	let ownedByName = owned[1];
 	let ownedIds = Object.keys(ownedById);
+	if (ownedIds.length==0) {
+		wrapper.innerHTML = `<span class="f fr w100 p5">You have not unlocked any event champions.</span>`;
+		return;
+	}
 	let ownedChampIdTiers = {};
 	
 	for (let id of ownedIds)
