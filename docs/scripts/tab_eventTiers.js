@@ -1,4 +1,4 @@
-const vet=1.004;
+const vet=1.005;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 const eventIdMult = 10000;
 
@@ -52,20 +52,25 @@ async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
 		for (let i=0; i<event.length; i++) {
 			let heroId = event[i].h;
 			let completedVars = event[i].c;
+			let zoneGoals = [];
 			let tiersCompleted = [];
 			for (let k=1; k<completedVars.length; k++) {
 				let statKey = `highest_area_completed_ever_c${completedVars[k]}`;
 				if (details.stats.hasOwnProperty(statKey)) {
 					let tier = 0;
+					let statValue = Number(details.stats[statKey] || 0);
 					for (let t=1; t<eventGoals[k-1].length; t++)
-						if (Number(details.stats[statKey]) >= eventGoals[k-1][t])
+						if (statValue >= eventGoals[k-1][t])
 							tier++;
 					tiersCompleted.push(tier);
-				} else
+					zoneGoals.push(statValue);
+				} else {
 					tiersCompleted.push(0);
+					zoneGoals.push(0);
+				}
 			}
 			if (tiersCompleted.length>0) {
-				ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId])};
+				ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),goals:zoneGoals};
 				if (ownedEventById[heroId]!=undefined)
 					ownedChampIdTiers[heroId].event2Id = `${ownedEventById[heroId]}`;
 			}
@@ -120,7 +125,16 @@ function et_addEventTierGridElements(name,id,event2Ids,heroData) {
 	let tierString = ``;
 	for (let i=1; i<=4; i++)
 		tierString+=`<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m13.73 3.51 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${i<=heroData.tier?heroData.tier:0}"/></svg>`;
-	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${tierString}</span>`;
+	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
+	for (let i=0; i<heroData.goals.length; i++) {
+		let goal = heroData.goals[i];
+		let tier = 0;
+		for (let t=1; t<eventGoals[i].length; t++)
+			if (goal >= eventGoals[i][t])
+				tier++;
+		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">${goal}</span><span class="f falc fje">Tier ${tier}</span>`;
+	}
+	txt+=`</span></span></span>`;
 	return txt;
 }
 

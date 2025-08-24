@@ -634,3 +634,27 @@ input[type="checkbox"]:checked::before {
 	fill: var(--Saffron);
 	filter: drop-shadow(0px 0px 2px var(--Saffron));
 }
+.eventTiersTooltipsHolder {
+	position: relative;
+}
+.eventTiersTooltipsHolder:hover .eventTiersTooltips {
+	visibility: visible;
+}
+.eventTiersTooltips {
+	visibility: hidden;
+	position: absolute;
+	left: 0px;
+	bottom: 40px;
+	background-color: var(--Sooty);
+	border-radius: 5px;
+	padding: 10px 20px 20px 20px;
+	pointer-events: none;
+	width: max-content;
+	z-index: 1;
+	font-size: 1.1em;
+	
+	display: grid;
+	grid-template-columns: 75px 40px 50px;
+	column-gap: 5px;
+	row-gap: 4px;
+}
