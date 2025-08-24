@@ -611,8 +611,8 @@ input[type="checkbox"]:checked::before {
 	justify-content: flex-start;
 }
 .svgEventTier0 {
-	fill: none;
-	opacity: 0.6;
+	fill: var(--DarkGunmetal);
+	filter: drop-shadow(0px 0px 2px var(--Black));
 }
 .svgEventTier1 {
 	fill: var(--WhitecapFoam);
