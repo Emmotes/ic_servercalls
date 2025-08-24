@@ -1,4 +1,4 @@
-const v=4.012;
+const v=4.013;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -299,6 +299,9 @@ function setFormsWrapperFormat(wrapper,type) {
 		wrapper.style = ``;
 	} else if (type == 2) {
 		wrapper.className = `partiesWrapper`;
+		wrapper.style = ``;
+	} else if (type == 3) {
+		wrapper.className = `eventTiersWrapper`;
 		wrapper.style = ``;
 	}
 }

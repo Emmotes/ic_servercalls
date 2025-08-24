@@ -460,8 +460,15 @@
 						<span id="eventTiersPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
 					</span>
 				</span>
-				<span class="f fr w100 p5">
+				<span class="f fr w100 p5" style="position:relative">
 					&nbsp;
+					<span style="position:absolute;top:-30px;right:20px;width:fit-content;display:none" name="eventTiersSortHolder" id="eventTiersSortHolder">
+						Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px">
+							<option value="event" selected>Event</option>
+							<option value="name">Champion Name</option>
+							<option value="id">Champion ID</option>
+						</select>
+					</span>
 				</span>
 				<span class="f falc fje mr2" style="flex-direction:column" id="eventTiersWrapper">
 					&nbsp;
@@ -717,7 +724,7 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.013"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
-	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.002"></script>
+	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.003"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.003"></script>
@@ -725,6 +732,6 @@
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.005"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.015"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.012"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.013"></script>
 </body>
 </html>
