@@ -1,4 +1,4 @@
-const v=4.013;
+const v=4.014;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -16,7 +16,7 @@ const settingsLoad=document.getElementById(`settingsMenuButtonLoadAccount`);
 const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
-const NUMFORM = new Intl.NumberFormat("en",{useGrouping:true,maximumFractionDigits:2});
+const NUMFORM = new Intl.NumberFormat(undefined,{useGrouping:true,maximumFractionDigits:2});
 var updateInterval;
 var timerList = {};
 var pbNames;
@@ -331,7 +331,7 @@ function randInt(min, max) {
 }
 
 function dateFormat(input) {
-	return Intl.DateTimeFormat("en-GB", {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
+	return Intl.DateTimeFormat(undefined, {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
 }
 
 function getDisplayTime(time) {
