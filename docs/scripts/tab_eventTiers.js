@@ -1,4 +1,4 @@
-const vet=1.005;
+const vet=1.006;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 const eventIdMult = 10000;
 
@@ -13,11 +13,9 @@ async function et_pullEventTiersData() {
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for collections data...`;
-		let collections = (await getCompletionData()).data.event;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let heroDefs = (await getDefinitions("hero_defines")).hero_defines;
-		await et_displayEventTiersData(wrapper,heroDefs,details,collections);
+		await et_displayEventTiersData(wrapper,heroDefs,details);
 		codeEnablePullButtons();
 	} catch (error) {
 		et_hideEventSort(true);
@@ -26,7 +24,7 @@ async function et_pullEventTiersData() {
 	}
 }
 
-async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
+async function et_displayEventTiersData(wrapper,heroDefs,details) {
 	let owned = et_parseOwnedChamps(heroDefs,details.heroes);
 	let ownedById = owned[0];
 	let ownedIds = Object.keys(ownedById);
@@ -44,36 +42,39 @@ async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
 		ownedChampIdTiers[id] = ownedIds.includes(id) ? 0 : -1;
 	
 	let eventNameByEventId = {};
-	for (let event1Id of Object.keys(collections)) {
-		let event = collections[event1Id].y;
-		let event2Id = et_getEvent2IdFromEvent1Id(event1Id);
+	for (let hero of heroDefs) {
+		let heroId = `${hero.id}`;
+		if (!ownedIds.includes(heroId))
+			continue;
+		let eventName = hero.event_name;
+		let event2Id = et_getEvent2IdFromEventName(eventName);
 		if (event2Id!=undefined)
-			eventNameByEventId[event2Id] = collections[event1Id].n;
-		for (let i=0; i<event.length; i++) {
-			let heroId = event[i].h;
-			let completedVars = event[i].c;
-			let zoneGoals = [];
-			let tiersCompleted = [];
-			for (let k=1; k<completedVars.length; k++) {
-				let statKey = `highest_area_completed_ever_c${completedVars[k]}`;
-				if (details.stats.hasOwnProperty(statKey)) {
-					let tier = 0;
-					let statValue = Number(details.stats[statKey] || 0);
-					for (let t=1; t<eventGoals[k-1].length; t++)
-						if (statValue >= eventGoals[k-1][t])
-							tier++;
-					tiersCompleted.push(tier);
-					zoneGoals.push(statValue);
-				} else {
-					tiersCompleted.push(0);
-					zoneGoals.push(0);
-				}
+			eventNameByEventId[event2Id] = eventName;
+		let completedVars = [];
+		for (let adv of hero.adventure_ids)
+			if (adv.hasOwnProperty('adventure_id')&&adv.hasOwnProperty('type')&&adv.type=='variant')
+				completedVars.push(adv.adventure_id);
+		let zoneGoals = [];
+		let tiersCompleted = [];
+		for (let k=0; k<completedVars.length; k++) {
+			let statKey = `highest_area_completed_ever_c${completedVars[k]}`;
+			if (details.stats.hasOwnProperty(statKey)) {
+				let tier = 0;
+				let statValue = Number(details.stats[statKey] || 0);
+				for (let t=1; t<eventGoals[k].length; t++)
+					if (statValue >= eventGoals[k][t])
+						tier++;
+				tiersCompleted.push(tier);
+				zoneGoals.push(statValue);
+			} else {
+				tiersCompleted.push(0);
+				zoneGoals.push(0);
 			}
-			if (tiersCompleted.length>0) {
-				ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),goals:zoneGoals};
-				if (ownedEventById[heroId]!=undefined)
-					ownedChampIdTiers[heroId].event2Id = `${ownedEventById[heroId]}`;
-			}
+		}
+		if (tiersCompleted.length>0) {
+			ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),goals:zoneGoals};
+			if (ownedEventById[heroId]!=undefined)
+				ownedChampIdTiers[heroId].event2Id = `${ownedEventById[heroId]}`;
 		}
 	}
 	
@@ -88,10 +89,11 @@ async function et_displayEventTiersData(wrapper,heroDefs,details,collections) {
 	txt+=`<span class="eventGridHeader" data-sort="0" data-eventidorder="0" data-nameorder="0" data-id="0" style="display:none"><strong>Champion Event Tiers Completed:</strong></span>`;
 	for (let event2Id of event2Ids)
 		txt+=`<span class="eventGridHeader" data-sort="1" data-eventidorder="${event2Ids.indexOf(event2Id)}" data-nameorder="0" data-id="0"><strong>${eventNameByEventId[event2Id]} - ${et_getEventMonthByEvent2Id(event2Id)}:</strong></span>`;
+	let date = new Date();
 	for (let heroId of Object.keys(ownedChampIdTiers)) {
 		let heroData = ownedChampIdTiers[heroId];
 		if (heroData.tier >= 0)
-			txt+=et_addEventTierGridElements(ownedById[heroId], heroId, event2Ids, heroData);
+			txt+=et_addEventTierGridElements(ownedById[heroId], heroId, event2Ids, heroData, date);
 	}
 	setFormsWrapperFormat(wrapper,3);
 	wrapper.innerHTML = txt;
@@ -119,23 +121,6 @@ function et_parseOwnedChamps(defsHeroes,detailsHeroes) {
 		}
 	}
 	return [ownedById, ownedNames, ownedEventById];
-}
-
-function et_addEventTierGridElements(name,id,event2Ids,heroData) {
-	let tierString = ``;
-	for (let i=1; i<=4; i++)
-		tierString+=`<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m13.73 3.51 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${i<=heroData.tier?heroData.tier:0}"/></svg>`;
-	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
-	for (let i=0; i<heroData.goals.length; i++) {
-		let goal = heroData.goals[i];
-		let tier = 0;
-		for (let t=1; t<eventGoals[i].length; t++)
-			if (goal >= eventGoals[i][t])
-				tier++;
-		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">${goal}</span><span class="f falc fje">Tier ${tier}</span>`;
-	}
-	txt+=`</span></span></span>`;
-	return txt;
 }
 
 function et_changeOrder(type) {
@@ -210,4 +195,27 @@ function et_getCurrentOrNextEventId(details) {
 		return details.active_events[0].event_id;
 	if (details.hasOwnProperty('next_event')&&details.next_event.hasOwnProperty('event_id'))
 		return details.next_event.event_id;
+}
+
+function et_addEventTierGridElements(name,id,event2Ids,heroData,date) {
+	let tierString = ``;
+	for (let i=1; i<=4; i++)
+		tierString+=et_buildSVG(i<=heroData.tier?heroData.tier:0,date.getMonth()+1,date.getDate());
+	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
+	for (let i=0; i<heroData.goals.length; i++) {
+		let goal = heroData.goals[i];
+		let varTier = 0;
+		for (let t=1; t<eventGoals[i].length; t++)
+			if (goal >= eventGoals[i][t])
+				varTier++;
+		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">${goal}</span><span class="f falc fje">Tier ${varTier}</span>`;
+	}
+	txt+=`</span></span></span>`;
+	return txt;
+}
+
+function et_buildSVG(tier,month,day) {
+	if (month==2&&day==14)
+		return `<svg width="30" height="30" viewBox="-3 -4 38 38" xmlns="http://www.w3.org/2000/svg"><path d="M24 0c-3.333 0-6.018 1.842-8.031 4.235C14.013 1.76 11.333 0 8 0 3.306 0 0 4.036 0 8.438c0 2.361.967 4.061 2.026 5.659l12.433 14.906c1.395 1.309 1.659 1.309 3.054 0l12.461-14.906C31.22 12.499 32 10.799 32 8.438 32 4.036 28.694 0 24 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${tier}"></svg>`;
+	return `<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m13.73 3.51 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${tier}"/></svg>`;
 }
