@@ -1,4 +1,4 @@
-const vc=1.003;
+const vc=1.004;
 campaignIds = {
 	 "1": "Grand Tour of the Sword Coast",
 	 "2": "Tomb of Annihilation",
@@ -29,7 +29,8 @@ campaignIds = {
 	"27": "Wild Beyond the Witchlight",
 	"28": "Light of Xaryxis",
 	"29": "Turn of Fortune's Wheel",
-	"31": "Vecna: Eve of Ruin"
+	"31": "Vecna: Eve of Ruin",
+	"32": "Tales of the Champions"
 };
 paronAdvIds = {
 	      "0": "",
