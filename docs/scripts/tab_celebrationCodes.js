@@ -1,4 +1,4 @@
-const vcc=1.003;
+const vcc=1.004;
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData())
@@ -76,8 +76,11 @@ async function cc_displayCelebrationsData(wrapper,customNotes) {
 		celebrationsClaimer.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="celebrationsSelectAllTheCelebrationsRow"><input type="button" onClick="cc_celebrationsSelectAllTheCelebrations()" name="celebrationsSelectAllTheCelebrationsButton" id="celebrationsSelectAllTheCelebrationsButton" style="font-size:0.9em;min-width:180px" value="Select All Codes"></span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="celebrationsBuyRow"><input type="button" onClick="cc_claimCelebrations()" name="celebrationsBuyButton" id="celebrationsBuyButton" style="font-size:0.9em;min-width:180px" value="Claim Selected Codes"></span></span>`;
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
-		let timerText = timer==-1 ? `` : ` Check again in ${getDisplayTime(timer*1000)}.`;
-		celebrationsClaimer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">No celebration codes to claim at this time.${timerText}</span>`;
+		let timerMS = timer*1000;
+		let timerText = timer==-1 ? `` : getDisplayTime(timerMS);
+		let prefix = `No celebration codes to claim at this time. Check again in `;
+		celebrationsClaimer.innerHTML = `<span class="f w100 p5" style="padding-left:10%"><span id="celebrationCooldown">${prefix}${timerText}.</span></span>`;
+		createTimer(timerMS,`cc_celebration`,`celebrationCooldown`,`New Day Started. Check for Celebrations again.`,`${prefix}`,`.`);
 	}
 }
 

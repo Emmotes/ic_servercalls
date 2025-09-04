@@ -1,4 +1,4 @@
-const v=4.014;
+const v=4.015;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -406,7 +406,7 @@ function removeUserAccount(name) {
 	saveUserAccounts(userAccounts);
 }
 
-function createTimer(timeLength,timerName,eleName,endMsg,prefix) {
+function createTimer(timeLength,timerName,eleName,endMsg,prefix,suffix) {
 	if (timeLength <= 0)
 		return;
 	timeAim = new Date().getTime() + timeLength;
@@ -422,7 +422,7 @@ function createTimer(timeLength,timerName,eleName,endMsg,prefix) {
 			return;
 		}
 		let remaining = timerJson.aim - new Date().getTime();
-		ele.innerHTML = `${prefix || ''}${getDisplayTime(remaining)}`;
+		ele.innerHTML = `${prefix || ''}${getDisplayTime(remaining)}${suffix || ''}`;
 		
 		if (remaining < 0) {
 			clearInterval(timerList[timerName].interval);
