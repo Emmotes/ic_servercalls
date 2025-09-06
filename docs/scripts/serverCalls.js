@@ -1,4 +1,4 @@
-const vs=3.016;
+const vs=3.017;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -165,7 +165,6 @@ async function trialsClaimRewards(campaignId) {
 async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats) {
 	if (campId==undefined||name==undefined)
 		return;
-	let params = [];
 	let params = [
 		['campaign_id',campId],
 		['name',name],
