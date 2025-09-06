@@ -1,4 +1,4 @@
-const v=4.015;
+const v=4.016;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -136,11 +136,11 @@ function enableVersionUpdate() {
 
 function getPatronNameById(id) {
 	switch (id) {
-		case 1: return paronAdvIds["1100000"];
-		case 2: return paronAdvIds["1200000"];
-		case 3: return paronAdvIds["1300000"];
-		case 4: return paronAdvIds["1400000"];
-		case 5: return paronAdvIds["1500000"];
+		case 1: return patronAdvIds["1100000"];
+		case 2: return patronAdvIds["1200000"];
+		case 3: return patronAdvIds["1300000"];
+		case 4: return patronAdvIds["1400000"];
+		case 5: return patronAdvIds["1500000"];
 		default: return `??? (id: ${id})`;
 	}
 }

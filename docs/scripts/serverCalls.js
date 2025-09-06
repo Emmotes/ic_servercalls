@@ -1,4 +1,4 @@
-const vs=3.015;
+const vs=3.016;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -162,11 +162,11 @@ async function trialsClaimRewards(campaignId) {
 	return await sendServerCall(SERVER,'trialsclaimrewards',params,true,true);
 }
 
-async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats,overwrite) {
-	if (formId==undefined||campId==undefined||name==undefined)
+async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats) {
+	if (campId==undefined||name==undefined)
 		return;
+	let params = [];
 	let params = [
-		['formation_save_id',formId],
 		['campaign_id',campId],
 		['name',name],
 		['favorite',fav || 0],
@@ -175,6 +175,10 @@ async function saveFormation(formId,campId,name,fav,formation,familiars,specs,fe
 		['specializations',specs || "{}"],
 		['feats',feats || "{}"]
 	];
+	if (formId>0)
+		params.push(
+			['formation_save_id',formId]
+		);
 	return await sendServerCall(SERVER,'SaveFormation',params,true,true);
 }
 
@@ -261,7 +265,9 @@ async function openGenericChest(chestId,count,packId) {
 		['count',count]
 	];
 	if (packId!=undefined)
-		params.push(['pack_id',packId]);
+		params.push(
+			['pack_id',packId]
+		);
 	return await sendServerCall(SERVER,'opengenericchest',params,true,true);
 }
 

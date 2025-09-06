@@ -1,4 +1,4 @@
-const vdf=1.013;
+const vdf=1.014;
 
 async function df_pullFormationSaves() {
 	if (isBadUserData())
@@ -37,7 +37,7 @@ async function df_displayFormationSaves(wrapper,saves) {
 		if (id > 1000 && id < 1000000)
 			campName = formObj.campaign_name;
 		if (campName==undefined) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron==0?``:paronAdvIds[`${patron}`];
+		let patronName = patron==0?``:patronAdvIds[`${patron}`];
 		if (patronName==undefined) patronName=``;
 		let patronDisplay = patronName==``?`No Patron`:patronName;
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;

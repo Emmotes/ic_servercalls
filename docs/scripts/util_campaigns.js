@@ -1,4 +1,4 @@
-const vc=1.004;
+const vc=1.005;
 campaignIds = {
 	 "1": "Grand Tour of the Sword Coast",
 	 "2": "Tomb of Annihilation",
@@ -32,7 +32,7 @@ campaignIds = {
 	"31": "Vecna: Eve of Ruin",
 	"32": "Tales of the Champions"
 };
-paronAdvIds = {
+patronAdvIds = {
 	      "0": "",
 	"1100000": "Mirt",
 	"1200000": "Vajra",
