@@ -612,27 +612,33 @@ input[type="checkbox"]:checked::before {
 }
 .svgEventTier0 {
 	fill: none;
-	filter: drop-shadow(0px 0px 2px var(--Black));
+	color: var(--Black);
+	filter: drop-shadow(0px 0px 2px);
 }
 .svgEventTier1 {
 	fill: var(--WhitecapFoam);
-	filter: drop-shadow(0px 0px 2px var(--WhitecapFoam));
+	color: var(--WhitecapFoam);
+	filter: drop-shadow(0px 0px 2px);
 }
 .svgEventTier2 {
 	fill: var(--AlienArmpit);
-	filter: drop-shadow(0px 0px 2px var(--AlienArmpit));
+	color: var(--AlienArmpit);
+	filter: drop-shadow(0px 0px 2px);
 }
 .svgEventTier3 {
 	fill: var(--UltramarineBlue);
-	filter: drop-shadow(0px 0px 2px var(--UltramarineBlue));
+	color: var(--UltramarineBlue);
+	filter: drop-shadow(0px 0px 2px);
 }
 .svgEventTier4 {
 	fill: var(--Violet);
-	filter: drop-shadow(0px 0px 2px var(--Violet));
+	color: var(--Violet);
+	filter: drop-shadow(0px 0px 2px);
 }
 .svgEventTier5 {
 	fill: var(--Saffron);
-	filter: drop-shadow(0px 0px 2px var(--Saffron));
+	color: var(--Saffron);
+	filter: drop-shadow(0px 0px 2px);
 }
 .eventTiersTooltipsHolder {
 	position: relative;
