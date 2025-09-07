@@ -1,4 +1,4 @@
-const vet=1.009;
+const vet=1.010;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 const eventIdMult = 10000;
 const etht4 = `scEventTiersHideTier4`;
@@ -49,6 +49,8 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 		let heroId = `${hero.id}`;
 		if (!ownedIds.includes(heroId))
 			continue;
+		if (!collections.hasOwnProperty(heroId)||!collections[heroId].hasOwnProperty('v'))
+			continue;
 		let eventName = hero.event_name;
 		let event2Id = et_getEvent2IdFromEventName(eventName);
 		if (event2Id!=undefined)
@@ -57,7 +59,7 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 		for (let adv of hero.adventure_ids)
 			if (adv.hasOwnProperty('adventure_id')&&adv.hasOwnProperty('type')&&adv.type=='variant')
 				completedVars.push(adv.adventure_id);
-		let tiersCompleted = [];
+		let tiersCompleted = [0,0,0];
 		let heroCollection = collections[heroId].v;
 		for (let tier=0; tier<heroCollection.length; tier++) {
 			let heroVariants = heroCollection[tier];
