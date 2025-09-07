@@ -1,6 +1,7 @@
-const vet=1.008;
+const vet=1.009;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 const eventIdMult = 10000;
+const etht4 = `scEventTiersHideTier4`;
 
 async function et_pullEventTiersData() {
 	if (isBadUserData())
@@ -91,6 +92,8 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 	setFormsWrapperFormat(wrapper,3);
 	wrapper.innerHTML = txt;
 	et_hideEventSort(false);
+	if (et_getHideTier4())
+		et_toggleHideTier4(true);
 	et_changeOrder('event');
 }
 
@@ -194,7 +197,7 @@ function et_addEventTierGridElements(name,id,event2Ids,heroData,date) {
 	let tierString = ``;
 	for (let i=1; i<=4; i++)
 		tierString+=et_buildSVG(i<=heroData.tier?heroData.tier:0,date.getMonth()+1,date.getDate());
-	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
+	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${heroData.tier}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${heroData.tier}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
 	for (let i=0; i<heroData.tiers.length; i++) {
 		let varTier = heroData.tiers[i];
 		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">Tier ${varTier}</span>`;
@@ -209,4 +212,30 @@ function et_buildSVG(tier,month,day) {
 	if (month==2&&day==14)
 		return `<svg width="30" height="30" viewBox="-3 -4 38 38" xmlns="http://www.w3.org/2000/svg"><path d="M24 0c-3.333 0-6.018 1.842-8.031 4.235C14.013 1.76 11.333 0 8 0 3.306 0 0 4.036 0 8.438c0 2.361.967 4.061 2.026 5.659l12.433 14.906c1.395 1.309 1.659 1.309 3.054 0l12.461-14.906C31.22 12.499 32 10.799 32 8.438 32 4.036 28.694 0 24 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${tier}" style="filter:drop-shadow(0px 0px 3px)"/></svg>`;
 	return `<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m13.73 3.51 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${tier}"/></svg>`;
+}
+
+function et_initEventTiersHideTier4() {
+	document.getElementById('eventTiersHideTier4').checked = et_getHideTier4();
+}
+
+function et_toggleHideTier4(force) {
+	let hide = force || document.getElementById('eventTiersHideTier4').checked;
+	et_setHideTier4(hide);
+	for (let ele of document.querySelectorAll("span[class='eventGridName'],span[class='eventGridTier']")) {
+		if (Number(ele.dataset.tier)==4)
+			ele.style.display = hide ? `none` : ``;
+		else
+			ele.style.display = ``;
+	}
+}
+
+function et_getHideTier4() {
+	let strg = localStorage.getItem(etht4);
+	if (strg!=undefined)
+		return strg!='0';
+	return false;
+}
+
+function et_setHideTier4(hide) {
+	localStorage.setItem(etht4, hide ? '1' : '0');
 }

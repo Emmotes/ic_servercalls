@@ -462,12 +462,17 @@
 				</span>
 				<span class="f fr w100 p5" style="position:relative">
 					&nbsp;
-					<span style="position:absolute;top:-30px;right:20px;width:fit-content;display:none" name="eventTiersSortHolder" id="eventTiersSortHolder">
-						Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px">
-							<option value="event" selected>Event</option>
-							<option value="name">Champion Name</option>
-							<option value="id">Champion ID</option>
-						</select>
+					<span class="f fc" style="position:absolute;top:-30px;right:20px;width:fit-content">
+						<span class="f fr falc fjc">
+							<input type="checkbox" id="eventTiersHideTier4" onclick="et_toggleHideTier4()"> Hide Tier 4 Champions
+						</span>
+						<span class="f fr falc fjc" style="display:none" name="eventTiersSortHolder" id="eventTiersSortHolder">
+							Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px">
+								<option value="event" selected>Event</option>
+								<option value="name">Champion Name</option>
+								<option value="id">Champion ID</option>
+							</select>
+						</span>
 					</span>
 				</span>
 				<span class="f falc fje mr2" style="flex-direction:column" id="eventTiersWrapper">
@@ -724,7 +729,7 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.013"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
-	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.008"></script>
+	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.004"></script>
@@ -732,6 +737,6 @@
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.005"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.017"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.016"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.017"></script>
 </body>
 </html>

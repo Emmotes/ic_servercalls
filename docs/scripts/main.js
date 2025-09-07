@@ -1,4 +1,4 @@
-const v=4.016;
+const v=4.017;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -75,6 +75,7 @@ function init() {
 	oc_initOpenChestsSliderFidelity();
 	oc_initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
+	et_initEventTiersHideTier4();
 	swapTab();
 	startUpdateCheckInterval(1800000); // 30 mins
 }
