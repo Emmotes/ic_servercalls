@@ -1,4 +1,4 @@
-const vet=1.007;
+const vet=1.008;
 const eventGoals = [[0,75,250,600,1200],[0,125,350,800,1400],[0,175,450,1000,1600]];
 const eventIdMult = 10000;
 
@@ -13,9 +13,11 @@ async function et_pullEventTiersData() {
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
+		wrapper.innerHTML = `Waiting for collections data...`;
+		let collections = (await getCompletionData()).data.event;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let heroDefs = (await getDefinitions("hero_defines")).hero_defines;
-		await et_displayEventTiersData(wrapper,heroDefs,details);
+		await et_displayEventTiersData(wrapper,heroDefs,collections,details);
 		codeEnablePullButtons();
 	} catch (error) {
 		et_hideEventSort(true);
@@ -24,7 +26,7 @@ async function et_pullEventTiersData() {
 	}
 }
 
-async function et_displayEventTiersData(wrapper,heroDefs,details) {
+async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 	let owned = et_parseOwnedChamps(heroDefs,details.heroes);
 	let ownedById = owned[0];
 	let ownedIds = Object.keys(ownedById);
@@ -54,25 +56,16 @@ async function et_displayEventTiersData(wrapper,heroDefs,details) {
 		for (let adv of hero.adventure_ids)
 			if (adv.hasOwnProperty('adventure_id')&&adv.hasOwnProperty('type')&&adv.type=='variant')
 				completedVars.push(adv.adventure_id);
-		let zoneGoals = [];
 		let tiersCompleted = [];
-		for (let k=0; k<completedVars.length; k++) {
-			let statKey = `highest_area_completed_ever_c${completedVars[k]}`;
-			if (details.stats.hasOwnProperty(statKey)) {
-				let tier = 0;
-				let statValue = Number(details.stats[statKey] || 0);
-				for (let t=1; t<eventGoals[k].length; t++)
-					if (statValue >= eventGoals[k][t])
-						tier++;
-				tiersCompleted.push(tier);
-				zoneGoals.push(statValue);
-			} else {
-				tiersCompleted.push(0);
-				zoneGoals.push(0);
-			}
+		let heroCollection = collections[heroId].v;
+		for (let tier=0; tier<heroCollection.length; tier++) {
+			let heroVariants = heroCollection[tier];
+			for (let variant=0; variant<heroVariants.length; variant++)
+				if (heroVariants[variant] == 1)
+					tiersCompleted[variant] = tier+1;
 		}
 		if (tiersCompleted.length>0) {
-			ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),goals:zoneGoals};
+			ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),tiers:tiersCompleted};
 			if (ownedEventById[heroId]!=undefined)
 				ownedChampIdTiers[heroId].event2Id = `${ownedEventById[heroId]}`;
 		}
@@ -202,13 +195,9 @@ function et_addEventTierGridElements(name,id,event2Ids,heroData,date) {
 	for (let i=1; i<=4; i++)
 		tierString+=et_buildSVG(i<=heroData.tier?heroData.tier:0,date.getMonth()+1,date.getDate());
 	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
-	for (let i=0; i<heroData.goals.length; i++) {
-		let goal = heroData.goals[i];
-		let varTier = 0;
-		for (let t=1; t<eventGoals[i].length; t++)
-			if (goal >= eventGoals[i][t])
-				varTier++;
-		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">${goal}</span><span class="f falc fje">Tier ${varTier}</span>`;
+	for (let i=0; i<heroData.tiers.length; i++) {
+		let varTier = heroData.tiers[i];
+		txt+=`<span class="f falc">Variant ${i+1}:</span><span class="f falc fje">Tier ${varTier}</span>`;
 	}
 	txt+=`</span></span></span>`;
 	return txt;

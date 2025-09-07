@@ -660,7 +660,7 @@ input[type="checkbox"]:checked::before {
 	font-size: 1.1em;
 	
 	display: grid;
-	grid-template-columns: 75px 40px 50px;
+	grid-template-columns: 75px 50px;
 	column-gap: 5px;
 	row-gap: 4px;
 }
