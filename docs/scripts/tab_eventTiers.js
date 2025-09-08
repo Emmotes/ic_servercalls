@@ -1,4 +1,4 @@
-const vet=1.011;
+const vet=1.012;
 const eventIdMult = 10000;
 const etht4 = `scEventTiersHideTier4`;
 
@@ -44,6 +44,8 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 		ownedChampIdTiers[id] = ownedIds.includes(id) ? 0 : -1;
 	
 	let eventNameByEventId = {};
+	let numNotTier4 = 0;
+	let numTotal = 0;
 	for (let hero of heroDefs) {
 		let heroId = `${hero.id}`;
 		if (!ownedIds.includes(heroId))
@@ -63,7 +65,11 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 					tiersCompleted[variant] = tier+1;
 		}
 		if (tiersCompleted.length>0) {
-			ownedChampIdTiers[heroId] = {tier:tiersCompleted.reduce((a,b)=>Math.min(a,b)),nameOrder:ownedNames.indexOf(ownedById[heroId]),tiers:tiersCompleted};
+			let tier = tiersCompleted.reduce((a,b)=>Math.min(a,b));
+			if (tier!=4)
+				numNotTier4++;
+			numTotal++;
+			ownedChampIdTiers[heroId] = {tier:tier,nameOrder:ownedNames.indexOf(ownedById[heroId]),tiers:tiersCompleted};
 			if (ownedEventById[heroId]!=undefined)
 				ownedChampIdTiers[heroId].event2Id = `${ownedEventById[heroId]}`;
 		}
@@ -88,6 +94,7 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 	}
 	setFormsWrapperFormat(wrapper,3);
 	wrapper.innerHTML = txt;
+	document.getElementById('eventTiersHideTier4Amount').innerHTML = `Displaying: ${numNotTier4} / ${numTotal}`;
 	et_hideEventSort(false);
 	if (et_getHideTier4())
 		et_toggleHideTier4(true);
@@ -224,6 +231,7 @@ function et_toggleHideTier4(force) {
 		else
 			ele.style.display = ``;
 	}
+	document.getElementById('eventTiersHideTier4Amount').style.display = hide ? `` : `none`;
 }
 
 function et_getHideTier4() {

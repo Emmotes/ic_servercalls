@@ -466,12 +466,15 @@
 						<span class="f fr falc fjc">
 							<input type="checkbox" id="eventTiersHideTier4" onclick="et_toggleHideTier4()"> Hide Tier 4 Champions
 						</span>
-						<span class="f fr falc fjc" style="display:none" name="eventTiersSortHolder" id="eventTiersSortHolder">
-							Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px">
+						<span class="f fr falc fjc" style="display:none;margin-top:2px" name="eventTiersSortHolder" id="eventTiersSortHolder">
+							Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px;margin-left:5px">
 								<option value="event" selected>Event</option>
 								<option value="name">Champion Name</option>
 								<option value="id">Champion ID</option>
 							</select>
+						</span>
+						<span class="f ft falc fjc" style="display:none;margin-top:5px" name="eventTiersHideTier4Amount" id="eventTiersHideTier4Amount">
+							&nbsp;
 						</span>
 					</span>
 				</span>
@@ -729,7 +732,7 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.013"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
-	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.011"></script>
+	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.012"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.004"></script>
