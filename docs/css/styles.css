@@ -323,7 +323,7 @@ input[type="checkbox"]:checked::before {
 	width: 100%;
 }
 
-.settingsContainer,.updateContainer {
+.settingsContainer,.versioningContainer {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -335,10 +335,22 @@ input[type="checkbox"]:checked::before {
 	width: max-content;
 	height: max-content;
 }
-.updateContainer {
-	flex-direction: row;
+.versioningContainer {
 	top: 12px;
 	left: 10px;
+}
+
+.changelogContainer {
+	
+	font-size: 0.8em;
+}
+
+.changelogContainer a {
+	color: var(--Wolfram);
+}
+
+.changelogContainer a:hover {
+	color: var(--White);
 }
 
 .setting,.update {
@@ -375,6 +387,12 @@ input[type="checkbox"]:checked::before {
 	-moz-animation: spin 10s linear infinite;
 	animation: spin 10s linear infinite;
 	cursor: pointer;
+}
+
+.updateContainer {
+	display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .updateContainer:hover div {

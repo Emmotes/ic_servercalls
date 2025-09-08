@@ -1,4 +1,4 @@
-const v=4.017;
+const v=4.018;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -132,6 +132,7 @@ async function checkUpdatedScriptsAvailable() {
 
 function enableVersionUpdate() {
 	updateContainer.style.display = '';
+	changelogContainer.style.display = 'none';
 	clearAsyncInterval(updateInterval);
 }
 
