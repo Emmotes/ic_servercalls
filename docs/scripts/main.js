@@ -1,4 +1,4 @@
-const v=4.018;
+const v=4.019;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -131,8 +131,10 @@ async function checkUpdatedScriptsAvailable() {
 }
 
 function enableVersionUpdate() {
-	updateContainer.style.display = '';
-	changelogContainer.style.display = 'none';
+	document.getElementById('updateContainer').style.display = '';
+	document.getElementById('changelogContainer').style.display = 'none';
+	document.getElementById('versioningContainer').style = 'position:fixed;box-shadow:2px 2px 10px var(--ShipGrey), -2px -2px 10px var(--ShipGrey), -2px 2px 10px var(--ShipGrey), 2px -2px 10px var(--ShipGrey);';
+	
 	clearAsyncInterval(updateInterval);
 }
 

@@ -338,10 +338,12 @@ input[type="checkbox"]:checked::before {
 .versioningContainer {
 	top: 12px;
 	left: 10px;
+	z-index: 1;
+	border-radius: 10px;
+	background-color: var(--Charade);
 }
 
 .changelogContainer {
-	
 	font-size: 0.8em;
 }
 
@@ -393,6 +395,7 @@ input[type="checkbox"]:checked::before {
 	display: flex;
     align-items: center;
     justify-content: center;
+	padding: 0 5px;
 }
 
 .updateContainer:hover div {
