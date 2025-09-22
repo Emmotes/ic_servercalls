@@ -1,4 +1,4 @@
-const vir=1.001;
+const vir=1.002;
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData())
@@ -6,16 +6,16 @@ async function ir_pulliLvlReportData() {
 	disablePullButtons();
 	let wrapper = document.getElementById(`ilvlreportWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	try {
+	//try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let heroDefs = (await getDefinitions("hero_defines")).hero_defines;
 		await ir_displayiLvlReportData(wrapper,details,heroDefs);
 		codeEnablePullButtons();
-	} catch (error) {
-		handleError(wrapper,error);
-	}
+	//} catch (error) {
+	//	handleError(wrapper,error);
+	//}
 }
 
 async function ir_displayiLvlReportData(wrapper,details,heroDefs) {
@@ -113,7 +113,9 @@ function ir_parseOwnedChamps(defsHeroes,details) {
 	for (let item of details.loot) {
 		if (!item.hasOwnProperty('hero_id') || !item.hasOwnProperty('slot_id') || !item.hasOwnProperty('enchant') || !item.hasOwnProperty('gild'))
 			continue;
-		owned[item.hero_id].loot[item.slot_id] = {enchant:Number(item.enchant),gild:Number(item.gild)};
+		let heroId = `${item.hero_id}`;
+		if (ownedIds.includes(heroId))
+			owned[heroId].loot[item.slot_id] = {enchant:Number(item.enchant),gild:Number(item.gild)};
 	}
 	return owned;
 }
