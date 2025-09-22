@@ -6,16 +6,16 @@ async function ir_pulliLvlReportData() {
 	disablePullButtons();
 	let wrapper = document.getElementById(`ilvlreportWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
-	//try {
+	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		let details = (await getUserDetails()).details;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		let heroDefs = (await getDefinitions("hero_defines")).hero_defines;
 		await ir_displayiLvlReportData(wrapper,details,heroDefs);
 		codeEnablePullButtons();
-	//} catch (error) {
-	//	handleError(wrapper,error);
-	//}
+	} catch (error) {
+		handleError(wrapper,error);
+	}
 }
 
 async function ir_displayiLvlReportData(wrapper,details,heroDefs) {
