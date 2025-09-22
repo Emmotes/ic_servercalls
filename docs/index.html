@@ -405,43 +405,6 @@
 				</span>
 			</div>
 			<!-- END: Trials Calculator Tab -->
-			<!-- START: Shinies Calculator Tab -->
-			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
-			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
-			<div class="tabsContent">
-				<span class="f fr w100 p5">
-					<span class="f falc fjs ml2" style="width:100%">
-						<h1>Shinies Calculator</h1>
-					</span>
-				</span>
-				<span class="f fr w100 p5">
-					<span class="f falc fjs ml2" style="width:100%">
-						This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
-					</span>
-				</span>
-				<span class="f fr w100 p5">
-					&nbsp;
-				</span>
-				<span class="f fr w100 p5" style="height:34px;">
-					<span class="f falc fje mr2" style="width:50%;">
-						<input type="button" onClick="sc_pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
-						<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
-					</span>
-				</span>
-				<span class="f fr w100 p5">
-					&nbsp;
-				</span>
-				<span class="f falc fje mr2" style="flex-direction:column" id="shiniesWrapper">
-					&nbsp;
-				</span>
-				<span class="f fr w100 p5">
-					&nbsp;
-				</span>
-				<span class="f fr w100 p5">
-					&nbsp;
-				</span>
-			</div>
-			<!-- END: Shinies Calculator Tab -->
 			<!-- START: Event Tiers Tab -->
 			<input onClick="setHash('eventTiersTab')" type="radio" class="tabsRadio" name="serverTabs" id="eventTiersTab">
 			<label for="eventTiersTab" class="tabsLabel">Event Tiers</label>
@@ -495,6 +458,80 @@
 				</span>
 			</div>
 			<!-- END: Event Tiers Tab -->
+			<!-- START: iLvl Report Tab -->
+			<input onClick="setHash('ilvlreportTab')" type="radio" class="tabsRadio" name="serverTabs" id="ilvlreportTab">
+			<label for="ilvlreportTab" class="tabsLabel">iLvl Report</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>iLvl Report</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						This page is a replication of IdleCombos item level report feature.
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="ir_pulliLvlReportData()" name="ilvlreportPullButton" id="ilvlreportPullButton" value="Pull iLvl Report Data" style="min-width:175px">
+						<span id="ilvlreportPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="ilvlreportWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: iLvl Report Tab -->
+			<!-- START: Shinies Calculator Tab -->
+			<input onClick="setHash('shiniesTab')" type="radio" class="tabsRadio" name="serverTabs" id="shiniesTab">
+			<label for="shiniesTab" class="tabsLabel">Shinies Calculator</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Shinies Calculator</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="sc_pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
+						<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="shiniesWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Shinies Calculator Tab -->
 			<!-- START: Party Tab -->
 			<input onClick="setHash('partyTab')" type="radio" class="tabsRadio" name="serverTabs" id="partyTab">
 			<label for="partyTab" class="tabsLabel">Parties</label>
@@ -737,8 +774,9 @@
 	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.027"></script>
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.013"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.010"></script>
-	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
 	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.012"></script>
+	<script type="text/javascript" src="scripts/tab_ilvlReport.js?vir=1.000"></script>
+	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.005"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.009"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.004"></script>
