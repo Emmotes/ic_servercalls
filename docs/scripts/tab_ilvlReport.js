@@ -1,4 +1,4 @@
-const vir=1.000;
+const vir=1.001;
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData())
@@ -27,7 +27,7 @@ async function ir_displayiLvlReportData(wrapper,details,heroDefs) {
 	let averageiLvl = 0;
 	
 	let averageEvergreeniLvl = 0;
-	let highestAverageEvergreen,highestAverageEvergrenName,lowestAverageEvergreen,lowestAverageEvergreenName;
+	let highestAverageEvergreen,highestAverageEvergreenName,lowestAverageEvergreen,lowestAverageEvergreenName;
 	let evergreenShinies = 0;
 	
 	let averageEventiLvl = 0;
@@ -67,7 +67,7 @@ async function ir_displayiLvlReportData(wrapper,details,heroDefs) {
 			averageEvergreeniLvl += totaliLvls;
 			if (highestAverageEvergreen == undefined || avgiLvl > highestAverageEvergreen) {
 				highestAverageEvergreen = avgiLvl;
-				highestAverageEvergrenName = name;
+				highestAverageEvergreenName = name;
 			}
 			if (lowestAverageEvergreen == undefined || avgiLvl < lowestAverageEvergreen) {
 				lowestAverageEvergreen = avgiLvl;
@@ -84,7 +84,7 @@ async function ir_displayiLvlReportData(wrapper,details,heroDefs) {
 	txt+=ir_addiLvlReportRow(`Average All iLvl:`,nf(averageiLvl));
 	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
 	txt+=ir_addiLvlReportRow(`Average Evergreen iLvl:`,nf(averageEvergreeniLvl));
-	txt+=ir_addiLvlReportRow(`Highest Average Evergreen:`,nf(highestAverageEvergreen),highestAverageEvergrenName);
+	txt+=ir_addiLvlReportRow(`Highest Average Evergreen:`,nf(highestAverageEvergreen),highestAverageEvergreenName);
 	txt+=ir_addiLvlReportRow(`Lowest Average Evergreen:`,nf(lowestAverageEvergreen),lowestAverageEvergreenName);
 	txt+=ir_addiLvlReportRow(`Evergreen Shinies:`,`${nf(evergreenShinies)} / ${nf(totalEvergreenItems)}`);
 	txt+=`<span class="f fr w100 p5">&nbsp;</span>`;
