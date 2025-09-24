@@ -1,4 +1,4 @@
-const voc=1.027;
+const voc=1.028;
 const hoc = `scHideOpenChests`
 const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
@@ -61,6 +61,10 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 			if (chestNames[`${chestIds[i]}`][4].includes(58))
 				chestIds.splice(chestIds.indexOf(chestIds[i]),1);
 		chestIds = chestIds.filter((e)=>!brivPatronChests.includes(e));
+		for (let i=chestPackIds.length-1; i>=0; i--)
+			if (chestNames[`${chestPackIds[i]}`][4].includes(58))
+				chestPackIds.splice(chestPackIds.indexOf(chestPackIds[i]),1);
+		chestPackIds = chestPackIds.filter((e)=>!brivPatronChests.includes(e));
 	}
 	if (chestIds.length==0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
