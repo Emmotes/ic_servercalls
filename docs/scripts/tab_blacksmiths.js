@@ -1,4 +1,4 @@
-const vbs=1.013;
+const vbs=1.014;
 var ownedChamps={};
 var ownedChampsByName={};
 var champLoot={};
@@ -280,6 +280,7 @@ async function bs_bscSpendAverage(amountToSpend) {
 	if (bscChampionList==undefined||bscChampionList.value=="-1"||bscContractAverage==undefined||bscContractAverage.value<=0) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Unknown error. Didn't spend any blacksmiths.</span>`;
 		bscSpender.innerHTML = txt;
+		codeEnablePullButtons();
 		return;
 	}
 	bscMethodList.disabled = true;
@@ -299,6 +300,7 @@ async function bs_bscSpendAverage(amountToSpend) {
 	if (bscsToUse==undefined) {
 		txt+=`<span class="f w100 p5" style="padding-left:10%">Couldn't calculate a combination of blacksmiths to use to reach the average perfectly. Please make sure you have some of the smaller blacksmith contracts available.</span>`;
 		bscSpender.innerHTML = txt;
+		codeEnablePullButtons();
 		return;
 	}
 	
