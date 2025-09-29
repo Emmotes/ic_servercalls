@@ -1,4 +1,4 @@
-const vdf=1.014;
+const vdf=1.015;
 
 async function df_pullFormationSaves() {
 	if (isBadUserData())
@@ -55,7 +55,7 @@ async function df_displayFormationSaves(wrapper,saves) {
 				extras += "Has Feats";
 			}
 			if (extras!=``) extras = ` (${extras})`;
-			let tt=df_createFormationTooltip(formName+extras,formation.formation,formObjs[`${id}`])
+			let tt=df_createFormationTooltip(formName+extras,formation.formation,formObj)
 			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${campId}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 			added++;
 		}
@@ -75,6 +75,8 @@ async function df_displayFormationSaves(wrapper,saves) {
 }
 
 function df_createFormationTooltip(name,champs,formation) {
+	if (name==undefined||champs==undefined||formation==undefined)
+		return ``;
 	let formObj = ``;
 	for (let currForm of formation.game_change_data) {
 		if (currForm.type!=undefined&&currForm.type==`formation`) {

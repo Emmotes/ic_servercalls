@@ -1,4 +1,4 @@
-const v=4.019;
+const v=4.020;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -232,6 +232,13 @@ async function deleteUserAccount() {
 		settingsToggle();
 	}
 	cleanup();
+}
+
+async function sanitise(response) {
+	let s = JSON.stringify(response);
+	s = s.replaceAll(currAccount.id,"____");
+	s = s.replaceAll(currAccount.hash,"____");
+	return await JSON.parse(s);
 }
 
 async function refreshSettingsList() {
