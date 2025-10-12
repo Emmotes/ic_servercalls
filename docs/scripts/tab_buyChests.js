@@ -1,4 +1,4 @@
-const vbc=1.017;
+const vbc=1.018;
 let chestPackCost=7500;
 let silverChestCost=50;
 let goldChestCost=500;
@@ -30,32 +30,45 @@ async function bc_pullBuyChestsData() {
 		let chests = (await getDefinitions("chest_type_defines")).chest_type_defines;
 		wrapper.innerHTML = `Waiting for shop data...`;
 		let shop = (await getShop()).shop_data.items.chest;
-		await bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop);
+		wrapper.innerHTML = `Waiting for dismantle data...`;
+		let dismantleData = await getDismantleData();
+		await bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop,dismantleData);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper,error);
 	}
 }
 
-async function bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop) {
+async function bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,shop,dismantleData) {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
+	let fullDismantleChampions = bc_getFullDismantleChampionIds(dismantleData);
 	let eventChestIds = [];
-	let eventChestNames = [];
+	let eventChests = {};
+	let gotBadChest = false;
 	if (eventActive) {
 		for (let chest of shop)
 			if (chest.tags.includes('event')||chest.tags.includes('event_v2'))
-				eventChestIds.push(chest.type_id);
+				eventChests[chest.type_id] = {};
+		eventChestIds = Object.keys(eventChests);
 		numSort(eventChestIds);
+		outerLoop:
 		for (let chestId of eventChestIds) {
 			for (let chest of chests) {
 				if (chest.id == chestId) {
-					eventChestNames.push(chest.name.replace("Gold ", "") + " Pack");
+					name = chest.name.replace("Gold ", "") + " Pack";
+					heroIds = chest.hero_ids;
+					if (name==undefined||heroIds==undefined) {
+						gotBadChest = true;
+						break outerLoop;
+					}
+					dismantle = chest.hero_ids.some(r => fullDismantleChampions.includes(r));
+					eventChests[chestId] = {name:name,dismantle:dismantle};
 					break;
 				}
 			}
 		}
 	}
-	if (eventChestIds.length!=eventChestNames.length||eventChestNames.includes(undefined)) {
+	if (gotBadChest) {
 		wrapper.innerHTML = `&nbsp;`;
 		buyChestsBuyer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Error found when parsing chest ids. Cannot continue.</span>`
 		return;
@@ -80,8 +93,10 @@ async function bc_displayBuyChestsData(wrapper,gems,tokens,eventActive,chests,sh
 	s+=`</optgroup><optgroup label="Event Chest Packs" id="tokenChestsOpt">`;
 	if (eventChestIds.length > 0) {
 		if (tokens >= chestPackCost) {
-			for (let i=0; i<eventChestIds.length; i++)
-				s+=`<option value="${eventChestIds[i]}">${eventChestNames[i]}</option>`;
+			for (let eventChestId of eventChestIds) {
+				let eventChest = eventChests[eventChestId];
+				s+=`<option value="${eventChestId}" data-dismantle="${eventChest.dismantle?1:0}">${eventChest.name}</option>`;
+			}
 		} else
 			s+=notEnoughEventTokens;
 	} else
@@ -128,7 +143,10 @@ function bc_displayBuyChestsBuyButton(amount) {
 	let buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	let be = ``;
 	let chestId = Number(buyChestsBuyList.value);
+	let isDismantle = buyChestsBuyList.options[buyChestsBuyList.selectedIndex].dataset['dismantle'] == '1';
 	
+	if (isDismantle)
+		be += `<span class="f w100 p5" style="padding:0 0 20px 5%;color:var(--TangerineYellow)">Warning: This champion currently has a Full Dismantle running. Buying will disable that.</span>`
 	if (chestId<=0||amount==undefined||amount<=0)
 		be+=`<span class="f w100 p5" style="padding-left:10%">Cannot buy until a valid chest type and amount has been selected.</span>`;
 	else
@@ -238,6 +256,20 @@ async function bc_buyChests() {
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
 	codeEnablePullButtons();
+}
+
+function bc_getFullDismantleChampionIds(dismantleData) {
+	let fullDismantleIds = [];
+	if (dismantleData==undefined||dismantleData.redistribute_hero==undefined||Object.keys(dismantleData.redistribute_hero).length==0)
+		return fullDismantleIds;
+	dismantleData = dismantleData.redistribute_hero;
+	for (let champId of Object.keys(dismantleData)) {
+		let champ = dismantleData[champId];
+		if (champ.redistribute_id==undefined||champ.time_remaining==undefined||champ.reward_breakdown==undefined||champ.legendaries_only)
+			continue;
+		fullDismantleIds.push(Number(champId));
+	}
+	return fullDismantleIds;
 }
 
 function bc_applyValueToElementAndDisplay(eleName,value) {
