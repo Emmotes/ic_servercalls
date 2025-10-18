@@ -66,6 +66,20 @@
 			<div class="f fr w100 p5">	
 				<div class="f falc fjc mb2" style="width:100%"><input type="button" onClick="supportUrlSaveData()" id="supportUrlMenuButton" value=" Get User Data From Support Url " style="width:100%"></div>
 			</div>
+			<div class="f fr w100 p5">
+				&nbsp;
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f falc fjs ml2" style="width:100%">Options:</div>
+			</div>
+			<div class="f fr w100 p5">
+				<div class="f falc fjs ml2" style="width:40%"><label for="settingsMenuNumberFormat">Number Format:</label></div>
+				<div class="f falc fje mr2" style="width:60%">
+					<select id="settingsNumberFormat" onInput="changeCurrentNumberFormat(this.value)" style="width:95%;font-family:monospace">
+						<option value="" selected>-</option>
+					</select>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -784,6 +798,6 @@
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.005"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.017"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.020"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.021"></script>
 </body>
 </html>

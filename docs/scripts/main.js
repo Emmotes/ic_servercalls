@@ -1,4 +1,4 @@
-const v=4.020;
+const v=4.021;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -14,9 +14,12 @@ const settingsClose=document.getElementById(`settingsMenuButtonClose`);
 const settingsList=document.getElementById(`settingsMenuAccountsList`);
 const settingsLoad=document.getElementById(`settingsMenuButtonLoadAccount`);
 const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
+const settingsNumberFormat=document.getElementById(`settingsNumberFormat`);
 const supportUrl=document.getElementById(`supportUrl`);
 const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
-const NUMFORM = new Intl.NumberFormat(undefined,{useGrouping:true,maximumFractionDigits:2});
+const lsSettings=`scSettings`;
+const NF_GROUPS={useGrouping:true,maximumFractionDigits:2};
+var NUMFORM = new Intl.NumberFormat(undefined,NF_GROUPS);
 var updateInterval;
 var timerList = {};
 var pbNames;
@@ -70,6 +73,7 @@ function init() {
 	window.addEventListener('hashchange',() =>{
 		swapTab();
 	});
+	initSettingsNumberFormat();
 	initPullButtonStuff();
 	bc_initBuyChestsSliderFidelity();
 	oc_initOpenChestsSliderFidelity();
@@ -106,6 +110,36 @@ function settingsToggle() {
 	} else {
 		settingsMenu.style.display = `none`;
 	}
+}
+
+function initSettingsNumberFormat() {
+	let settings = getLocalSettings();
+	let settingNumFormat = settings.hasOwnProperty('nf') ? settings.nf : undefined;
+	let num = 12345.67;
+	
+	let opts = ``;
+	let types = [undefined,"fr-FR","en-GB","de-DE"];
+	for (let k=0;k<types.length;k++) {
+		let name = "Browser";
+		switch (k) {
+			case 1: name = "&nbsp;&nbsp;Space"; break;
+			case 2: name = "&nbsp;&nbsp;Comma"; break;
+			case 3: name = "&nbsp;Period";
+		}
+		opts+=`<option value="${types[k]==undefined?"-":types[k]}"${types[k]==settingNumFormat?" selected":""}>${name}: ${new Intl.NumberFormat(types[k],NF_GROUPS).format(num)}</option>`;
+	}
+	settingsNumberFormat.innerHTML = opts;
+	NUMFORM = new Intl.NumberFormat(settingNumFormat,NF_GROUPS);
+}
+
+function changeCurrentNumberFormat(code) {
+	if (code=="-")
+		code = undefined;
+	NUMFORM = new Intl.NumberFormat(code,NF_GROUPS);
+	if (code!=undefined)
+		setLocalSetting('nf',code);
+	else
+		deleteLocalSetting('nf');
 }
 
 function initPullButtonStuff() {
@@ -460,4 +494,28 @@ function getFirstLine(text) {
     if (index === -1)
         index = undefined;
     return text.substring(0, index);
+}
+
+function getLocalSettings() {
+	let strg = localStorage.getItem(lsSettings);
+	if (strg!=undefined)
+		return JSON.parse(strg);
+	return {};
+}
+
+function setLocalSetting(key,value) {
+	let strg = getLocalSettings();
+	strg[key] = value;
+	localStorage.setItem(lsSettings, JSON.stringify(strg));
+}
+
+function deleteLocalSetting(key,value) {
+	let strg = getLocalSettings();
+	if (strg.hasOwnProperty(key)) {
+		delete strg[key];
+		if (Object.keys(strg).length==0)
+			localStorage.removeItem(lsSettings);
+		else
+			localStorage.setItem(lsSettings, JSON.stringify(strg));
+	}
 }
