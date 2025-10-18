@@ -1,4 +1,4 @@
-const vet=1.012;
+const vet=1.013;
 const eventIdMult = 10000;
 const etht4 = `scEventTiersHideTier4`;
 
@@ -82,15 +82,17 @@ async function et_displayEventTiersData(wrapper,heroDefs,collections,details) {
 		event2Ids = event2Ids.slice(index).concat(event2Ids.slice(0,index));
 	}
 	
+	let date = new Date();
+	let month = date.getMonth()+1;
+	let day = date.getDate();
 	let txt = ``;
 	txt+=`<span class="eventGridHeader" data-sort="0" data-eventidorder="0" data-nameorder="0" data-id="0" style="display:none"><strong>Champion Event Tiers Completed:</strong></span>`;
 	for (let event2Id of event2Ids)
-		txt+=`<span class="eventGridHeader" data-sort="1" data-eventidorder="${event2Ids.indexOf(event2Id)}" data-nameorder="0" data-id="0"><strong>${eventNameByEventId[event2Id]} - ${et_getEventMonthByEvent2Id(event2Id)}:</strong></span>`;
-	let date = new Date();
+		txt+=`<span class="eventGridHeader" data-sort="1" data-eventidorder="${event2Ids.indexOf(event2Id)}" data-nameorder="0" data-id="0"><strong>${eventNameByEventId[event2Id]} - ${et_getEventMonthByEvent2Id(event2Id,month,day)}:</strong></span>`;
 	for (let heroId of Object.keys(ownedChampIdTiers)) {
 		let heroData = ownedChampIdTiers[heroId];
 		if (heroData.tier >= 0)
-			txt+=et_addEventTierGridElements(ownedById[heroId], heroId, event2Ids, heroData, date);
+			txt+=et_addEventTierGridElements(ownedById[heroId], heroId, event2Ids, heroData, month, day);
 	}
 	setFormsWrapperFormat(wrapper,3);
 	wrapper.innerHTML = txt;
@@ -186,8 +188,11 @@ function et_getEvent2IdFromEventName(eventName) {
 	}
 }
 
-function et_getEventMonthByEvent2Id(event2Id) {
-	return Intl.DateTimeFormat(undefined, { month: 'long' }).format(new Date(`${((Number(event2Id)+7)%12)+1}`));
+function et_getEventMonthByEvent2Id(event2Id,month,day) {
+	let code = "en-GB";
+	if (month==9&&day==26)
+		code = et_getRandomLocale();
+	return Intl.DateTimeFormat(code, { month: 'long' }).format(new Date(`${((Number(event2Id)+7)%12)+1}`));
 }
 
 function et_getCurrentOrNextEventId(details) {
@@ -197,10 +202,10 @@ function et_getCurrentOrNextEventId(details) {
 		return details.next_event.event_id;
 }
 
-function et_addEventTierGridElements(name,id,event2Ids,heroData,date) {
+function et_addEventTierGridElements(name,id,event2Ids,heroData,month,day) {
 	let tierString = ``;
 	for (let i=1; i<=4; i++)
-		tierString+=et_buildSVG(i<=heroData.tier?heroData.tier:0,date.getMonth()+1,date.getDate());
+		tierString+=et_buildSVG(i<=heroData.tier?heroData.tier:0,month,day);
 	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${heroData.tier}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(heroData.event2Id)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${heroData.tier}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
 	for (let i=0; i<heroData.tiers.length; i++) {
 		let varTier = heroData.tiers[i];
@@ -243,4 +248,9 @@ function et_getHideTier4() {
 
 function et_setHideTier4(hide) {
 	localStorage.setItem(etht4, hide ? '1' : '0');
+}
+
+function et_getRandomLocale() {
+	let locales = ["zh-Hans","es-ES","en-GB","hi-IN","pt-BR","bn-BD","ru-UA","ja-JP","tr-TR","ar-EG","ko-KR","de-DE","fr-FR","it-IT","sv-SE","nl-NL","el-GR","uk-UA"];
+	return locales[randInt(0,locales.length-1)];
 }
