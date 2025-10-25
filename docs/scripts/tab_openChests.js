@@ -1,4 +1,4 @@
-const voc=1.028;
+const voc=1.029;
 const hoc = `scHideOpenChests`
 const ocsf = `scOpenChestsSliderFidelity`;
 var brivPatronChests=['152','153','311'];
@@ -31,9 +31,12 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 	let chestPacksById = {};
 	for (let chestPack of chestPacks) {
 		let id = chestPack.chest_type_id;
-		chestPacksById[id] = {total:chestPack.total_chests,opened:chestPack.opened_chests,id:chestPack.pack_id,have:0};
-		if (chestsHave[id]!=undefined)
-			chestPacksById[id].have = chestsHave[id];
+		if (chestPacksById[id] == undefined) {
+			chestPacksById[id] = {have:0,packs:[]};
+			if (chestsHave[id]!=undefined)
+				chestPacksById[id]['have'] = chestsHave[id];
+		}
+		chestPacksById[id].packs.push({total:chestPack.total_chests,opened:chestPack.opened_chests,id:chestPack.pack_id});
 	}
 	let chestPackIds = Object.keys(chestPacksById);
 	for (let chestId of chestPackIds)
@@ -79,7 +82,8 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 		let plural = chestNames[id][1];
 		let amount = chestsHave[id];
 		if (amount!=undefined&&chestPacksById[id]!=undefined)
-			amount -= chestPacksById[id].total - chestPacksById[id].opened;
+			for (let currPack of chestPacksById[id].packs)
+				amount -= currPack.total - currPack.opened;
 		if (amount <= 0)
 			continue;
 		let fidelity = oc_getOpenChestsSliderFidelity();
@@ -87,24 +91,32 @@ async function oc_displayOpenChestsData(wrapper,chestsHave,chestPacks,chestsDefs
 			fidelity = 1;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(amount)}</span></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value);" data-chestid="${id}"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="oc_openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
-	for (let id of chestPackIds) {
-		if (hiddenChestIds.includes(Number(id)))
-			continue;
-		let chestPack = chestPacksById[id];
-		let name = chestNames[id][2];
-		let plural = chestNames[id][3];
-		let max = chestPacksById[id].total - chestPacksById[id].opened;
-		let min = Math.min(chestPacksById[id].have,max);
-		let canOpen = min >= max;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${id}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
-		if (canOpen)
-			txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChestPacks${id}Slider" id="openChestPacks${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value,true);" data-chestid="${id}"><label class="cblabel" for="openChestPacks${id}Slider" id="openChestPacks${id}Label" style="width:20%;text-align:center">0</label></span>`;
-		txt += `<span class="formsCampaignSelect greenButton" id="openChestPacks${id}ButtonHolder">`;
-		if (canOpen)
-			txt += `<input type="button" id="openChestPacks${id}Button" onClick="oc_openChestPack('${id}','${chestPack.id}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="visibility:hidden;width:80%">`;
-		else
-			txt += `You don't have enough to open this pack.`;
-		txt += `</span></span></span>`;
+	if (!hiddenChestIds.includes("PP")) {
+		for (let id of chestPackIds) {
+			if (hiddenChestIds.includes(Number(id)))
+				continue;
+			let currChestPacks = chestPacksById[id];
+			let name = chestNames[id][2];
+			let plural = chestNames[id][3];
+			let have = chestPacksById[id].have;
+			for (let chestPack of currChestPacks.packs) {
+				let max = chestPack.total - chestPack.opened;
+				let min = Math.min(have,max);
+				let canOpen = min >= max;
+				let packId = chestPack.id;
+				if (canOpen)
+					have -= max;
+				txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${packId}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
+				if (canOpen)
+					txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChestPacks${packId}Slider" id="openChestPacks${packId}Slider" oninput="oc_updateOpenChestsSliderValue(${packId},this.value,true);" data-chestid="${id}"><label class="cblabel" for="openChestPacks${packId}Slider" id="openChestPacks${packId}Label" style="width:20%;text-align:center">0</label></span>`;
+				txt += `<span class="formsCampaignSelect greenButton" id="openChestPacks${packId}ButtonHolder">`;
+				if (canOpen)
+					txt += `<input type="button" id="openChestPacks${packId}Button" onClick="oc_openChestPack('${id}','${packId}','${max}')" value="Open Chest Pack" data-name="${name} Pack" data-plural="${plural} Pack" style="visibility:hidden;width:80%">`;
+				else
+					txt += `You don't have enough to open this pack.`;
+				txt += `</span></span></span>`;
+			}
+		}
 	}
 	
 	setFormsWrapperFormat(wrapper,1);
@@ -218,6 +230,7 @@ async function oc_openChests(id) {
 	txt += bc_addChestResultRow(`Finished.`);
 	openChestsOpener.innerHTML = opening + txt;
 	openChestsButton.value = `Open ${openChestsSlider.value} ${plural}`;
+	oc_disableSlidersButtonsAndHolders(false);
 	if (numFails >= RETRIES) {
 		txt += bc_addChestResultRow(`- Stopping:`,`Got too many failures.`);
 		opening=oc_makeOpeningRow(0,plural,amount);
@@ -227,7 +240,6 @@ async function oc_openChests(id) {
 	}
 	opening=oc_makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
-	oc_disableSlidersButtonsAndHolders(false);
 	oc_toggleOpenChestsSliderFidelity();
 	if (openChestsSlider.value==0)
 		openChestsButton.style.visibility = `hidden`;
@@ -290,6 +302,7 @@ async function oc_openChestPack(id,packId,amount) {
 	txt += bc_addChestResultRow(`Finished.`);
 	document.getElementById(`${id}Pack`).innerHTML = `&nbsp;`;
 	openChestsOpener.innerHTML = opening + txt;
+	oc_disableSlidersButtonsAndHolders(false);
 	if (numFails >= RETRIES) {
 		txt += bc_addChestResultRow(`- Stopping:`,`Got too many failures.`);
 		opening=oc_makeOpeningRow(0,plural,amount);
@@ -298,7 +311,6 @@ async function oc_openChestPack(id,packId,amount) {
 	}
 	opening=oc_makeOpeningRow(0,plural,amount);
 	openChestsOpener.innerHTML = opening + txt;
-	oc_disableSlidersButtonsAndHolders(false);
 	oc_toggleOpenChestsSliderFidelity();
 }
 
