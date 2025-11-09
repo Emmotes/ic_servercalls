@@ -688,7 +688,7 @@ input[type="checkbox"]:checked::before {
 
 .serverStatusWrapper {
 	display: grid;
-	grid-template-columns: minmax(150px,max-content) minmax(60px,max-content) minmax(200px,max-content);
+	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(300px,max-content);
 	column-gap: 10px;
 	row-gap: 10px;
 }
