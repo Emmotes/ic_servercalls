@@ -717,6 +717,44 @@
 				</span>
 			</div>
 			<!-- END: Aeon Tab -->
+			<!-- START: ServerStatus Calculator Tab -->
+			<input onClick="setHash('serverStatusTab')" type="radio" class="tabsRadio" name="serverTabs" id="serverStatusTab">
+			<label for="serverStatusTab" class="tabsLabel">Server Status</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Server Status</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%">
+						<p>This page will test the status of all the known servers.</p>
+						<p style="color:var(--TangerineYellow)">Do not spam this if the servers are down - you'll only make the situation worse.</p>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="ss_pullServerStatusData()" name="serverStatusPullButton" id="serverStatusPullButton" value="Check Server Status" style="min-width:175px">
+						<span id="serverStatusPullButtonDisabled" style="font-size:0.9em" hidden>Temporarily disabled to prevent spamming the server.</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="serverStatusWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: ServerStatus Calculator Tab -->
 			<!-- START: Chest Data Tab
 			<input onClick="setHash('chestDataTab')" type="radio" class="tabsRadio" name="serverTabs" id="chestDataTab">
 			<label for="chestDataTab" class="tabsLabel">Chest Data</label>
@@ -798,6 +836,7 @@
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.004"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.005"></script>
+	<script type="text/javascript" src="scripts/tab_serverStatus.js?vss=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_chestsData.js?vcd=1.005"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.000"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.017"></script>

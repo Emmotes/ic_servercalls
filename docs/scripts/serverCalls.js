@@ -14,8 +14,14 @@ var instanceId=``;
 var boilerplate=``;
 
 async function getPlayServerFromMaster() {
-	let response = await sendServerCall(M,'getPlayServerForDefinitions');
+	let response = await getPlayServerForDefinitions(M);
 	SERVER = response['play_server'];
+}
+
+async function getPlayServerForDefinitions(serverToUse,customTimeout) {
+	if (serverToUse==undefined)
+		serverToUse=M;
+	return await sendServerCall(serverToUse,'getPlayServerForDefinitions',undefined,false,false,customTimeout);
 }
 
 async function getUserDetails() {
@@ -446,7 +452,7 @@ function buildParams(paramList) {
 	return params;
 }
 
-async function sendServerCall(server,callType,params,addUserData,addInstanceId) {
+async function sendServerCall(server,callType,params,addUserData,addInstanceId,customTimeout) {
 	let call=`${PARAM_CALL}=${callType}`;
 	if (params != undefined)
 		call += buildParams(params);
@@ -460,12 +466,12 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 			await getPlayServerFromMaster();
 		server = SERVER;
 	}
-	let response = await sendOutgoingCall(server,call);
+	let response = await sendOutgoingCall(server,call,customTimeout);
 	let limit = 0;
 	while ((response[SPS]!=undefined||!response['success'])&&limit<RETRIES) {
 		if (response[SPS]) {
 			server = SERVER = response[SPS].replace(`http://`, `https://`);
-			response = await sendOutgoingCall(server,call);
+			response = await sendOutgoingCall(server,call,customTimeout);
 		} else if (!response['success']) {
 			if (response[FR]==OII) {
 				console.log(`Got outdated instance id.`);
@@ -474,7 +480,7 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 				console.log(`Old: ${call}`)
 				call = call.replace(oldII,instanceId);
 				console.log(`New: ${call}`)
-				response = await sendOutgoingCall(server,call);
+				response = await sendOutgoingCall(server,call,customTimeout);
 			} else if (response[FR].includes(`Security hash failure`)) {
 				throw new Error(`Your user data is incorrect`);
 			} else if (response[FR].includes(`non-atomic`)) {
@@ -491,11 +497,12 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId) 
 	return response;
 }
 
-async function sendOutgoingCall(server,call) {
+async function sendOutgoingCall(server,call,customTimeout) {
 	let url = `${server}post.php?${call}`;
 	let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
+	let timeoutTime = Number.isInteger(customTimeout)&&customTimeout>0?customTimeout:40000;
 	try {
-		let response = await fetch(url, {signal:AbortSignal.timeout(30000)});
+		let response = await fetch(url, {signal:AbortSignal.timeout(timeoutTime)});
 		await sleep(200);
 		if (response.ok)
 			return await JSON.parse(await response.text());
@@ -507,7 +514,7 @@ async function sendOutgoingCall(server,call) {
 		}
 	} catch (error) {
 		if (error.name === "TimeoutError" || error.name === "AbortError")
-			throw new Error(`Timed out. Took more than 30 seconds to get a response.`);
+			throw new Error(`Timed out. Took more than  seconds to get a response`);
 		console.error('Fetch', error);
 		throw error;
 	}
