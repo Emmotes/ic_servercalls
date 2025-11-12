@@ -1,4 +1,4 @@
-const v=4.025;
+const v=4.026;
 const globalButtonDisableTime=15000;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
@@ -320,7 +320,7 @@ function togglePullButtons(disable) {
 			let prefix = `Disabled for `;
 			let suffix = ` to prevent spamming the servers.`;
 			message.innerHTML = prefix + getDisplayTime(globalButtonDisableTime-1000) + suffix;
-			createTimer(globalButtonDisableTime,`pb${name}`,`${name}PullButtonDisabled`,`<span id="${name}PullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>`,prefix,suffix);
+			createTimer(globalButtonDisableTime,`mpb_${name}`,`${name}PullButtonDisabled`,`<span id="${name}PullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>`,prefix,suffix);
 		}
 		message.hidden = !disable;
 		button.className = disable ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);

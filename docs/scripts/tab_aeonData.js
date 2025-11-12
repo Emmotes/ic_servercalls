@@ -1,4 +1,4 @@
-const vad=1.005;
+const vad=1.006;
 
 async function ad_pullAeonData() {
 	if (isBadUserData())
@@ -52,7 +52,8 @@ async function ad_displayAeonData(wrapper,details) {
 	txt+=ad_addAeonRow(`${currPatron} Weekly Chores:`,choreInfo);
 	txt+=ad_addAeonRow(`&nbsp;`,`&nbsp;`);
 	txt+=ad_addAeonRow(`Next Patron:`,nextPatron);
-	txt+=ad_addAeonRow(`Time 'til Switch:`,getDisplayTime(millisecondsTilRollover));
+	txt+=ad_addAeonRow(`Time 'til Switch:`,`<span id="aeonTimer">${getDisplayTime(millisecondsTilRollover)}</span>`);
+	createTimer(millisecondsTilRollover,`ad_switchPatron`,`aeonTimer`,`Switched`);
 	wrapper.innerHTML = txt;
 }
 
