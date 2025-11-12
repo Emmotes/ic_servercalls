@@ -1,4 +1,4 @@
-const v=4.024;
+const v=4.025;
 const globalButtonDisableTime=15000;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
@@ -318,7 +318,7 @@ function togglePullButtons(disable) {
 		message.innerHTML = `&nbsp;`
 		if (disable) {
 			let prefix = `Disabled for `;
-			let suffix = ` to prevent spamming.`;
+			let suffix = ` to prevent spamming the servers.`;
 			message.innerHTML = prefix + getDisplayTime(globalButtonDisableTime-1000) + suffix;
 			createTimer(globalButtonDisableTime,`pb${name}`,`${name}PullButtonDisabled`,`<span id="${name}PullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>`,prefix,suffix);
 		}
@@ -396,10 +396,10 @@ function getDisplayTime(time) {
 	let minutes = Math.floor((time/1000/60) % 60);
 	let seconds = Math.floor((time/1000) % 60);
 	let display = ``;
-	if (days>0) display += `${days} days `;
-	if (days>0||hours>0) display += `${hours} hours `;
-	if (days>0||hours>0||minutes>0) display += `${padZeros(minutes,2)} mins `;
-	display+= `${padZeros(seconds,2)} secs`;
+	if (days>0) display += `${days} day${days!=1?'s':''} `;
+	if (days>0||hours>0) display += `${hours} hour${hours!=1?'s':''} `;
+	if (days>0||hours>0||minutes>0) display += `${padZeros(minutes,2)} min${minutes!=1?'s':''} `;
+	display+= `${padZeros(seconds,2)} sec${seconds!=1?'s':''}`;
 	return display;
 }
 
