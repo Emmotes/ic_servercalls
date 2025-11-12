@@ -1,4 +1,5 @@
-const v=4.023;
+const v=4.024;
+const globalButtonDisableTime=15000;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -314,6 +315,13 @@ function togglePullButtons(disable) {
 		if (button==undefined||message==undefined)
 			continue;
 		button.hidden = disable;
+		message.innerHTML = `&nbsp;`
+		if (disable) {
+			let prefix = `Disabled for `;
+			let suffix = ` to prevent spamming.`;
+			message.innerHTML = prefix + getDisplayTime(globalButtonDisableTime-1000) + suffix;
+			createTimer(globalButtonDisableTime,`pb${name}`,`${name}PullButtonDisabled`,`<span id="${name}PullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>`,prefix,suffix);
+		}
 		message.hidden = !disable;
 		button.className = disable ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);
 	}
@@ -326,7 +334,7 @@ function disablePullButtons(skipTimer) {
 		pbTimerRunning = false;
 	else {
 		pbTimerRunning = true;
-		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},15000);
+		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},globalButtonDisableTime);
 	}
 }
 
