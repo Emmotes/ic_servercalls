@@ -1,4 +1,4 @@
-const v=4.022;
+const v=4.023;
 const disabledUntilInit=document.getElementById(`disabledUntilInit`);
 const disabledUntilData=document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
@@ -326,7 +326,7 @@ function disablePullButtons(skipTimer) {
 		pbTimerRunning = false;
 	else {
 		pbTimerRunning = true;
-		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},10000);
+		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},15000);
 	}
 }
 
