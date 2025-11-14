@@ -1,4 +1,4 @@
-const vs=3.017;
+const vs=3.018;
 const M=`https://master.idlechampions.com/~idledragons/`;
 const SPS=`switch_play_server`;
 const FR=`failure_reason`;
@@ -514,7 +514,7 @@ async function sendOutgoingCall(server,call,customTimeout) {
 		}
 	} catch (error) {
 		if (error.name === "TimeoutError" || error.name === "AbortError")
-			throw new Error(`Timed out. Took more than  seconds to get a response`);
+			throw new Error(`Timed out. Took more than ${timeoutTime/1000} seconds to get a response`);
 		console.error('Fetch', error);
 		throw error;
 	}
