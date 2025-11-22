@@ -1,486 +1,629 @@
-const vs=3.018;
-const M=`https://master.idlechampions.com/~idledragons/`;
-const SPS=`switch_play_server`;
-const FR=`failure_reason`;
-const OII=`Outdated instance id`;
-const PARAM_CALL=`call`;
-const PARAM_INSTANCEID=`instance_id`;
-const PARAM_USERID=`user_id`;
-const PARAM_USERHASH=`hash`;
-const RETRIES=4;
-var currAccount=undefined;
-var SERVER=``;
-var instanceId=``;
-var boilerplate=``;
+const vs = 3.018; // prettier-ignore
+const M = `https://master.idlechampions.com/~idledragons/`;
+const SPS = `switch_play_server`;
+const FR = `failure_reason`;
+const OII = `Outdated instance id`;
+const PARAM_CALL = `call`;
+const PARAM_INSTANCEID = `instance_id`;
+const PARAM_USERID = `user_id`;
+const PARAM_USERHASH = `hash`;
+const RETRIES = 4;
+var currAccount = undefined;
+var SERVER = ``;
+var instanceId = ``;
+var boilerplate = ``;
 
 async function getPlayServerFromMaster() {
 	let response = await getPlayServerForDefinitions(M);
-	SERVER = response['play_server'];
+	SERVER = response["play_server"];
 }
 
-async function getPlayServerForDefinitions(serverToUse,customTimeout) {
-	if (serverToUse==undefined)
-		serverToUse=M;
-	return await sendServerCall(serverToUse,'getPlayServerForDefinitions',undefined,false,false,customTimeout);
+async function getPlayServerForDefinitions(serverToUse, customTimeout) {
+	if (serverToUse == undefined) serverToUse = M;
+	return await sendServerCall(
+		serverToUse,
+		"getPlayServerForDefinitions",
+		undefined,
+		false,
+		false,
+		customTimeout
+	);
 }
 
 async function getUserDetails() {
-	let deets = await sendServerCall(SERVER,'getuserdetails',undefined,true);
+	let deets = await sendServerCall(SERVER, "getuserdetails", undefined, true);
 	getUpdatedInstanceId(deets);
 	return deets;
 }
 
 async function getUpdatedInstanceId(deets) {
-	if (deets==undefined)
-		deets = await getUserDetails();
+	if (deets == undefined) deets = await getUserDetails();
 	instanceId = deets.details.instance_id;
 }
 
 async function getDefinitions(filter) {
 	let params = [
-		['supports_chunked_defs',0],
-		['new_achievements',1],
-		['challenge_sets_no_deltas',0]
+		["supports_chunked_defs", 0],
+		["new_achievements", 1],
+		["challenge_sets_no_deltas", 0],
 	];
-	if (filter!=undefined&&filter!=``)
-		params.push(
-			['filter',filter]
-		);
-	return await sendServerCall(SERVER,'getdefinitions',params);
+	if (filter != undefined && filter != ``) params.push(["filter", filter]);
+	return await sendServerCall(SERVER, "getdefinitions", params);
 }
 
 async function getPatronDetails() {
-	return await sendServerCall(SERVER,'getpatrondetails',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getpatrondetails",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function getFormationSaves() {
-	return await sendServerCall(SERVER,'getallformationsaves',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getallformationsaves",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function deleteFormationSave(formId) {
-	let params = [
-		['formation_save_id',formId]
-	];
-	return await sendServerCall(SERVER,'DeleteFormationSave',params,true,true);
+	let params = [["formation_save_id", formId]];
+	return await sendServerCall(
+		SERVER,
+		"DeleteFormationSave",
+		params,
+		true,
+		true
+	);
 }
 
 async function openTimeGate(heroId) {
-	let params = [
-		['champion_id',heroId]
-	];
-	return await sendServerCall(SERVER,'opentimegate',params,true,true);
+	let params = [["champion_id", heroId]];
+	return await sendServerCall(SERVER, "opentimegate", params, true, true);
 }
 
 async function closeTimeGate() {
-	return await sendServerCall(SERVER,'closetimegate',undefined,true,true);
+	return await sendServerCall(SERVER, "closetimegate", undefined, true, true);
 }
 
 async function purchaseFeat(featId) {
-	let params = [
-		['feat_id',featId]
-	];
-	return await sendServerCall(SERVER,'purchasefeat',params,true,true);
+	let params = [["feat_id", featId]];
+	return await sendServerCall(SERVER, "purchasefeat", params, true, true);
 }
 
-async function forgeLegendary(heroId,slotId) {
+async function forgeLegendary(heroId, slotId) {
 	let params = [
-		['hero_id',heroId],
-		['slot_id',slotId]
+		["hero_id", heroId],
+		["slot_id", slotId],
 	];
-	return await sendServerCall(SERVER,'craftlegendaryitem',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"craftlegendaryitem",
+		params,
+		true,
+		true
+	);
 }
 
-async function upgradeLegendary(heroId,slotId) {
+async function upgradeLegendary(heroId, slotId) {
 	let params = [
-		['hero_id',heroId],
-		['slot_id',slotId]
+		["hero_id", heroId],
+		["slot_id", slotId],
 	];
-	return await sendServerCall(SERVER,'upgradelegendaryitem',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"upgradelegendaryitem",
+		params,
+		true,
+		true
+	);
 }
 
-async function reforgeLegendary(heroId,slotId) {
+async function reforgeLegendary(heroId, slotId) {
 	let params = [
-		['hero_id',heroId],
-		['slot_id',slotId]
+		["hero_id", heroId],
+		["slot_id", slotId],
 	];
-	return await sendServerCall(SERVER,'changelegendaryitem',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"changelegendaryitem",
+		params,
+		true,
+		true
+	);
 }
 
-async function useServerBuff(buffId,heroId,slotId,count) {
+async function useServerBuff(buffId, heroId, slotId, count) {
 	let params = [
-		['buff_id',buffId],
-		['hero_id',heroId],
-		['slot_id',slotId],
-		['num_uses',count]
+		["buff_id", buffId],
+		["hero_id", heroId],
+		["slot_id", slotId],
+		["num_uses", count],
 	];
-	return await sendServerCall(SERVER,'useServerBuff',params,true,true);
+	return await sendServerCall(SERVER, "useServerBuff", params, true, true);
 }
 
 async function trialsRefreshData() {
-	return await sendServerCall(SERVER,'trialsrefreshdata',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"trialsrefreshdata",
+		undefined,
+		true,
+		true
+	);
 }
 
-async function trialsCreateCampaign(difficultyId,isPrivate,prismatic,autoStart) {
+async function trialsCreateCampaign(
+	difficultyId,
+	isPrivate,
+	prismatic,
+	autoStart
+) {
 	let params = [
-		['difficulty_id',difficultyId],
-		['private',isPrivate?`True`:`False`],
-		['cost_choice',difficultyId==1?-1:(prismatic?`1`:`0`)],
-		['auto_start',autoStart?`True`:`False`]
+		["difficulty_id", difficultyId],
+		["private", isPrivate ? `True` : `False`],
+		["cost_choice", difficultyId == 1 ? -1 : prismatic ? `1` : `0`],
+		["auto_start", autoStart ? `True` : `False`],
 	];
-	return await sendServerCall(SERVER,'trialsopencampaign',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"trialsopencampaign",
+		params,
+		true,
+		true
+	);
 }
 
 async function trialsJoinCampaign(joinKey) {
 	let params = [
-		['join_key',joinKey],
-		['player_index',0]
+		["join_key", joinKey],
+		["player_index", 0],
 	];
-	return await sendServerCall(SERVER,'trialsjoincampaign',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"trialsjoincampaign",
+		params,
+		true,
+		true
+	);
 }
 
 async function trialsKickPlayer(playerIndex) {
-	let params = [
-		['player_index',playerIndex]
-	];
-	return await sendServerCall(SERVER,'trialskickplayer',params,true,true);
+	let params = [["player_index", playerIndex]];
+	return await sendServerCall(SERVER, "trialskickplayer", params, true, true);
 }
 
 async function trialsStartCampaign(campaignId) {
-	let params = [
-		['campaign_id',campaignId]
-	];
-	return await sendServerCall(SERVER,'trialsstartcampaign',params,true,true);
+	let params = [["campaign_id", campaignId]];
+	return await sendServerCall(
+		SERVER,
+		"trialsstartcampaign",
+		params,
+		true,
+		true
+	);
 }
 
-async function trialsPickRoleHero(roleId,heroId,prismatic) {
+async function trialsPickRoleHero(roleId, heroId, prismatic) {
 	let params = [
-		['role_id',roleId],
-		['hero_id',heroId],
-		['cost_choice',prismatic?1:0]
+		["role_id", roleId],
+		["hero_id", heroId],
+		["cost_choice", prismatic ? 1 : 0],
 	];
-	return await sendServerCall(SERVER,'trialspickrolehero',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"trialspickrolehero",
+		params,
+		true,
+		true
+	);
 }
 
 async function trialsClaimRewards(campaignId) {
-	let params = [
-		['campaign_id',campaignId]
-	];
-	return await sendServerCall(SERVER,'trialsclaimrewards',params,true,true);
+	let params = [["campaign_id", campaignId]];
+	return await sendServerCall(
+		SERVER,
+		"trialsclaimrewards",
+		params,
+		true,
+		true
+	);
 }
 
-async function saveFormation(formId,campId,name,fav,formation,familiars,specs,feats) {
-	if (campId==undefined||name==undefined)
-		return;
+async function saveFormation(
+	formId,
+	campId,
+	name,
+	fav,
+	formation,
+	familiars,
+	specs,
+	feats
+) {
+	if (campId == undefined || name == undefined) return;
 	let params = [
-		['campaign_id',campId],
-		['name',name],
-		['favorite',fav || 0],
-		['formation',formation || "[]"],
-		['familiars',familiars || "{}"],
-		['specializations',specs || "{}"],
-		['feats',feats || "{}"]
+		["campaign_id", campId],
+		["name", name],
+		["favorite", fav || 0],
+		["formation", formation || "[]"],
+		["familiars", familiars || "{}"],
+		["specializations", specs || "{}"],
+		["feats", feats || "{}"],
 	];
-	if (formId>0)
-		params.push(
-			['formation_save_id',formId]
-		);
-	return await sendServerCall(SERVER,'SaveFormation',params,true,true);
+	if (formId > 0) params.push(["formation_save_id", formId]);
+	return await sendServerCall(SERVER, "SaveFormation", params, true, true);
 }
 
-async function purchasePatronShopItem(patronId,shopItemId,count) {
+async function purchasePatronShopItem(patronId, shopItemId, count) {
 	let params = [
-		['patron_id',patronId],
-		['shop_item_id',shopItemId],
-		['count',count]
+		["patron_id", patronId],
+		["shop_item_id", shopItemId],
+		["count", count],
 	];
-	return await sendServerCall(SERVER,'purchasepatronshopitem',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"purchasepatronshopitem",
+		params,
+		true,
+		true
+	);
 }
 
-async function saveModron(coreId,gameInstanceId,buffs) {
+async function saveModron(coreId, gameInstanceId, buffs) {
 	let userDetails = await getUserDetails();
 	let modronSave = userDetails.details.modron_saves[coreId];
 	let grid = JSON.stringify(modronSave.grid);
 	let formationSaves = JSON.stringify(modronSave.formation_saves);
 	let areaGoal = modronSave.area_goal;
 	let buffsStr = JSON.stringify(buffs);
-	let checkinTimestamp = (Date.now() / 1000) + 604800;
+	let checkinTimestamp = Date.now() / 1000 + 604800;
 	let properties = JSON.stringify(modronSave.properties);
-	
+
 	let params = [
-		['core_id',coreId],
-		['grid',grid],
-		['game_instance_id',gameInstanceId],
-		['formation_saves',formationSaves],
-		['area_goal',areaGoal],
-		['buffs',buffsStr],
-		['checkin_timestamp',checkinTimestamp],
-		['properties',properties]
+		["core_id", coreId],
+		["grid", grid],
+		["game_instance_id", gameInstanceId],
+		["formation_saves", formationSaves],
+		["area_goal", areaGoal],
+		["buffs", buffsStr],
+		["checkin_timestamp", checkinTimestamp],
+		["properties", properties],
 	];
-	return await sendServerCall(SERVER,'saveModron',params,true,true);
+	return await sendServerCall(SERVER, "saveModron", params, true, true);
 }
 
 async function redeemCombination(combo) {
-	let params = [
-		['code',combo]
-	];
-	return await sendServerCall(SERVER,'redeemcoupon',params,true,true);
+	let params = [["code", combo]];
+	return await sendServerCall(SERVER, "redeemcoupon", params, true, true);
 }
 
 async function useSummonScroll(heroId) {
-	let params = [
-		['hero_id',heroId]
-	];
-	return await sendServerCall(SERVER,'usesummonscoll',params,true,true);
+	let params = [["hero_id", heroId]];
+	return await sendServerCall(SERVER, "usesummonscoll", params, true, true);
 }
 
 async function getDismantleData() {
-	return await sendServerCall(SERVER,'getredistributehero',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getredistributehero",
+		undefined,
+		true,
+		true
+	);
 }
 
-async function dismantleHero(heroId,redistId) {
+async function dismantleHero(heroId, redistId) {
 	let params = [
-		['hero_id',heroId],
-		['redistribute_id',redistId]
+		["hero_id", heroId],
+		["redistribute_id", redistId],
 	];
-	return await sendServerCall(SERVER,'redistributehero',params,true,true);
+	return await sendServerCall(SERVER, "redistributehero", params, true, true);
 }
 
-async function saveInstanceName(name,instanceId) {
+async function saveInstanceName(name, instanceId) {
 	let params = [
-		['name',name],
-		['game_instance_id',instanceId]
+		["name", name],
+		["game_instance_id", instanceId],
 	];
-	return await sendServerCall(SERVER,'saveinstancename',params,true,true);
+	return await sendServerCall(SERVER, "saveinstancename", params, true, true);
 }
 
-async function buySoftCurrencyChest(chestId,count) {
+async function buySoftCurrencyChest(chestId, count) {
 	let params = [
-		['chest_type_id',chestId],
-		['count',count],
-		['spend_event_v2_tokens',(chestId > 2 ? 1 : 0)]
+		["chest_type_id", chestId],
+		["count", count],
+		["spend_event_v2_tokens", chestId > 2 ? 1 : 0],
 	];
-	return await sendServerCall(SERVER,'buysoftcurrencychest',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"buysoftcurrencychest",
+		params,
+		true,
+		true
+	);
 }
 
-async function openGenericChest(chestId,count,packId) {
+async function openGenericChest(chestId, count, packId) {
 	let params = [
-		['gold_per_second',0],
-		['checksum','4c5f019b6fc6eefa4d47d21cfaf1bc68'],
-		['chest_type_id',chestId],
-		['count',count]
+		["gold_per_second", 0],
+		["checksum", "4c5f019b6fc6eefa4d47d21cfaf1bc68"],
+		["chest_type_id", chestId],
+		["count", count],
 	];
-	if (packId!=undefined)
-		params.push(
-			['pack_id',packId]
-		);
-	return await sendServerCall(SERVER,'opengenericchest',params,true,true);
+	if (packId != undefined) params.push(["pack_id", packId]);
+	return await sendServerCall(SERVER, "opengenericchest", params, true, true);
 }
 
 async function getShop() {
 	let params = [
-		['return_all_items_live',1],
-		['return_all_items_ever',0],
-		['show_hard_currency',1],
-		['prioritize_item_category','recommend']
+		["return_all_items_live", 1],
+		["return_all_items_ever", 0],
+		["show_hard_currency", 1],
+		["prioritize_item_category", "recommend"],
 	];
-	return await sendServerCall(SERVER,'getshop',params,true,true);
+	return await sendServerCall(SERVER, "getshop", params, true, true);
 }
 
-async function setCurrentObjective(instanceId,adventureId,patronId) {
+async function setCurrentObjective(instanceId, adventureId, patronId) {
 	let params = [
-		['patron_tier',0],
-		['game_instance_id',instanceId],
-		['adventure_id',adventureId],
-		['patron_id',patronId]
+		["patron_tier", 0],
+		["game_instance_id", instanceId],
+		["adventure_id", adventureId],
+		["patron_id", patronId],
 	];
-	return await sendServerCall(SERVER,'setcurrentobjective',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"setcurrentobjective",
+		params,
+		true,
+		true
+	);
 }
 
 async function endCurrentObjective(instanceId) {
-	let params = [
-		['game_instance_id',instanceId]
-	];
-	return await sendServerCall(SERVER,'softreset',params,true,true);
+	let params = [["game_instance_id", instanceId]];
+	return await sendServerCall(SERVER, "softreset", params, true, true);
 }
 
 async function getLegendaryDetails() {
-	return await sendServerCall(SERVER,'getlegendarydetails',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getlegendarydetails",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function getCampaignDetails() {
-	return await sendServerCall(SERVER,'getcampaigndetails',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getcampaigndetails",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function getDailyLoginRewards() {
-	return await sendServerCall(SERVER,'getdailyloginrewards',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getdailyloginrewards",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function revealWeeklyOffers() {
-	return await sendServerCall(SERVER,'revealalacarteoffers',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"revealalacarteoffers",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function getWeeklyOffers() {
-	return await sendServerCall(SERVER,'getalacarteoffers',undefined,true,true);
+	return await sendServerCall(
+		SERVER,
+		"getalacarteoffers",
+		undefined,
+		true,
+		true
+	);
 }
 
 async function rerollWeeklyOffer(offerId) {
-	let params = [
-		['offer_id',offerId]
-	];
-	return await sendServerCall(SERVER,'rerollalacarteoffer',params,true,true);
+	let params = [["offer_id", offerId]];
+	return await sendServerCall(
+		SERVER,
+		"rerollalacarteoffer",
+		params,
+		true,
+		true
+	);
 }
 
 async function purchaseWeeklyOffer(offerId) {
-	let params = [
-		['offer_id',offerId]
-	];
-	return await sendServerCall(SERVER,'PurchaseALaCarteOffer',params,true,true);
+	let params = [["offer_id", offerId]];
+	return await sendServerCall(
+		SERVER,
+		"PurchaseALaCarteOffer",
+		params,
+		true,
+		true
+	);
 }
 
 async function claimDailyLoginReward(isBoost) {
 	let params = undefined;
-	if (isBoost)
-		params = [
-			['is_boost',1]
-		];
-	return await sendServerCall(SERVER,'claimdailyloginreward',params,true,true);
+	if (isBoost) params = [["is_boost", 1]];
+	return await sendServerCall(
+		SERVER,
+		"claimdailyloginreward",
+		params,
+		true,
+		true
+	);
 }
 
 async function getDynamicDialog(dialog) {
 	let params = [
-		['dialog',dialog],
-		['ui_type','standard']
+		["dialog", dialog],
+		["ui_type", "standard"],
 	];
-	return await sendServerCall(SERVER,'getdynamicdialog',params,true,true);
+	return await sendServerCall(SERVER, "getdynamicdialog", params, true, true);
 }
 
 async function claimSaleBonus(premiumId) {
 	let params = [
-		['premium_item_id',premiumId],
-		['return_all_items_live',1],
-		['return_all_items_ever',0],
-		['show_hard_currency',1],
-		['prioritize_item_category','recommend']
+		["premium_item_id", premiumId],
+		["return_all_items_live", 1],
+		["return_all_items_ever", 0],
+		["show_hard_currency", 1],
+		["prioritize_item_category", "recommend"],
 	];
-	return await sendServerCall(SERVER,'claimsalebonus',params,true,true);
+	return await sendServerCall(SERVER, "claimsalebonus", params, true, true);
 }
 
-async function convertContracts(sourceBuffId,resultBuffId,count,toEventTokens) {
+async function convertContracts(
+	sourceBuffId,
+	resultBuffId,
+	count,
+	toEventTokens
+) {
 	let params = [
-		['source_buff_id',sourceBuffId],
-		['result_buff_id',resultBuffId],
-		['count',count],
-		['to_event_tokens',toEventTokens?1:0]
+		["source_buff_id", sourceBuffId],
+		["result_buff_id", resultBuffId],
+		["count", count],
+		["to_event_tokens", toEventTokens ? 1 : 0],
 	];
-	return await sendServerCall(SERVER,'convertcontracts',params,true,true);
+	return await sendServerCall(SERVER, "convertcontracts", params, true, true);
 }
 
-async function purchaseNotaryChestBundle(chestId,count) {
+async function purchaseNotaryChestBundle(chestId, count) {
 	let params = [
-		['chest_type_id',chestId],
-		['count',count]
+		["chest_type_id", chestId],
+		["count", count],
 	];
-	return await sendServerCall(SERVER,'purchasenotarychestbundle',params,true,true);
+	return await sendServerCall(
+		SERVER,
+		"purchasenotarychestbundle",
+		params,
+		true,
+		true
+	);
 }
 
 async function distillPotions(pots) {
 	// {"id":amount,"id":amount,etc..
-	let params = [
-		['to_distill',JSON.stringify(pots)]
-	];
-	return await sendServerCall(SERVER,'distillpotions',params,true,true);
+	let params = [["to_distill", JSON.stringify(pots)]];
+	return await sendServerCall(SERVER, "distillpotions", params, true, true);
 }
 
-async function brewPotions(buffId,count) {
+async function brewPotions(buffId, count) {
 	let params = [
-		['buff_id',buffId],
-		['count',count]
+		["buff_id", buffId],
+		["count", count],
 	];
-	return await sendServerCall(SERVER,'brewpotions',params,true,true);
+	return await sendServerCall(SERVER, "brewpotions", params, true, true);
 }
 
-async function enhancePotions(sourceBuffId,resultBuffId,count) {
+async function enhancePotions(sourceBuffId, resultBuffId, count) {
 	let params = [
-		['source_buff_id',sourceBuffId],
-		['result_buff_id',resultBuffId],
-		['count',count]
+		["source_buff_id", sourceBuffId],
+		["result_buff_id", resultBuffId],
+		["count", count],
 	];
-	return await sendServerCall(SERVER,'enhancepotions',params,true,true);
+	return await sendServerCall(SERVER, "enhancepotions", params, true, true);
 }
 
 async function getCompletionData() {
-	let params = [
-		['level',0]
-	];
-	return await sendServerCall(SERVER,'getcompletiondata',params,true,true);
+	let params = [["level", 0]];
+	return await sendServerCall(
+		SERVER,
+		"getcompletiondata",
+		params,
+		true,
+		true
+	);
 }
 
 function appendUserData() {
 	return buildParams([
-		[PARAM_USERID,currAccount.id],
-		[PARAM_USERHASH,currAccount.hash]
+		[PARAM_USERID, currAccount.id],
+		[PARAM_USERHASH, currAccount.hash],
 	]);
 }
 
 async function appendInstanceId() {
-	if (instanceId==``)
-		await getUpdatedInstanceId()
-	return buildParams([
-		[PARAM_INSTANCEID,instanceId]
-	]);
+	if (instanceId == ``) await getUpdatedInstanceId();
+	return buildParams([[PARAM_INSTANCEID, instanceId]]);
 }
 
 function appendBoilerplate() {
 	if (boilerplate == undefined || boilerplate == ``)
 		boilerplate = buildParams([
-			['language_id',1],
-			['timestamp',0],
-			['request_id',0],
-			['mobile_client_version',99999],
-			['include_free_play_objectives','true'],
-			['instance_key',1],
-			['offline_v2_build',1],
-			['localization_aware','true']
+			["language_id", 1],
+			["timestamp", 0],
+			["request_id", 0],
+			["mobile_client_version", 99999],
+			["include_free_play_objectives", "true"],
+			["instance_key", 1],
+			["offline_v2_build", 1],
+			["localization_aware", "true"],
 		]);
 	return boilerplate;
 }
 
 function buildParams(paramList) {
 	let params = ``;
-	for (let param of paramList)
-		params += `&${param[0]}=${param[1]}`;
+	for (let param of paramList) params += `&${param[0]}=${param[1]}`;
 	return params;
 }
 
-async function sendServerCall(server,callType,params,addUserData,addInstanceId,customTimeout) {
-	let call=`${PARAM_CALL}=${callType}`;
-	if (params != undefined)
-		call += buildParams(params);
-	if (addUserData)
-		call += appendUserData();
-	if (addInstanceId)
-		call += await appendInstanceId();
+async function sendServerCall(
+	server,
+	callType,
+	params,
+	addUserData,
+	addInstanceId,
+	customTimeout
+) {
+	let call = `${PARAM_CALL}=${callType}`;
+	if (params != undefined) call += buildParams(params);
+	if (addUserData) call += appendUserData();
+	if (addInstanceId) call += await appendInstanceId();
 	call += appendBoilerplate();
-	if (server==``) {
-		if (SERVER==``)
-			await getPlayServerFromMaster();
+	if (server == ``) {
+		if (SERVER == ``) await getPlayServerFromMaster();
 		server = SERVER;
 	}
-	let response = await sendOutgoingCall(server,call,customTimeout);
+	let response = await sendOutgoingCall(server, call, customTimeout);
 	let limit = 0;
-	while ((response[SPS]!=undefined||!response['success'])&&limit<RETRIES) {
+	while (
+		(response[SPS] != undefined || !response["success"]) &&
+		limit < RETRIES
+	) {
 		if (response[SPS]) {
 			server = SERVER = response[SPS].replace(`http://`, `https://`);
-			response = await sendOutgoingCall(server,call,customTimeout);
-		} else if (!response['success']) {
-			if (response[FR]==OII) {
+			response = await sendOutgoingCall(server, call, customTimeout);
+		} else if (!response["success"]) {
+			if (response[FR] == OII) {
 				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
 				await getUpdatedInstanceId();
-				console.log(`Old: ${call}`)
-				call = call.replace(oldII,instanceId);
-				console.log(`New: ${call}`)
-				response = await sendOutgoingCall(server,call,customTimeout);
+				console.log(`Old: ${call}`);
+				call = call.replace(oldII, instanceId);
+				console.log(`New: ${call}`);
+				response = await sendOutgoingCall(server, call, customTimeout);
 			} else if (response[FR].includes(`Security hash failure`)) {
 				throw new Error(`Your user data is incorrect`);
 			} else if (response[FR].includes(`non-atomic`)) {
@@ -497,15 +640,19 @@ async function sendServerCall(server,callType,params,addUserData,addInstanceId,c
 	return response;
 }
 
-async function sendOutgoingCall(server,call,customTimeout) {
+async function sendOutgoingCall(server, call, customTimeout) {
 	let url = `${server}post.php?${call}`;
-	let errTxt = `Server ps${server.replace(/[^0-9]/g,``)} appears to be dead`;
-	let timeoutTime = Number.isInteger(customTimeout)&&customTimeout>0?customTimeout:40000;
+	let errTxt = `Server ps${server.replace(/[^0-9]/g, ``)} appears to be dead`;
+	let timeoutTime =
+		Number.isInteger(customTimeout) && customTimeout > 0
+			? customTimeout
+			: 40000;
 	try {
-		let response = await fetch(url, {signal:AbortSignal.timeout(timeoutTime)});
+		let response = await fetch(url, {
+			signal: AbortSignal.timeout(timeoutTime),
+		});
 		await sleep(200);
-		if (response.ok)
-			return await JSON.parse(await response.text());
+		if (response.ok) return await JSON.parse(await response.text());
 		else {
 			if (response.status === 502) throw new Error(errTxt);
 			if (response.status === 500) throw new Error(errTxt);
@@ -514,8 +661,12 @@ async function sendOutgoingCall(server,call,customTimeout) {
 		}
 	} catch (error) {
 		if (error.name === "TimeoutError" || error.name === "AbortError")
-			throw new Error(`Timed out. Took more than ${timeoutTime/1000} seconds to get a response`);
-		console.error('Fetch', error);
+			throw new Error(
+				`Timed out. Took more than ${
+					timeoutTime / 1000
+				} seconds to get a response`
+			);
+		console.error("Fetch", error);
 		throw error;
 	}
 	return `Unknown error`;

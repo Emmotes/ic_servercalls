@@ -1,26 +1,30 @@
-const v=4.029;
-const globalButtonDisableTime=15000;
-const disabledUntilInit=document.getElementById(`disabledUntilInit`);
-const disabledUntilData=document.getElementById(`disabledUntilData`);
-const disabledVersionLockdown=document.getElementById(`disabledVersionLockdown`);
-const updateContainer=document.getElementById(`updateContainer`);
-const tabsContainer=document.getElementById(`tabsContainer`);
-const settingsIconName=document.getElementById(`settingsIconName`);
-const settingsMenu=document.getElementById(`settingsMenu`);
-const settingsUserName=document.getElementById(`userName`);
-const settingsUserId=document.getElementById(`userId`);
-const settingsUserHash=document.getElementById(`userHash`);
-const settingsSave=document.getElementById(`settingsMenuButtonSave`);
-const settingsClose=document.getElementById(`settingsMenuButtonClose`);
-const settingsList=document.getElementById(`settingsMenuAccountsList`);
-const settingsLoad=document.getElementById(`settingsMenuButtonLoadAccount`);
-const settingsDelete=document.getElementById(`settingsMenuButtonDeleteAccount`);
-const settingsNumberFormat=document.getElementById(`settingsNumberFormat`);
-const supportUrl=document.getElementById(`supportUrl`);
-const supportUrlButton=document.getElementById(`supportUrlMenuButton`);
-const lsSettings=`scSettings`;
-const NF_GROUPS={useGrouping:true,maximumFractionDigits:2};
-var NUMFORM = new Intl.NumberFormat(undefined,NF_GROUPS);
+const v = 4.029; // prettier-ignore
+const globalButtonDisableTime = 15000;
+const disabledUntilInit = document.getElementById(`disabledUntilInit`);
+const disabledUntilData = document.getElementById(`disabledUntilData`);
+const disabledVersionLockdown = document.getElementById(
+	`disabledVersionLockdown`
+);
+const updateContainer = document.getElementById(`updateContainer`);
+const tabsContainer = document.getElementById(`tabsContainer`);
+const settingsIconName = document.getElementById(`settingsIconName`);
+const settingsMenu = document.getElementById(`settingsMenu`);
+const settingsUserName = document.getElementById(`userName`);
+const settingsUserId = document.getElementById(`userId`);
+const settingsUserHash = document.getElementById(`userHash`);
+const settingsSave = document.getElementById(`settingsMenuButtonSave`);
+const settingsClose = document.getElementById(`settingsMenuButtonClose`);
+const settingsList = document.getElementById(`settingsMenuAccountsList`);
+const settingsLoad = document.getElementById(`settingsMenuButtonLoadAccount`);
+const settingsDelete = document.getElementById(
+	`settingsMenuButtonDeleteAccount`
+);
+const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
+const supportUrl = document.getElementById(`supportUrl`);
+const supportUrlButton = document.getElementById(`supportUrlMenuButton`);
+const lsSettings = `scSettings`;
+const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
+var NUMFORM = new Intl.NumberFormat(undefined, NF_GROUPS);
 var updateInterval;
 var timerList = {};
 var pbNames;
@@ -28,9 +32,13 @@ var pbCodeRunning;
 var pbTimerRunning;
 
 function isBadUserData() {
-	if (pbCodeRunning||pbTimerRunning)
-		return true;
-	if (currAccount==undefined||currAccount.name==undefined||currAccount.id==undefined||currAccount.hash==undefined) {
+	if (pbCodeRunning || pbTimerRunning) return true;
+	if (
+		currAccount == undefined ||
+		currAccount.name == undefined ||
+		currAccount.id == undefined ||
+		currAccount.hash == undefined
+	) {
 		init();
 		return true;
 	}
@@ -41,12 +49,12 @@ function init() {
 	disabledUntilInit.hidden = true;
 	tabsContainer.hidden = false;
 	// Deal with account migration.
-	if (localStorage.scUserIdent!=undefined) {
+	if (localStorage.scUserIdent != undefined) {
 		let userIdent = JSON.parse(localStorage.scUserIdent);
 		settingsUserName.value = ``;
 		settingsUserId.value = userIdent[0];
 		settingsUserHash.value = userIdent[1];
-		
+
 		disabledUntilData.hidden = false;
 		tabsContainer.hidden = true;
 		settingsClose.hidden = true;
@@ -57,7 +65,13 @@ function init() {
 		settingsIconName.innerHTML = `&nbsp;`;
 	} else {
 		let accountData = getUserAccounts();
-		if (accountData==undefined||accountData.current==undefined||accountData.accounts==undefined||Object.keys(accountData.current).length==0||Object.keys(accountData.accounts)==0) {
+		if (
+			accountData == undefined ||
+			accountData.current == undefined ||
+			accountData.accounts == undefined ||
+			Object.keys(accountData.current).length == 0 ||
+			Object.keys(accountData.accounts) == 0
+		) {
 			currAccount = undefined;
 			settingsIconName.innerHTML = `&nbsp;`;
 			disabledUntilData.hidden = false;
@@ -71,7 +85,7 @@ function init() {
 		}
 	}
 	refreshSettingsList();
-	window.addEventListener('hashchange',() =>{
+	window.addEventListener("hashchange", () => {
 		swapTab();
 	});
 	initSettingsNumberFormat();
@@ -86,14 +100,21 @@ function init() {
 }
 
 function settingsToggle() {
-	if (currAccount==undefined) {
+	if (currAccount == undefined) {
 		settingsMenu.style.display = `flex`;
 		return;
 	}
-	if (settingsMenu.style.display==`none`||settingsMenu.style.display==``) {
-		if (currAccount.name==undefined||currAccount.id==undefined||currAccount.hash==undefined) {
+	if (
+		settingsMenu.style.display == `none` ||
+		settingsMenu.style.display == ``
+	) {
+		if (
+			currAccount.name == undefined ||
+			currAccount.id == undefined ||
+			currAccount.hash == undefined
+		) {
 			refreshSettingsList();
-			if (settingsList.value!=`-`) {
+			if (settingsList.value != `-`) {
 				loadUserAccount();
 			} else {
 				userName.value = ``;
@@ -115,72 +136,103 @@ function settingsToggle() {
 
 function initSettingsNumberFormat() {
 	let settings = getLocalSettings();
-	let settingNumFormat = settings.hasOwnProperty('nf') ? settings.nf : undefined;
+	let settingNumFormat = settings.hasOwnProperty("nf")
+		? settings.nf
+		: undefined;
 	let num = 12345.67;
-	
+
 	let opts = ``;
-	let types = [undefined,"fr-FR","en-GB","de-DE"];
-	for (let k=0;k<types.length;k++) {
+	let types = [undefined, "fr-FR", "en-GB", "de-DE"];
+	for (let k = 0; k < types.length; k++) {
 		let name = "Browser";
 		switch (k) {
-			case 1: name = "&nbsp;&nbsp;Space"; break;
-			case 2: name = "&nbsp;&nbsp;Comma"; break;
-			case 3: name = "&nbsp;Period";
+			case 1:
+				name = "&nbsp;&nbsp;Space";
+				break;
+			case 2:
+				name = "&nbsp;&nbsp;Comma";
+				break;
+			case 3:
+				name = "&nbsp;Period";
 		}
-		opts+=`<option value="${types[k]==undefined?"-":types[k]}"${types[k]==settingNumFormat?" selected":""}>${name}: ${new Intl.NumberFormat(types[k],NF_GROUPS).format(num)}</option>`;
+		opts += `<option value="${types[k] == undefined ? "-" : types[k]}"${
+			types[k] == settingNumFormat ? " selected" : ""
+		}>${name}: ${new Intl.NumberFormat(types[k], NF_GROUPS).format(
+			num
+		)}</option>`;
 	}
 	settingsNumberFormat.innerHTML = opts;
-	NUMFORM = new Intl.NumberFormat(settingNumFormat,NF_GROUPS);
+	NUMFORM = new Intl.NumberFormat(settingNumFormat, NF_GROUPS);
 }
 
 function changeCurrentNumberFormat(code) {
-	if (code=="-")
-		code = undefined;
-	NUMFORM = new Intl.NumberFormat(code,NF_GROUPS);
-	if (code!=undefined)
-		setLocalSetting('nf',code);
-	else
-		deleteLocalSetting('nf');
+	if (code == "-") code = undefined;
+	NUMFORM = new Intl.NumberFormat(code, NF_GROUPS);
+	if (code != undefined) setLocalSetting("nf", code);
+	else deleteLocalSetting("nf");
 }
 
 function initPullButtonStuff() {
-	pbNames=[];
+	pbNames = [];
 	for (let obj of document.querySelectorAll('[name$="PullButton"]'))
-		pbNames.push(obj.name.replace(`PullButton`,``));
+		pbNames.push(obj.name.replace(`PullButton`, ``));
 	pbCodeRunning = false;
 	pbTimerRunning = false;
 }
 
 async function startUpdateCheckInterval(delay) {
 	await sleep(delay);
-	updateInterval = setAsyncInterval(async () => {await checkUpdatedScriptsAvailable();},delay);
+	updateInterval = setAsyncInterval(async () => {
+		await checkUpdatedScriptsAvailable();
+	}, delay);
 }
 
 async function checkUpdatedScriptsAvailable() {
-	let newDocum = new DOMParser().parseFromString(await (await fetch(window.location.href,{headers:{'Cache-Control':'no-cache'}})).text(), "text/html");
-	let oldList = [...document.querySelectorAll("script[type='text/javascript']")].map(ele=>ele.src);
-	let newList = [...newDocum.querySelectorAll("script[type='text/javascript']")].map(ele=>ele.src);
-	if (oldList.length === newList.length && oldList.every((value, index) => value === newList[index]))
+	let newDocum = new DOMParser().parseFromString(
+		await (
+			await fetch(window.location.href, {
+				headers: {"Cache-Control": "no-cache"},
+			})
+		).text(),
+		"text/html"
+	);
+	let oldList = [
+		...document.querySelectorAll("script[type='text/javascript']"),
+	].map((ele) => ele.src);
+	let newList = [
+		...newDocum.querySelectorAll("script[type='text/javascript']"),
+	].map((ele) => ele.src);
+	if (
+		oldList.length === newList.length &&
+		oldList.every((value, index) => value === newList[index])
+	)
 		return;
 	enableVersionUpdate();
 }
 
 function enableVersionUpdate() {
-	document.getElementById('updateContainer').style.display = '';
-	document.getElementById('changelogContainer').style.display = 'none';
-	document.getElementById('versioningContainer').style = 'position:fixed;box-shadow:2px 2px 10px var(--ShipGrey), -2px -2px 10px var(--ShipGrey), -2px 2px 10px var(--ShipGrey), 2px -2px 10px var(--ShipGrey);';
-	
+	document.getElementById("updateContainer").style.display = "";
+	document.getElementById("changelogContainer").style.display = "none";
+	document.getElementById("versioningContainer").style =
+		"position:fixed;box-shadow:2px 2px 10px var(--ShipGrey), -2px -2px 10px var(--ShipGrey), -2px 2px 10px var(--ShipGrey), 2px -2px 10px var(--ShipGrey);";
+
 	clearAsyncInterval(updateInterval);
 }
 
 function getPatronNameById(id) {
 	switch (id) {
-		case 1: return patronAdvIds["1100000"];
-		case 2: return patronAdvIds["1200000"];
-		case 3: return patronAdvIds["1300000"];
-		case 4: return patronAdvIds["1400000"];
-		case 5: return patronAdvIds["1500000"];
-		default: return `??? (id: ${id})`;
+		case 1:
+			return patronAdvIds["1100000"];
+		case 2:
+			return patronAdvIds["1200000"];
+		case 3:
+			return patronAdvIds["1300000"];
+		case 4:
+			return patronAdvIds["1400000"];
+		case 5:
+			return patronAdvIds["1500000"];
+		default:
+			return `??? (id: ${id})`;
 	}
 }
 
@@ -188,22 +240,23 @@ async function saveUserData() {
 	let userName = settingsUserName.value || ``;
 	let userId = settingsUserId.value || ``;
 	let userHash = settingsUserHash.value || ``;
-	if (userName!=``&&userId!=``&&userHash!=``) {
-		let newAccount = {name:userName,id:userId,hash:userHash};
+	if (userName != `` && userId != `` && userHash != ``) {
+		let newAccount = {name: userName, id: userId, hash: userHash};
 		addUserAccount(newAccount);
 		currAccount = newAccount;
 		settingsIconName.innerHTML = currAccount.name;
 		settingsSave.value = `SAVED`;
-		if (settingsClose.hidden)
-			settingsClose.hidden = false;
-		if (tabsContainer.hidden)
-			tabsContainer.hidden = false;
-		if (!disabledUntilData.hidden)
-			disabledUntilData.hidden = true;
-		setTimeout(function(){settingsSave.value=`Save`;},2000);
+		if (settingsClose.hidden) settingsClose.hidden = false;
+		if (tabsContainer.hidden) tabsContainer.hidden = false;
+		if (!disabledUntilData.hidden) disabledUntilData.hidden = true;
+		setTimeout(function () {
+			settingsSave.value = `Save`;
+		}, 2000);
 	} else {
 		settingsSave.value = `ERROR`;
-		setTimeout(function(){settingsSave.value=`Save`;},2000);
+		setTimeout(function () {
+			settingsSave.value = `Save`;
+		}, 2000);
 	}
 	refreshSettingsList();
 	cleanup();
@@ -211,11 +264,14 @@ async function saveUserData() {
 
 async function supportUrlSaveData() {
 	let url = supportUrl.value || ``;
-	if (url==``)
-		return;
+	if (url == ``) return;
 	try {
-		let userId = Number(url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=",""));
-		let userHash = url.match(/&device_hash=[A-Za-z0-9]+/g)[0].replace("&device_hash=","");
+		let userId = Number(
+			url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=", "")
+		);
+		let userHash = url
+			.match(/&device_hash=[A-Za-z0-9]+/g)[0]
+			.replace("&device_hash=", "");
 		settingsUserName.value = ``;
 		settingsUserId.value = userId;
 		settingsUserHash.value = userHash;
@@ -229,10 +285,12 @@ async function supportUrlSaveData() {
 async function loadUserAccount() {
 	let accounts = getUserAccounts();
 	let accountChoice = settingsList.value;
-	if (accounts.accounts[accountChoice]==undefined) {
+	if (accounts.accounts[accountChoice] == undefined) {
 		settingsLoad.value = `ERROR`;
-		setTimeout(function(){settingsLoad.value=`Load`;},2000);
-		for (var i=settingsList.length-1; i>=0; i--)
+		setTimeout(function () {
+			settingsLoad.value = `Load`;
+		}, 2000);
+		for (var i = settingsList.length - 1; i >= 0; i--)
 			if (settingsList.options[i].value == accountChoice)
 				settingsList.remove(i);
 	} else {
@@ -243,9 +301,9 @@ async function loadUserAccount() {
 		userId.value = currAccount.id;
 		userHash.value = currAccount.hash;
 		settingsIconName.innerHTML = currAccount.name;
-		SERVER=``;
-		instanceId=``;
-		boilerplate=``;
+		SERVER = ``;
+		instanceId = ``;
+		boilerplate = ``;
 		oc_initOpenChestsHideChests();
 	}
 	clearTimers();
@@ -255,8 +313,7 @@ async function loadUserAccount() {
 async function deleteUserAccount() {
 	removeUserAccount(settingsList.value);
 	refreshSettingsList();
-	if (settingsList.value!=`-`)
-		loadUserAccount();
+	if (settingsList.value != `-`) loadUserAccount();
 	else {
 		userName.value = ``;
 		userId.value = ``;
@@ -271,8 +328,8 @@ async function deleteUserAccount() {
 
 async function sanitise(response) {
 	let s = JSON.stringify(response);
-	s = s.replaceAll(currAccount.id,"____");
-	s = s.replaceAll(currAccount.hash,"____");
+	s = s.replaceAll(currAccount.id, "____");
+	s = s.replaceAll(currAccount.hash, "____");
 	return await JSON.parse(s);
 }
 
@@ -280,9 +337,14 @@ async function refreshSettingsList() {
 	let userAccounts = getUserAccounts();
 	let select = ``;
 	for (let name of Object.keys(userAccounts.accounts))
-		select += `<option value="${name}"${currAccount!=undefined&&currAccount.name!=undefined&&currAccount.name==name?` selected`:``}>${name}</option>`;
-	if (select==``)
-		select += `<option value="-" selected>-</option>`;
+		select += `<option value="${name}"${
+			currAccount != undefined &&
+			currAccount.name != undefined &&
+			currAccount.name == name
+				? ` selected`
+				: ``
+		}>${name}</option>`;
+	if (select == ``) select += `<option value="-" selected>-</option>`;
 	settingsList.innerHTML = select;
 }
 
@@ -293,52 +355,64 @@ function swapTab() {
 }
 
 function cleanup() {
-	for (let ele of [...document.querySelectorAll(`div[class="tabsContent"] > span`)].filter(e=>e.id!=""))
+	for (let ele of [
+		...document.querySelectorAll(`div[class="tabsContent"] > span`),
+	].filter((e) => e.id != ""))
 		ele.innerHTML = `&nbsp;`;
 }
 
 function setHash(hash) {
 	hash = "#" + hash;
-	if (history.replaceState)
-		history.replaceState(null, null, hash);
-	else
-		window.location.hash = hash;
+	if (history.replaceState) history.replaceState(null, null, hash);
+	else window.location.hash = hash;
 }
 
 function togglePullButtons(disable) {
-	if (pbCodeRunning||pbTimerRunning)
-		return;
-	
+	if (pbCodeRunning || pbTimerRunning) return;
+
 	for (let name of pbNames) {
 		let button = document.getElementById(`${name}PullButton`);
 		let message = document.getElementById(`${name}PullButtonDisabled`);
-		if (button==undefined||message==undefined)
-			continue;
+		if (button == undefined || message == undefined) continue;
 		button.hidden = disable;
-		message.innerHTML = `&nbsp;`
+		message.innerHTML = `&nbsp;`;
 		let timerName = `mpb_${name}`;
 		if (disable) {
 			let prefix = `Disabled for `;
 			let suffix = ` to prevent spamming the servers.`;
-			message.innerHTML = prefix + getDisplayTime(globalButtonDisableTime-1000) + suffix;
-			createTimer(globalButtonDisableTime,timerName,`${name}PullButtonDisabled`,`<span id="${name}PullButtonDisabled" style="font-size:0.9em">Still busy with other tasks. Please wait.</span>`,prefix,suffix);
+			message.innerHTML =
+				prefix +
+				getDisplayTime(globalButtonDisableTime - 1000) +
+				suffix;
+			createTimer(
+				globalButtonDisableTime,
+				timerName,
+				`${name}PullButtonDisabled`,
+				`<span id="${name}PullButtonDisabled" style="font-size:0.9em">Still busy with other tasks. Please wait.</span>`,
+				prefix,
+				suffix
+			);
 		} else if (timerList.hasOwnProperty(timerName)) {
 			clearInterval(timerList[timerName].interval);
 			delete timerList[timerName];
 		}
 		message.hidden = !disable;
-		button.className = disable ? button.className + ` greyButton` : button.className.replace(` greyButton`,``);
+		button.className = disable
+			? button.className + ` greyButton`
+			: button.className.replace(` greyButton`, ``);
 	}
 }
 
 function disablePullButtons(skipTimer) {
 	togglePullButtons(true);
 	pbCodeRunning = true;
-	if (skipTimer)
-		pbTimerRunning = false;
+	if (skipTimer) pbTimerRunning = false;
 	else {
 		pbTimerRunning = true;
-		setTimeout(function(){pbTimerRunning=false;togglePullButtons(false);},globalButtonDisableTime);
+		setTimeout(function () {
+			pbTimerRunning = false;
+			togglePullButtons(false);
+		}, globalButtonDisableTime);
 	}
 }
 
@@ -347,7 +421,7 @@ function codeEnablePullButtons() {
 	togglePullButtons(false);
 }
 
-function setFormsWrapperFormat(wrapper,type) {
+function setFormsWrapperFormat(wrapper, type) {
 	if (type == 0) {
 		wrapper.className = `f falc fje mr2`;
 		wrapper.style = `flex-direction:column;`;
@@ -366,18 +440,16 @@ function setFormsWrapperFormat(wrapper,type) {
 	}
 }
 
-function handleError(wrapper,error) {
+function handleError(wrapper, error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
-	if (error.toString().includes(`appears to be dead`))
-		SERVER = ``;
+	if (error.toString().includes(`appears to be dead`)) SERVER = ``;
 	codeEnablePullButtons();
 }
 
 function getDefsNames(defs) {
-    let names = {};
-    for (let def of defs)
-        names[def.id] = def.name;
-    return names;
+	let names = {};
+	for (let def of defs) names[def.id] = def.name;
+	return names;
 }
 
 function nf(number) {
@@ -391,24 +463,30 @@ function randInt(min, max) {
 }
 
 function dateFormat(input) {
-	return Intl.DateTimeFormat(undefined, {"hour":"2-digit","minute":"2-digit","second":"2-digit"}).format(input);
+	return Intl.DateTimeFormat(undefined, {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	}).format(input);
 }
 
 function getDisplayTime(time) {
-	let days = Math.floor(time/(1000*60*60*24));
-	let hours = Math.floor((time/(1000*60*60)) % 24);
-	let minutes = Math.floor((time/1000/60) % 60);
-	let seconds = Math.floor((time/1000) % 60);
+	let days = Math.floor(time / (1000 * 60 * 60 * 24));
+	let hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+	let minutes = Math.floor((time / 1000 / 60) % 60);
+	let seconds = Math.floor((time / 1000) % 60);
 	let display = ``;
-	if (days>0) display += `${days} day${days!=1?'s':''} `;
-	if (days>0||hours>0) display += `${hours} hour${hours!=1?'s':''} `;
-	if (days>0||hours>0||minutes>0) display += `${padZeros(minutes,2)} min${minutes!=1?'s':''} `;
-	display+= `${padZeros(seconds,2)} sec${seconds!=1?'s':''}`;
+	if (days > 0) display += `${days} day${days != 1 ? "s" : ""} `;
+	if (days > 0 || hours > 0)
+		display += `${hours} hour${hours != 1 ? "s" : ""} `;
+	if (days > 0 || hours > 0 || minutes > 0)
+		display += `${padZeros(minutes, 2)} min${minutes != 1 ? "s" : ""} `;
+	display += `${padZeros(seconds, 2)} sec${seconds != 1 ? "s" : ""}`;
 	return display;
 }
 
-function padZeros(num,places) {
-	return String(num).padStart(places, '0');
+function padZeros(num, places) {
+	return String(num).padStart(places, "0");
 }
 
 function compress(input) {
@@ -419,27 +497,28 @@ function decompress(input) {
 	return LZString.decompress(input);
 }
 
-function findWord(word,str) {
-	if (ciEquals(word,`Test`) && ciEquals(str,`Test of High Sorcery`))
+function findWord(word, str) {
+	if (ciEquals(word, `Test`) && ciEquals(str, `Test of High Sorcery`))
 		return false;
-	return RegExp('\\b'+ word +'\\b', 'i').test(str)
+	return RegExp("\\b" + word + "\\b", "i").test(str);
 }
 
 function ciEquals(a, b) {
-	return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0 : a === b;
+	return typeof a === "string" && typeof b === "string"
+		? a.localeCompare(b, undefined, {sensitivity: "accent"}) === 0
+		: a === b;
 }
 
-function numSort(arr,reverse) {
+function numSort(arr, reverse) {
 	arr.sort((a, b) => (reverse ? b - a : a - b));
 }
 
 async function sleep(ms) {
-	await new Promise(r => setTimeout(r, ms));
+	await new Promise((r) => setTimeout(r, ms));
 }
 
 function getUserAccounts() {
-	if (localStorage.scAccounts==undefined)
-		return {accounts:{}};
+	if (localStorage.scAccounts == undefined) return {accounts: {}};
 	return JSON.parse(localStorage.scAccounts);
 }
 
@@ -458,7 +537,7 @@ function removeUserAccount(name) {
 	let userAccounts = getUserAccounts();
 	if (Object.keys(userAccounts.accounts).includes(name))
 		delete userAccounts.accounts[name];
-	if (userAccounts.current.name==name) {
+	if (userAccounts.current.name == name) {
 		userAccounts.current = {};
 		currAccount = undefined;
 		settingsIconName.innerHTML = `&nbsp;`;
@@ -466,14 +545,17 @@ function removeUserAccount(name) {
 	saveUserAccounts(userAccounts);
 }
 
-function createTimer(timeLength,timerName,eleName,endMsg,prefix,suffix) {
-	if (timeLength <= 0)
-		return;
+function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
+	if (timeLength <= 0) return;
 	timeAim = new Date().getTime() + timeLength;
 	timeInterval = setInterval(() => {
 		let ele = document.getElementById(eleName);
 		let timerJson = timerList[timerName];
-		if (timerJson==undefined || timerJson.interval == undefined || timerJson.aim == undefined) {
+		if (
+			timerJson == undefined ||
+			timerJson.interval == undefined ||
+			timerJson.aim == undefined
+		) {
 			delete timerList[timerName];
 			return;
 		} else if (ele == null) {
@@ -482,15 +564,17 @@ function createTimer(timeLength,timerName,eleName,endMsg,prefix,suffix) {
 			return;
 		}
 		let remaining = timerJson.aim - new Date().getTime();
-		ele.innerHTML = `${prefix || ''}${getDisplayTime(remaining)}${suffix || ''}`;
-		
+		ele.innerHTML = `${prefix || ""}${getDisplayTime(remaining)}${
+			suffix || ""
+		}`;
+
 		if (remaining < 0) {
 			clearInterval(timerList[timerName].interval);
 			delete timerList[timerName];
 			ele.outerHTML = endMsg || ``;
 		}
 	}, 1000);
-	timerList[timerName] = {aim:timeAim,interval:timeInterval};
+	timerList[timerName] = {aim: timeAim, interval: timeInterval};
 }
 
 function clearTimers(prefix) {
@@ -505,32 +589,28 @@ function clearTimers(prefix) {
 }
 
 function getFirstLine(text) {
-	var index = text.indexOf("\n")
-    if (index === -1)
-        index = undefined;
-    return text.substring(0, index);
+	var index = text.indexOf("\n");
+	if (index === -1) index = undefined;
+	return text.substring(0, index);
 }
 
 function getLocalSettings() {
 	let strg = localStorage.getItem(lsSettings);
-	if (strg!=undefined)
-		return JSON.parse(strg);
+	if (strg != undefined) return JSON.parse(strg);
 	return {};
 }
 
-function setLocalSetting(key,value) {
+function setLocalSetting(key, value) {
 	let strg = getLocalSettings();
 	strg[key] = value;
 	localStorage.setItem(lsSettings, JSON.stringify(strg));
 }
 
-function deleteLocalSetting(key,value) {
+function deleteLocalSetting(key, value) {
 	let strg = getLocalSettings();
 	if (strg.hasOwnProperty(key)) {
 		delete strg[key];
-		if (Object.keys(strg).length==0)
-			localStorage.removeItem(lsSettings);
-		else
-			localStorage.setItem(lsSettings, JSON.stringify(strg));
+		if (Object.keys(strg).length == 0) localStorage.removeItem(lsSettings);
+		else localStorage.setItem(lsSettings, JSON.stringify(strg));
 	}
 }
