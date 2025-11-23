@@ -1,9 +1,9 @@
-const vai = 1.000; // prettier-ignore
-const asyncIntervals = [];
+const vai = 1.001; // prettier-ignore
+const ai_asyncIntervals = [];
 
 const runAsyncInterval = async (cb, interval, intervalIndex) => {
 	await cb();
-	if (asyncIntervals[intervalIndex])
+	if (ai_asyncIntervals[intervalIndex])
 		setTimeout(
 			() => runAsyncInterval(cb, interval, intervalIndex),
 			interval
@@ -12,13 +12,14 @@ const runAsyncInterval = async (cb, interval, intervalIndex) => {
 
 const setAsyncInterval = (cb, interval) => {
 	if (cb && typeof cb === "function") {
-		const intervalIndex = asyncIntervals.length;
-		asyncIntervals.push(true);
+		const intervalIndex = ai_asyncIntervals.length;
+		ai_asyncIntervals.push(true);
 		runAsyncInterval(cb, interval, intervalIndex);
 		return intervalIndex;
 	} else throw new Error("Callback must be a function");
 };
 
 const clearAsyncInterval = (intervalIndex) => {
-	if (asyncIntervals[intervalIndex]) asyncIntervals[intervalIndex] = false;
+	if (ai_asyncIntervals[intervalIndex])
+		ai_asyncIntervals[intervalIndex] = false;
 };

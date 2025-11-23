@@ -1,14 +1,14 @@
-const vdf = 1.015; // prettier-ignore
+const vdf = 1.016; // prettier-ignore
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`formsWrapper`);
+	const wrapper = document.getElementById(`formsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
-		let forms = await getFormationSaves();
+		const forms = await getFormationSaves();
 		await df_displayFormationSaves(wrapper, forms);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -18,51 +18,51 @@ async function df_pullFormationSaves() {
 }
 
 async function df_displayFormationSaves(wrapper, saves) {
-	if (saves == undefined || saves.all_saves == undefined) {
+	if (saves == null || saves.all_saves == null) {
 		wrapper.innerHTML = `Error.`;
 		return;
 	}
-	let all = saves.all_saves;
-	let formObjs = saves.formation_objects;
+	const all = saves.all_saves;
+	const formObjs = saves.formation_objects;
 	let c = ``;
 	let added = 0;
-	for (let key of Object.keys(all)) {
-		if (key == "-1") continue;
-		let id = Number(key);
-		let camp = id % 1000;
-		let patron = id - camp;
-		let formObj = formObjs[`${id}`];
-		let campName = campaignIds[`${camp}`];
+	for (let key in all) {
+		if (key === "-1") continue;
+		const id = Number(key);
+		const camp = id % 1000;
+		const patron = id - camp;
+		const formObj = formObjs[`${id}`];
+		let campName = c_campaignIds[`${camp}`];
 		if (id > 1000 && id < 1000000) campName = formObj.campaign_name;
-		if (campName == undefined) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron == 0 ? `` : patronAdvIds[`${patron}`];
-		if (patronName == undefined) patronName = ``;
-		let patronDisplay = patronName == `` ? `No Patron` : patronName;
+		if (campName == null) campName = `Unknown Campaign ID: ${camp}`;
+		let patronName = patron === 0 ? `` : c_patronAdvIds[`${patron}`];
+		if (patronName == null) patronName = ``;
+		const patronDisplay = patronName === `` ? `No Patron` : patronName;
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;
 		for (let formation of all[key]) {
-			let formId = formation.formation_save_id;
-			let campId = Number(formation.campaign_id);
-			let formName = formation.name;
-			let formFav = Number(formation.favorite || 0);
-			let formLet =
-				formFav == 1
+			const formId = formation.formation_save_id;
+			const campId = Number(formation.campaign_id);
+			const formName = formation.name;
+			const formFav = Number(formation.favorite || 0);
+			const formLet =
+				formFav === 1
 					? `Q`
-					: formFav == 2
+					: formFav === 2
 					? `W`
-					: formFav == 3
+					: formFav === 3
 					? `E`
 					: ``;
-			let formFeats =
-				Object.prototype.toString.call(formation.feats || []) !=
+			const formFeats =
+				Object.prototype.toString.call(formation.feats || []) !==
 				`[object Array]`;
 			let extras = ``;
-			if (formLet != ``) extras += `Fav: ${formLet}`;
+			if (formLet !== ``) extras += `Fav: ${formLet}`;
 			if (formFeats) {
-				if (extras != ``) extras += " / ";
+				if (extras !== ``) extras += " / ";
 				extras += "Has Feats";
 			}
-			if (extras != ``) extras = ` (${extras})`;
-			let tt = df_createFormationTooltip(
+			if (extras !== ``) extras = ` (${extras})`;
+			const tt = df_createFormationTooltip(
 				formName + extras,
 				formation.formation,
 				formObj
@@ -74,7 +74,7 @@ async function df_displayFormationSaves(wrapper, saves) {
 	}
 	setFormsWrapperFormat(wrapper, 1);
 	wrapper.innerHTML = c;
-	let formsDeleter = document.getElementById(`formsDeleter`);
+	const formsDeleter = document.getElementById(`formsDeleter`);
 	let fd = ``;
 	if (document.querySelectorAll('input[name="___AUTO___SAVE___"]').length > 0)
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="df_toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
@@ -86,52 +86,51 @@ async function df_displayFormationSaves(wrapper, saves) {
 }
 
 function df_createFormationTooltip(name, champs, formation) {
-	if (name == undefined || champs == undefined || formation == undefined)
-		return ``;
+	if (name == null || champs == null || formation == null) return ``;
 	let formObj = ``;
 	for (let currForm of formation.game_change_data) {
-		if (currForm.type != undefined && currForm.type == `formation`) {
-			if (currForm.formation == undefined) return ``;
+		if (currForm.type != null && currForm.type === `formation`) {
+			if (currForm.formation == null) return ``;
 			formObj = currForm.formation;
 			break;
 		}
 	}
-	if (formObj == ``) {
+	if (formObj === ``) {
 		for (let currForm of formation.campaign_changes) {
-			if (currForm.type != undefined && currForm.type == `formation`) {
-				if (currForm.formation == undefined) return ``;
+			if (currForm.type != null && currForm.type === `formation`) {
+				if (currForm.formation == null) return ``;
 				formObj = currForm.formation;
 				break;
 			}
 		}
 	}
-	if (formObj == ``) return ``;
+	if (formObj === ``) return ``;
 
-	let circleDiameter = 50;
-	let colMult = 60;
-	let rowMult = 30;
+	const circleDiameter = 50;
+	const colMult = 60;
+	const rowMult = 30;
 
 	let maxCol = 0;
 	let minY = 99999999;
 	let maxY = 0;
 	for (let currObj of formObj) {
 		if (currObj.col > maxCol) maxCol = currObj.col;
-		let y = Math.floor(currObj.y / 10);
+		const y = Math.floor(currObj.y / 10);
 		if (y < minY) minY = y;
 		if (y > maxY) maxY = y;
 	}
 
-	let formWidth = circleDiameter + colMult * maxCol;
-	let formHeight = circleDiameter + rowMult * (maxY - minY);
+	const formWidth = circleDiameter + colMult * maxCol;
+	const formHeight = circleDiameter + rowMult * (maxY - minY);
 
 	let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${formWidth}" height="${formHeight}">`;
 	for (let i = 0; i < formObj.length; i++) {
-		let currObj = formObj[i];
+		const currObj = formObj[i];
 		let champ = Number(champs[i]);
 		if (isNaN(champ) || champ < 0) champ = 0;
-		let yPos = Math.floor(currObj.y / 10);
-		let x = (maxCol - currObj.col) * colMult;
-		let y = (yPos - minY) * rowMult;
+		const yPos = Math.floor(currObj.y / 10);
+		const x = (maxCol - currObj.col) * colMult;
+		const y = (yPos - minY) * rowMult;
 		svg += `<image x="${x}" y="${y}" width="${circleDiameter}" height="${circleDiameter}" href="images/portraits/${champ}.png" />`;
 	}
 	svg += `</svg>`;
@@ -146,9 +145,8 @@ function df_formsSelectAll(id, check) {
 }
 
 function df_toggleSelectAutosaveForms() {
-	let button = document.getElementById(`toggleSelectAutosaveFormsButton`);
-	let check = !button.value.includes(`Deselect`);
-	let counter = 0;
+	const button = document.getElementById(`toggleSelectAutosaveFormsButton`);
+	const check = !button.value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(
 		'input[name="___AUTO___SAVE___"]'
 	))
@@ -158,30 +156,29 @@ function df_toggleSelectAutosaveForms() {
 
 async function df_deleteFormationSaves() {
 	df_disableAllFormationsButtonsAndCheckboxes(true);
-	let formsDeleter = document.getElementById(`formsDeleter`);
+	const formsDeleter = document.getElementById(`formsDeleter`);
 	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
 	formsDeleter.innerHTML = c;
-	let list = document.querySelectorAll('[id^="form_"]');
 	let count = 0;
-	for (let form of list) {
+	for (let form of document.querySelectorAll('[id^="form_"]')) {
 		if (!form.checked) continue;
 		count++;
-		let id = Number(form.id.replaceAll("form_", ""));
+		const id = Number(form.id.replaceAll("form_", ""));
 		let autosaveError = false;
-		if (form.name == `___AUTO___SAVE___`) {
+		if (form.name === `___AUTO___SAVE___`) {
 			if (autosaveError) {
 				form.parentNode.style.display = `none`;
 				form.checked = false;
 				continue;
 			}
 			// Can't delete the autosaves atm. So have to rename them first.
-			let campId = form.dataset.campid;
-			let result = await saveFormation(
+			const campId = form.dataset.campid;
+			const result = await saveFormation(
 				id,
 				campId,
 				`renameAutoSaveToDeleteIt`
 			);
-			if (result[FR] == `Invalid or incomplete parameters`) {
+			if (result[FR] === `Invalid or incomplete parameters`) {
 				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
 				autosaveError = true;
 				form.parentNode.style.display = `none`;
@@ -190,8 +187,8 @@ async function df_deleteFormationSaves() {
 				continue;
 			}
 		}
-		let result = await deleteFormationSave(id);
-		let extras = form.dataset.extras;
+		const result = await deleteFormationSave(id);
+		const extras = form.dataset.extras;
 		let successType = ``;
 		if (result["success"] && result["okay"])
 			successType = `Successfully deleted`;
@@ -201,7 +198,7 @@ async function df_deleteFormationSaves() {
 		form.checked = false;
 		formsDeleter.innerHTML = c;
 	}
-	if (count == 0) {
+	if (count === 0) {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		formsDeleter.innerHTML = c;
 	}

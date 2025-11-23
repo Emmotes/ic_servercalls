@@ -1,13 +1,13 @@
-const vad = 1.006; // prettier-ignore
+const vad = 1.007; // prettier-ignore
 
 async function ad_pullAeonData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`aeonWrapper`);
+	const wrapper = document.getElementById(`aeonWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for patron data...`;
-		let details = await getPatronDetails();
+		const details = await getPatronDetails();
 		await ad_displayAeonData(wrapper, details);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -16,24 +16,24 @@ async function ad_pullAeonData() {
 }
 
 async function ad_displayAeonData(wrapper, details) {
-	let aeonData = details.aeon_data;
-	let millisecondsTilRollover =
+	const aeonData = details.aeon_data;
+	const millisecondsTilRollover =
 		Number(aeonData.seconds_until_patron_rollover) * 1000;
-	let currPatronId = Number(aeonData.current_patron_id);
-	let nextPatronId = Number(aeonData.next_patron_id);
-	let currPatron = getPatronNameById(currPatronId);
-	let nextPatron = getPatronNameById(nextPatronId);
+	const currPatronId = Number(aeonData.current_patron_id);
+	const nextPatronId = Number(aeonData.next_patron_id);
+	const currPatron = getPatronNameById(currPatronId);
+	const nextPatron = getPatronNameById(nextPatronId);
 	let count = 0;
 	let goal = 0;
 	outerLoop: for (let patron of details.patrons) {
 		if (
-			patron.patron_id != currPatronId ||
-			patron.unlocked == false ||
-			patron.progress_bars == undefined
+			patron.patron_id !== currPatronId ||
+			patron.unlocked === false ||
+			patron.progress_bars == null
 		)
 			continue;
 		for (let prog of patron.progress_bars) {
-			if (prog.label != "weekly_challenges_progress") continue;
+			if (prog.label !== "weekly_challenges_progress") continue;
 			count = Number(prog.count);
 			goal = Number(prog.goal);
 			break outerLoop;
@@ -46,8 +46,6 @@ async function ad_displayAeonData(wrapper, details) {
 		choreInfo = `${count} / ${goal} (${percent}%)`;
 	}
 
-	let col1 = `width:25%;min-width:200px;`;
-	let col2 = `width:35%;min-width:250px;`;
 	let txt = ``;
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Aeon Patron Data:</span>`;
 	txt += ad_addAeonRow(`Current Patron:`, currPatron);
@@ -68,7 +66,5 @@ async function ad_displayAeonData(wrapper, details) {
 }
 
 function ad_addAeonRow(left, right) {
-	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span>`;
-	txt += `</span>`;
-	return txt;
+	return `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:35%;min-width:250px;">${right}</span></span>`;
 }

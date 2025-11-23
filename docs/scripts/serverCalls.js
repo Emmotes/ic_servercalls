@@ -1,4 +1,4 @@
-const vs = 3.018; // prettier-ignore
+const vs = 3.019; // prettier-ignore
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
 const FR = `failure_reason`;
@@ -8,18 +8,18 @@ const PARAM_INSTANCEID = `instance_id`;
 const PARAM_USERID = `user_id`;
 const PARAM_USERHASH = `hash`;
 const RETRIES = 4;
-var currAccount = undefined;
-var SERVER = ``;
-var instanceId = ``;
-var boilerplate = ``;
+let currAccount = undefined;
+let SERVER = ``;
+let instanceId = ``;
+let boilerplate = ``;
 
 async function getPlayServerFromMaster() {
-	let response = await getPlayServerForDefinitions(M);
+	const response = await getPlayServerForDefinitions(M);
 	SERVER = response["play_server"];
 }
 
 async function getPlayServerForDefinitions(serverToUse, customTimeout) {
-	if (serverToUse == undefined) serverToUse = M;
+	if (serverToUse == null) serverToUse = M;
 	return await sendServerCall(
 		serverToUse,
 		"getPlayServerForDefinitions",
@@ -31,23 +31,28 @@ async function getPlayServerForDefinitions(serverToUse, customTimeout) {
 }
 
 async function getUserDetails() {
-	let deets = await sendServerCall(SERVER, "getuserdetails", undefined, true);
+	const deets = await sendServerCall(
+		SERVER,
+		"getuserdetails",
+		undefined,
+		true
+	);
 	getUpdatedInstanceId(deets);
 	return deets;
 }
 
 async function getUpdatedInstanceId(deets) {
-	if (deets == undefined) deets = await getUserDetails();
+	if (deets == null) deets = await getUserDetails();
 	instanceId = deets.details.instance_id;
 }
 
 async function getDefinitions(filter) {
-	let params = [
+	const params = [
 		["supports_chunked_defs", 0],
 		["new_achievements", 1],
 		["challenge_sets_no_deltas", 0],
 	];
-	if (filter != undefined && filter != ``) params.push(["filter", filter]);
+	if (filter != null && filter !== ``) params.push(["filter", filter]);
 	return await sendServerCall(SERVER, "getdefinitions", params);
 }
 
@@ -72,7 +77,7 @@ async function getFormationSaves() {
 }
 
 async function deleteFormationSave(formId) {
-	let params = [["formation_save_id", formId]];
+	const params = [["formation_save_id", formId]];
 	return await sendServerCall(
 		SERVER,
 		"DeleteFormationSave",
@@ -83,7 +88,7 @@ async function deleteFormationSave(formId) {
 }
 
 async function openTimeGate(heroId) {
-	let params = [["champion_id", heroId]];
+	const params = [["champion_id", heroId]];
 	return await sendServerCall(SERVER, "opentimegate", params, true, true);
 }
 
@@ -92,12 +97,12 @@ async function closeTimeGate() {
 }
 
 async function purchaseFeat(featId) {
-	let params = [["feat_id", featId]];
+	const params = [["feat_id", featId]];
 	return await sendServerCall(SERVER, "purchasefeat", params, true, true);
 }
 
 async function forgeLegendary(heroId, slotId) {
-	let params = [
+	const params = [
 		["hero_id", heroId],
 		["slot_id", slotId],
 	];
@@ -111,7 +116,7 @@ async function forgeLegendary(heroId, slotId) {
 }
 
 async function upgradeLegendary(heroId, slotId) {
-	let params = [
+	const params = [
 		["hero_id", heroId],
 		["slot_id", slotId],
 	];
@@ -125,7 +130,7 @@ async function upgradeLegendary(heroId, slotId) {
 }
 
 async function reforgeLegendary(heroId, slotId) {
-	let params = [
+	const params = [
 		["hero_id", heroId],
 		["slot_id", slotId],
 	];
@@ -139,7 +144,7 @@ async function reforgeLegendary(heroId, slotId) {
 }
 
 async function useServerBuff(buffId, heroId, slotId, count) {
-	let params = [
+	const params = [
 		["buff_id", buffId],
 		["hero_id", heroId],
 		["slot_id", slotId],
@@ -164,10 +169,10 @@ async function trialsCreateCampaign(
 	prismatic,
 	autoStart
 ) {
-	let params = [
+	const params = [
 		["difficulty_id", difficultyId],
 		["private", isPrivate ? `True` : `False`],
-		["cost_choice", difficultyId == 1 ? -1 : prismatic ? `1` : `0`],
+		["cost_choice", difficultyId === 1 ? -1 : prismatic ? `1` : `0`],
 		["auto_start", autoStart ? `True` : `False`],
 	];
 	return await sendServerCall(
@@ -180,7 +185,7 @@ async function trialsCreateCampaign(
 }
 
 async function trialsJoinCampaign(joinKey) {
-	let params = [
+	const params = [
 		["join_key", joinKey],
 		["player_index", 0],
 	];
@@ -194,12 +199,12 @@ async function trialsJoinCampaign(joinKey) {
 }
 
 async function trialsKickPlayer(playerIndex) {
-	let params = [["player_index", playerIndex]];
+	const params = [["player_index", playerIndex]];
 	return await sendServerCall(SERVER, "trialskickplayer", params, true, true);
 }
 
 async function trialsStartCampaign(campaignId) {
-	let params = [["campaign_id", campaignId]];
+	const params = [["campaign_id", campaignId]];
 	return await sendServerCall(
 		SERVER,
 		"trialsstartcampaign",
@@ -210,7 +215,7 @@ async function trialsStartCampaign(campaignId) {
 }
 
 async function trialsPickRoleHero(roleId, heroId, prismatic) {
-	let params = [
+	const params = [
 		["role_id", roleId],
 		["hero_id", heroId],
 		["cost_choice", prismatic ? 1 : 0],
@@ -225,7 +230,7 @@ async function trialsPickRoleHero(roleId, heroId, prismatic) {
 }
 
 async function trialsClaimRewards(campaignId) {
-	let params = [["campaign_id", campaignId]];
+	const params = [["campaign_id", campaignId]];
 	return await sendServerCall(
 		SERVER,
 		"trialsclaimrewards",
@@ -245,8 +250,8 @@ async function saveFormation(
 	specs,
 	feats
 ) {
-	if (campId == undefined || name == undefined) return;
-	let params = [
+	if (campId == null || name == null) return;
+	const params = [
 		["campaign_id", campId],
 		["name", name],
 		["favorite", fav || 0],
@@ -260,7 +265,7 @@ async function saveFormation(
 }
 
 async function purchasePatronShopItem(patronId, shopItemId, count) {
-	let params = [
+	const params = [
 		["patron_id", patronId],
 		["shop_item_id", shopItemId],
 		["count", count],
@@ -275,16 +280,16 @@ async function purchasePatronShopItem(patronId, shopItemId, count) {
 }
 
 async function saveModron(coreId, gameInstanceId, buffs) {
-	let userDetails = await getUserDetails();
-	let modronSave = userDetails.details.modron_saves[coreId];
-	let grid = JSON.stringify(modronSave.grid);
-	let formationSaves = JSON.stringify(modronSave.formation_saves);
-	let areaGoal = modronSave.area_goal;
-	let buffsStr = JSON.stringify(buffs);
-	let checkinTimestamp = Date.now() / 1000 + 604800;
-	let properties = JSON.stringify(modronSave.properties);
+	const userDetails = await getUserDetails();
+	const modronSave = userDetails.details.modron_saves[coreId];
+	const grid = JSON.stringify(modronSave.grid);
+	const formationSaves = JSON.stringify(modronSave.formation_saves);
+	const areaGoal = modronSave.area_goal;
+	const buffsStr = JSON.stringify(buffs);
+	const checkinTimestamp = Date.now() / 1000 + 604800;
+	const properties = JSON.stringify(modronSave.properties);
 
-	let params = [
+	const params = [
 		["core_id", coreId],
 		["grid", grid],
 		["game_instance_id", gameInstanceId],
@@ -298,12 +303,12 @@ async function saveModron(coreId, gameInstanceId, buffs) {
 }
 
 async function redeemCombination(combo) {
-	let params = [["code", combo]];
+	const params = [["code", combo]];
 	return await sendServerCall(SERVER, "redeemcoupon", params, true, true);
 }
 
 async function useSummonScroll(heroId) {
-	let params = [["hero_id", heroId]];
+	const params = [["hero_id", heroId]];
 	return await sendServerCall(SERVER, "usesummonscoll", params, true, true);
 }
 
@@ -318,7 +323,7 @@ async function getDismantleData() {
 }
 
 async function dismantleHero(heroId, redistId) {
-	let params = [
+	const params = [
 		["hero_id", heroId],
 		["redistribute_id", redistId],
 	];
@@ -326,7 +331,7 @@ async function dismantleHero(heroId, redistId) {
 }
 
 async function saveInstanceName(name, instanceId) {
-	let params = [
+	const params = [
 		["name", name],
 		["game_instance_id", instanceId],
 	];
@@ -334,7 +339,7 @@ async function saveInstanceName(name, instanceId) {
 }
 
 async function buySoftCurrencyChest(chestId, count) {
-	let params = [
+	const params = [
 		["chest_type_id", chestId],
 		["count", count],
 		["spend_event_v2_tokens", chestId > 2 ? 1 : 0],
@@ -349,18 +354,18 @@ async function buySoftCurrencyChest(chestId, count) {
 }
 
 async function openGenericChest(chestId, count, packId) {
-	let params = [
+	const params = [
 		["gold_per_second", 0],
 		["checksum", "4c5f019b6fc6eefa4d47d21cfaf1bc68"],
 		["chest_type_id", chestId],
 		["count", count],
 	];
-	if (packId != undefined) params.push(["pack_id", packId]);
+	if (packId != null) params.push(["pack_id", packId]);
 	return await sendServerCall(SERVER, "opengenericchest", params, true, true);
 }
 
 async function getShop() {
-	let params = [
+	const params = [
 		["return_all_items_live", 1],
 		["return_all_items_ever", 0],
 		["show_hard_currency", 1],
@@ -370,7 +375,7 @@ async function getShop() {
 }
 
 async function setCurrentObjective(instanceId, adventureId, patronId) {
-	let params = [
+	const params = [
 		["patron_tier", 0],
 		["game_instance_id", instanceId],
 		["adventure_id", adventureId],
@@ -386,7 +391,7 @@ async function setCurrentObjective(instanceId, adventureId, patronId) {
 }
 
 async function endCurrentObjective(instanceId) {
-	let params = [["game_instance_id", instanceId]];
+	const params = [["game_instance_id", instanceId]];
 	return await sendServerCall(SERVER, "softreset", params, true, true);
 }
 
@@ -441,7 +446,7 @@ async function getWeeklyOffers() {
 }
 
 async function rerollWeeklyOffer(offerId) {
-	let params = [["offer_id", offerId]];
+	const params = [["offer_id", offerId]];
 	return await sendServerCall(
 		SERVER,
 		"rerollalacarteoffer",
@@ -452,7 +457,7 @@ async function rerollWeeklyOffer(offerId) {
 }
 
 async function purchaseWeeklyOffer(offerId) {
-	let params = [["offer_id", offerId]];
+	const params = [["offer_id", offerId]];
 	return await sendServerCall(
 		SERVER,
 		"PurchaseALaCarteOffer",
@@ -463,8 +468,7 @@ async function purchaseWeeklyOffer(offerId) {
 }
 
 async function claimDailyLoginReward(isBoost) {
-	let params = undefined;
-	if (isBoost) params = [["is_boost", 1]];
+	const params = isBoost ? [["is_boost", 1]] : undefined;
 	return await sendServerCall(
 		SERVER,
 		"claimdailyloginreward",
@@ -475,7 +479,7 @@ async function claimDailyLoginReward(isBoost) {
 }
 
 async function getDynamicDialog(dialog) {
-	let params = [
+	const params = [
 		["dialog", dialog],
 		["ui_type", "standard"],
 	];
@@ -483,7 +487,7 @@ async function getDynamicDialog(dialog) {
 }
 
 async function claimSaleBonus(premiumId) {
-	let params = [
+	const params = [
 		["premium_item_id", premiumId],
 		["return_all_items_live", 1],
 		["return_all_items_ever", 0],
@@ -499,7 +503,7 @@ async function convertContracts(
 	count,
 	toEventTokens
 ) {
-	let params = [
+	const params = [
 		["source_buff_id", sourceBuffId],
 		["result_buff_id", resultBuffId],
 		["count", count],
@@ -509,7 +513,7 @@ async function convertContracts(
 }
 
 async function purchaseNotaryChestBundle(chestId, count) {
-	let params = [
+	const params = [
 		["chest_type_id", chestId],
 		["count", count],
 	];
@@ -524,12 +528,12 @@ async function purchaseNotaryChestBundle(chestId, count) {
 
 async function distillPotions(pots) {
 	// {"id":amount,"id":amount,etc..
-	let params = [["to_distill", JSON.stringify(pots)]];
+	const params = [["to_distill", JSON.stringify(pots)]];
 	return await sendServerCall(SERVER, "distillpotions", params, true, true);
 }
 
 async function brewPotions(buffId, count) {
-	let params = [
+	const params = [
 		["buff_id", buffId],
 		["count", count],
 	];
@@ -537,7 +541,7 @@ async function brewPotions(buffId, count) {
 }
 
 async function enhancePotions(sourceBuffId, resultBuffId, count) {
-	let params = [
+	const params = [
 		["source_buff_id", sourceBuffId],
 		["result_buff_id", resultBuffId],
 		["count", count],
@@ -546,7 +550,7 @@ async function enhancePotions(sourceBuffId, resultBuffId, count) {
 }
 
 async function getCompletionData() {
-	let params = [["level", 0]];
+	const params = [["level", 0]];
 	return await sendServerCall(
 		SERVER,
 		"getcompletiondata",
@@ -564,12 +568,12 @@ function appendUserData() {
 }
 
 async function appendInstanceId() {
-	if (instanceId == ``) await getUpdatedInstanceId();
+	if (instanceId === ``) await getUpdatedInstanceId();
 	return buildParams([[PARAM_INSTANCEID, instanceId]]);
 }
 
 function appendBoilerplate() {
-	if (boilerplate == undefined || boilerplate == ``)
+	if (boilerplate == null || boilerplate === ``)
 		boilerplate = buildParams([
 			["language_id", 1],
 			["timestamp", 0],
@@ -598,25 +602,22 @@ async function sendServerCall(
 	customTimeout
 ) {
 	let call = `${PARAM_CALL}=${callType}`;
-	if (params != undefined) call += buildParams(params);
+	if (params != null) call += buildParams(params);
 	if (addUserData) call += appendUserData();
 	if (addInstanceId) call += await appendInstanceId();
 	call += appendBoilerplate();
-	if (server == ``) {
-		if (SERVER == ``) await getPlayServerFromMaster();
+	if (server === ``) {
+		if (SERVER === ``) await getPlayServerFromMaster();
 		server = SERVER;
 	}
 	let response = await sendOutgoingCall(server, call, customTimeout);
 	let limit = 0;
-	while (
-		(response[SPS] != undefined || !response["success"]) &&
-		limit < RETRIES
-	) {
+	while ((response[SPS] != null || !response["success"]) && limit < RETRIES) {
 		if (response[SPS]) {
 			server = SERVER = response[SPS].replace(`http://`, `https://`);
 			response = await sendOutgoingCall(server, call, customTimeout);
 		} else if (!response["success"]) {
-			if (response[FR] == OII) {
+			if (response[FR] === OII) {
 				console.log(`Got outdated instance id.`);
 				let oldII = instanceId;
 				await getUpdatedInstanceId();
@@ -641,14 +642,17 @@ async function sendServerCall(
 }
 
 async function sendOutgoingCall(server, call, customTimeout) {
-	let url = `${server}post.php?${call}`;
-	let errTxt = `Server ps${server.replace(/[^0-9]/g, ``)} appears to be dead`;
-	let timeoutTime =
+	const url = `${server}post.php?${call}`;
+	const errTxt = `Server ps${server.replace(
+		/[^0-9]/g,
+		``
+	)} appears to be dead`;
+	const timeoutTime =
 		Number.isInteger(customTimeout) && customTimeout > 0
 			? customTimeout
 			: 40000;
 	try {
-		let response = await fetch(url, {
+		const response = await fetch(url, {
 			signal: AbortSignal.timeout(timeoutTime),
 		});
 		await sleep(200);
@@ -669,5 +673,4 @@ async function sendOutgoingCall(server, call, customTimeout) {
 		console.error("Fetch", error);
 		throw error;
 	}
-	return `Unknown error`;
 }

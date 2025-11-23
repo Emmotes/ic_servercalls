@@ -1,5 +1,5 @@
-const vb = 1.001; // prettier-ignore
-const buffValues = {
+const vb = 1.002; // prettier-ignore
+const b_buffValues = {
 	1: "Small Potion of Giant's Strength",
 	2: "Medium Potion of Giant's Strength",
 	3: "Large Potion of Giant's Strength",

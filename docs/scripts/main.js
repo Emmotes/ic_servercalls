@@ -1,4 +1,4 @@
-const v = 4.029; // prettier-ignore
+const v = 4.030; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -24,20 +24,20 @@ const supportUrl = document.getElementById(`supportUrl`);
 const supportUrlButton = document.getElementById(`supportUrlMenuButton`);
 const lsSettings = `scSettings`;
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
-var NUMFORM = new Intl.NumberFormat(undefined, NF_GROUPS);
-var updateInterval;
-var timerList = {};
-var pbNames;
-var pbCodeRunning;
-var pbTimerRunning;
+let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
+let updateInterval;
+const timerList = {};
+let pbNames;
+let pbCodeRunning;
+let pbTimerRunning;
 
 function isBadUserData() {
 	if (pbCodeRunning || pbTimerRunning) return true;
 	if (
-		currAccount == undefined ||
-		currAccount.name == undefined ||
-		currAccount.id == undefined ||
-		currAccount.hash == undefined
+		currAccount == null ||
+		currAccount.name == null ||
+		currAccount.id == null ||
+		currAccount.hash == null
 	) {
 		init();
 		return true;
@@ -49,7 +49,7 @@ function init() {
 	disabledUntilInit.hidden = true;
 	tabsContainer.hidden = false;
 	// Deal with account migration.
-	if (localStorage.scUserIdent != undefined) {
+	if (localStorage.scUserIdent != null) {
 		let userIdent = JSON.parse(localStorage.scUserIdent);
 		settingsUserName.value = ``;
 		settingsUserId.value = userIdent[0];
@@ -66,11 +66,11 @@ function init() {
 	} else {
 		let accountData = getUserAccounts();
 		if (
-			accountData == undefined ||
-			accountData.current == undefined ||
-			accountData.accounts == undefined ||
-			Object.keys(accountData.current).length == 0 ||
-			Object.keys(accountData.accounts) == 0
+			accountData == null ||
+			accountData.current == null ||
+			accountData.accounts == null ||
+			Object.keys(accountData.current).length === 0 ||
+			Object.keys(accountData.accounts) === 0
 		) {
 			currAccount = undefined;
 			settingsIconName.innerHTML = `&nbsp;`;
@@ -100,21 +100,21 @@ function init() {
 }
 
 function settingsToggle() {
-	if (currAccount == undefined) {
+	if (currAccount == null) {
 		settingsMenu.style.display = `flex`;
 		return;
 	}
 	if (
-		settingsMenu.style.display == `none` ||
-		settingsMenu.style.display == ``
+		settingsMenu.style.display === `none` ||
+		settingsMenu.style.display === ``
 	) {
 		if (
-			currAccount.name == undefined ||
-			currAccount.id == undefined ||
-			currAccount.hash == undefined
+			currAccount.name == null ||
+			currAccount.id == null ||
+			currAccount.hash == null
 		) {
 			refreshSettingsList();
-			if (settingsList.value != `-`) {
+			if (settingsList.value !== `-`) {
 				loadUserAccount();
 			} else {
 				userName.value = ``;
@@ -135,14 +135,18 @@ function settingsToggle() {
 }
 
 function initSettingsNumberFormat() {
-	let settings = getLocalSettings();
-	let settingNumFormat = settings.hasOwnProperty("nf")
+	const settings = getLocalSettings();
+	const settingNumFormat = Object.prototype.hasOwnProperty.call(
+		Object,
+		settings,
+		"nf"
+	)
 		? settings.nf
 		: undefined;
-	let num = 12345.67;
+	const num = 12345.67;
 
 	let opts = ``;
-	let types = [undefined, "fr-FR", "en-GB", "de-DE"];
+	const types = [undefined, "fr-FR", "en-GB", "de-DE"];
 	for (let k = 0; k < types.length; k++) {
 		let name = "Browser";
 		switch (k) {
@@ -155,20 +159,20 @@ function initSettingsNumberFormat() {
 			case 3:
 				name = "&nbsp;Period";
 		}
-		opts += `<option value="${types[k] == undefined ? "-" : types[k]}"${
-			types[k] == settingNumFormat ? " selected" : ""
+		opts += `<option value="${types[k] == null ? "-" : types[k]}"${
+			types[k] === settingNumFormat ? " selected" : ""
 		}>${name}: ${new Intl.NumberFormat(types[k], NF_GROUPS).format(
 			num
 		)}</option>`;
 	}
 	settingsNumberFormat.innerHTML = opts;
-	NUMFORM = new Intl.NumberFormat(settingNumFormat, NF_GROUPS);
+	numForm = new Intl.NumberFormat(settingNumFormat, NF_GROUPS);
 }
 
 function changeCurrentNumberFormat(code) {
-	if (code == "-") code = undefined;
-	NUMFORM = new Intl.NumberFormat(code, NF_GROUPS);
-	if (code != undefined) setLocalSetting("nf", code);
+	if (code === "-") code = undefined;
+	numForm = new Intl.NumberFormat(code, NF_GROUPS);
+	if (code != null) setLocalSetting("nf", code);
 	else deleteLocalSetting("nf");
 }
 
@@ -188,7 +192,7 @@ async function startUpdateCheckInterval(delay) {
 }
 
 async function checkUpdatedScriptsAvailable() {
-	let newDocum = new DOMParser().parseFromString(
+	const newDocum = new DOMParser().parseFromString(
 		await (
 			await fetch(window.location.href, {
 				headers: {"Cache-Control": "no-cache"},
@@ -196,10 +200,10 @@ async function checkUpdatedScriptsAvailable() {
 		).text(),
 		"text/html"
 	);
-	let oldList = [
+	const oldList = [
 		...document.querySelectorAll("script[type='text/javascript']"),
 	].map((ele) => ele.src);
-	let newList = [
+	const newList = [
 		...newDocum.querySelectorAll("script[type='text/javascript']"),
 	].map((ele) => ele.src);
 	if (
@@ -222,26 +226,26 @@ function enableVersionUpdate() {
 function getPatronNameById(id) {
 	switch (id) {
 		case 1:
-			return patronAdvIds["1100000"];
+			return c_patronAdvIds["1100000"];
 		case 2:
-			return patronAdvIds["1200000"];
+			return c_patronAdvIds["1200000"];
 		case 3:
-			return patronAdvIds["1300000"];
+			return c_patronAdvIds["1300000"];
 		case 4:
-			return patronAdvIds["1400000"];
+			return c_patronAdvIds["1400000"];
 		case 5:
-			return patronAdvIds["1500000"];
+			return c_patronAdvIds["1500000"];
 		default:
 			return `??? (id: ${id})`;
 	}
 }
 
 async function saveUserData() {
-	let userName = settingsUserName.value || ``;
-	let userId = settingsUserId.value || ``;
-	let userHash = settingsUserHash.value || ``;
-	if (userName != `` && userId != `` && userHash != ``) {
-		let newAccount = {name: userName, id: userId, hash: userHash};
+	const userName = settingsUserName.value || ``;
+	const userId = settingsUserId.value || ``;
+	const userHash = settingsUserHash.value || ``;
+	if (userName !== `` && userId !== `` && userHash !== ``) {
+		const newAccount = {name: userName, id: userId, hash: userHash};
 		addUserAccount(newAccount);
 		currAccount = newAccount;
 		settingsIconName.innerHTML = currAccount.name;
@@ -263,13 +267,13 @@ async function saveUserData() {
 }
 
 async function supportUrlSaveData() {
-	let url = supportUrl.value || ``;
-	if (url == ``) return;
+	const url = supportUrl.value || ``;
+	if (url === ``) return;
 	try {
-		let userId = Number(
+		const userId = Number(
 			url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=", "")
 		);
-		let userHash = url
+		const userHash = url
 			.match(/&device_hash=[A-Za-z0-9]+/g)[0]
 			.replace("&device_hash=", "");
 		settingsUserName.value = ``;
@@ -283,15 +287,15 @@ async function supportUrlSaveData() {
 }
 
 async function loadUserAccount() {
-	let accounts = getUserAccounts();
-	let accountChoice = settingsList.value;
-	if (accounts.accounts[accountChoice] == undefined) {
+	const accounts = getUserAccounts();
+	const accountChoice = settingsList.value;
+	if (accounts.accounts[accountChoice] == null) {
 		settingsLoad.value = `ERROR`;
 		setTimeout(function () {
 			settingsLoad.value = `Load`;
 		}, 2000);
 		for (var i = settingsList.length - 1; i >= 0; i--)
-			if (settingsList.options[i].value == accountChoice)
+			if (settingsList.options[i].value === accountChoice)
 				settingsList.remove(i);
 	} else {
 		currAccount = accounts.accounts[accountChoice];
@@ -313,7 +317,7 @@ async function loadUserAccount() {
 async function deleteUserAccount() {
 	removeUserAccount(settingsList.value);
 	refreshSettingsList();
-	if (settingsList.value != `-`) loadUserAccount();
+	if (settingsList.value !== `-`) loadUserAccount();
 	else {
 		userName.value = ``;
 		userId.value = ``;
@@ -326,38 +330,50 @@ async function deleteUserAccount() {
 	cleanup();
 }
 
-async function sanitise(response) {
-	let s = JSON.stringify(response);
-	s = s.replaceAll(currAccount.id, "____");
-	s = s.replaceAll(currAccount.hash, "____");
-	return await JSON.parse(s);
+function sanitise(obj) {
+	function replacer(value) {
+		if (typeof value === "string")
+			if (value === currAccount.id || value === currAccount.hash)
+				return "____";
+		return value;
+	}
+	function deepSanitise(input) {
+		if (Array.isArray(input)) return input.map(deepSanitise);
+		else if (input && typeof input === "object") {
+			const out = {};
+			for (let key in input) out[key] = deepSanitise(input[key]);
+			return out;
+		}
+		return replacer(input);
+	}
+	return deepSanitise(obj);
 }
 
 async function refreshSettingsList() {
-	let userAccounts = getUserAccounts();
+	const userAccounts = getUserAccounts();
 	let select = ``;
-	for (let name of Object.keys(userAccounts.accounts))
+	for (let name in userAccounts.accounts)
 		select += `<option value="${name}"${
-			currAccount != undefined &&
-			currAccount.name != undefined &&
-			currAccount.name == name
+			currAccount != null &&
+			currAccount.name != null &&
+			currAccount.name === name
 				? ` selected`
 				: ``
 		}>${name}</option>`;
-	if (select == ``) select += `<option value="-" selected>-</option>`;
+	if (select === ``) select += `<option value="-" selected>-</option>`;
 	settingsList.innerHTML = select;
 }
 
 function swapTab() {
-	let hash = window.location.hash.substring(1);
-	if (hash != "" && document.getElementById(hash) != undefined)
+	const hash = window.location.hash.substring(1);
+	if (hash !== "" && document.getElementById(hash) != null)
 		document.getElementById(hash).click();
 }
 
 function cleanup() {
 	for (let ele of [
 		...document.querySelectorAll(`div[class="tabsContent"] > span`),
-	].filter((e) => e.id != ""))
+	].filter((e) => e.id !== ""))
 		ele.innerHTML = `&nbsp;`;
 }
 
@@ -371,12 +387,12 @@ function togglePullButtons(disable) {
 	if (pbCodeRunning || pbTimerRunning) return;
 
 	for (let name of pbNames) {
-		let button = document.getElementById(`${name}PullButton`);
-		let message = document.getElementById(`${name}PullButtonDisabled`);
-		if (button == undefined || message == undefined) continue;
+		const button = document.getElementById(`${name}PullButton`);
+		const message = document.getElementById(`${name}PullButtonDisabled`);
+		if (button == null || message == null) continue;
 		button.hidden = disable;
 		message.innerHTML = `&nbsp;`;
-		let timerName = `mpb_${name}`;
+		const timerName = `mpb_${name}`;
 		if (disable) {
 			let prefix = `Disabled for `;
 			let suffix = ` to prevent spamming the servers.`;
@@ -392,7 +408,7 @@ function togglePullButtons(disable) {
 				prefix,
 				suffix
 			);
-		} else if (timerList.hasOwnProperty(timerName)) {
+		} else if (Object.prototype.hasOwnProperty.call(timerList, timerName)) {
 			clearInterval(timerList[timerName].interval);
 			delete timerList[timerName];
 		}
@@ -422,19 +438,19 @@ function codeEnablePullButtons() {
 }
 
 function setFormsWrapperFormat(wrapper, type) {
-	if (type == 0) {
+	if (type === 0) {
 		wrapper.className = `f falc fje mr2`;
 		wrapper.style = `flex-direction:column;`;
-	} else if (type == 1) {
+	} else if (type === 1) {
 		wrapper.className = `formsWrapper`;
 		wrapper.style = ``;
-	} else if (type == 2) {
+	} else if (type === 2) {
 		wrapper.className = `partiesWrapper`;
 		wrapper.style = ``;
-	} else if (type == 3) {
+	} else if (type === 3) {
 		wrapper.className = `eventTiersWrapper`;
 		wrapper.style = ``;
-	} else if (type == 4) {
+	} else if (type === 4) {
 		wrapper.className = `serverStatusWrapper`;
 		wrapper.style = ``;
 	}
@@ -447,13 +463,13 @@ function handleError(wrapper, error) {
 }
 
 function getDefsNames(defs) {
-	let names = {};
+	const names = {};
 	for (let def of defs) names[def.id] = def.name;
 	return names;
 }
 
 function nf(number) {
-	return NUMFORM.format(number);
+	return numForm.format(number);
 }
 
 function randInt(min, max) {
@@ -471,17 +487,17 @@ function dateFormat(input) {
 }
 
 function getDisplayTime(time) {
-	let days = Math.floor(time / (1000 * 60 * 60 * 24));
-	let hours = Math.floor((time / (1000 * 60 * 60)) % 24);
-	let minutes = Math.floor((time / 1000 / 60) % 60);
-	let seconds = Math.floor((time / 1000) % 60);
+	const days = Math.floor(time / (1000 * 60 * 60 * 24));
+	const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+	const minutes = Math.floor((time / 1000 / 60) % 60);
+	const seconds = Math.floor((time / 1000) % 60);
 	let display = ``;
-	if (days > 0) display += `${days} day${days != 1 ? "s" : ""} `;
+	if (days > 0) display += `${days} day${days !== 1 ? "s" : ""} `;
 	if (days > 0 || hours > 0)
-		display += `${hours} hour${hours != 1 ? "s" : ""} `;
+		display += `${hours} hour${hours !== 1 ? "s" : ""} `;
 	if (days > 0 || hours > 0 || minutes > 0)
-		display += `${padZeros(minutes, 2)} min${minutes != 1 ? "s" : ""} `;
-	display += `${padZeros(seconds, 2)} sec${seconds != 1 ? "s" : ""}`;
+		display += `${padZeros(minutes, 2)} min${minutes !== 1 ? "s" : ""} `;
+	display += `${padZeros(seconds, 2)} sec${seconds !== 1 ? "s" : ""}`;
 	return display;
 }
 
@@ -518,7 +534,7 @@ async function sleep(ms) {
 }
 
 function getUserAccounts() {
-	if (localStorage.scAccounts == undefined) return {accounts: {}};
+	if (localStorage.scAccounts == null) return {accounts: {}};
 	return JSON.parse(localStorage.scAccounts);
 }
 
@@ -527,17 +543,17 @@ function saveUserAccounts(accounts) {
 }
 
 function addUserAccount(account) {
-	let userAccounts = getUserAccounts();
+	const userAccounts = getUserAccounts();
 	userAccounts.accounts[account.name] = account;
 	userAccounts.current = account;
 	saveUserAccounts(userAccounts);
 }
 
 function removeUserAccount(name) {
-	let userAccounts = getUserAccounts();
+	const userAccounts = getUserAccounts();
 	if (Object.keys(userAccounts.accounts).includes(name))
 		delete userAccounts.accounts[name];
-	if (userAccounts.current.name == name) {
+	if (userAccounts.current.name === name) {
 		userAccounts.current = {};
 		currAccount = undefined;
 		settingsIconName.innerHTML = `&nbsp;`;
@@ -549,21 +565,21 @@ function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
 	if (timeLength <= 0) return;
 	timeAim = new Date().getTime() + timeLength;
 	timeInterval = setInterval(() => {
-		let ele = document.getElementById(eleName);
-		let timerJson = timerList[timerName];
+		const ele = document.getElementById(eleName);
+		const timerJson = timerList[timerName];
 		if (
-			timerJson == undefined ||
-			timerJson.interval == undefined ||
-			timerJson.aim == undefined
+			timerJson == null ||
+			timerJson.interval == null ||
+			timerJson.aim == null
 		) {
 			delete timerList[timerName];
 			return;
-		} else if (ele == null) {
+		} else if (ele === null) {
 			clearInterval(timerList[timerName].interval);
 			delete timerList[timerName];
 			return;
 		}
-		let remaining = timerJson.aim - new Date().getTime();
+		const remaining = timerJson.aim - new Date().getTime();
 		ele.innerHTML = `${prefix || ""}${getDisplayTime(remaining)}${
 			suffix || ""
 		}`;
@@ -578,9 +594,9 @@ function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
 }
 
 function clearTimers(prefix) {
-	for (let name of Object.keys(timerList)) {
-		if (prefix == undefined || name.startsWith(prefix)) {
-			if (timerList[name].interval != undefined) {
+	for (let name in timerList) {
+		if (prefix == null || name.startsWith(prefix)) {
+			if (timerList[name].interval != null) {
 				clearInterval(timerList[name].interval);
 				delete timerList[name];
 			}
@@ -589,28 +605,28 @@ function clearTimers(prefix) {
 }
 
 function getFirstLine(text) {
-	var index = text.indexOf("\n");
+	let index = text.indexOf("\n");
 	if (index === -1) index = undefined;
 	return text.substring(0, index);
 }
 
 function getLocalSettings() {
-	let strg = localStorage.getItem(lsSettings);
-	if (strg != undefined) return JSON.parse(strg);
+	const strg = localStorage.getItem(lsSettings);
+	if (strg) return JSON.parse(strg);
 	return {};
 }
 
 function setLocalSetting(key, value) {
-	let strg = getLocalSettings();
+	const strg = getLocalSettings();
 	strg[key] = value;
 	localStorage.setItem(lsSettings, JSON.stringify(strg));
 }
 
-function deleteLocalSetting(key, value) {
-	let strg = getLocalSettings();
-	if (strg.hasOwnProperty(key)) {
+function deleteLocalSetting(key) {
+	const strg = getLocalSettings();
+	if (Object.prototype.hasOwnProperty.call(strg, key)) {
 		delete strg[key];
-		if (Object.keys(strg).length == 0) localStorage.removeItem(lsSettings);
+		if (Object.keys(strg).length === 0) localStorage.removeItem(lsSettings);
 		else localStorage.setItem(lsSettings, JSON.stringify(strg));
 	}
 }

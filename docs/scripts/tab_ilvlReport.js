@@ -1,15 +1,15 @@
-const vir = 1.002; // prettier-ignore
+const vir = 1.003; // prettier-ignore
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`ilvlreportWrapper`);
+	const wrapper = document.getElementById(`ilvlreportWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
-		let details = (await getUserDetails()).details;
+		const details = (await getUserDetails()).details;
 		wrapper.innerHTML = `Waiting for definitions...`;
-		let heroDefs = (await getDefinitions("hero_defines")).hero_defines;
+		const heroDefs = (await getDefinitions("hero_defines")).hero_defines;
 		await ir_displayiLvlReportData(wrapper, details, heroDefs);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -18,7 +18,7 @@ async function ir_pulliLvlReportData() {
 }
 
 async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
-	let ownedChampions = ir_parseOwnedChamps(heroDefs, details);
+	const ownedChampions = ir_parseOwnedChamps(heroDefs, details);
 
 	let totalItems = 0;
 	let totalEvergreenItems = 0;
@@ -39,35 +39,28 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 		lowestAverageEventName;
 	let eventShinies = 0;
 
-	for (let champId of Object.keys(ownedChampions)) {
-		let champ = ownedChampions[champId];
-		let name = champ.name;
-		let event = champ.event;
+	for (let champId in ownedChampions) {
+		const champ = ownedChampions[champId];
+		const name = champ.name;
 		let totaliLvls = 0;
 		let shinies = 0;
 		let slotIds = Object.keys(champ.loot);
 		for (let slotId of slotIds) {
-			let item = champ.loot[slotId];
+			const item = champ.loot[slotId];
 			totaliLvls += item.enchant + 1;
 			if (item.gild >= 1) shinies++;
 		}
-		let numItems = slotIds.length;
+		const numItems = slotIds.length;
 		totalItems += numItems;
 		averageiLvl += totaliLvls;
-		let avgiLvl = totaliLvls / numItems;
-		if (event) {
+		const avgiLvl = totaliLvls / numItems;
+		if (champ.event) {
 			averageEventiLvl += totaliLvls;
-			if (
-				highestAverageEvent == undefined ||
-				avgiLvl > highestAverageEvent
-			) {
+			if (highestAverageEvent == null || avgiLvl > highestAverageEvent) {
 				highestAverageEvent = avgiLvl;
 				highestAverageEventName = name;
 			}
-			if (
-				lowestAverageEvent == undefined ||
-				avgiLvl < lowestAverageEvent
-			) {
+			if (lowestAverageEvent == null || avgiLvl < lowestAverageEvent) {
 				lowestAverageEvent = avgiLvl;
 				lowestAverageEventName = name;
 			}
@@ -76,14 +69,14 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 			totalEvergreenItems += numItems;
 			averageEvergreeniLvl += totaliLvls;
 			if (
-				highestAverageEvergreen == undefined ||
+				highestAverageEvergreen == null ||
 				avgiLvl > highestAverageEvergreen
 			) {
 				highestAverageEvergreen = avgiLvl;
 				highestAverageEvergreenName = name;
 			}
 			if (
-				lowestAverageEvergreen == undefined ||
+				lowestAverageEvergreen == null ||
 				avgiLvl < lowestAverageEvergreen
 			) {
 				lowestAverageEvergreen = avgiLvl;
@@ -137,15 +130,13 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 }
 
 function ir_parseOwnedChamps(defsHeroes, details) {
-	let owned = {};
+	const owned = {};
 	for (let ownedHero of details.heroes)
-		if (ownedHero.owned == 1)
+		if (Number(ownedHero.owned) === 1)
 			owned[ownedHero.hero_id] = {event: "", name: "", loot: {}};
-	let ownedIds = Object.keys(owned);
-	let ownedEvergreens = {};
-	let ownedEvents = [];
+	const ownedIds = Object.keys(owned);
 	for (let hero of defsHeroes) {
-		let heroId = `${hero.id}`;
+		const heroId = `${hero.id}`;
 		if (ownedIds.includes(heroId)) {
 			owned[heroId].event = !hero.tags.includes("evergreen");
 			owned[heroId].name = hero.name;
@@ -153,13 +144,13 @@ function ir_parseOwnedChamps(defsHeroes, details) {
 	}
 	for (let item of details.loot) {
 		if (
-			!item.hasOwnProperty("hero_id") ||
-			!item.hasOwnProperty("slot_id") ||
-			!item.hasOwnProperty("enchant") ||
-			!item.hasOwnProperty("gild")
+			!Object.prototype.hasOwnProperty.call(item, "hero_id") ||
+			!Object.prototype.hasOwnProperty.call(item, "slot_id") ||
+			!Object.prototype.hasOwnProperty.call(item, "enchant") ||
+			!Object.prototype.hasOwnProperty.call(item, "gild")
 		)
 			continue;
-		let heroId = `${item.hero_id}`;
+		const heroId = `${item.hero_id}`;
 		if (ownedIds.includes(heroId))
 			owned[heroId].loot[item.slot_id] = {
 				enchant: Number(item.enchant),
@@ -171,7 +162,7 @@ function ir_parseOwnedChamps(defsHeroes, details) {
 
 function ir_addiLvlReportRow(title, content, name) {
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${title}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${content}</span>`;
-	if (name != undefined)
+	if (name != null)
 		txt += `<span class="f falc fjs ml2" style="min-width:90px;max-width:110px;padding-left:8px">(${name})</span>`;
 	txt += `</span>`;
 	return txt;

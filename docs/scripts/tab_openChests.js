@@ -1,21 +1,22 @@
-const voc = 1.030; // prettier-ignore
-const hoc = `scHideOpenChests`;
-const ocsf = `scOpenChestsSliderFidelity`;
-var brivPatronChests = ["152", "153", "311"];
+const voc = 1.031; // prettier-ignore
+const oc_LSKey_hide = `scHideOpenChests`;
+const oc_LSKey_fidelity = `scOpenChestsSliderFidelity`;
+const oc_brivPatronChests = ["152", "153", "311"];
+const oc_amountUndefined = `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
 
 async function oc_pullOpenChestsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`openChestsWrapper`);
+	const wrapper = document.getElementById(`openChestsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
-		let details = (await getUserDetails()).details;
-		let chestsHave = details.chests;
-		let chestPacks = details.chest_packs;
+		const details = (await getUserDetails()).details;
+		const chestsHave = details.chests;
+		const chestPacks = details.chest_packs;
 		wrapper.innerHTML = `Waiting for definitions...`;
-		let chestsDefs = (await getDefinitions("chest_type_defines"))
+		const chestsDefs = (await getDefinitions("chest_type_defines"))
 			.chest_type_defines;
 		await oc_displayOpenChestsData(
 			wrapper,
@@ -36,14 +37,14 @@ async function oc_displayOpenChestsData(
 	chestPacks,
 	chestsDefs
 ) {
-	let openChestsOpener = document.getElementById(`openChestsOpener`);
-	let chestIds = chestsHave != undefined ? Object.keys(chestsHave) : [];
-	let chestPacksById = {};
+	const openChestsOpener = document.getElementById(`openChestsOpener`);
+	let chestIds = !chestsHave ? [] : Object.keys(chestsHave);
+	const chestPacksById = {};
 	for (let chestPack of chestPacks) {
-		let id = chestPack.chest_type_id;
-		if (chestPacksById[id] == undefined) {
+		const id = chestPack.chest_type_id;
+		if (chestPacksById[id] == null) {
 			chestPacksById[id] = {have: 0, packs: []};
-			if (chestsHave[id] != undefined)
+			if (chestsHave[id] != null)
 				chestPacksById[id]["have"] = chestsHave[id];
 		}
 		chestPacksById[id].packs.push({
@@ -56,19 +57,19 @@ async function oc_displayOpenChestsData(
 	for (let chestId of chestPackIds)
 		if (!chestIds.includes(chestId)) chestIds.push(chestId);
 	wrapper.innerHTML = `&nbsp;`;
-	if (chestIds.length == 0) {
+	if (chestIds.length === 0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any chests to open.</span>`;
 		return;
 	}
-	let hiddenChestIds = oc_getHiddenChestIds();
+	const hiddenChestIds = oc_getHiddenChestIds();
 	for (let i = chestIds.length - 1; i >= 0; i--)
 		if (hiddenChestIds.includes(chestIds[i]))
 			chestIds.splice(chestIds.indexOf(chestIds[i]), 1);
-	if (chestIds.length == 0) {
+	if (chestIds.length === 0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
 		return;
 	}
-	let chestNames = {};
+	const chestNames = {};
 	for (let chest of chestsDefs)
 		if (chestIds.includes(`${chest.id}`))
 			chestNames[chest.id] = [
@@ -76,21 +77,21 @@ async function oc_displayOpenChestsData(
 				chest.name_plural,
 				chest.hc_name,
 				chest.hc_name_plural,
-				chest.hero_ids == undefined ? [] : chest.hero_ids,
+				chest.hero_ids == null ? [] : chest.hero_ids,
 			];
 	if (hiddenChestIds.includes(174) || hiddenChestIds.includes(175)) {
 		for (let i = chestIds.length - 1; i >= 0; i--)
 			if (chestNames[`${chestIds[i]}`][4].includes(58))
 				chestIds.splice(chestIds.indexOf(chestIds[i]), 1);
-		chestIds = chestIds.filter((e) => !brivPatronChests.includes(e));
+		chestIds = chestIds.filter((e) => !oc_brivPatronChests.includes(e));
 		for (let i = chestPackIds.length - 1; i >= 0; i--)
 			if (chestNames[`${chestPackIds[i]}`][4].includes(58))
 				chestPackIds.splice(chestPackIds.indexOf(chestPackIds[i]), 1);
 		chestPackIds = chestPackIds.filter(
-			(e) => !brivPatronChests.includes(e)
+			(e) => !oc_brivPatronChests.includes(e)
 		);
 	}
-	if (chestIds.length == 0) {
+	if (chestIds.length === 0) {
 		openChestsOpener.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You don't have any unhidden chests to open.</span>`;
 		return;
 	}
@@ -98,10 +99,10 @@ async function oc_displayOpenChestsData(
 	let txt = ``;
 	for (let id of chestIds) {
 		if (hiddenChestIds.includes(Number(id))) continue;
-		let name = chestNames[id][0];
-		let plural = chestNames[id][1];
+		const name = chestNames[id][0];
+		const plural = chestNames[id][1];
 		let amount = chestsHave[id];
-		if (amount != undefined && chestPacksById[id] != undefined)
+		if (amount != null && chestPacksById[id] != null)
 			for (let currPack of chestPacksById[id].packs)
 				amount -= currPack.total - currPack.opened;
 		if (amount <= 0) continue;
@@ -114,15 +115,15 @@ async function oc_displayOpenChestsData(
 	if (!hiddenChestIds.includes("PP")) {
 		for (let id of chestPackIds) {
 			if (hiddenChestIds.includes(Number(id))) continue;
-			let currChestPacks = chestPacksById[id];
-			let name = chestNames[id][2];
-			let plural = chestNames[id][3];
+			const currChestPacks = chestPacksById[id];
+			const name = chestNames[id][2];
+			const plural = chestNames[id][3];
 			let have = chestPacksById[id].have;
 			for (let chestPack of currChestPacks.packs) {
-				let max = chestPack.total - chestPack.opened;
-				let min = Math.min(have, max);
-				let canOpen = min >= max;
-				let packId = chestPack.id;
+				const max = chestPack.total - chestPack.opened;
+				const min = Math.min(have, max);
+				const canOpen = min >= max;
+				const packId = chestPack.id;
 				if (canOpen) have -= max;
 				txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${packId}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
 				if (canOpen)
@@ -137,22 +138,22 @@ async function oc_displayOpenChestsData(
 	}
 
 	setFormsWrapperFormat(wrapper, 1);
-	if (txt != ``) wrapper.innerHTML = txt;
+	if (txt !== ``) wrapper.innerHTML = txt;
 	else wrapper.innerHTML = `&nbsp;`;
 }
 
 function oc_updateOpenChestsSliderValue(id, val, pack) {
-	if (pack == undefined) pack = false;
+	if (pack == null) pack = false;
 	document.getElementById(
 		`openChest${pack ? "Pack" : ""}s${id}Label`
 	).innerHTML = nf(val);
-	let button = document.getElementById(
+	const button = document.getElementById(
 		`openChest${pack ? "Pack" : ""}s${id}Button`
 	);
 	if (val > 0) {
-		if (button.value != `Open Chest Pack`)
+		if (button.value !== `Open Chest Pack`)
 			button.value = `Open ${nf(val)} ${
-				val == 1 ? button.dataset.name : button.dataset.plural
+				val === 1 ? button.dataset.name : button.dataset.plural
 			}`;
 		button.style.visibility = ``;
 	} else {
@@ -161,23 +162,21 @@ function oc_updateOpenChestsSliderValue(id, val, pack) {
 }
 
 async function oc_openChests(id) {
-	let openChestsOpener = document.getElementById(`openChestsOpener`);
-	let openChestsSlider = document.getElementById(`openChests${id}Slider`);
-	let openChestsLabel = document.getElementById(`openChests${id}Label`);
-	let openChestsLabelMax = document.getElementById(`openChests${id}LabelMax`);
-	let openChestsButton = document.getElementById(`openChests${id}Button`);
-	let openChestsButtonHolder = document.getElementById(
-		`openChests${id}ButtonHolder`
+	const openChestsOpener = document.getElementById(`openChestsOpener`);
+	const openChestsSlider = document.getElementById(`openChests${id}Slider`);
+	const openChestsLabel = document.getElementById(`openChests${id}Label`);
+	const openChestsLabelMax = document.getElementById(
+		`openChests${id}LabelMax`
 	);
-	let slidersButtonsAndHoldersIds = [];
+	const openChestsButton = document.getElementById(`openChests${id}Button`);
 	oc_disableSlidersButtonsAndHolders(true);
 
-	let name = openChestsButton.dataset.name;
-	let plural = openChestsButton.dataset.plural;
+	const name = openChestsButton.dataset.name;
+	const plural = openChestsButton.dataset.plural;
 
-	let amount = openChestsSlider.value;
-	if (amount == undefined) {
-		txt += `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
+	const amount = openChestsSlider.value;
+	if (amount == null) {
+		txt += oc_amountUndefined;
 		openChestsOpener.innerHTML = txt;
 		return;
 	}
@@ -189,17 +188,17 @@ async function oc_openChests(id) {
 	let txt = ``;
 	opening = oc_makeOpeningRow(
 		currAmount,
-		currAmount == 1 ? name : plural,
+		currAmount === 1 ? name : plural,
 		amount
 	);
 	openChestsOpener.innerHTML = opening + txt;
-	if (currAmount == 0) {
+	if (currAmount === 0) {
 		txt += bc_addChestResultRow(`- None`);
 		openChestsOpener.innerHTML = opening + txt;
 		return;
 	}
 	while (currAmount > 0 && numFails < RETRIES) {
-		let open = Math.min(1000, currAmount);
+		const open = Math.min(1000, currAmount);
 		let successType = `Failed to open`;
 		try {
 			result = await openGenericChest(id, open);
@@ -214,10 +213,10 @@ async function oc_openChests(id) {
 			numFails++;
 			continue;
 		}
-		let initMsg = `${open} ${open == 1 ? name : plural}`;
+		let initMsg = `${open} ${open === 1 ? name : plural}`;
 		if (result.success) {
-			let remaining = result.chests_remaining;
-			if (remaining == 0 && currAmount > open) {
+			const remaining = result.chests_remaining;
+			if (remaining === 0 && currAmount > open) {
 				txt += bc_addChestResultRow(
 					`- Stopping:`,
 					`Server Said 0 ${plural} Remaining.`
@@ -246,11 +245,11 @@ async function oc_openChests(id) {
 				openChestsLabel.innerHTML = nf(openChestsSlider.value);
 				opening = oc_makeOpeningRow(
 					currAmount,
-					open == 1 ? name : plural,
+					open === 1 ? name : plural,
 					amount
 				);
 				openChestsButton.value = `Open ${nf(openChestsSlider.value)} ${
-					openChestsSlider.value == 1 ? name : plural
+					openChestsSlider.value === 1 ? name : plural
 				}`;
 			} else {
 				txt += bc_addChestResultRow(
@@ -272,7 +271,7 @@ async function oc_openChests(id) {
 	}
 	opening = oc_makeOpeningRow(
 		currAmount,
-		amount == 1 ? name : plural,
+		amount === 1 ? name : plural,
 		amount
 	);
 	txt += bc_addChestResultRow(`Finished.`);
@@ -289,27 +288,24 @@ async function oc_openChests(id) {
 	opening = oc_makeOpeningRow(0, plural, amount);
 	openChestsOpener.innerHTML = opening + txt;
 	oc_toggleOpenChestsSliderFidelity();
-	if (openChestsSlider.value == 0)
+	if (openChestsSlider.value === 0)
 		openChestsButton.style.visibility = `hidden`;
 }
 
 async function oc_openChestPack(id, packId, amount) {
-	if (amount == undefined) {
-		txt += `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
+	if (amount == null) {
+		txt += oc_amountUndefined;
 		openChestsOpener.innerHTML = txt;
 		return;
 	}
-	let openChestsOpener = document.getElementById(`openChestsOpener`);
-	let openChestsButton = document.getElementById(
+	const openChestsOpener = document.getElementById(`openChestsOpener`);
+	const openChestsButton = document.getElementById(
 		`openChestPacks${packId}Button`
-	);
-	let openChestsButtonHolder = document.getElementById(
-		`openChestPacks${packId}ButtonHolder`
 	);
 	oc_disableSlidersButtonsAndHolders(true);
 
-	let name = openChestsButton.dataset.name;
-	let plural = openChestsButton.dataset.plural;
+	const name = openChestsButton.dataset.name;
+	const plural = openChestsButton.dataset.plural;
 
 	amount = Number(amount);
 	let currAmount = amount;
@@ -319,17 +315,17 @@ async function oc_openChestPack(id, packId, amount) {
 	let txt = ``;
 	opening = oc_makeOpeningRow(
 		currAmount,
-		currAmount == 1 ? name : plural,
+		currAmount === 1 ? name : plural,
 		amount
 	);
 	openChestsOpener.innerHTML = opening + txt;
-	if (currAmount == 0) {
+	if (currAmount === 0) {
 		txt += bc_addChestResultRow(`- None`);
 		openChestsOpener.innerHTML = opening + txt;
 		return;
 	}
 	while (currAmount > 0 && numFails < RETRIES) {
-		let open = Math.min(1000, currAmount);
+		const open = Math.min(1000, currAmount);
 		let successType = `Failed to open`;
 		try {
 			result = await openGenericChest(id, open, packId);
@@ -344,7 +340,7 @@ async function oc_openChestPack(id, packId, amount) {
 			numFails++;
 			continue;
 		}
-		let initMsg = `${open} ${open == 1 ? name : plural}`;
+		const initMsg = `${open} ${open === 1 ? name : plural}`;
 		if (result.success && result.loot_details) {
 			successType = `Successfully opened`;
 			currAmount -= open;
@@ -359,7 +355,7 @@ async function oc_openChestPack(id, packId, amount) {
 	}
 	opening = oc_makeOpeningRow(
 		currAmount,
-		amount == 1 ? name : plural,
+		amount === 1 ? name : plural,
 		amount
 	);
 	txt += bc_addChestResultRow(`Finished.`);
@@ -379,22 +375,22 @@ async function oc_openChestPack(id, packId, amount) {
 
 function oc_makeOpeningRow(amount, name, initAmount) {
 	return `<span class="f fr w100 p5">${
-		amount == 0 ? `Finished ` : ``
-	}Opening ${nf(amount == 0 ? initAmount : amount)} ${name}:</span>`;
+		amount === 0 ? `Finished ` : ``
+	}Opening ${nf(amount === 0 ? initAmount : amount)} ${name}:</span>`;
 }
 
 function oc_initOpenChestsHideChests() {
-	if (localStorage.getItem(hoc) == undefined) return;
-	let hideChests = oc_getHiddenChestIds();
+	if (localStorage.getItem(oc_LSKey_hide) == null) return;
+	const hideChests = oc_getHiddenChestIds();
 	for (let ele of document.querySelectorAll('[id^="openChestsHide"]')) {
-		let eleIds = JSON.parse(ele.dataset.ids);
+		const eleIds = JSON.parse(ele.dataset.ids);
 		if (eleIds.some((v) => hideChests.includes(v))) ele.checked = true;
 		else ele.checked = false;
 	}
 }
 
 function oc_toggleHideOpenChests() {
-	let chestIds = [];
+	const chestIds = [];
 	for (let ele of document.querySelectorAll(
 		"input[type='checkbox'][id^='openChestsHide'"
 	))
@@ -403,27 +399,26 @@ function oc_toggleHideOpenChests() {
 }
 
 function oc_getHiddenChestIds() {
-	let strg = localStorage.getItem(hoc);
-	if (strg != undefined) {
-		strg = JSON.parse(localStorage.getItem(hoc));
-		// Detect migration required.
-		if (Array.isArray(strg)) {
-			oc_saveHiddenChestIds(strg);
-			return strg;
-		}
-		if (strg[currAccount.name] != undefined) return strg[currAccount.name];
+	let strg = localStorage.getItem(oc_LSKey_hide);
+	if (!strg) return [];
+	strg = JSON.parse(strg);
+	// Detect migration required.
+	if (Array.isArray(strg)) {
+		oc_saveHiddenChestIds(strg);
+		return strg;
 	}
-	return [];
+	if (!strg[currAccount.name]) return [];
+	return strg[currAccount.name];
 }
 
 function oc_saveHiddenChestIds(chestIds) {
-	let strg = localStorage.getItem(hoc);
-	if (strg == undefined) strg = {};
+	let strg = localStorage.getItem(oc_LSKey_hide);
+	if (!strg) strg = {};
 	else strg = JSON.parse(strg);
 	if (Array.isArray(strg)) strg = {};
-	if (chestIds.length == 0) delete strg[currAccount.name];
+	if (chestIds.length === 0) delete strg[currAccount.name];
 	else strg[currAccount.name] = chestIds;
-	localStorage.setItem(hoc, JSON.stringify(strg));
+	localStorage.setItem(oc_LSKey_hide, JSON.stringify(strg));
 }
 
 function oc_initOpenChestsSliderFidelity() {
@@ -436,19 +431,19 @@ function oc_initOpenChestsSliderFidelity() {
 }
 
 function oc_toggleOpenChestsSliderFidelity(fidelity) {
-	if (fidelity == undefined) fidelity = oc_getOpenChestsSliderFidelity();
-	if (fidelity == 1 && localStorage.getItem(ocsf) != undefined)
-		localStorage.removeItem(ocsf);
-	else if (fidelity != 1) oc_saveOpenChestsSliderFidelity(fidelity);
+	if (!fidelity) fidelity = oc_getOpenChestsSliderFidelity();
+	if (fidelity === 1 && localStorage.getItem(oc_LSKey_fidelity))
+		localStorage.removeItem(oc_LSKey_fidelity);
+	else if (fidelity !== 1) oc_saveOpenChestsSliderFidelity(fidelity);
 	for (let ele of document.querySelectorAll(
 		'input[id^="openChests"][id$="Slider"]'
 	)) {
-		let id = ele.dataset.chestid;
+		const id = ele.dataset.chestid;
 		if (
-			document.getElementById(`openChests${id}Button`).value !=
+			document.getElementById(`openChests${id}Button`).value !==
 			`Open Chest Pack`
 		) {
-			let max = Number(ele.max);
+			const max = Number(ele.max);
 			ele.step = fidelity > max ? 1 : fidelity;
 		}
 		ele.value = 0;
@@ -457,11 +452,11 @@ function oc_toggleOpenChestsSliderFidelity(fidelity) {
 }
 
 function oc_disableSlidersButtonsAndHolders(disable) {
-	if (disable == undefined) disable = true;
+	if (disable == null) disable = true;
 	for (let ele of document.querySelectorAll(
 		'input[id^="openChests"][id$="Slider"]'
 	)) {
-		let id = ele.dataset.chestid;
+		const id = ele.dataset.chestid;
 		ele.disabled = disable;
 		document.getElementById(`openChests${id}Button`).disabled = disable;
 		document.getElementById(`openChests${id}ButtonHolder`).className =
@@ -474,11 +469,11 @@ function oc_disableSlidersButtonsAndHolders(disable) {
 }
 
 function oc_getOpenChestsSliderFidelity() {
-	let strg = localStorage.getItem(ocsf);
-	if (strg != undefined) return Number(strg);
-	return 1;
+	const strg = localStorage.getItem(oc_LSKey_fidelity);
+	if (!strg) return 1;
+	return Number(strg);
 }
 
 function oc_saveOpenChestsSliderFidelity(fidelity) {
-	localStorage.scOpenChestsSliderFidelity = fidelity;
+	localStorage.setItem(oc_LSKey_fidelity, fidelity);
 }

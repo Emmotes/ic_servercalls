@@ -1,15 +1,15 @@
-const vcd = 1.005; // prettier-ignore
-var chestDataBefore = ``;
+const vcd = 1.006; // prettier-ignore
+let cd_chestDataBefore = ``;
 
 async function cd_pullChestCollectData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`chestCollectWrapper`);
+	const wrapper = document.getElementById(`chestCollectWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
-		let details = await getUserDetails();
-		if (chestDataBefore == ``)
+		const details = await getUserDetails();
+		if (cd_chestDataBefore === ``)
 			await cd_displayChestCollectDataPhase1(wrapper, details);
 		else await cd_displayChestCollectDataPhase2(wrapper, details);
 		codeEnablePullButtons();
@@ -22,19 +22,19 @@ async function cd_displayChestCollectDataPhase1(wrapper, details) {
 	document.getElementById(
 		`chestCollectPullButton`
 	).value = `Snapshot the 'After' Chest Data`;
-	let chests = details.details.chests;
+	const chests = details.details.chests;
 	//let loot = details.details.loot;
-	let buffs = [];
+	const buffs = [];
 	for (let buff of details.details.buffs) {
-		if (!Object.keys(buffValues).includes("" + buff.buff_id)) continue;
+		if (!Object.keys(b_buffValues).includes("" + buff.buff_id)) continue;
 		buffs[buff.buff_id] = buff.inventory_amount;
 	}
-	chestDataBefore = {chests: chests, buffs: buffs}; //,'loot':loot};
+	cd_chestDataBefore = {chests: chests, buffs: buffs}; //,'loot':loot};
 	let txt = ``;
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Chest Data Before:</span>`;
-	for (let id of Object.keys(chestDataBefore.buffs)) {
-		let name = buffValues["" + id];
-		let value = chestDataBefore.buffs[id];
+	for (let id in cd_chestDataBefore.buffs) {
+		let name = b_buffValues["" + id];
+		let value = cd_chestDataBefore.buffs[id];
 		txt += addShiniesRow(`${name}`, `${nf(value)}`);
 	}
 	wrapper.innerHTML = txt;
@@ -48,37 +48,37 @@ async function cd_displayChestCollectDataPhase2(wrapper, details) {
 	document.getElementById(
 		`chestCollectPullButton`
 	).value = `Snapshot the 'Before' Chest Data`;
-	let chests = details.details.chests;
+	const chests = details.details.chests;
 	//let loot = details.details.loot;
-	let buffs = [];
+	const buffs = [];
 	for (let buff of details.details.buffs) {
-		if (!Object.keys(buffValues).includes("" + buff.buff_id)) continue;
+		if (!Object.keys(b_buffValues).includes("" + buff.buff_id)) continue;
 		buffs[buff.buff_id] = buff.inventory_amount;
 	}
-	let chestDataAfter = {chests: chests, buffs: buffs}; //,'loot':loot};
+	const chestDataAfter = {chests: chests, buffs: buffs}; //,'loot':loot};
 
 	let txt = ``;
 	let comma = ``;
 
 	let chestsReduced = {};
-	for (let key in chestDataBefore.chests) {
+	for (let key in cd_chestDataBefore.chests) {
 		let before =
-			chestDataBefore.chests[key] == undefined
+			cd_chestDataBefore.chests[key] == null
 				? 0
-				: Number(chestDataBefore.chests[key]);
+				: Number(cd_chestDataBefore.chests[key]);
 		let after =
-			chestDataAfter.chests[key] == undefined
+			chestDataAfter.chests[key] == null
 				? 0
 				: Number(chestDataAfter.chests[key]);
 		if (after < before) chestsReduced[key] = before - after;
 	}
 	for (let key in chestDataAfter.chests) {
 		let before =
-			chestDataBefore.chests[key] == undefined
+			cd_chestDataBefore.chests[key] == null
 				? 0
-				: Number(chestDataBefore.chests[key]);
+				: Number(cd_chestDataBefore.chests[key]);
 		let after =
-			chestDataAfter.chests[key] == undefined
+			chestDataAfter.chests[key] == null
 				? 0
 				: Number(chestDataAfter.chests[key]);
 		if (after < before) chestsReduced[key] = before - after;
@@ -88,9 +88,9 @@ async function cd_displayChestCollectDataPhase2(wrapper, details) {
 		txt += `<span class="f fr w100 p5" style="font-size:1.2em">Error:</span>`;
 		txt += `<span class="f fr w100 p5">You've invalidated the dataset by opening multiple chest types.</span>`;
 		wrapper.innerHTML = txt;
-		chestDataBefore = ``;
+		cd_chestDataBefore = ``;
 		return;
-	} else if (chestTypesOpened == 0) {
+	} else if (chestTypesOpened === 0) {
 		document.getElementById(
 			`chestCollectPullButton`
 		).value = `Snapshot the 'After' Chest Data`;
@@ -118,9 +118,9 @@ async function cd_displayChestCollectDataPhase2(wrapper, details) {
 		`${nf(chestsReduced[chestOpenedId])}`
 	);
 	comma += `${chestOpenedId},${chestsReduced[chestOpenedId]}`;
-	for (let id of Object.keys(chestDataBefore.buffs)) {
-		let name = buffValues["" + id];
-		let valueBefore = chestDataBefore.buffs[id];
+	for (let id in cd_chestDataBefore.buffs) {
+		let name = b_buffValues["" + id];
+		let valueBefore = cd_chestDataBefore.buffs[id];
 		let valueAfter = chestDataAfter.buffs[id];
 		let diff = valueAfter - valueBefore;
 		txt += addShiniesRow(`${name}`, `${nf(diff)}`);

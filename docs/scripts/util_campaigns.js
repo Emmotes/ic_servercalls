@@ -1,5 +1,5 @@
-const vc = 1.005; // prettier-ignore
-campaignIds = {
+const vc = 1.006; // prettier-ignore
+const c_campaignIds = {
 	1: "Grand Tour of the Sword Coast",
 	2: "Tomb of Annihilation",
 	3: "Highharvestide",
@@ -32,7 +32,7 @@ campaignIds = {
 	31: "Vecna: Eve of Ruin",
 	32: "Tales of the Champions",
 };
-patronAdvIds = {
+const c_patronAdvIds = {
 	0: "",
 	1100000: "Mirt",
 	1200000: "Vajra",

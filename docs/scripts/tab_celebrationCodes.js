@@ -1,14 +1,15 @@
-const vcc = 1.004; // prettier-ignore
+const vcc = 1.005; // prettier-ignore
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	let wrapper = document.getElementById(`celebrationsWrapper`);
+	const wrapper = document.getElementById(`celebrationsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
 	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
-		let customNotes = (await getUserDetails()).details.custom_notifications;
+		const customNotes = (await getUserDetails()).details
+			.custom_notifications;
 		await cc_displayCelebrationsData(wrapper, customNotes);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -18,16 +19,16 @@ async function cc_pullCelebrationsData() {
 }
 
 async function cc_displayCelebrationsData(wrapper, customNotes) {
-	if (customNotes == undefined) {
+	if (customNotes == null) {
 		wrapper.innerHTML = `Error.`;
 		return;
 	}
-	let idents = {};
+	const idents = {};
 	for (let customNote of customNotes) idents[customNote.identifier] = {};
-	let identKeys = Object.keys(idents);
+	const identKeys = Object.keys(idents);
 
-	let celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
-	if (identKeys.length == 0) {
+	const celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
+	if (identKeys.length === 0) {
 		wrapper.innerHTML = `&nbsp;`;
 		celebrationsClaimer.innerHTML = `<span class="f w100 p5" style="padding-left:10%">There are no celebrations running at the moment.</span>`;
 		return;
@@ -35,40 +36,40 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 	let timer = -1;
 	wrapper.innerHTML = `Waiting for celebration dialogs...`;
 	for (let ident of identKeys) {
-		let codes = [];
-		let dynamicDialog = await getDynamicDialog(ident);
+		const codes = [];
+		const dynamicDialog = await getDynamicDialog(ident);
 		if (
 			!dynamicDialog.success ||
-			dynamicDialog == undefined ||
-			dynamicDialog.dialog_data == undefined ||
-			dynamicDialog.dialog_data.title == undefined ||
-			dynamicDialog.dialog_data.elements == undefined
+			dynamicDialog == null ||
+			dynamicDialog.dialog_data == null ||
+			dynamicDialog.dialog_data.title == null ||
+			dynamicDialog.dialog_data.elements == null
 		)
 			continue;
 		for (let ele of dynamicDialog.dialog_data.elements) {
 			if (
-				ele.type != undefined &&
-				ele.type == `text` &&
-				ele.timer != undefined &&
-				ele.timer_resolution != undefined &&
-				ele.timer_resolution == `seconds` &&
-				(timer == -1 || ele.timer < timer)
+				ele.type != null &&
+				ele.type === `text` &&
+				ele.timer != null &&
+				ele.timer_resolution != null &&
+				ele.timer_resolution === `seconds` &&
+				(timer === -1 || ele.timer < timer)
 			)
 				timer = ele.timer;
 			if (
-				ele.type != `button` ||
+				ele.type !== `button` ||
 				(!ele.text.includes(`Claim`) &&
 					!ele.text.includes(`1 to go`)) ||
-				ele.actions == undefined ||
-				ele.actions.length == 0
+				ele.actions == null ||
+				ele.actions.length === 0
 			)
 				continue;
 			for (let action of ele.actions) {
 				if (
-					action.action == undefined ||
-					action.action != `redeem_code` ||
-					action.params == undefined ||
-					action.params.code == undefined
+					action.action == null ||
+					action.action !== `redeem_code` ||
+					action.params == null ||
+					action.params.code == null
 				)
 					continue;
 				codes.push(action.params.code);
@@ -81,12 +82,12 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 
 	let txt = ``;
 	for (let ident of identKeys) {
-		let codes = idents[ident].codes;
-		if (codes.length == 0) continue;
-		let name = idents[ident].name;
+		const codes = idents[ident].codes;
+		if (codes.length === 0) continue;
+		const name = idents[ident].name;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name}</span><span class="formsCampaign" id="${ident}">`;
 		for (let i = 0; i < codes.length; i++) {
-			let code = codes[i];
+			const code = codes[i];
 			txt += `<span class="featsChampionList"><input type="checkbox" id="celeb_${ident}_${i}" name="celeb_${ident}_${i}" data-name="${name}" data-ident="${ident}" data-code="${code}"><label class="cblabel" for="celeb_${ident}_${i}" style="font-family:monospace;font-size:1.1em">${cc_displayCode(
 				code
 			)}</label></span>`;
@@ -94,14 +95,14 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
 	}
 	setFormsWrapperFormat(wrapper, 1);
-	if (txt != ``) {
+	if (txt !== ``) {
 		wrapper.innerHTML = txt;
 		celebrationsClaimer.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="celebrationsSelectAllTheCelebrationsRow"><input type="button" onClick="cc_celebrationsSelectAllTheCelebrations()" name="celebrationsSelectAllTheCelebrationsButton" id="celebrationsSelectAllTheCelebrationsButton" style="font-size:0.9em;min-width:180px" value="Select All Codes"></span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="celebrationsBuyRow"><input type="button" onClick="cc_claimCelebrations()" name="celebrationsBuyButton" id="celebrationsBuyButton" style="font-size:0.9em;min-width:180px" value="Claim Selected Codes"></span></span>`;
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
-		let timerMS = timer * 1000;
-		let timerText = timer == -1 ? `` : getDisplayTime(timerMS);
-		let prefix = `No celebration codes to claim at this time. Check again in `;
+		const timerMS = timer * 1000;
+		const timerText = timer === -1 ? `` : getDisplayTime(timerMS);
+		const prefix = `No celebration codes to claim at this time. Check again in `;
 		celebrationsClaimer.innerHTML = `<span class="f w100 p5" style="padding-left:10%"><span id="celebrationCooldown">${prefix}${timerText}.</span></span>`;
 		createTimer(
 			timerMS,
@@ -122,7 +123,7 @@ function cc_celebrationsSelectAll(ident, check) {
 }
 
 function cc_celebrationsSelectAllTheCelebrations() {
-	let check = !document
+	const check = !document
 		.getElementById(`celebrationsSelectAllTheCelebrationsButton`)
 		.value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(
@@ -136,24 +137,22 @@ function cc_celebrationsSelectAllTheCelebrations() {
 
 async function cc_claimCelebrations() {
 	cc_disableAllCelebrationButtonsAndCheckboxes(true);
-	let celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
+	const celebrationsClaimer = document.getElementById(`celebrationsClaimer`);
 	let txt = `<span class="f fr w100 p5">Claiming Celebrations Codes:</span>`;
 	celebrationsClaimer.innerHTML = txt;
-	let list = document.querySelectorAll(
-		`input[type="checkbox"][id^="celeb_"]`
-	);
 	let count = 0;
-	for (let ele of list) {
+	for (let ele of document.querySelectorAll(
+		`input[type="checkbox"][id^="celeb_"]`
+	)) {
 		if (!ele.checked) continue;
 		count++;
-		let code = ele.dataset.code;
-		let name = ele.dataset.name;
-		let ident = ele.dataset.ident;
-		let result = await redeemCombination(code);
+		const code = ele.dataset.code;
+		const name = ele.dataset.name;
+		const result = await redeemCombination(code);
 		let successType = ``;
 		if (result.success && result.okay) successType = `Successfully claimed`;
 		else {
-			if (result.failure_reason != undefined)
+			if (result.failure_reason != null)
 				console.log(
 					`Code ${cc_displayCode(
 						code
@@ -170,7 +169,7 @@ async function cc_claimCelebrations() {
 		ele.checked = false;
 		celebrationsClaimer.innerHTML = txt;
 	}
-	if (count == 0) {
+	if (count === 0) {
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
 		celebrationsClaimer.innerHTML = txt;
 	}
