@@ -1,4 +1,4 @@
-const vdc = 1.005; // prettier-ignore
+const vdc = 1.006; // prettier-ignore
 const dc_LSKey_hideDismantleOpts = `scHideDismantleOptions`;
 
 async function dc_pullData() {
@@ -119,10 +119,12 @@ async function dc_displayData(
 			const name = champNames[champId];
 			const hasBeenReforged = champ.legs.reforged;
 			const numLegs = champ.legs.amount;
+			const onlyHasOnes = Object.keys(champ.legs.levels).join() === "1";
 			if (type === `Legendary`) {
 				if (hasBeenReforged && hideOptions.includes(`reforges`))
 					continue;
 				if (numLegs === 6 && hideOptions.includes(`6legs`)) continue;
+				if (onlyHasOnes && hideOptions.includes(`1sonly`)) continue;
 			}
 			const rewardKeys = Object.keys(champ.rewards);
 			if (rewardKeys.length === 0) continue;
@@ -281,18 +283,21 @@ function dc_dismantleParseLegendaries(details, champId) {
 	const legs = details.legendary_details.legendary_items;
 	let amount = 0;
 	let reforged = false;
+	let levels = {};
 	if (Object.keys(legs).includes(`${champId}`)) {
 		let curr = legs[champId];
 		let keys = Object.keys(curr);
 		amount = keys.length;
 		for (let key of keys) {
+			const level = curr[key].level;
+			levels[level] = (levels[level] ?? 0) + 1;
 			if (curr[key].effects_unlocked.length > 1) {
 				reforged = true;
 				break;
 			}
 		}
 	}
-	return {amount: amount, reforged: reforged};
+	return {amount: amount, reforged: reforged, levels: levels};
 }
 
 function dc_simplifyBuffName(buffName) {
