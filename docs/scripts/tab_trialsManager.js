@@ -1,4 +1,4 @@
-const vtm = 1.011; // prettier-ignore
+const vtm = 1.012; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -471,13 +471,7 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 			`<span id="trialsPickChampionButtonHolder">&nbsp;</span>`
 		);
 	} else {
-		let playerIndex = -1;
-		for (let index in campaign.players) {
-			if (campaign.players[index].name === playerName) {
-				playerIndex = index;
-				break;
-			}
-		}
+		const playerIndex = campaign.players.findIndex(p => p.name === playerName);
 		txt += `<span class="f fr w100 p5" style="font-size:1.2em">Actions:</span>`;
 		if (playerIndex === 0)
 			txt += tm_addRow(
