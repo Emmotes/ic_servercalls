@@ -1,4 +1,4 @@
-const vir = 1.003; // prettier-ignore
+const vir = 1.004; // prettier-ignore
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData()) return;
@@ -45,12 +45,13 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 		let totaliLvls = 0;
 		let shinies = 0;
 		let slotIds = Object.keys(champ.loot);
+		const numItems = slotIds.length;
+		if (numItems === 0) continue;
 		for (let slotId of slotIds) {
 			const item = champ.loot[slotId];
-			totaliLvls += item.enchant + 1;
+			totaliLvls += (item.enchant ?? 0) + 1;
 			if (item.gild >= 1) shinies++;
 		}
-		const numItems = slotIds.length;
 		totalItems += numItems;
 		averageiLvl += totaliLvls;
 		const avgiLvl = totaliLvls / numItems;
@@ -85,47 +86,62 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 			evergreenShinies += shinies;
 		}
 	}
-	averageiLvl /= totalItems;
-	averageEvergreeniLvl /= totalEvergreenItems;
-	averageEventiLvl /= totalItems - totalEvergreenItems;
+
+	if (totalItems === 0) {
+		wrapper.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You have a gearless account. Why are you trying to use this tab?</span>`;
+		return;
+	}
+
+	const totalEventItems = totalItems - totalEvergreenItems;
+
+	const safeAvg = (sum, count) => (count ? sum / count : 0);
+	averageiLvl = safeAvg(averageiLvl, totalItems);
+	averageEvergreeniLvl = safeAvg(averageEvergreeniLvl, totalEvergreenItems);
+	averageEventiLvl = safeAvg(averageEventiLvl, totalEventItems);
 
 	let txt = ``;
 	txt += ir_addiLvlReportRow(`Average All iLvl:`, nf(averageiLvl));
 	txt += `<span class="f fr w100 p5">&nbsp;</span>`;
-	txt += ir_addiLvlReportRow(
-		`Average Evergreen iLvl:`,
-		nf(averageEvergreeniLvl)
-	);
-	txt += ir_addiLvlReportRow(
-		`Highest Average Evergreen:`,
-		nf(highestAverageEvergreen),
-		highestAverageEvergreenName
-	);
-	txt += ir_addiLvlReportRow(
-		`Lowest Average Evergreen:`,
-		nf(lowestAverageEvergreen),
-		lowestAverageEvergreenName
-	);
-	txt += ir_addiLvlReportRow(
-		`Evergreen Shinies:`,
-		`${nf(evergreenShinies)} / ${nf(totalEvergreenItems)}`
-	);
+	if (totalEvergreenItems > 0) {
+		txt += ir_addiLvlReportRow(
+			`Average Evergreen iLvl:`,
+			nf(averageEvergreeniLvl)
+		);
+		txt += ir_addiLvlReportRow(
+			`Highest Average Evergreen:`,
+			nf(highestAverageEvergreen),
+			highestAverageEvergreenName
+		);
+		txt += ir_addiLvlReportRow(
+			`Lowest Average Evergreen:`,
+			nf(lowestAverageEvergreen),
+			lowestAverageEvergreenName
+		);
+		txt += ir_addiLvlReportRow(
+			`Evergreen Shinies:`,
+			`${nf(evergreenShinies)} / ${nf(totalEvergreenItems)}`
+		);
+	} else
+		txt += `<span class="f fr w100 p5">You do not have any evergreen items.</span>`;
 	txt += `<span class="f fr w100 p5">&nbsp;</span>`;
-	txt += ir_addiLvlReportRow(`Average Event iLvl:`, nf(averageEventiLvl));
-	txt += ir_addiLvlReportRow(
-		`Highest Average Event:`,
-		nf(highestAverageEvent),
-		highestAverageEventName
-	);
-	txt += ir_addiLvlReportRow(
-		`Lowest Average Event:`,
-		nf(lowestAverageEvent),
-		lowestAverageEventName
-	);
-	txt += ir_addiLvlReportRow(
-		`Event Shinies:`,
-		`${nf(eventShinies)} / ${nf(totalItems - totalEvergreenItems)}`
-	);
+	if (totalEventItems > 0) {
+		txt += ir_addiLvlReportRow(`Average Event iLvl:`, nf(averageEventiLvl));
+		txt += ir_addiLvlReportRow(
+			`Highest Average Event:`,
+			nf(highestAverageEvent),
+			highestAverageEventName
+		);
+		txt += ir_addiLvlReportRow(
+			`Lowest Average Event:`,
+			nf(lowestAverageEvent),
+			lowestAverageEventName
+		);
+		txt += ir_addiLvlReportRow(
+			`Event Shinies:`,
+			`${nf(eventShinies)} / ${nf(totalItems - totalEvergreenItems)}`
+		);
+	} else
+		txt += `<span class="f fr w100 p5">You do not have any event items.</span>`;
 	wrapper.innerHTML = txt;
 }
 
