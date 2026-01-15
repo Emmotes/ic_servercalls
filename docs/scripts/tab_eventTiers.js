@@ -1,4 +1,4 @@
-const vet = 1.015; // prettier-ignore
+const vet = 1.016; // prettier-ignore
 const et_idMult = 10000;
 const et_LSKey_hideTier4 = `scEventTiersHideTier4`;
 
@@ -48,22 +48,22 @@ async function et_displayEventTiersData(
 	const ownedChampIdTiers = {};
 	for (let hero of heroDefs) {
 		const heroId = `${hero.id}`;
+		const tiersCompleted = [0, 0, 0];
 		if (!ownedIds.includes(heroId)) continue;
-		if (
-			!Object.prototype.hasOwnProperty.call(collections, heroId) ||
-			!Object.prototype.hasOwnProperty.call(collections[heroId], "v")
-		)
-			continue;
 		const eventName = hero.event_name;
 		const event2Id = et_getEvent2IdFromEventName(eventName);
 		if (event2Id != null) eventNameByEventId[event2Id] = eventName;
-		const tiersCompleted = [0, 0, 0];
-		const heroCollection = collections[heroId].v;
-		for (let tier = 0; tier < heroCollection.length; tier++) {
-			const heroVariants = heroCollection[tier];
-			for (let variant = 0; variant < heroVariants.length; variant++)
-				if (heroVariants[variant] === 1)
-					tiersCompleted[variant] = tier + 1;
+		if (
+			Object.prototype.hasOwnProperty.call(collections, heroId) &&
+			Object.prototype.hasOwnProperty.call(collections[heroId], "v")
+		) {
+			const heroCollection = collections[heroId].v;
+			for (let tier = 0; tier < heroCollection.length; tier++) {
+				const heroVariants = heroCollection[tier];
+				for (let variant = 0; variant < heroVariants.length; variant++)
+					if (heroVariants[variant] === 1)
+						tiersCompleted[variant] = tier + 1;
+			}
 		}
 		if (tiersCompleted.length > 0) {
 			const tier = tiersCompleted.reduce((a, b) => Math.min(a, b));
