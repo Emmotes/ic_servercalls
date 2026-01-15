@@ -48,11 +48,11 @@ async function et_displayEventTiersData(
 	const ownedChampIdTiers = {};
 	for (let hero of heroDefs) {
 		const heroId = `${hero.id}`;
-		const tiersCompleted = [0, 0, 0];
 		if (!ownedIds.includes(heroId)) continue;
 		const eventName = hero.event_name;
 		const event2Id = et_getEvent2IdFromEventName(eventName);
 		if (event2Id != null) eventNameByEventId[event2Id] = eventName;
+		const tiersCompleted = [0, 0, 0];
 		if (
 			Object.prototype.hasOwnProperty.call(collections, heroId) &&
 			Object.prototype.hasOwnProperty.call(collections[heroId], "v")
@@ -65,7 +65,7 @@ async function et_displayEventTiersData(
 						tiersCompleted[variant] = tier + 1;
 			}
 		}
-		if (tiersCompleted.length > 0) {
+		if (tiersCompleted.length === 3) {
 			const tier = tiersCompleted.reduce((a, b) => Math.min(a, b));
 			if (tier !== 4) numNotTier4++;
 			numTotal++;
