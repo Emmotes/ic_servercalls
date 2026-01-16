@@ -1,4 +1,4 @@
-const vs = 3.019; // prettier-ignore
+const vs = 3.020; // prettier-ignore
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
 const FR = `failure_reason`;
@@ -85,6 +85,11 @@ async function deleteFormationSave(formId) {
 		true,
 		true
 	);
+}
+
+async function getUserGameInstance(gameInstanceId) {
+	const params = [["game_instance_id", gameInstanceId]];
+	return await sendServerCall(SERVER, "getusergameinstance", params, true, true);
 }
 
 async function openTimeGate(heroId) {
@@ -279,25 +284,17 @@ async function purchasePatronShopItem(patronId, shopItemId, count) {
 	);
 }
 
-async function saveModron(coreId, gameInstanceId, buffs) {
-	const userDetails = await getUserDetails();
-	const modronSave = userDetails.details.modron_saves[coreId];
-	const grid = JSON.stringify(modronSave.grid);
-	const formationSaves = JSON.stringify(modronSave.formation_saves);
-	const areaGoal = modronSave.area_goal;
-	const buffsStr = JSON.stringify(buffs);
+async function saveModron(coreId, grid, gameInstanceId, formationSaves, areaGoal, buffs, properties) {
 	const checkinTimestamp = Date.now() / 1000 + 604800;
-	const properties = JSON.stringify(modronSave.properties);
-
 	const params = [
 		["core_id", coreId],
-		["grid", grid],
+		["grid", JSON.stringify(grid)],
 		["game_instance_id", gameInstanceId],
-		["formation_saves", formationSaves],
+		["formation_saves", JSON.stringify(formationSaves)],
 		["area_goal", areaGoal],
-		["buffs", buffsStr],
+		["buffs", JSON.stringify(buffs)],
 		["checkin_timestamp", checkinTimestamp],
-		["properties", properties],
+		["properties", JSON.stringify(properties)],
 	];
 	return await sendServerCall(SERVER, "saveModron", params, true, true);
 }
@@ -310,6 +307,16 @@ async function redeemCombination(combo) {
 async function useSummonScroll(heroId) {
 	const params = [["hero_id", heroId]];
 	return await sendServerCall(SERVER, "usesummonscoll", params, true, true);
+}
+
+async function exchangeSummonScroll(count) {
+	const params = [["count", count]];
+	return await sendServerCall(SERVER, "exchangesummonscroll", params, true, true);
+}
+
+async function useGildingScroll(heroId) {
+	const params = [["hero_id", heroId]];
+	return await sendServerCall(SERVER, "usegildingscroll", params, true, true);
 }
 
 async function getDismantleData() {
@@ -374,13 +381,21 @@ async function getShop() {
 	return await sendServerCall(SERVER, "getshop", params, true, true);
 }
 
-async function setCurrentObjective(instanceId, adventureId, patronId) {
+async function setCurrentObjective(instanceId, adventureId, patronId, timeGateObjective) {
+	// Use patronId OR timeGateObjective. Never both.
 	const params = [
-		["patron_tier", 0],
 		["game_instance_id", instanceId],
 		["adventure_id", adventureId],
-		["patron_id", patronId],
 	];
+	if (patronId != null && timeGateObjective != null) {
+		console.error("Cannot set a patronId and a timeGateObjective in the same call.");
+		return {};
+	} else if (timeGateObjective !== undefined) {
+		params.push(["time_gate_objective", timeGateObjective]);
+	} else {
+		params.push(["patron_tier", 0]);
+		params.push(["patron_id", patronId || 0]);
+	}
 	return await sendServerCall(
 		SERVER,
 		"setcurrentobjective",
@@ -558,6 +573,94 @@ async function getCompletionData() {
 		true,
 		true
 	);
+}
+
+async function getPlayHistory(page, includeGems) {
+	const types = [0,1,2,3,6,11,12,13,19,20,21,28,30,37,45,50];
+	if (includeGems) {
+		types.push(18);
+		types.sort();
+	}
+	const params = [
+		["page", page],
+		["types", types],
+	];
+	return await sendServerCall(SERVER, "getPlayHistory", params, true, true);
+}
+
+async function claimCollectionQuestRewards(questId) {
+	// Use -1 questId to claim all.
+	const params = [["collection_quest_id", questId]];
+	return await sendServerCall(
+		SERVER,
+		"claimcollectionquestrewards",
+		params,
+		true,
+		true
+	);
+}
+
+async function getEventsDetails() {
+	return await sendServerCall(SERVER, "geteventsdetails", undefined, true, true);
+}
+
+async function pickEventFlexHero(eventId, heroId, flexSlotId, resetHero) {
+	const params = [
+		["event_id", eventId],
+		["hero_id", heroId],
+		["slot_id", flexSlotId],
+		["reset_tiers", resetHero ? 1 : 0],
+	];
+	return await sendServerCall(SERVER, "pickeventflexhero", params, true, true);
+}
+
+async function getActiveTasksData() {
+	return await sendServerCall(SERVER, "getactivetasksdata", undefined, true, true);
+}
+
+async function purchaseVaultItem(itemType, itemId) {
+	const params = [
+		["item_type", itemType],
+		["item_id", itemId],
+	];
+	return await sendServerCall(SERVER, "purchaseshopvaultoffer", params, true, true);
+}
+
+async function getMasteryChallengeData() {
+	return await sendServerCall(SERVER, "getmasterychallengesdata", undefined, true, true);
+}
+
+async function setMasteryChallengeOptions(challengeId, restrictions) {
+	// Restrictions should be an array of integers.
+	const params = [
+		["challenge_id", challengeId],
+		["restrictions", JSON.stringify(restrictions)],
+	];
+	return await sendServerCall(SERVER, "setmasterychallengeoptions", params, true, true);
+}
+
+async function purchaseCardSleeve(sleeveId, heroId, autoEquip) {
+	const params = [
+		["sleeve_id", sleeveId],
+		["hero_id", heroId],
+		["auto_equip", autoEquip ? 1 : 0],
+	];
+	return await sendServerCall(SERVER, "purchasecardsleeve", params, true, true);
+}
+
+async function equipCardSleeve(sleeveId, heroId) {
+	const params = [
+		["sleeve_id", sleeveId],
+		["hero_id", heroId],
+	];
+	return await sendServerCall(SERVER, "equipcardsleeve", params, true, true);
+}
+
+async function unequipCardSleeve(heroId) {
+	const params = [
+		["hero_id", heroId],
+	];
+	return await sendServerCall(SERVER, "equipcardsleeve", params, true, true);
 }
 
 function appendUserData() {
