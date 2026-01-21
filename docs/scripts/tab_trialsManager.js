@@ -1,4 +1,4 @@
-const vtm = 1.012; // prettier-ignore
+const vtm = 1.013; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -422,13 +422,10 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 		Number(trialsData.difficulty_token_inventory.any || 0),
 	];
 	const playerName = trialsData.player_name;
-	let hasPlayerPicked = false;
-	for (let roleId of playersByRoleKeys) {
-		if (playersByRole[roleId].name === playerName) {
-			hasPlayerPicked = true;
-			break;
-		}
-	}
+	const hostIndex = Number(campaign.host_index);
+	const playerIndex = Number(campaign.active_player_index);
+	const player = campaign.players[playerIndex];
+	const hasPlayerPicked = player?.name === playerName && player?.hero_id !== 0 && player?.role_id !== 0;
 
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`, `${tier} (${tierName})`);
@@ -444,14 +441,14 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
 	for (let roleId of playersByRoleKeys) {
 		const roleName = tm_roles[roleId];
-		const player = playersByRole[roleId];
-		if (player.empty) txt += tm_addRow(`${roleName}:`, `-`);
+		const currPlayer = playersByRole[roleId];
+		if (currPlayer.empty) txt += tm_addRow(`${roleName}:`, `-`);
 		else
 			txt += tm_addRow(
 				`${roleName}:`,
-				player.name,
+				currPlayer.name,
 				`Champion:`,
-				tm_champsById[player.hero]
+				tm_champsById[currPlayer.hero]
 			);
 	}
 	txt += tm_addRow(`&nbsp;`, `&nbsp;`);
@@ -471,9 +468,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 			`<span id="trialsPickChampionButtonHolder">&nbsp;</span>`
 		);
 	} else {
-		const playerIndex = campaign.players.findIndex(p => p.name === playerName);
 		txt += `<span class="f fr w100 p5" style="font-size:1.2em">Actions:</span>`;
-		if (playerIndex === 0)
+		if (playerIndex === hostIndex)
 			txt += tm_addRow(
 				`Start Trial:`,
 				tm_addGenericButton(
@@ -492,16 +488,16 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 				`Change Role or Champion`
 			)
 		);
-		if (playerIndex >= 0)
-			txt += tm_addRow(
-				`Leave Lobby:`,
-				tm_addGenericButton(
-					`red`,
-					`tm_trialsLeaveLobby(${playerIndex},'${joinKey}')`,
-					`trialsLeaveLobbyButton`,
-					`Leave This Lobby`
-				)
-			);
+		const type = playerIndex === hostIndex ? "Close" : "Leave";
+		txt += tm_addRow(
+			`${type} Lobby:`,
+			tm_addGenericButton(
+				`red`,
+				`tm_trialsLeaveLobby(${playerIndex},'${joinKey}')`,
+				`trialsLeaveLobbyButton`,
+				`${type} This Lobby`
+			)
+		);
 	}
 	wrapper.innerHTML = txt;
 }
