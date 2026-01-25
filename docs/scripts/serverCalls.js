@@ -1,4 +1,5 @@
-const vs = 3.020; // prettier-ignore
+const vs = 3.021; // prettier-ignore
+const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
 const FR = `failure_reason`;
@@ -13,21 +14,16 @@ let SERVER = ``;
 let instanceId = ``;
 let boilerplate = ``;
 
-async function getPlayServerFromMaster() {
-	const response = await getPlayServerForDefinitions(M);
-	SERVER = response["play_server"];
-}
-
-async function getPlayServerForDefinitions(serverToUse, customTimeout) {
-	if (serverToUse == null) serverToUse = M;
-	return await sendServerCall(
-		serverToUse,
+async function getPlayServerForDefinitions() {
+	const response = await sendServerCall(
+		M,
 		"getPlayServerForDefinitions",
 		undefined,
 		false,
 		false,
-		customTimeout
+		customTimeout,
 	);
+	SERVER = response["play_server"];
 }
 
 async function getUserDetails() {
@@ -35,7 +31,7 @@ async function getUserDetails() {
 		SERVER,
 		"getuserdetails",
 		undefined,
-		true
+		true,
 	);
 	getUpdatedInstanceId(deets);
 	return deets;
@@ -62,7 +58,7 @@ async function getPatronDetails() {
 		"getpatrondetails",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -72,7 +68,7 @@ async function getFormationSaves() {
 		"getallformationsaves",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -83,13 +79,19 @@ async function deleteFormationSave(formId) {
 		"DeleteFormationSave",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
 async function getUserGameInstance(gameInstanceId) {
 	const params = [["game_instance_id", gameInstanceId]];
-	return await sendServerCall(SERVER, "getusergameinstance", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"getusergameinstance",
+		params,
+		true,
+		true,
+	);
 }
 
 async function openTimeGate(heroId) {
@@ -116,7 +118,7 @@ async function forgeLegendary(heroId, slotId) {
 		"craftlegendaryitem",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -130,7 +132,7 @@ async function upgradeLegendary(heroId, slotId) {
 		"upgradelegendaryitem",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -144,7 +146,7 @@ async function reforgeLegendary(heroId, slotId) {
 		"changelegendaryitem",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -164,7 +166,7 @@ async function trialsRefreshData() {
 		"trialsrefreshdata",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -172,12 +174,17 @@ async function trialsCreateCampaign(
 	difficultyId,
 	isPrivate,
 	prismatic,
-	autoStart
+	autoStart,
 ) {
 	const params = [
 		["difficulty_id", difficultyId],
 		["private", isPrivate ? `True` : `False`],
-		["cost_choice", difficultyId === 1 ? -1 : prismatic ? `1` : `0`],
+		[
+			"cost_choice",
+			difficultyId === 1 ? -1
+			: prismatic ? `1`
+			: `0`,
+		],
 		["auto_start", autoStart ? `True` : `False`],
 	];
 	return await sendServerCall(
@@ -185,7 +192,7 @@ async function trialsCreateCampaign(
 		"trialsopencampaign",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -199,7 +206,7 @@ async function trialsJoinCampaign(joinKey) {
 		"trialsjoincampaign",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -215,7 +222,7 @@ async function trialsStartCampaign(campaignId) {
 		"trialsstartcampaign",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -230,7 +237,7 @@ async function trialsPickRoleHero(roleId, heroId, prismatic) {
 		"trialspickrolehero",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -241,7 +248,7 @@ async function trialsClaimRewards(campaignId) {
 		"trialsclaimrewards",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -253,7 +260,7 @@ async function saveFormation(
 	formation,
 	familiars,
 	specs,
-	feats
+	feats,
 ) {
 	if (campId == null || name == null) return;
 	const params = [
@@ -280,11 +287,19 @@ async function purchasePatronShopItem(patronId, shopItemId, count) {
 		"purchasepatronshopitem",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
-async function saveModron(coreId, grid, gameInstanceId, formationSaves, areaGoal, buffs, properties) {
+async function saveModron(
+	coreId,
+	grid,
+	gameInstanceId,
+	formationSaves,
+	areaGoal,
+	buffs,
+	properties,
+) {
 	const checkinTimestamp = Date.now() / 1000 + 604800;
 	const params = [
 		["core_id", coreId],
@@ -311,7 +326,13 @@ async function useSummonScroll(heroId) {
 
 async function exchangeSummonScroll(count) {
 	const params = [["count", count]];
-	return await sendServerCall(SERVER, "exchangesummonscroll", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"exchangesummonscroll",
+		params,
+		true,
+		true,
+	);
 }
 
 async function useGildingScroll(heroId) {
@@ -325,7 +346,7 @@ async function getDismantleData() {
 		"getredistributehero",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -356,7 +377,7 @@ async function buySoftCurrencyChest(chestId, count) {
 		"buysoftcurrencychest",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -381,14 +402,21 @@ async function getShop() {
 	return await sendServerCall(SERVER, "getshop", params, true, true);
 }
 
-async function setCurrentObjective(instanceId, adventureId, patronId, timeGateObjective) {
+async function setCurrentObjective(
+	instanceId,
+	adventureId,
+	patronId,
+	timeGateObjective,
+) {
 	// Use patronId OR timeGateObjective. Never both.
 	const params = [
 		["game_instance_id", instanceId],
 		["adventure_id", adventureId],
 	];
 	if (patronId != null && timeGateObjective != null) {
-		console.error("Cannot set a patronId and a timeGateObjective in the same call.");
+		console.error(
+			"Cannot set a patronId and a timeGateObjective in the same call.",
+		);
 		return {};
 	} else if (timeGateObjective !== undefined) {
 		params.push(["time_gate_objective", timeGateObjective]);
@@ -401,7 +429,7 @@ async function setCurrentObjective(instanceId, adventureId, patronId, timeGateOb
 		"setcurrentobjective",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -416,7 +444,7 @@ async function getLegendaryDetails() {
 		"getlegendarydetails",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -426,7 +454,7 @@ async function getCampaignDetails() {
 		"getcampaigndetails",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -436,7 +464,7 @@ async function getDailyLoginRewards() {
 		"getdailyloginrewards",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -446,7 +474,7 @@ async function revealWeeklyOffers() {
 		"revealalacarteoffers",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -456,7 +484,7 @@ async function getWeeklyOffers() {
 		"getalacarteoffers",
 		undefined,
 		true,
-		true
+		true,
 	);
 }
 
@@ -467,7 +495,7 @@ async function rerollWeeklyOffer(offerId) {
 		"rerollalacarteoffer",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -478,7 +506,7 @@ async function purchaseWeeklyOffer(offerId) {
 		"PurchaseALaCarteOffer",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -489,7 +517,7 @@ async function claimDailyLoginReward(isBoost) {
 		"claimdailyloginreward",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -516,7 +544,7 @@ async function convertContracts(
 	sourceBuffId,
 	resultBuffId,
 	count,
-	toEventTokens
+	toEventTokens,
 ) {
 	const params = [
 		["source_buff_id", sourceBuffId],
@@ -537,7 +565,7 @@ async function purchaseNotaryChestBundle(chestId, count) {
 		"purchasenotarychestbundle",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
@@ -571,12 +599,12 @@ async function getCompletionData() {
 		"getcompletiondata",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
 async function getPlayHistory(page, includeGems) {
-	const types = [0,1,2,3,6,11,12,13,19,20,21,28,30,37,45,50];
+	const types = [0, 1, 2, 3, 6, 11, 12, 13, 19, 20, 21, 28, 30, 37, 45, 50];
 	if (includeGems) {
 		types.push(18);
 		types.sort();
@@ -596,12 +624,18 @@ async function claimCollectionQuestRewards(questId) {
 		"claimcollectionquestrewards",
 		params,
 		true,
-		true
+		true,
 	);
 }
 
 async function getEventsDetails() {
-	return await sendServerCall(SERVER, "geteventsdetails", undefined, true, true);
+	return await sendServerCall(
+		SERVER,
+		"geteventsdetails",
+		undefined,
+		true,
+		true,
+	);
 }
 
 async function pickEventFlexHero(eventId, heroId, flexSlotId, resetHero) {
@@ -611,11 +645,23 @@ async function pickEventFlexHero(eventId, heroId, flexSlotId, resetHero) {
 		["slot_id", flexSlotId],
 		["reset_tiers", resetHero ? 1 : 0],
 	];
-	return await sendServerCall(SERVER, "pickeventflexhero", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"pickeventflexhero",
+		params,
+		true,
+		true,
+	);
 }
 
 async function getActiveTasksData() {
-	return await sendServerCall(SERVER, "getactivetasksdata", undefined, true, true);
+	return await sendServerCall(
+		SERVER,
+		"getactivetasksdata",
+		undefined,
+		true,
+		true,
+	);
 }
 
 async function purchaseVaultItem(itemType, itemId) {
@@ -623,11 +669,23 @@ async function purchaseVaultItem(itemType, itemId) {
 		["item_type", itemType],
 		["item_id", itemId],
 	];
-	return await sendServerCall(SERVER, "purchaseshopvaultoffer", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"purchaseshopvaultoffer",
+		params,
+		true,
+		true,
+	);
 }
 
 async function getMasteryChallengeData() {
-	return await sendServerCall(SERVER, "getmasterychallengesdata", undefined, true, true);
+	return await sendServerCall(
+		SERVER,
+		"getmasterychallengesdata",
+		undefined,
+		true,
+		true,
+	);
 }
 
 async function setMasteryChallengeOptions(challengeId, restrictions) {
@@ -636,7 +694,13 @@ async function setMasteryChallengeOptions(challengeId, restrictions) {
 		["challenge_id", challengeId],
 		["restrictions", JSON.stringify(restrictions)],
 	];
-	return await sendServerCall(SERVER, "setmasterychallengeoptions", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"setmasterychallengeoptions",
+		params,
+		true,
+		true,
+	);
 }
 
 async function purchaseCardSleeve(sleeveId, heroId, autoEquip) {
@@ -645,7 +709,13 @@ async function purchaseCardSleeve(sleeveId, heroId, autoEquip) {
 		["hero_id", heroId],
 		["auto_equip", autoEquip ? 1 : 0],
 	];
-	return await sendServerCall(SERVER, "purchasecardsleeve", params, true, true);
+	return await sendServerCall(
+		SERVER,
+		"purchasecardsleeve",
+		params,
+		true,
+		true,
+	);
 }
 
 async function equipCardSleeve(sleeveId, heroId) {
@@ -657,10 +727,15 @@ async function equipCardSleeve(sleeveId, heroId) {
 }
 
 async function unequipCardSleeve(heroId) {
-	const params = [
-		["hero_id", heroId],
-	];
+	const params = [["hero_id", heroId]];
 	return await sendServerCall(SERVER, "equipcardsleeve", params, true, true);
+}
+
+async function getServerStatus() {
+	const res = await fetch(STATUS, {});
+	if (!res.ok) throw new Error(`Status fetch failed: ${res.status}`);
+
+	return await res.json();
 }
 
 function appendUserData() {
@@ -702,7 +777,7 @@ async function sendServerCall(
 	params,
 	addUserData,
 	addInstanceId,
-	customTimeout
+	customTimeout,
 ) {
 	let call = `${PARAM_CALL}=${callType}`;
 	if (params != null) call += buildParams(params);
@@ -710,7 +785,7 @@ async function sendServerCall(
 	if (addInstanceId) call += await appendInstanceId();
 	call += appendBoilerplate();
 	if (server === ``) {
-		if (SERVER === ``) await getPlayServerFromMaster();
+		if (SERVER === ``) await getPlayServerForDefinitions();
 		server = SERVER;
 	}
 	let response = await sendOutgoingCall(server, call, customTimeout);
@@ -748,12 +823,12 @@ async function sendOutgoingCall(server, call, customTimeout) {
 	const url = `${server}post.php?${call}`;
 	const errTxt = `Server ps${server.replace(
 		/[^0-9]/g,
-		``
+		``,
 	)} appears to be dead`;
 	const timeoutTime =
-		Number.isInteger(customTimeout) && customTimeout > 0
-			? customTimeout
-			: 40000;
+		Number.isInteger(customTimeout) && customTimeout > 0 ?
+			customTimeout
+		:	40000;
 	try {
 		const response = await fetch(url, {
 			signal: AbortSignal.timeout(timeoutTime),
@@ -771,7 +846,7 @@ async function sendOutgoingCall(server, call, customTimeout) {
 			throw new Error(
 				`Timed out. Took more than ${
 					timeoutTime / 1000
-				} seconds to get a response`
+				} seconds to get a response`,
 			);
 		console.error("Fetch", error);
 		throw error;
