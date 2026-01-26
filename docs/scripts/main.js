@@ -1,9 +1,9 @@
-const v = 4.030; // prettier-ignore
+const v = 4.031; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
 const disabledVersionLockdown = document.getElementById(
-	`disabledVersionLockdown`
+	`disabledVersionLockdown`,
 );
 const updateContainer = document.getElementById(`updateContainer`);
 const tabsContainer = document.getElementById(`tabsContainer`);
@@ -17,7 +17,7 @@ const settingsClose = document.getElementById(`settingsMenuButtonClose`);
 const settingsList = document.getElementById(`settingsMenuAccountsList`);
 const settingsLoad = document.getElementById(`settingsMenuButtonLoadAccount`);
 const settingsDelete = document.getElementById(
-	`settingsMenuButtonDeleteAccount`
+	`settingsMenuButtonDeleteAccount`,
 );
 const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
 const supportUrl = document.getElementById(`supportUrl`);
@@ -95,6 +95,7 @@ function init() {
 	oc_initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
 	et_initEventTiersHideTier4();
+	ss_tryResumeCooldownOnLoad();
 	swapTab();
 	startUpdateCheckInterval(1800000); // 30 mins
 }
@@ -136,13 +137,10 @@ function settingsToggle() {
 
 function initSettingsNumberFormat() {
 	const settings = getLocalSettings();
-	const settingNumFormat = Object.prototype.hasOwnProperty.call(
-		Object,
-		settings,
-		"nf"
-	)
-		? settings.nf
-		: undefined;
+	const settingNumFormat =
+		Object.prototype.hasOwnProperty.call(Object, settings, "nf") ?
+			settings.nf
+		:	undefined;
 	const num = 12345.67;
 
 	let opts = ``;
@@ -162,7 +160,7 @@ function initSettingsNumberFormat() {
 		opts += `<option value="${types[k] == null ? "-" : types[k]}"${
 			types[k] === settingNumFormat ? " selected" : ""
 		}>${name}: ${new Intl.NumberFormat(types[k], NF_GROUPS).format(
-			num
+			num,
 		)}</option>`;
 	}
 	settingsNumberFormat.innerHTML = opts;
@@ -198,7 +196,7 @@ async function checkUpdatedScriptsAvailable() {
 				headers: {"Cache-Control": "no-cache"},
 			})
 		).text(),
-		"text/html"
+		"text/html",
 	);
 	const oldList = [
 		...document.querySelectorAll("script[type='text/javascript']"),
@@ -271,7 +269,7 @@ async function supportUrlSaveData() {
 	if (url === ``) return;
 	try {
 		const userId = Number(
-			url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=", "")
+			url.match(/&user_id=[0-9]+/g)[0].replace("&user_id=", ""),
 		);
 		const userHash = url
 			.match(/&device_hash=[A-Za-z0-9]+/g)[0]
@@ -354,11 +352,13 @@ async function refreshSettingsList() {
 	let select = ``;
 	for (let name in userAccounts.accounts)
 		select += `<option value="${name}"${
-			currAccount != null &&
-			currAccount.name != null &&
-			currAccount.name === name
-				? ` selected`
-				: ``
+			(
+				currAccount != null &&
+				currAccount.name != null &&
+				currAccount.name === name
+			) ?
+				` selected`
+			:	``
 		}>${name}</option>`;
 	if (select === ``) select += `<option value="-" selected>-</option>`;
 	settingsList.innerHTML = select;
@@ -406,16 +406,17 @@ function togglePullButtons(disable) {
 				`${name}PullButtonDisabled`,
 				`<span id="${name}PullButtonDisabled" style="font-size:0.9em">Still busy with other tasks. Please wait.</span>`,
 				prefix,
-				suffix
+				suffix,
 			);
 		} else if (Object.prototype.hasOwnProperty.call(timerList, timerName)) {
 			clearInterval(timerList[timerName].interval);
 			delete timerList[timerName];
 		}
 		message.hidden = !disable;
-		button.className = disable
-			? button.className + ` greyButton`
-			: button.className.replace(` greyButton`, ``);
+		button.className =
+			disable ?
+				button.className + ` greyButton`
+			:	button.className.replace(` greyButton`, ``);
 	}
 }
 
@@ -486,19 +487,25 @@ function dateFormat(input) {
 	}).format(input);
 }
 
-function getDisplayTime(time) {
-	const days = Math.floor(time / (1000 * 60 * 60 * 24));
-	const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
-	const minutes = Math.floor((time / 1000 / 60) % 60);
-	const seconds = Math.floor((time / 1000) % 60);
-	let display = ``;
-	if (days > 0) display += `${days} day${days !== 1 ? "s" : ""} `;
+function getDisplayTime(timeMs) {
+	let ms = Math.max(0, Number(timeMs) || 0);
+
+	const totalSeconds = Math.floor(ms / 1000);
+	const days = Math.floor(totalSeconds / 86400);
+	const hours = Math.floor((totalSeconds % 86400) / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = totalSeconds % 60;
+
+	const parts = [];
+
+	if (days > 0) parts.push(`${days} day${days === 1 ? "" : "s"}`);
 	if (days > 0 || hours > 0)
-		display += `${hours} hour${hours !== 1 ? "s" : ""} `;
+		parts.push(`${hours} hour${hours === 1 ? "" : "s"}`);
 	if (days > 0 || hours > 0 || minutes > 0)
-		display += `${padZeros(minutes, 2)} min${minutes !== 1 ? "s" : ""} `;
-	display += `${padZeros(seconds, 2)} sec${seconds !== 1 ? "s" : ""}`;
-	return display;
+		parts.push(`${padZeros(minutes, 2)} min${minutes === 1 ? "" : "s"}`);
+	parts.push(`${padZeros(seconds, 2)} sec${seconds === 1 ? "" : "s"}`);
+
+	return parts.join(" ");
 }
 
 function padZeros(num, places) {
@@ -520,9 +527,9 @@ function findWord(word, str) {
 }
 
 function ciEquals(a, b) {
-	return typeof a === "string" && typeof b === "string"
-		? a.localeCompare(b, undefined, {sensitivity: "accent"}) === 0
-		: a === b;
+	return typeof a === "string" && typeof b === "string" ?
+			a.localeCompare(b, undefined, {sensitivity: "accent"}) === 0
+		:	a === b;
 }
 
 function numSort(arr, reverse) {

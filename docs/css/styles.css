@@ -172,6 +172,8 @@ pre {
 .fjs {justify-content:flex-start}
 .fje {justify-content:flex-end}
 .fjc {justify-content:center}
+.fgr {flex-grow:1}
+.fsh {flex-shrink:1}
 .ml2 {margin-left:2px}
 .mr2 {margin-right:2px}
 .mb2 {margin:0 2px}
