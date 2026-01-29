@@ -29,6 +29,9 @@ const b_basics = {
 const b_pop = {
 	36: "Potion of Polish",
 };
+const b_GE = {
+	1798: "Epic Golden Potion",
+};
 const b_spec = {
 	35: "Potion of Specialization",
 };
