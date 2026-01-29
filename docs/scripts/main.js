@@ -1,4 +1,4 @@
-const v = 4.031; // prettier-ignore
+const v = 4.032; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -30,6 +30,7 @@ const timerList = {};
 let pbNames;
 let pbCodeRunning;
 let pbTimerRunning;
+let pbTimerTimeout = null;
 
 function isBadUserData() {
 	if (pbCodeRunning || pbTimerRunning) return true;
@@ -384,7 +385,7 @@ function setHash(hash) {
 }
 
 function togglePullButtons(disable) {
-	if (pbCodeRunning || pbTimerRunning) return;
+	if (!disable && (pbCodeRunning || pbTimerRunning)) return;
 
 	for (let name of pbNames) {
 		const button = document.getElementById(`${name}PullButton`);
@@ -420,17 +421,18 @@ function togglePullButtons(disable) {
 	}
 }
 
-function disablePullButtons(skipTimer) {
+function disablePullButtons() {
 	togglePullButtons(true);
+
 	pbCodeRunning = true;
-	if (skipTimer) pbTimerRunning = false;
-	else {
-		pbTimerRunning = true;
-		setTimeout(function () {
-			pbTimerRunning = false;
-			togglePullButtons(false);
-		}, globalButtonDisableTime);
-	}
+	pbTimerRunning = true;
+
+	if (pbTimerTimeout != null) clearTimeout(pbTimerTimeout);
+	pbTimerTimeout = setTimeout(() => {
+		pbTimerRunning = false;
+		pbTimerTimeout = null;
+		togglePullButtons(false);
+	}, globalButtonDisableTime);
 }
 
 function codeEnablePullButtons() {
@@ -570,33 +572,38 @@ function removeUserAccount(name) {
 
 function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
 	if (timeLength <= 0) return;
-	timeAim = new Date().getTime() + timeLength;
-	timeInterval = setInterval(() => {
+
+	if (timerList[timerName]?.interval != null) {
+		clearInterval(timerList[timerName].interval);
+		delete timerList[timerName];
+	}
+
+	const timeAim = Date.now() + timeLength;
+
+	const timeInterval = setInterval(() => {
 		const ele = document.getElementById(eleName);
 		const timerJson = timerList[timerName];
-		if (
-			timerJson == null ||
-			timerJson.interval == null ||
-			timerJson.aim == null
-		) {
-			delete timerList[timerName];
-			return;
-		} else if (ele === null) {
-			clearInterval(timerList[timerName].interval);
+
+		if (!timerJson?.interval || timerJson.aim == null) {
 			delete timerList[timerName];
 			return;
 		}
-		const remaining = timerJson.aim - new Date().getTime();
-		ele.innerHTML = `${prefix || ""}${getDisplayTime(remaining)}${
-			suffix || ""
-		}`;
+		if (ele === null) {
+			clearInterval(timerJson.interval);
+			delete timerList[timerName];
+			return;
+		}
+
+		const remaining = timerJson.aim - Date.now();
+		ele.innerHTML = `${prefix || ""}${getDisplayTime(remaining)}${suffix || ""}`;
 
 		if (remaining < 0) {
-			clearInterval(timerList[timerName].interval);
+			clearInterval(timerJson.interval);
 			delete timerList[timerName];
 			ele.outerHTML = endMsg || ``;
 		}
 	}, 1000);
+
 	timerList[timerName] = {aim: timeAim, interval: timeInterval};
 }
 

@@ -1,4 +1,4 @@
-const vdc = 1.006; // prettier-ignore
+const vdc = 1.007; // prettier-ignore
 const dc_LSKey_hideDismantleOpts = `scHideDismantleOptions`;
 
 async function dc_pullData() {
@@ -18,9 +18,8 @@ async function dc_pullData() {
 		) {
 			setFormsWrapperFormat(wrapper, 1);
 			wrapper.innerHTML = `&nbsp;`;
-			document.getElementById(
-				`dismantleDismantler`
-			).innerHTML = `<span class="f w100 p5" style="padding-left:10%">There is no dismantle running at the moment.</span>`;
+			document.getElementById(`dismantleDismantler`).innerHTML =
+				`<span class="f w100 p5" style="padding-left:10%">There is no dismantle running at the moment.</span>`;
 			codeEnablePullButtons();
 			return;
 		}
@@ -36,7 +35,7 @@ async function dc_pullData() {
 			dismantleData,
 			details,
 			heroDefs,
-			buffDefs
+			buffDefs,
 		);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -50,7 +49,7 @@ async function dc_displayData(
 	dismantleData,
 	details,
 	heroDefs,
-	buffDefs
+	buffDefs,
 ) {
 	if (details == null || heroDefs == null) {
 		wrapper.innerHTML = `Error.`;
@@ -101,7 +100,7 @@ async function dc_displayData(
 		};
 		redists[type].champs[champId].legs = dc_dismantleParseLegendaries(
 			details,
-			Number(champId)
+			Number(champId),
 		);
 	}
 	const hideOptions = dc_getDismantleHideOptions();
@@ -130,7 +129,7 @@ async function dc_displayData(
 			if (rewardKeys.length === 0) continue;
 			if (!addedHeader) {
 				txt += `<p style="grid-column:1/-1;font-size:1.3em"><span id="dismantle${type}Ends">${type} Dismantle - Ends in ${getDisplayTime(
-					time
+					time,
 				)}</span></p>`;
 				dismantleTimers[type] = time;
 				addedHeader = true;
@@ -138,11 +137,11 @@ async function dc_displayData(
 			txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle" style="font-size:1.2em">${name}</span><span class="formsCampaign">`;
 			txt += dc_addRow(
 				`${numLegs}`,
-				`Legendar${numLegs === 1 ? "y" : "ies"}`
+				`Legendar${numLegs === 1 ? "y" : "ies"}`,
 			);
 			txt += dc_addRow(
 				`&nbsp;`,
-				hasBeenReforged ? `HAS BEEN REFORGED` : `&nbsp;`
+				hasBeenReforged ? `HAS BEEN REFORGED` : `&nbsp;`,
 			);
 			txt += dc_addRow(`&nbsp;`);
 			txt += dc_addRow(`<u>Rewards</u>:`);
@@ -169,7 +168,7 @@ async function dc_displayData(
 				`dc_${timerType}`,
 				`dismantle${timerType}Ends`,
 				`${timerType} Dismantle - Ended`,
-				`${timerType} Dismantle - Ends in `
+				`${timerType} Dismantle - Ends in `,
 			);
 	} else {
 		wrapper.innerHTML = `&nbsp;`;
@@ -194,7 +193,7 @@ function dc_recalculate() {
 	let totalSelected = 0;
 	let reforgedSelected = 0;
 	for (let ele of document.querySelectorAll(
-		`[type="checkbox"][id^="dismantle_"]`
+		`[type="checkbox"][id^="dismantle_"]`,
 	)) {
 		if (ele.checked) {
 			totalSelected++;
@@ -202,11 +201,11 @@ function dc_recalculate() {
 		}
 	}
 	document.getElementById(`dismantleDismantleWarningRow`).innerHTML =
-		reforgedSelected > 0
-			? `${reforgedSelected} reforged champion${
-					reforgedSelected === 1 ? " has" : "s have"
-			  } been selected.`
-			: `&nbsp;`;
+		reforgedSelected > 0 ?
+			`${reforgedSelected} reforged champion${
+				reforgedSelected === 1 ? " has" : "s have"
+			} been selected.`
+		:	`&nbsp;`;
 	let txt = ``;
 	if (totalSelected > 0)
 		txt = `<input type="button" onClick="dc_dismantleDismantle()" name="dismantleDismantleButton" id="dismantleDismantleButton" style="font-size:0.9em;min-width:180px" value="Dismantle ${totalSelected} Champion${
@@ -221,7 +220,7 @@ function dc_selectAll() {
 		.getElementById(`dc_selectAll`)
 		.value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(
-		`[type="checkbox"][id^="dismantle_"]`
+		`[type="checkbox"][id^="dismantle_"]`,
 	))
 		ele.checked = check;
 	document.getElementById(`dc_selectAll`).value = `${
@@ -237,7 +236,7 @@ async function dc_dismantleDismantle() {
 	dismantleDismantler.innerHTML = txt;
 	let count = 0;
 	for (let champ of document.querySelectorAll(
-		`[type="checkbox"][id^="dismantle_"]`
+		`[type="checkbox"][id^="dismantle_"]`,
 	)) {
 		if (!champ.checked) continue;
 		count++;
@@ -262,20 +261,20 @@ async function dc_dismantleDismantle() {
 
 function dc_disableAllDismantleButtonsAndCheckboxes(disable) {
 	if (disable) {
-		disablePullButtons(true);
+		disablePullButtons();
 		for (let ele of document.querySelectorAll(
-			`input[type="checkbox"][id^="dismantle_"]`
+			`input[type="checkbox"][id^="dismantle_"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
-				: ``;
+			ele.style =
+				disable ?
+					`color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
+				:	``;
 		}
 		let ele = document.getElementById(`dc_selectAll`);
 		ele.disabled = disable;
-		ele.style = disable
-			? `color:#555555;background-color:var(--good2)`
-			: ``;
+		ele.style =
+			disable ? `color:#555555;background-color:var(--good2)` : ``;
 	} else codeEnablePullButtons();
 }
 

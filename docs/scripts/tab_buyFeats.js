@@ -1,4 +1,4 @@
-const vbf = 1.012; // prettier-ignore
+const vbf = 1.013; // prettier-ignore
 
 async function bf_pullFeatsData() {
 	if (isBadUserData()) return;
@@ -25,9 +25,8 @@ async function bf_displayFeatsData(wrapper, details, defs) {
 		return;
 	}
 	const now = Date.now() / 1000;
-	wrapper.dataset.gems = !details.details.red_rubies
-		? 0
-		: details.details.red_rubies;
+	wrapper.dataset.gems =
+		!details.details.red_rubies ? 0 : details.details.red_rubies;
 	const unlockedChampIDs = [];
 	const unlockedFeats = [];
 	for (let hero of details.details.heroes) {
@@ -114,7 +113,7 @@ function bf_featsRecalcCost() {
 	if (wrapGemsCost != null)
 		wrapGemsCost.innerHTML = `Total Gems Cost: ${nf(cost)}`;
 	const featsSelectAllTheFeatsRow = document.getElementById(
-		"featsSelectAllTheFeatsRow"
+		"featsSelectAllTheFeatsRow",
 	);
 	const featsBuyRow = document.getElementById("featsBuyRow");
 	featsSelectAllTheFeatsRow.innerHTML = `<input type="button" onClick="bf_featsSelectAllTheFeats()" name="featsSelectAllTheFeatsButton" id="featsSelectAllTheFeatsButton" style="font-size:0.9em;min-width:180px" value="Select All Unowned Feats">`;
@@ -181,22 +180,22 @@ async function bf_buyFeats() {
 
 function bf_disableAllFeatButtonsAndCheckboxes(disable) {
 	if (disable) {
-		disablePullButtons(true);
+		disablePullButtons();
 		for (let ele of document.querySelectorAll(
-			`input[type="checkbox"][id^="feat"]`
+			`input[type="checkbox"][id^="feat"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
-				: ``;
+			ele.style =
+				disable ?
+					`color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
+				:	``;
 		}
 		for (let ele of document.querySelectorAll(
-			`input[type="button"][id^="feat_select"]`
+			`input[type="button"][id^="feat_select"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:var(--good2)`
-				: ``;
+			ele.style =
+				disable ? `color:#555555;background-color:var(--good2)` : ``;
 		}
 	} else codeEnablePullButtons();
 }

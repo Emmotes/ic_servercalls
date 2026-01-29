@@ -1,4 +1,4 @@
-const vsc = 1.006; // prettier-ignore
+const vsc = 1.007; // prettier-ignore
 
 async function sc_pullShiniesData() {
 	if (isBadUserData()) return;
@@ -64,25 +64,25 @@ async function sc_displayShiniesData(wrapper, details) {
 		`Tiny Bounty Contracts:`,
 		nf(bcC),
 		`Tokens:`,
-		nf(bcCT)
+		nf(bcCT),
 	);
 	txt += sc_addShiniesRow(
 		`Small Bounty Contracts:`,
 		nf(bcU),
 		`Tokens:`,
-		nf(bcUT)
+		nf(bcUT),
 	);
 	txt += sc_addShiniesRow(
 		`Medium Bounty Contracts:`,
 		nf(bcR),
 		`Tokens:`,
-		nf(bcRT)
+		nf(bcRT),
 	);
 	txt += sc_addShiniesRow(
 		`Large Bounty Contracts:`,
 		nf(bcE),
 		`Tokens:`,
-		nf(bcET)
+		nf(bcET),
 	);
 	txt += `<span class="f fr w100 p5">&nbsp;</span>`;
 	txt += sc_addShiniesRow(`Tokens:`, nf(tokensB));

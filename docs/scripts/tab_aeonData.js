@@ -1,4 +1,4 @@
-const vad = 1.007; // prettier-ignore
+const vad = 1.008; // prettier-ignore
 
 async function ad_pullAeonData() {
 	if (isBadUserData()) return;
@@ -54,13 +54,13 @@ async function ad_displayAeonData(wrapper, details) {
 	txt += ad_addAeonRow(`Next Patron:`, nextPatron);
 	txt += ad_addAeonRow(
 		`Time 'til Switch:`,
-		`<span id="aeonTimer">${getDisplayTime(millisecondsTilRollover)}</span>`
+		`<span id="aeonTimer">${getDisplayTime(millisecondsTilRollover)}</span>`,
 	);
 	createTimer(
 		millisecondsTilRollover,
 		`ad_switchPatron`,
 		`aeonTimer`,
-		`Switched`
+		`Switched`,
 	);
 	wrapper.innerHTML = txt;
 }

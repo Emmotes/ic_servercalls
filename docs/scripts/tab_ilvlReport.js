@@ -1,4 +1,4 @@
-const vir = 1.004; // prettier-ignore
+const vir = 1.005; // prettier-ignore
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData()) return;
@@ -105,21 +105,21 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 	if (totalEvergreenItems > 0) {
 		txt += ir_addiLvlReportRow(
 			`Average Evergreen iLvl:`,
-			nf(averageEvergreeniLvl)
+			nf(averageEvergreeniLvl),
 		);
 		txt += ir_addiLvlReportRow(
 			`Highest Average Evergreen:`,
 			nf(highestAverageEvergreen),
-			highestAverageEvergreenName
+			highestAverageEvergreenName,
 		);
 		txt += ir_addiLvlReportRow(
 			`Lowest Average Evergreen:`,
 			nf(lowestAverageEvergreen),
-			lowestAverageEvergreenName
+			lowestAverageEvergreenName,
 		);
 		txt += ir_addiLvlReportRow(
 			`Evergreen Shinies:`,
-			`${nf(evergreenShinies)} / ${nf(totalEvergreenItems)}`
+			`${nf(evergreenShinies)} / ${nf(totalEvergreenItems)}`,
 		);
 	} else
 		txt += `<span class="f fr w100 p5">You do not have any evergreen items.</span>`;
@@ -129,16 +129,16 @@ async function ir_displayiLvlReportData(wrapper, details, heroDefs) {
 		txt += ir_addiLvlReportRow(
 			`Highest Average Event:`,
 			nf(highestAverageEvent),
-			highestAverageEventName
+			highestAverageEventName,
 		);
 		txt += ir_addiLvlReportRow(
 			`Lowest Average Event:`,
 			nf(lowestAverageEvent),
-			lowestAverageEventName
+			lowestAverageEventName,
 		);
 		txt += ir_addiLvlReportRow(
 			`Event Shinies:`,
-			`${nf(eventShinies)} / ${nf(totalItems - totalEvergreenItems)}`
+			`${nf(eventShinies)} / ${nf(totalItems - totalEvergreenItems)}`,
 		);
 	} else
 		txt += `<span class="f fr w100 p5">You do not have any event items.</span>`;

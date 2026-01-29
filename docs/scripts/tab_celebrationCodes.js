@@ -1,4 +1,4 @@
-const vcc = 1.005; // prettier-ignore
+const vcc = 1.006; // prettier-ignore
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData()) return;
@@ -89,7 +89,7 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 		for (let i = 0; i < codes.length; i++) {
 			const code = codes[i];
 			txt += `<span class="featsChampionList"><input type="checkbox" id="celeb_${ident}_${i}" name="celeb_${ident}_${i}" data-name="${name}" data-ident="${ident}" data-code="${code}"><label class="cblabel" for="celeb_${ident}_${i}" style="font-family:monospace;font-size:1.1em">${cc_displayCode(
-				code
+				code,
 			)}</label></span>`;
 		}
 		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
@@ -110,7 +110,7 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 			`celebrationCooldown`,
 			`New Day Started. Check for Celebrations again.`,
 			`${prefix}`,
-			`.`
+			`.`,
 		);
 	}
 }
@@ -127,11 +127,11 @@ function cc_celebrationsSelectAllTheCelebrations() {
 		.getElementById(`celebrationsSelectAllTheCelebrationsButton`)
 		.value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(
-		`[type="checkbox"][id^="celeb_"]`
+		`[type="checkbox"][id^="celeb_"]`,
 	))
 		ele.checked = check;
 	document.getElementById(
-		`celebrationsSelectAllTheCelebrationsButton`
+		`celebrationsSelectAllTheCelebrationsButton`,
 	).value = `${check ? "Deselect" : "Select"} All Codes`;
 }
 
@@ -142,7 +142,7 @@ async function cc_claimCelebrations() {
 	celebrationsClaimer.innerHTML = txt;
 	let count = 0;
 	for (let ele of document.querySelectorAll(
-		`input[type="checkbox"][id^="celeb_"]`
+		`input[type="checkbox"][id^="celeb_"]`,
 	)) {
 		if (!ele.checked) continue;
 		count++;
@@ -155,15 +155,15 @@ async function cc_claimCelebrations() {
 			if (result.failure_reason != null)
 				console.log(
 					`Code ${cc_displayCode(
-						code
+						code,
 					)} failed to claim. Server gave reason: ${
 						result.failure_reason
-					}`
+					}`,
 				);
 			successType = `Failed to claim`;
 		}
 		txt += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${cc_displayCode(
-			code
+			code,
 		)} in ${name}</span></span>`;
 		ele.parentNode.style.display = `none`;
 		ele.checked = false;
@@ -178,22 +178,22 @@ async function cc_claimCelebrations() {
 
 function cc_disableAllCelebrationButtonsAndCheckboxes(disable) {
 	if (disable) {
-		disablePullButtons(true);
+		disablePullButtons();
 		for (let ele of document.querySelectorAll(
-			`input[type="checkbox"][id^="celeb"]`
+			`input[type="checkbox"][id^="celeb"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
-				: ``;
+			ele.style =
+				disable ?
+					`color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
+				:	``;
 		}
 		for (let ele of document.querySelectorAll(
-			`input[type="button"][id^="celeb_select"]`
+			`input[type="button"][id^="celeb_select"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:var(--good2)`
-				: ``;
+			ele.style =
+				disable ? `color:#555555;background-color:var(--good2)` : ``;
 		}
 	} else codeEnablePullButtons();
 }

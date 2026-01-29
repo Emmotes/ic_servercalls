@@ -1,4 +1,4 @@
-const vdf = 1.016; // prettier-ignore
+const vdf = 1.017; // prettier-ignore
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;
@@ -45,13 +45,10 @@ async function df_displayFormationSaves(wrapper, saves) {
 			const formName = formation.name;
 			const formFav = Number(formation.favorite || 0);
 			const formLet =
-				formFav === 1
-					? `Q`
-					: formFav === 2
-					? `W`
-					: formFav === 3
-					? `E`
-					: ``;
+				formFav === 1 ? `Q`
+				: formFav === 2 ? `W`
+				: formFav === 3 ? `E`
+				: ``;
 			const formFeats =
 				Object.prototype.toString.call(formation.feats || []) !==
 				`[object Array]`;
@@ -65,7 +62,7 @@ async function df_displayFormationSaves(wrapper, saves) {
 			const tt = df_createFormationTooltip(
 				formName + extras,
 				formation.formation,
-				formObj
+				formObj,
 			);
 			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${campId}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
 			added++;
@@ -148,7 +145,7 @@ function df_toggleSelectAutosaveForms() {
 	const button = document.getElementById(`toggleSelectAutosaveFormsButton`);
 	const check = !button.value.includes(`Deselect`);
 	for (let ele of document.querySelectorAll(
-		'input[name="___AUTO___SAVE___"]'
+		'input[name="___AUTO___SAVE___"]',
 	))
 		ele.checked = check;
 	button.value = `${check ? `Deselect` : `Select`} All Autosaved Formations`;
@@ -176,7 +173,7 @@ async function df_deleteFormationSaves() {
 			const result = await saveFormation(
 				id,
 				campId,
-				`renameAutoSaveToDeleteIt`
+				`renameAutoSaveToDeleteIt`,
 			);
 			if (result[FR] === `Invalid or incomplete parameters`) {
 				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
@@ -207,22 +204,22 @@ async function df_deleteFormationSaves() {
 
 function df_disableAllFormationsButtonsAndCheckboxes(disable) {
 	if (disable) {
-		disablePullButtons(true);
+		disablePullButtons();
 		for (let ele of document.querySelectorAll(
-			`input[type="checkbox"][id^="form"]`
+			`input[type="checkbox"][id^="form"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
-				: ``;
+			ele.style =
+				disable ?
+					`color:#555555;background-color:hsl(calc(240*0.95),15%,calc(16%*0.8))`
+				:	``;
 		}
 		for (let ele of document.querySelectorAll(
-			`input[type="button"][id^="forms_select"]`
+			`input[type="button"][id^="forms_select"]`,
 		)) {
 			ele.disabled = disable;
-			ele.style = disable
-				? `color:#555555;background-color:var(--good2)`
-				: ``;
+			ele.style =
+				disable ? `color:#555555;background-color:var(--good2)` : ``;
 		}
 	} else codeEnablePullButtons();
 }

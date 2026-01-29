@@ -72,7 +72,7 @@ const LZString = (function () {
 				16384,
 				function (index) {
 					return compressed.charCodeAt(index) - 32;
-				}
+				},
 			);
 		},
 
@@ -152,7 +152,7 @@ const LZString = (function () {
 				if (
 					!Object.prototype.hasOwnProperty.call(
 						context_dictionary,
-						context_c
+						context_c,
 					)
 				) {
 					context_dictionary[context_c] = context_dictSize++;
@@ -163,7 +163,7 @@ const LZString = (function () {
 				if (
 					Object.prototype.hasOwnProperty.call(
 						context_dictionary,
-						context_wc
+						context_wc,
 					)
 				) {
 					context_w = context_wc;
@@ -171,7 +171,7 @@ const LZString = (function () {
 					if (
 						Object.prototype.hasOwnProperty.call(
 							context_dictionaryToCreate,
-							context_w
+							context_w,
 						)
 					) {
 						if (context_w.charCodeAt(0) < 256) {
@@ -180,7 +180,7 @@ const LZString = (function () {
 								if (context_data_position === bitsPerChar - 1) {
 									context_data_position = 0;
 									context_data.push(
-										getCharFromInt(context_data_val)
+										getCharFromInt(context_data_val),
 									);
 									context_data_val = 0;
 								} else {
@@ -194,7 +194,7 @@ const LZString = (function () {
 								if (context_data_position === bitsPerChar - 1) {
 									context_data_position = 0;
 									context_data.push(
-										getCharFromInt(context_data_val)
+										getCharFromInt(context_data_val),
 									);
 									context_data_val = 0;
 								} else {
@@ -210,7 +210,7 @@ const LZString = (function () {
 								if (context_data_position === bitsPerChar - 1) {
 									context_data_position = 0;
 									context_data.push(
-										getCharFromInt(context_data_val)
+										getCharFromInt(context_data_val),
 									);
 									context_data_val = 0;
 								} else {
@@ -225,7 +225,7 @@ const LZString = (function () {
 								if (context_data_position === bitsPerChar - 1) {
 									context_data_position = 0;
 									context_data.push(
-										getCharFromInt(context_data_val)
+										getCharFromInt(context_data_val),
 									);
 									context_data_val = 0;
 								} else {
@@ -248,7 +248,7 @@ const LZString = (function () {
 							if (context_data_position === bitsPerChar - 1) {
 								context_data_position = 0;
 								context_data.push(
-									getCharFromInt(context_data_val)
+									getCharFromInt(context_data_val),
 								);
 								context_data_val = 0;
 							} else {
@@ -273,7 +273,7 @@ const LZString = (function () {
 				if (
 					Object.prototype.hasOwnProperty.call(
 						context_dictionaryToCreate,
-						context_w
+						context_w,
 					)
 				) {
 					if (context_w.charCodeAt(0) < 256) {
@@ -282,7 +282,7 @@ const LZString = (function () {
 							if (context_data_position === bitsPerChar - 1) {
 								context_data_position = 0;
 								context_data.push(
-									getCharFromInt(context_data_val)
+									getCharFromInt(context_data_val),
 								);
 								context_data_val = 0;
 							} else {
@@ -296,7 +296,7 @@ const LZString = (function () {
 							if (context_data_position === bitsPerChar - 1) {
 								context_data_position = 0;
 								context_data.push(
-									getCharFromInt(context_data_val)
+									getCharFromInt(context_data_val),
 								);
 								context_data_val = 0;
 							} else {
@@ -311,7 +311,7 @@ const LZString = (function () {
 							if (context_data_position === bitsPerChar - 1) {
 								context_data_position = 0;
 								context_data.push(
-									getCharFromInt(context_data_val)
+									getCharFromInt(context_data_val),
 								);
 								context_data_val = 0;
 							} else {
@@ -326,7 +326,7 @@ const LZString = (function () {
 							if (context_data_position === bitsPerChar - 1) {
 								context_data_position = 0;
 								context_data.push(
-									getCharFromInt(context_data_val)
+									getCharFromInt(context_data_val),
 								);
 								context_data_val = 0;
 							} else {
@@ -396,7 +396,7 @@ const LZString = (function () {
 				32768,
 				function (index) {
 					return compressed.charCodeAt(index);
-				}
+				},
 			);
 		},
 

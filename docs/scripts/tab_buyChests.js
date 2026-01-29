@@ -1,4 +1,4 @@
-const vbc = 1.019; // prettier-ignore
+const vbc = 1.020; // prettier-ignore
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
 const bc_goldChestCost = 500;
@@ -42,7 +42,7 @@ async function bc_pullBuyChestsData() {
 			eventActive,
 			chests,
 			shop,
-			dismantleData
+			dismantleData,
 		);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -57,7 +57,7 @@ async function bc_displayBuyChestsData(
 	eventActive,
 	chests,
 	shop,
-	dismantleData
+	dismantleData,
 ) {
 	const buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	const fullDismantleChampions =
@@ -81,7 +81,7 @@ async function bc_displayBuyChestsData(
 						break outerLoop;
 					}
 					const dismantle = chest.hero_ids.some((r) =>
-						fullDismantleChampions.includes(r)
+						fullDismantleChampions.includes(r),
 					);
 					eventChests[chestId] = {name: name, dismantle: dismantle};
 					break;
@@ -104,26 +104,26 @@ async function bc_displayBuyChestsData(
 		`Maximum Silver Chests:`,
 		nf(silverChests),
 		`buyChestsSilver`,
-		silverChests
+		silverChests,
 	);
 	txt += bc_addChestsRow(
 		`Maximum Gold Chests:`,
 		nf(goldChests),
 		`buyChestsGold`,
-		goldChests
+		goldChests,
 	);
 	txt += bc_addChestsRow(`&nbsp;`, `&nbsp;`);
 	txt += bc_addChestsRow(
 		`Available Event Tokens:`,
 		nf(tokens),
 		`buyChestsTokens`,
-		tokens
+		tokens,
 	);
 	txt += bc_addChestsRow(
 		`Maximum Chest Packs:`,
 		nf(chestPacks),
 		`buyChestsEvent`,
-		chestPacks
+		chestPacks,
 	);
 	txt += bc_addChestsRow(`&nbsp;`, `&nbsp;`);
 	let s = `<select name="buyChestsBuyList" id="buyChestsBuyList" oninput="bc_modifyBuyChestsBuyAmountSlider(this.value);" style="width:100%"><option value="-1" selected>-</option><optgroup label="Gem Chests" id="gemChestsOpt">`;
@@ -158,13 +158,10 @@ function bc_modifyBuyChestsBuyAmountSlider(val) {
 	const buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	val = Number(val);
 	let maximumToUse =
-		val == null
-			? 0
-			: val === 1
-			? Number(buyChestsSilver.value)
-			: val === 2
-			? Number(buyChestsGold.value)
-			: Number(buyChestsEvent.value);
+		val == null ? 0
+		: val === 1 ? Number(buyChestsSilver.value)
+		: val === 2 ? Number(buyChestsGold.value)
+		: Number(buyChestsEvent.value);
 
 	buyChestsBuyAmount.max = maximumToUse;
 	buyChestsBuyAmount.min = 0;
@@ -210,7 +207,7 @@ async function bc_buyChests() {
 	const buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
-	disablePullButtons(true);
+	disablePullButtons();
 	let buying = ``;
 	let txt = ``;
 	if (buyChestsBuyList == null || buyChestsBuyAmount == null) {
@@ -222,11 +219,9 @@ async function bc_buyChests() {
 	const chestName =
 		buyChestsBuyList.options[buyChestsBuyList.selectedIndex].text;
 	const genChest =
-		chestId > 2
-			? `Chest Pack`
-			: chestId === 1
-			? `Silver Chest`
-			: `Gold Chest`;
+		chestId > 2 ? `Chest Pack`
+		: chestId === 1 ? `Silver Chest`
+		: `Gold Chest`;
 	let amount = buyChestsBuyAmount.value;
 	const initAmount = amount;
 
@@ -248,7 +243,7 @@ async function bc_buyChests() {
 			const failureType = chestId > 2 ? `tokens` : `gems`;
 			txt += bc_addChestResultRow(
 				`- ${successType}:`,
-				`Not enough ${failureType}.`
+				`Not enough ${failureType}.`,
 			);
 			buying = bc_makeBuyingRow(0, chestName, initAmount);
 			buyChestsBuyer.innerHTML = buying + txt;
@@ -259,30 +254,30 @@ async function bc_buyChests() {
 			const currencyType = chestId > 2 ? `Tokens` : `Gems`;
 			const currencyRemaining = Math.floor(result.currency_remaining);
 			cost = ` for ${nf(result.currency_spent)} ${currencyType} (${nf(
-				currencyRemaining
+				currencyRemaining,
 			)} ${currencyType} Remaining)`;
 			amount -= toBuy;
 			if (chestId > 2) {
 				bc_applyValueToElementAndDisplay(
 					`buyChestsTokens`,
-					currencyRemaining
+					currencyRemaining,
 				);
 				bc_applyValueToElementAndDisplay(
 					`buyChestsEvent`,
-					Math.floor(currencyRemaining / bc_chestPackCost)
+					Math.floor(currencyRemaining / bc_chestPackCost),
 				);
 			} else {
 				bc_applyValueToElementAndDisplay(
 					`buyChestsGems`,
-					currencyRemaining
+					currencyRemaining,
 				);
 				bc_applyValueToElementAndDisplay(
 					`buyChestsSilver`,
-					Math.floor(currencyRemaining / bc_silverChestCost)
+					Math.floor(currencyRemaining / bc_silverChestCost),
 				);
 				bc_applyValueToElementAndDisplay(
 					`buyChestsGold`,
-					Math.floor(currencyRemaining / bc_goldChestCost)
+					Math.floor(currencyRemaining / bc_goldChestCost),
 				);
 			}
 			buyChestsBuyAmount.value -= toBuy;
@@ -291,7 +286,7 @@ async function bc_buyChests() {
 		buying = bc_makeBuyingRow(amount, chestName, initAmount);
 		txt += bc_addChestResultRow(
 			`- ${successType}:`,
-			`${toBuy} ${genChest}${cost}`
+			`${toBuy} ${genChest}${cost}`,
 		);
 		buyChestsBuyer.innerHTML = buying + txt;
 	}
@@ -392,7 +387,7 @@ function bc_toggleBuyChestsSliderFidelity(fidelity) {
 		buyChestsBuyAmount.step = fidelity;
 		buyChestsBuyAmount.value = 0;
 		bc_modifyBuyChestsBuyAmountSlider(
-			document.getElementById(`buyChestsBuyList`).value
+			document.getElementById(`buyChestsBuyList`).value,
 		);
 	}
 }

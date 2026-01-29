@@ -1,4 +1,4 @@
-const vpm = 1.010; // prettier-ignore
+const vpm = 1.011; // prettier-ignore
 
 async function pm_pullPartyData() {
 	if (isBadUserData()) return;
@@ -27,9 +27,9 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		const adventureId = gameInstance.current_adventure_id;
 		if (adventureId == null) continue;
 		const adventure =
-			adventureId > 0
-				? pm_getAdventure(adventureId, adventures)
-				: undefined;
+			adventureId > 0 ?
+				pm_getAdventure(adventureId, adventures)
+			:	undefined;
 		let customName = gameInstance.custom_name;
 		if (customName !== `` && customName != null)
 			customName = `: ${customName}`;

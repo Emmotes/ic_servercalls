@@ -1,4 +1,4 @@
-const vb = 2.000; // prettier-ignore
+const vb = 2.001; // prettier-ignore
 const b_basics = {
 	1: "Small Potion of Giant's Strength",
 	2: "Medium Potion of Giant's Strength",

@@ -1,4 +1,4 @@
-const vtm = 1.013; // prettier-ignore
+const vtm = 1.014; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -15,7 +15,7 @@ async function tm_pullData() {
 		const trialsData = (await trialsRefreshData()).trials_data;
 		wrapper.innerHTML = `Waiting for definitions...`;
 		const defs = await getDefinitions(
-			"hero_defines,trials_role_defines,trials_difficulty_defines"
+			"hero_defines,trials_role_defines,trials_difficulty_defines",
 		);
 		const trialsRoles = defs.trials_role_defines;
 		const trialsDiffs = defs.trials_difficulty_defines;
@@ -25,7 +25,7 @@ async function tm_pullData() {
 			trialsData,
 			trialsRoles,
 			trialsDiffs,
-			champDefs
+			champDefs,
 		);
 		codeEnablePullButtons();
 	} catch (error) {
@@ -38,7 +38,7 @@ async function tm_displayData(
 	trialsData,
 	trialsRoles,
 	trialsDiffs,
-	champDefs
+	champDefs,
 ) {
 	const trialsInfo = document.getElementById(`trialsInfo`);
 	tm_champsById = getDefsNames(champDefs);
@@ -79,13 +79,13 @@ async function tm_displayData(
 		// Trials aren't running and the reward has already been claimed.
 
 		const timeUntilNext = Number(
-			trialsData.seconds_until_can_join_campaign || 0
+			trialsData.seconds_until_can_join_campaign || 0,
 		);
 		tm_displayJoinCreateCampaign(
 			wrapper,
 			trialsInfo,
 			trialsData,
-			timeUntilNext
+			timeUntilNext,
 		);
 	} else if (campaign != null && !campaign.started) {
 		// Sitting in lobby.
@@ -95,7 +95,7 @@ async function tm_displayData(
 		wrapper.innerHTML = `&nbsp;`;
 		tm_champsByName = tm_parseOwnedChampsByName(
 			tm_champsById,
-			detailsHeroes
+			detailsHeroes,
 		);
 
 		tm_displayLobby(wrapper, campaign, trialsData);
@@ -141,7 +141,7 @@ function tm_displayClaimRewards(wrapper, trialsInfo, trialsData, campaign) {
 	txt += tm_addRow(`Rewards:`, `${nf(scales)} Scales of Tiamat`);
 	txt += tm_addRow(
 		`&nbsp;`,
-		`${nf(chests)} Glory of Bahamut Chest${chests === 1 ? "" : "s"}`
+		`${nf(chests)} Glory of Bahamut Chest${chests === 1 ? "" : "s"}`,
 	);
 	wrapper.innerHTML = txt;
 	trialsInfo.innerHTML = tm_addGenericButton(
@@ -149,7 +149,7 @@ function tm_displayClaimRewards(wrapper, trialsInfo, trialsData, campaign) {
 		`tm_claimRewards(this)`,
 		`trialsClaimRewardsButton`,
 		`Claim Trials Rewards`,
-		dataset
+		dataset,
 	);
 }
 
@@ -157,7 +157,7 @@ async function tm_claimRewards(trialsClaimRewardsButton) {
 	const trialsInfo = document.getElementById(`trialsInfo`);
 
 	trialsClaimRewardsButton.disabled = true;
-	disablePullButtons(true);
+	disablePullButtons();
 	let txt = ``;
 
 	const campaignId = trialsClaimRewardsButton.dataset.campaignid || 0;
@@ -192,19 +192,19 @@ async function tm_claimRewards(trialsClaimRewardsButton) {
 	if (scales > 0)
 		txt += tm_addInfoRow(
 			`- ${successType}:`,
-			`${nf(scales)} Scale${scales === 1 ? "" : "s"} of Tiamat`
+			`${nf(scales)} Scale${scales === 1 ? "" : "s"} of Tiamat`,
 		);
 	if (chests > 0)
 		txt += tm_addInfoRow(
 			`- ${successType}:`,
-			`${nf(chests)} Glory of Bahamut Chest${chests === 1 ? "" : "s"}`
+			`${nf(chests)} Glory of Bahamut Chest${chests === 1 ? "" : "s"}`,
 		);
 	if (skinCount > 0)
 		txt += tm_addInfoRow(
 			`- ${successType}:`,
 			`${skinCount === 1 ? "A" : skinCount} Champion Skin${
 				skinCount === 1 ? "" : "s"
-			}`
+			}`,
 		);
 	trialsInfo.innerHTML = txt;
 
@@ -220,43 +220,43 @@ function tm_displayJoinCreateCampaign(
 	wrapper,
 	trialsInfo,
 	trialsData,
-	timeUntilNext
+	timeUntilNext,
 ) {
 	const timeMS = timeUntilNext * 1000;
 
 	let txt = tm_addRowHeader(`Join a Lobby`);
 	txt += tm_addRow(
 		`Join Key:`,
-		`<input type="text" id="trialsJoinKey" name="trialsJoinKey">`
+		`<input type="text" id="trialsJoinKey" name="trialsJoinKey">`,
 	);
 	if (timeUntilNext > 0)
 		txt += tm_addRow(
 			`&nbsp;`,
 			`<span id="trialsJoinCannotJoinSpan">Available in ${getDisplayTime(
-				timeMS
-			)}</span>`
+				timeMS,
+			)}</span>`,
 		);
 	else txt += tm_addRow(`&nbsp;`, tm_createJoinButton());
 	txt += tm_addRow(`&nbsp;`, `&nbsp;`);
 	txt += tm_addRowHeader(`Create a Lobby`);
 	txt += tm_addRow(
 		`Difficulty:`,
-		tm_buildDifficultySelect(trialsData.highest_available_difficulty)
+		tm_buildDifficultySelect(trialsData.highest_available_difficulty),
 	);
 	txt += tm_addRow(
 		`Private:`,
-		`<input type="checkbox" id="trialsPrivateCheckbox" checked>`
+		`<input type="checkbox" id="trialsPrivateCheckbox" checked>`,
 	);
 	txt += tm_addRow(
 		`Auto Start:`,
-		`<input type="checkbox" id="trialsAutostartCheckbox" checked>`
+		`<input type="checkbox" id="trialsAutostartCheckbox" checked>`,
 	);
 	if (timeUntilNext > 0)
 		txt += tm_addRow(
 			`&nbsp;`,
 			`<span id="trialsCreateCannotCreateSpan">Available in ${getDisplayTime(
-				timeMS
-			)}</span>`
+				timeMS,
+			)}</span>`,
 		);
 	else txt += tm_addRow(`&nbsp;`, tm_createCreateButton());
 	wrapper.innerHTML = txt;
@@ -266,14 +266,14 @@ function tm_displayJoinCreateCampaign(
 		`tm_cooldownJoin`,
 		`trialsJoinCannotJoinSpan`,
 		tm_createJoinButton(),
-		`Available in `
+		`Available in `,
 	);
 	createTimer(
 		timeMS,
 		`tm_cooldownCreate`,
 		`trialsCreateCannotCreateSpan`,
 		tm_createCreateButton(),
-		`Available in `
+		`Available in `,
 	);
 
 	trialsInfo.innerHTML = `&nbsp;`;
@@ -284,7 +284,7 @@ function tm_createJoinButton() {
 		`green`,
 		`tm_joinTrial()`,
 		`trialsJoinButton`,
-		`Join Trials Lobby`
+		`Join Trials Lobby`,
 	);
 }
 
@@ -293,7 +293,7 @@ function tm_createCreateButton() {
 		`green`,
 		`tm_createTrial()`,
 		`trialsCreateButton`,
-		`Create Trials Lobby`
+		`Create Trials Lobby`,
 	);
 }
 
@@ -319,7 +319,7 @@ async function tm_joinTrial() {
 
 	trialsJoinKey.disabled = true;
 	trialsJoinButton.disabled = true;
-	disablePullButtons(true);
+	disablePullButtons();
 
 	let txt = trialsInfo.innerHTML;
 	if (!txt.includes("Joining a Trial"))
@@ -349,13 +349,13 @@ async function tm_joinTrial() {
 async function tm_createTrial() {
 	const trialsInfo = document.getElementById(`trialsInfo`);
 	const trialsDifficultySelect = document.getElementById(
-		`trialsDifficultySelect`
+		`trialsDifficultySelect`,
 	);
 	const trialsPrivateCheckbox = document.getElementById(
-		`trialsPrivateCheckbox`
+		`trialsPrivateCheckbox`,
 	);
 	const trialsAutostartCheckbox = document.getElementById(
-		`trialsAutostartCheckbox`
+		`trialsAutostartCheckbox`,
 	);
 	let trialsCreateButton = document.getElementById(`trialsCreateButton`);
 
@@ -363,7 +363,7 @@ async function tm_createTrial() {
 	trialsPrivateCheckbox.disabled = true;
 	trialsAutostartCheckbox.disabled = true;
 	trialsCreateButton.disabled = true;
-	disablePullButtons(true);
+	disablePullButtons();
 
 	let txt = trialsInfo.innerHTML;
 	if (!txt.includes("Creating a Trial"))
@@ -376,7 +376,7 @@ async function tm_createTrial() {
 		diffId,
 		isPrivate,
 		0,
-		isAutostart
+		isAutostart,
 	);
 	let successType = `Failed to create`;
 	if (response.success & response.okay) {
@@ -384,7 +384,7 @@ async function tm_createTrial() {
 		txt = txt.replace(/^.*?(<br>){2}/gm, "");
 		txt += tm_addInfoRow(
 			`- ${successType}:`,
-			`Tier ${diffId} - ${tm_diffs[diffId].name}`
+			`Tier ${diffId} - ${tm_diffs[diffId].name}`,
 		);
 	} else if (response.success && response.fail_message != null)
 		txt += tm_addInfoRow(`- ${successType}:`, `${response.fail_message}.`);
@@ -425,7 +425,10 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 	const hostIndex = Number(campaign.host_index);
 	const playerIndex = Number(campaign.active_player_index);
 	const player = campaign.players[playerIndex];
-	const hasPlayerPicked = player?.name === playerName && player?.hero_id !== 0 && player?.role_id !== 0;
+	const hasPlayerPicked =
+		player?.name === playerName &&
+		player?.hero_id !== 0 &&
+		player?.role_id !== 0;
 
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`, `${tier} (${tierName})`);
@@ -433,7 +436,7 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 	txt += tm_addRow(`Auto Start:`, `${autoStart ? "Yes" : "No"}`);
 	txt += tm_addRow(
 		`Join Key:`,
-		`<span style="color:var(--AlienArmpit)">${joinKey}</span>`
+		`<span style="color:var(--AlienArmpit)">${joinKey}</span>`,
 	);
 	txt += tm_addRow(`Tiamat HP:`, nf(tiamatHP));
 	if (!hasPlayerPicked) txt += tm_addRow(`Blood Vial Cost:`, nf(vialCost));
@@ -448,7 +451,7 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 				`${roleName}:`,
 				currPlayer.name,
 				`Champion:`,
-				tm_champsById[currPlayer.hero]
+				tm_champsById[currPlayer.hero],
 			);
 	}
 	txt += tm_addRow(`&nbsp;`, `&nbsp;`);
@@ -456,16 +459,16 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 		txt += `<span class="f fr w100 p5" style="font-size:1.2em">Pick Role and Champion:</span>`;
 		txt += tm_addRow(
 			`Choose Role:`,
-			tm_buildRoleChoiceSelect(playersByRoleKeys)
+			tm_buildRoleChoiceSelect(playersByRoleKeys),
 		);
 		txt += tm_addRow(`Choose Champion:`, tm_buildChampionChoiceSelect());
 		txt += tm_addRow(
 			`Currency:`,
-			tm_buildCostChoiceSelect(vialCost, vialInv)
+			tm_buildCostChoiceSelect(vialCost, vialInv),
 		);
 		txt += tm_addRow(
 			`&nbsp;`,
-			`<span id="trialsPickChampionButtonHolder">&nbsp;</span>`
+			`<span id="trialsPickChampionButtonHolder">&nbsp;</span>`,
 		);
 	} else {
 		txt += `<span class="f fr w100 p5" style="font-size:1.2em">Actions:</span>`;
@@ -476,8 +479,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 					`red`,
 					`tm_trialsStartTrial(${campaignId})`,
 					`trialsStartTrialButton`,
-					`Start Trial Now`
-				)
+					`Start Trial Now`,
+				),
 			);
 		txt += tm_addRow(
 			`Change Role/Champion:`,
@@ -485,8 +488,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 				`red`,
 				`tm_trialsPickRoleHero(0,0,false)`,
 				`trialsChangeRoleHeroButton`,
-				`Change Role or Champion`
-			)
+				`Change Role or Champion`,
+			),
 		);
 		const type = playerIndex === hostIndex ? "Close" : "Leave";
 		txt += tm_addRow(
@@ -495,8 +498,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 				`red`,
 				`tm_trialsLeaveLobby(${playerIndex},'${joinKey}')`,
 				`trialsLeaveLobbyButton`,
-				`${type} This Lobby`
-			)
+				`${type} This Lobby`,
+			),
 		);
 	}
 	wrapper.innerHTML = txt;
@@ -543,7 +546,7 @@ function tm_updateTrialsPick() {
 		document.getElementById(`trialsChampionSelect`);
 	const trialsCostSelect = document.getElementById(`trialsCostSelect`);
 	const trialsPickChampionButtonHolder = document.getElementById(
-		`trialsPickChampionButtonHolder`
+		`trialsPickChampionButtonHolder`,
 	);
 
 	let txt = ``;
@@ -562,7 +565,7 @@ function tm_updateTrialsPick() {
 			`green`,
 			`tm_trialsPickRoleHero(${roleId},${heroId},${prismatic})`,
 			`trialsPickRoleHeroButton`,
-			`Pick Role and Champion`
+			`Pick Role and Champion`,
 		);
 	}
 	trialsPickChampionButtonHolder.innerHTML = txt;
@@ -575,16 +578,16 @@ async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
 		document.getElementById(`trialsChampionSelect`);
 	const trialsCostSelect = document.getElementById(`trialsCostSelect`);
 	const trialsPickRoleHeroButton = document.getElementById(
-		`trialsPickRoleHeroButton`
+		`trialsPickRoleHeroButton`,
 	);
 	const trialsStartTrialButton = document.getElementById(
-		`trialsStartTrialButton`
+		`trialsStartTrialButton`,
 	);
 	const trialsChangeRoleHeroButton = document.getElementById(
-		`trialsChangeRoleHeroButton`
+		`trialsChangeRoleHeroButton`,
 	);
 	const trialsLeaveLobbyButton = document.getElementById(
-		`trialsLeaveLobbyButton`
+		`trialsLeaveLobbyButton`,
 	);
 
 	let type = `pick`;
@@ -600,7 +603,7 @@ async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
 		trialsCostSelect.disabled = true;
 		trialsPickRoleHeroButton.disabled = true;
 	}
-	disablePullButtons(true);
+	disablePullButtons();
 
 	let txt = trialsInfo.innerHTML;
 	if (!txt.includes("Picking Role and Hero"))
@@ -613,9 +616,9 @@ async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
 		txt = txt.replace(/^.*?(<br>){2}/gm, "");
 		txt += tm_addInfoRow(
 			`- ${successType}:`,
-			type === `pick`
-				? `${tm_champsById[heroId]} to assault the ${tm_roles[roleId]}`
-				: `Assault location and champion`
+			type === `pick` ?
+				`${tm_champsById[heroId]} to assault the ${tm_roles[roleId]}`
+			:	`Assault location and champion`,
 		);
 	} else if (response.success && response.fail_message != null) {
 		let msg = response.fail_message;
@@ -641,19 +644,19 @@ async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
 async function tm_trialsLeaveLobby(playerIndex, joinKey) {
 	const trialsInfo = document.getElementById(`trialsInfo`);
 	const trialsStartTrialButton = document.getElementById(
-		`trialsStartTrialButton`
+		`trialsStartTrialButton`,
 	);
 	const trialsChangeRoleHeroButton = document.getElementById(
-		`trialsChangeRoleHeroButton`
+		`trialsChangeRoleHeroButton`,
 	);
 	const trialsLeaveLobbyButton = document.getElementById(
-		`trialsLeaveLobbyButton`
+		`trialsLeaveLobbyButton`,
 	);
 
 	if (trialsStartTrialButton != null) trialsStartTrialButton.disabled = true;
 	trialsChangeRoleHeroButton.disabled = true;
 	trialsLeaveLobbyButton.disabled = true;
-	disablePullButtons(true);
+	disablePullButtons();
 
 	let txt = tm_addInfoHeader(`Leaving the Lobby`);
 
@@ -722,25 +725,25 @@ function tm_displayRunningTrial(wrapper, campaign) {
 		});padding-right:4px">${
 			completed ? "Completed" : "Incomplete"
 		}</span>-<span id="trialsRunningDaySpan" style="padding-left:4px">Ends in: ${getDisplayTime(
-			dayEnds
-		)}</span>)`
+			dayEnds,
+		)}</span>)`,
 	);
 	if (trialEnds > 0)
 		txt += tm_addRow(
 			`Trial Ends:`,
 			`<span id="trialsRunningEndSpan">${getDisplayTime(
-				trialEnds
-			)}</span>`
+				trialEnds,
+			)}</span>`,
 		);
 	txt += tm_addRow(`Tiamat HP:`, nf(tiamatHP));
 	txt += tm_addRow(`Current DPS:`, nf(dps));
 	txt += tm_addRow(
 		`Estimated Time to Die:`,
-		`<span id="trialsRunningDieSpan">${timeToDieMsg}</span>`
+		`<span id="trialsRunningDieSpan">${timeToDieMsg}</span>`,
 	);
 	txt += tm_addRow(
 		`&nbsp;`,
-		`<span style="font-size:0.9em;color:var(--Boulder)">Active timers are based on the last time you pulled data.</span>`
+		`<span style="font-size:0.9em;color:var(--Boulder)">Active timers are based on the last time you pulled data.</span>`,
 	);
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
 	for (let roleId of playersByRoleKeys) {
@@ -752,7 +755,7 @@ function tm_displayRunningTrial(wrapper, campaign) {
 				`${roleName}:`,
 				player.name,
 				`DPS:`,
-				nf(player.dps)
+				nf(player.dps),
 			);
 	}
 	wrapper.innerHTML = txt;
@@ -762,7 +765,7 @@ function tm_displayRunningTrial(wrapper, campaign) {
 		`tm_dayends`,
 		`trialsRunningDaySpan`,
 		` Ended`,
-		`Ends in: `
+		`Ends in: `,
 	);
 	createTimer(timeToDie, `tm_todie`, `trialsRunningDieSpan`, `Dead`);
 	createTimer(trialEnds, `tm_trialends`, `trialsRunningEndSpan`, `Ended`);

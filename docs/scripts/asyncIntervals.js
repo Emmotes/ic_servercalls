@@ -1,4 +1,4 @@
-const vai = 1.001; // prettier-ignore
+const vai = 1.002; // prettier-ignore
 const ai_asyncIntervals = [];
 
 const runAsyncInterval = async (cb, interval, intervalIndex) => {
@@ -6,7 +6,7 @@ const runAsyncInterval = async (cb, interval, intervalIndex) => {
 	if (ai_asyncIntervals[intervalIndex])
 		setTimeout(
 			() => runAsyncInterval(cb, interval, intervalIndex),
-			interval
+			interval,
 		);
 };
 

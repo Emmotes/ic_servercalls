@@ -1,4 +1,4 @@
-const vet = 1.016; // prettier-ignore
+const vet = 1.017; // prettier-ignore
 const et_idMult = 10000;
 const et_LSKey_hideTier4 = `scEventTiersHideTier4`;
 
@@ -29,7 +29,7 @@ async function et_displayEventTiersData(
 	wrapper,
 	heroDefs,
 	collections,
-	details
+	details,
 ) {
 	const owned = et_parseOwnedChamps(heroDefs, details.heroes);
 	const ownedById = owned[0];
@@ -75,9 +75,8 @@ async function et_displayEventTiersData(
 				tiers: tiersCompleted,
 			};
 			if (ownedEventById[heroId] != null)
-				ownedChampIdTiers[
-					heroId
-				].event2Id = `${ownedEventById[heroId]}`;
+				ownedChampIdTiers[heroId].event2Id =
+					`${ownedEventById[heroId]}`;
 		}
 	}
 
@@ -95,13 +94,13 @@ async function et_displayEventTiersData(
 	txt += `<span class="eventGridHeader" data-sort="0" data-eventidorder="0" data-nameorder="0" data-id="0" style="display:none"><strong>Champion Event Tiers Completed:</strong></span>`;
 	for (let event2Id of event2Ids)
 		txt += `<span class="eventGridHeader" data-sort="1" data-eventidorder="${event2Ids.indexOf(
-			event2Id
+			event2Id,
 		)}" data-nameorder="0" data-id="0"><strong>${
 			eventNameByEventId[event2Id]
 		} - ${et_getEventMonthByEvent2Id(
 			event2Id,
 			month,
-			day
+			day,
 		)}:</strong></span>`;
 	for (let heroId in ownedChampIdTiers) {
 		let heroData = ownedChampIdTiers[heroId];
@@ -112,14 +111,13 @@ async function et_displayEventTiersData(
 				event2Ids,
 				heroData,
 				month,
-				day
+				day,
 			);
 	}
 	setFormsWrapperFormat(wrapper, 3);
 	wrapper.innerHTML = txt;
-	document.getElementById(
-		"eventTiersHideTier4Amount"
-	).innerHTML = `Displaying: ${numNotTier4} / ${numTotal}`;
+	document.getElementById("eventTiersHideTier4Amount").innerHTML =
+		`Displaying: ${numNotTier4} / ${numTotal}`;
 	et_hideEventSort(false);
 	if (et_getHideTier4()) et_toggleHideTier4(true);
 	et_changeOrder("event");
@@ -128,7 +126,8 @@ async function et_displayEventTiersData(
 function et_parseOwnedChamps(defsHeroes, detailsHeroes) {
 	const ownedIds = [];
 	for (let ownedHero of detailsHeroes)
-		if (Number(ownedHero.owned) === 1) ownedIds.push(Number(ownedHero.hero_id));
+		if (Number(ownedHero.owned) === 1)
+			ownedIds.push(Number(ownedHero.hero_id));
 	const ownedById = {};
 	const ownedNames = [];
 	const ownedEventById = {};
@@ -166,9 +165,8 @@ function et_changeOrder(type) {
 }
 
 function et_hideEventSort(hide) {
-	document.getElementById("eventTiersSortHolder").style.display = hide
-		? "none"
-		: "";
+	document.getElementById("eventTiersSortHolder").style.display =
+		hide ? "none" : "";
 }
 
 function et_getEvent2IdFromEvent1Id(event1Id) {
@@ -212,7 +210,7 @@ function et_getEventMonthByEvent2Id(event2Id, month, day) {
 	let code = "en-GB";
 	if (month === 9 && day === 26) code = et_getRandomLocale();
 	return Intl.DateTimeFormat(code, {month: "long"}).format(
-		new Date(`${((Number(event2Id) + 7) % 12) + 1}`)
+		new Date(`${((Number(event2Id) + 7) % 12) + 1}`),
 	);
 }
 
@@ -235,21 +233,21 @@ function et_addEventTierGridElements(
 	event2Ids,
 	heroData,
 	month,
-	day
+	day,
 ) {
 	let tierString = ``;
 	for (let i = 1; i <= 4; i++)
 		tierString += et_buildSVG(
 			i <= heroData.tier ? heroData.tier : 0,
 			month,
-			day
+			day,
 		);
 	let txt = `<span class="eventGridName" style="margin-top:4px" data-eventidorder="${event2Ids.indexOf(
-		heroData.event2Id
+		heroData.event2Id,
 	)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${
 		heroData.tier
 	}">${name}</span><span class="eventGridTier" data-eventidorder="${event2Ids.indexOf(
-		heroData.event2Id
+		heroData.event2Id,
 	)}" data-id="${id}" data-nameorder="${heroData.nameOrder}" data-tier="${
 		heroData.tier
 	}"><span class="eventTiersTooltipsHolder">${tierString}<span class="eventTiersTooltips"><h3 style="grid-column:1/-1;">${name}</h3>`;
@@ -280,15 +278,14 @@ function et_toggleHideTier4(force) {
 		force || document.getElementById("eventTiersHideTier4").checked;
 	et_setHideTier4(hide);
 	for (let ele of document.querySelectorAll(
-		"span[class='eventGridName'],span[class='eventGridTier']"
+		"span[class='eventGridName'],span[class='eventGridTier']",
 	)) {
 		if (Number(ele.dataset.tier) === 4)
 			ele.style.display = hide ? `none` : ``;
 		else ele.style.display = ``;
 	}
-	document.getElementById("eventTiersHideTier4Amount").style.display = hide
-		? ``
-		: `none`;
+	document.getElementById("eventTiersHideTier4Amount").style.display =
+		hide ? `` : `none`;
 }
 
 function et_getHideTier4() {
