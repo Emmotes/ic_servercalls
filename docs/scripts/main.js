@@ -1,4 +1,4 @@
-const v = 4.032; // prettier-ignore
+const v = 4.033; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -95,6 +95,7 @@ function init() {
 	oc_initOpenChestsSliderFidelity();
 	oc_initOpenChestsHideChests();
 	dc_initDismantleHideOptions();
+	ap_initApothecaryHideOptions();
 	et_initEventTiersHideTier4();
 	ss_tryResumeCooldownOnLoad();
 	swapTab();
@@ -456,6 +457,9 @@ function setFormsWrapperFormat(wrapper, type) {
 	} else if (type === 4) {
 		wrapper.className = `serverStatusWrapper`;
 		wrapper.style = ``;
+	} else if (type === 5) {
+		wrapper.className = `apothecaryWrapper`;
+		wrapper.style = ``;
 	}
 }
 
@@ -616,6 +620,12 @@ function clearTimers(prefix) {
 			}
 		}
 	}
+}
+
+function capitalise(s) {
+	if (s === `armor_based`) return `Armoured`;
+	if (s === `hits_based`) return `Hits-Based`;
+	return s && s[0].toUpperCase() + s.slice(1);
 }
 
 function getFirstLine(text) {

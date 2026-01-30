@@ -1,56 +1,97 @@
-const vb = 2.001; // prettier-ignore
-const b_basics = {
-	1: "Small Potion of Giant's Strength",
-	2: "Medium Potion of Giant's Strength",
-	3: "Large Potion of Giant's Strength",
-	4: "Huge Potion of Giant's Strength",
-	5: "Small Potion of Clairvoyance",
-	6: "Medium Potion of Clairvoyance",
-	7: "Large Potion of Clairvoyance",
-	8: "Huge Potion of Clairvoyance",
-	13: "Small Potion of Heroism",
-	14: "Medium Potion of Heroism",
-	15: "Large Potion of Heroism",
-	16: "Huge Potion of Heroism",
-	37: "Small Potion of Fire Breath",
-	38: "Medium Potion of Fire Breath",
-	39: "Large Potion of Fire Breath",
-	40: "Huge Potion of Fire Breath",
-	74: "Small Potion of Speed",
-	75: "Medium Potion of Speed",
-	76: "Large Potion of Speed",
-	77: "Huge Potion of Speed",
-	2164: "Legendary Potion of Giant's Strength",
-	2165: "Legendary Potion of Clairvoyance",
-	2166: "Legendary Potion of Heroism",
-	2167: "Legendary Fire Breath Potion",
-	2168: "Legendary Potion of Speed",
-};
-const b_pop = {
-	36: "Potion of Polish",
-};
-const b_GE = {
-	1798: "Epic Golden Potion",
-};
-const b_spec = {
-	35: "Potion of Specialization",
-};
-const b_7days = {
-	1712: "Potion of the Hunter",
-	1721: "Potion of the Gold Hunter",
-	1722: "Potion of Psychomorphic Energy",
-	1723: "Potion of the Gem Hunter",
-};
-const b_blacksmiths = {
-	31: "Tiny Blacksmithing Contract",
-	32: "Small Blacksmithing Contract",
-	33: "Medium Blacksmithing Contract",
-	34: "Large Blacksmithing Contract",
-	1797: "Huge Blacksmithing Contract",
-};
-const b_bounties = {
-	17: "Tiny Bounty Contract",
-	18: "Small Bounty Contract",
-	19: "Medium Bounty Contract",
-	20: "Large Bounty Contract",
-};
+const vb = 2.002; // prettier-ignore
+const buffRegistry = [
+	// Gold basics.
+	{id: 5, name: "Small Potion of Clairvoyance", type: "potion", category: "basic", size: "small", buff: "Clairvoyance"},
+	{id: 6, name: "Medium Potion of Clairvoyance", type: "potion", category: "basic", size: "medium", buff: "Clairvoyance"},
+	{id: 7, name: "Large Potion of Clairvoyance", type: "potion", category: "basic", size: "large", buff: "Clairvoyance"},
+	{id: 8, name: "Huge Potion of Clairvoyance", type: "potion", category: "basic", size: "huge", buff: "Clairvoyance"},
+	{id: 2165, name: "Legendary Potion of Clairvoyance", type: "potion", category: "basic", size: "legendary", buff: "Clairvoyance", legendary: true, distillBanned: true},
+
+	// Click damage basics.
+	{id: 37, name: "Small Potion of Fire Breath", type: "potion", category: "basic", size: "small", buff: "Fire Breath"},
+	{id: 38, name: "Medium Potion of Fire Breath", type: "potion", category: "basic", size: "medium", buff: "Fire Breath"},
+	{id: 39, name: "Large Potion of Fire Breath", type: "potion", category: "basic", size: "large", buff: "Fire Breath"},
+	{id: 40, name: "Huge Potion of Fire Breath", type: "potion", category: "basic", size: "huge", buff: "Fire Breath"},
+	{id: 2167, name: "Legendary Fire Breath Potion", type: "potion", category: "basic", size: "legendary", buff: "Fire Breath", legendary: true, distillBanned: true},
+
+	// Damage basics.
+	{id: 1, name: "Small Potion of Giant's Strength", type: "potion", category: "basic", size: "small", buff: "Giant's Strength"},
+	{id: 2, name: "Medium Potion of Giant's Strength", type: "potion", category: "basic", size: "medium", buff: "Giant's Strength"},
+	{id: 3, name: "Large Potion of Giant's Strength", type: "potion", category: "basic", size: "large", buff: "Giant's Strength"},
+	{id: 4, name: "Huge Potion of Giant's Strength", type: "potion", category: "basic", size: "huge", buff: "Giant's Strength"},
+	{id: 2164, name: "Legendary Potion of Giant's Strength", type: "potion", category: "basic", size: "legendary", buff: "Giant's Strength", legendary: true, distillBanned: true},
+
+	// Health basics.
+	{id: 13, name: "Small Potion of Heroism", type: "potion", category: "basic", size: "small", buff: "Heroism"},
+	{id: 14, name: "Medium Potion of Heroism", type: "potion", category: "basic", size: "medium", buff: "Heroism"},
+	{id: 15, name: "Large Potion of Heroism", type: "potion", category: "basic", size: "large", buff: "Heroism"},
+	{id: 16, name: "Huge Potion of Heroism", type: "potion", category: "basic", size: "huge", buff: "Heroism"},
+	{id: 2166, name: "Legendary Potion of Heroism", type: "potion", category: "basic", size: "legendary", buff: "Heroism", legendary: true, distillBanned: true},
+
+	// Speed basics.
+	{id: 74, name: "Small Potion of Speed", type: "potion", category: "basic", size: "small", buff: "Speed"},
+	{id: 75, name: "Medium Potion of Speed", type: "potion", category: "basic", size: "medium", buff: "Speed"},
+	{id: 76, name: "Large Potion of Speed", type: "potion", category: "basic", size: "large", buff: "Speed"},
+	{id: 77, name: "Huge Potion of Speed", type: "potion", category: "basic", size: "huge", buff: "Speed"},
+	{id: 2168, name: "Legendary Potion of Speed", type: "potion", category: "basic", size: "legendary", buff: "Speed", legendary: true, distillBanned: true},
+	
+	// Misc Potions
+	{id: 35, name: "Potion of Specialization", type: "potion", category: "spec"},
+	{id: 36, name: "Potion of Polish", type: "potion", category: "pop"},
+	{id: 1798, name: "Epic Golden Potion", type: "potion", category: "GE", distillBanned: true},
+
+	// 7 Day Potions.
+	{id: 1712, name: "Potion of the Hunter", type: "potion", category: "7days"},
+	{id: 1721, name: "Potion of the Gold Hunter", type: "potion", category: "7days"},
+	{id: 1722, name: "Potion of Psychomorphic Energy", type: "potion", category: "7days"},
+	{id: 1723, name: "Potion of the Gem Hunter", type: "potion", category: "7days", distillBanned: true},
+
+	// Blacksmiths.
+	{id: 31, name: "Tiny Blacksmithing Contract", type: "contract", category: "blacksmith"},
+	{id: 32, name: "Small Blacksmithing Contract", type: "contract", category: "blacksmith"},
+	{id: 33, name: "Medium Blacksmithing Contract", type: "contract", category: "blacksmith"},
+	{id: 34, name: "Large Blacksmithing Contract", type: "contract", category: "blacksmith"},
+	{id: 1797, name: "Huge Blacksmithing Contract", type: "contract", category: "blacksmith"},
+
+	// Bounties.
+	{id: 17, name: "Tiny Bounty Contract", type: "contract", category: "bounty"},
+	{id: 18, name: "Small Bounty Contract", type: "contract", category: "bounty"},
+	{id: 19, name: "Medium Bounty Contract", type: "contract", category: "bounty"},
+	{id: 20, name: "Large Bounty Contract", type: "contract", category: "bounty"},
+]; // prettier-ignore
+
+// Potion Specific
+const b_potionsById = new Map();
+const b_potionsByName = new Map();
+const b_potionsByCategory = new Map();
+const b_potionsBySize = new Map();
+const b_potionsByBuff = new Map();
+const b_potionsByBuffAndSize = new Map();
+
+for (const buff of buffRegistry) {
+	if (buff.type === "potion") {
+		b_potionsById.set(buff.id, buff);
+		b_potionsByName.set(buff.name, buff);
+
+		if (buff.category != null) {
+			if (!b_potionsByCategory.has(buff.category))
+				b_potionsByCategory.set(buff.category, []);
+			b_potionsByCategory.get(buff.category).push(buff);
+		}
+		if (buff.size != null) {
+			if (!b_potionsBySize.has(buff.size))
+				b_potionsBySize.set(buff.size, []);
+			b_potionsBySize.get(buff.size).push(buff);
+		}
+		if (buff.buff != null) {
+			if (!b_potionsByBuff.has(buff.buff))
+				b_potionsByBuff.set(buff.buff, []);
+			b_potionsByBuff.get(buff.buff).push(buff);
+			if (buff.size != null) {
+				if (!b_potionsByBuffAndSize.has(buff.buff))
+					b_potionsByBuffAndSize.set(buff.buff, new Map());
+				b_potionsByBuffAndSize.get(buff.buff).set(buff.size, buff);
+			}
+		}
+	}
+} // prettier-ignore

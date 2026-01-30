@@ -693,3 +693,15 @@ input[type="checkbox"]:checked::before {
 	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(200px,max-content);
 	gap: 10px;
 }
+
+.apothecaryInventoryWrapper {
+	display: grid;
+	grid-template-columns: 160px repeat(5, 100px);
+	gap: 5px;
+}
+
+.apothecaryWrapper {
+	display: grid;
+	grid-template-columns: 200px 175px 250px;
+	gap: 5px;
+}

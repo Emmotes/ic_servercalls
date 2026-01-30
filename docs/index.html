@@ -382,6 +382,67 @@
 				</span>
 			</div>
 			<!-- END: BSC Calculator Tab -->
+			<!-- START: Apothecary/Notary Tab -->
+			<input onClick="setHash('apothecaryTab')" type="radio" class="tabsRadio" name="serverTabs" id="apothecaryTab">
+			<label for="apothecaryTab" class="tabsLabel">Apothecary</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Apothecary</h1>
+					</span>
+				</span>
+				
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+						<p>This page will allow you to quickly use the Apothecary for various specific purposes.</p>
+						<p><em>Note: At present this only allows distilling potions.</em></p>
+						<span class="f fc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
+							<span class="f fc fals" style="font-size:1.1em">
+								<b>Distilling:</b>
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="apothecaryIncludeSpec" onclick="ap_toggleIncludePotions(this)"> Include Specialisation Potions
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="apothecaryIncludePoP" onclick="ap_toggleIncludePotions(this)"> Include Potions of Polish
+							</span>
+							<span class="f fr falc">
+								<input type="checkbox" id="apothecaryInclude7Days" onclick="ap_toggleIncludePotions(this)"> Include 7 Day Potions
+							</span>
+							<span class="f fc falc" style="text-align:center">
+								<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+									<span>Note: Gem Hunter, Golden Epic and<br>Legendary Potions will <em>never</em> be distilled.</span>
+								</span>
+							</span>
+						</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="ap_pullApothecaryData()" name="apothecaryPullButton" id="apothecaryPullButton" value="Pull Apothecary Data" style="min-width:175px">
+						<span id="apothecaryPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="apothecaryInventoryWrapper" id="apothecaryInventory">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="apothecaryWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Apothecary/Notary Tab -->
 			<!-- START: Trials Calculator Tab -->
 			<input onClick="setHash('trialsTab')" type="radio" class="tabsRadio" name="serverTabs" id="trialsTab">
 			<label for="trialsTab" class="tabsLabel">Trials</label>
@@ -768,6 +829,7 @@
 	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.020"></script>
 	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.032"></script>
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.016"></script>
+	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.014"></script>
 	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.017"></script>
 	<script type="text/javascript" src="scripts/tab_ilvlReport.js?vir=1.005"></script>
@@ -779,6 +841,6 @@
 	<script type="text/javascript" src="scripts/tab_serverStatus.js?vss=2.006"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.022"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.032"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.033"></script>
 </body>
 </html>
