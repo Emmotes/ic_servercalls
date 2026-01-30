@@ -1,4 +1,4 @@
-const vap = 2.000; // prettier-ignore
+const vap = 2.001; // prettier-ignore
 const ap_LSKey_includeDistills = `scIncludeDistills`;
 const ap_LSKey_distillMaintains = `scDistillMaintains`;
 const ap_METHOD_SELECTID = "ap_method";
@@ -538,25 +538,37 @@ async function ap_brewPotions() {
 }
 
 function ap_maxBrewType(id) {
+	id = Number(id);
 	const ele = document.getElementById(`ap_brew_${id}`);
 	if (!ele) return;
 
-	const brewCost = ap_brewCosts[id];
+	const brewCost = ap_brewCosts?.[id] ?? ap_brewCosts?.[String(id)];
 	const reagentsPer = Number(brewCost?.r || 0);
 	const vesselsPer = Number(brewCost?.v || 0);
 	if (reagentsPer === 0 && vesselsPer === 0) return;
 
+	const plan = ap_getCurrentBrewPlan();
+	const spent = ap_computeBrewCosts(plan, id);
+
+	const remainingReagents = Math.max(
+		0,
+		Number(ap_reagents || 0) - spent.reagents,
+	);
+	const remainingVessels = Math.max(
+		0,
+		Number(ap_vessels || 0) - spent.vessels,
+	);
+
 	const maxFromReagents =
-		reagentsPer > 0 ? Math.floor((ap_reagents || 0) / reagentsPer) : 0;
+		reagentsPer > 0 ?
+			Math.floor(remainingReagents / reagentsPer)
+		:	Infinity;
 	const maxFromVessels =
-		vesselsPer > 0 ? Math.floor((ap_vessels || 0) / vesselsPer) : 0;
+		vesselsPer > 0 ? Math.floor(remainingVessels / vesselsPer) : Infinity;
 
-	const max =
-		vesselsPer === 0 ? maxFromReagents
-		: reagentsPer === 0 ? maxFromVessels
-		: Math.min(maxFromReagents, maxFromVessels);
+	const max = Math.min(maxFromReagents, maxFromVessels);
 
-	ele.value = max;
+	ele.value = Number.isFinite(max) ? max : 0;
 
 	ap_recalculateBrewValues();
 }
@@ -614,6 +626,39 @@ function ap_recalculateBrewValues() {
 		message.style.display = `none`;
 		button.style.display = ``;
 	}
+}
+
+function ap_getCurrentBrewPlan() {
+	const plan = new Map();
+	for (const ele of document.querySelectorAll(
+		`#apothecaryWrapper input[type="number"][data-potid]`,
+	)) {
+		const id = Number(ele.dataset?.potid || -1);
+		if (id < 1) continue;
+		const count = Math.max(0, Number(ele.value || 0));
+		if (!Number.isFinite(count)) continue;
+		plan.set(id, count);
+	}
+	return plan;
+}
+
+function ap_computeBrewCosts(plan, excludeId) {
+	let reagents = 0;
+	let vessels = 0;
+
+	for (const [id, count] of plan.entries()) {
+		if (id === excludeId) continue;
+		if (count <= 0) continue;
+
+		const brewCost = ap_brewCosts?.[id] ?? ap_brewCosts?.[String(id)];
+		const r = Number(brewCost?.r || 0);
+		const v = Number(brewCost?.v || 0);
+
+		reagents += count * r;
+		vessels += count * v;
+	}
+
+	return {reagents, vessels};
 }
 
 // =============================
