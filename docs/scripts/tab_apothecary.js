@@ -1,9 +1,13 @@
-const vap = 1.000; // prettier-ignore
+const vap = 2.000; // prettier-ignore
 const ap_LSKey_includeDistills = `scIncludeDistills`;
 const ap_LSKey_distillMaintains = `scDistillMaintains`;
+const ap_METHOD_SELECTID = "ap_method";
+const ap_MODES = [`-`, `Distill`, `Brew`];
 let ap_ownedById = null;
 let ap_reagents = null;
 let ap_vessels = null;
+let ap_brewCosts = null;
+let ap_enhanceCosts = null;
 
 async function ap_pullApothecaryData() {
 	if (isBadUserData()) return;
@@ -33,9 +37,15 @@ async function ap_displayApothecaryData(wrapper, details, gameRules) {
 		return;
 	}
 
-	const incSpecs = document.getElementById(`apothecaryIncludeSpec`).checked;
-	const incPoPs = document.getElementById(`apothecaryIncludePoP`).checked;
-	const inc7Days = document.getElementById(`apothecaryInclude7Days`).checked;
+	const gameRuleCosts = ap_getGameRuleCosts(gameRules);
+	if (gameRuleCosts) {
+		if (gameRuleCosts.brewCosts != null)
+			ap_brewCosts = gameRuleCosts.brewCosts;
+		if (gameRuleCosts.enhanceCosts != null)
+			ap_enhanceCosts = gameRuleCosts.enhanceCosts;
+	}
+
+	const incs = ap_getInclusions();
 
 	ap_ownedById = ap_parseOwnedPotions(details);
 	ap_reagents = Number(details?.stats?.potion_reagents || 0);
@@ -44,15 +54,12 @@ async function ap_displayApothecaryData(wrapper, details, gameRules) {
 	const inventoryWrapper = document.getElementById(`apothecaryInventory`);
 	if (inventoryWrapper != null)
 		inventoryWrapper.innerHTML = ap_buildInventoryDisplay(
-			incSpecs,
-			incPoPs,
-			inc7Days,
+			incs.incSpecs,
+			incs.incPoPs,
+			incs.inc7Days,
 		);
 
-	let txt = ap_buildDistillDisplay(incSpecs, incPoPs, inc7Days);
-
-	setFormsWrapperFormat(wrapper, 5);
-	wrapper.innerHTML = txt;
+	wrapper.innerHTML = `&nbsp;`;
 }
 
 function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
@@ -122,7 +129,6 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 				text: nf(amount),
 				classes: flex,
 				small: true,
-				gridCol: `span 1`,
 				hide: hide,
 				id: id,
 				data: {id: potion.id, value: amount, hidecat: category},
@@ -144,7 +150,6 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 			text: nf(ap_reagents || 0),
 			classes: flex,
 			small: true,
-			gridCol: `span 1`,
 			id: `ap_inv_reagents`,
 			data: {reagents: ap_reagents || 0},
 		},
@@ -156,9 +161,21 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 			text: nf(ap_vessels || 0),
 			classes: flex,
 			small: true,
-			gridCol: `span 1`,
 			id: `ap_inv_vessels`,
 			data: {vessels: ap_vessels || 0},
+		},
+		{text: `&nbsp;`, gridCol: `4 / -1`},
+	]);
+	txt += ap_addSingleApothecaryRow(`&nbsp;`);
+	txt += ap_addApothecaryRow([
+		{
+			text: `<label for="${ap_METHOD_SELECTID}">Method:</label>`,
+			classes: flex,
+		},
+		{
+			text: ap_buildMethodSelect(),
+			classes: flex,
+			gridCol: `span 2`,
 		},
 		{text: `&nbsp;`, gridCol: `4 / -1`},
 	]);
@@ -166,7 +183,41 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 	return txt;
 }
 
-function ap_buildDistillDisplay(incSpecs, incPoPs, inc7Days) {
+function ap_buildMethodSelect() {
+	let txt = `<select id="${ap_METHOD_SELECTID}" name="${ap_METHOD_SELECTID}" oninput="ap_changeMethod(this.value);">`;
+	for (let mode of ap_MODES)
+		txt += `<option value="${mode}"${mode === `-` ? " selected" : ""}>${mode}</option>`;
+	txt += `</select>`;
+	return txt;
+}
+
+function ap_changeMethod(value) {
+	const wrapper = document.getElementById(`apothecaryWrapper`);
+	let txt;
+
+	if (value === `Distill`) {
+		txt = ap_buildDistillDisplay();
+		setFormsWrapperFormat(wrapper, 5);
+	} else if (value === `Brew`) {
+		txt = ap_buildBrewDisplay();
+		setFormsWrapperFormat(wrapper, 6);
+	} else if (value === `Enhance`) {
+		txt = ap_buildEnhanceDisplay();
+		setFormsWrapperFormat(wrapper, 6);
+	} else {
+		txt = `&nbsp;`;
+		setFormsWrapperFormat(wrapper, 0);
+	}
+
+	wrapper.innerHTML = txt;
+	if (value === `Brew`) ap_recalculateBrewValues();
+}
+
+// =============================
+// ===== DISTILL FUNCTIONS =====
+// =============================
+
+function ap_buildDistillDisplay() {
 	let txt = ``;
 	txt += ap_addSingleApothecaryRow(`Distill Potions`, true);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
@@ -192,30 +243,37 @@ function ap_buildDistillDisplay(incSpecs, incPoPs, inc7Days) {
 		pop: "Potions of Polish",
 		"7days": "7 Day Potions",
 	};
+	const incs = ap_getInclusions();
 	for (let category in categories) {
 		let hide = false;
-		if (category === "spec" && !incSpecs) hide = true;
-		if (category === "pop" && !incPoPs) hide = true;
-		if (category === "7days" && !inc7Days) hide = true;
+		if (category === "spec" && !incs.incSpecs) hide = true;
+		if (category === "pop" && !incs.incPoPs) hide = true;
+		if (category === "7days" && !incs.inc7Days) hide = true;
 		const id = `ap_distill_maintain_${category}`;
 		let maintain = Number(savedDistillMaintains[category]);
 		if (isNaN(maintain)) maintain = 1000;
-		const inp = `<input type="number" id="${id}" data-category="${category}" min="0" value="${maintain}" style="width:70px" oninput="ap_saveDistillMaintains(ap_buildMaintains())">`;
+		const inp = `<input type="number" id="${id}" data-category="${category}" min="0" value="${maintain}" style="width:70px" oninput="ap_saveDistillMaintains(ap_buildDistillMaintains())">`;
 		txt += ap_addApothecaryRow([
 			{
 				text: categories[category],
 				classes: `f fr falc fje`,
 				id: `${id}grid1`,
 				hide: hide,
-				data: {hidecat:category}
+				data: {hidecat: category},
 			},
-			{text: inp, classes: `f fr falc fjc`, id: `${id}grid2`, hide: hide, data: {hidecat:category}},
+			{
+				text: inp,
+				classes: `f fr falc fjc`,
+				id: `${id}grid2`,
+				hide: hide,
+				data: {hidecat: category},
+			},
 			{
 				text: `&nbsp;`,
 				classes: `f fr falc fjs`,
 				id: `${id}grid3`,
 				hide: hide,
-				data: {hidecat:category}
+				data: {hidecat: category},
 			},
 		]);
 	}
@@ -232,34 +290,22 @@ function ap_buildDistillDisplay(incSpecs, incPoPs, inc7Days) {
 	return txt;
 }
 
-function ap_parseOwnedPotions(details) {
-	const ownedById = {};
-	for (let buff of details.buffs) {
-		const id = Number(buff.buff_id);
-		if (!b_potionsById.has(id)) continue;
-		ownedById[id] = buff.inventory_amount;
-	}
-	return ownedById;
-}
-
 async function ap_distillPotions() {
 	ap_disableAllApothecaryInputs(true);
 	const distillDetails = document.getElementById(`apothecaryDistillDetails`);
 	let txt = `<span class="f fr w100 p5">Distilling Potions:</span>`;
 	distillDetails.innerHTML = txt;
 
-	const incSpecs = document.getElementById(`apothecaryIncludeSpec`).checked;
-	const incPoPs = document.getElementById(`apothecaryIncludePoP`).checked;
-	const inc7Days = document.getElementById(`apothecaryInclude7Days`).checked;
+	const incs = ap_getInclusions();
 
 	const allowedCats = new Set(["small", "medium", "large", "huge"]);
-	if (incSpecs) allowedCats.add("spec");
-	if (incPoPs) allowedCats.add("pop");
-	if (inc7Days) allowedCats.add("7days");
+	if (incs.incSpecs) allowedCats.add("spec");
+	if (incs.incPoPs) allowedCats.add("pop");
+	if (incs.inc7Days) allowedCats.add("7days");
 
 	let potsToDistill = {};
 
-	const maintain = ap_buildMaintains();
+	const maintain = ap_buildDistillMaintains();
 
 	for (const idStr in ap_ownedById) {
 		const id = Number(idStr);
@@ -316,15 +362,8 @@ async function ap_distillPotions() {
 			if (type !== "set_buff_amount") continue;
 			const id = Number(action?.buff_id || -1);
 			const newAmount = Number(action?.amount || -1);
-			if (id < 0 || newAmount < 0) continue;
-			const oldAmount = ap_ownedById[id] || 0;
-			ap_ownedById[id] = newAmount;
-			const ele = document.getElementById(`ap_inv_${id}`);
-			if (ele && ele.dataset.id === `${id}`) {
-				ele.dataset.value = newAmount;
-				ele.innerHTML = nf(newAmount);
-			}
-			const diff = oldAmount - newAmount;
+			const diff = ap_updateCurrentPotionCountAndDiff(id, newAmount);
+			if (diff == null) continue;
 			const potion = b_potionsById.get(id);
 			const name = potion?.name ?? `Unknown (${id})`;
 			txt += `<span class="f fr w100 p5" style="padding-left:20px">${name}: ${nf(diff)}</span>`;
@@ -338,7 +377,297 @@ async function ap_distillPotions() {
 	ap_disableAllApothecaryInputs(false);
 }
 
+// ==========================
+// ===== BREW FUNCTIONS =====
+// ==========================
+
+function ap_buildBrewDisplay() {
+	if (ap_brewCosts == null)
+		return ap_addSingleApothecaryRow(
+			`Apologies but brewing definitions failed to pull properly. Brewing is disabled.`,
+		);
+
+	const eFlex = `f fr falc fje`;
+	const cFlex = `f fr falc fjc`;
+
+	let txt = ``;
+	txt += ap_addSingleApothecaryRow(`Brew Potions`, true);
+	txt += ap_addSingleApothecaryRow(`&nbsp;`);
+	txt += ap_addSingleApothecaryRow(
+		`Here you can brew specific amounts of any Speed potion - provided you have the resources to do so.`,
+	);
+	txt += ap_addSingleApothecaryRow(`&nbsp;`);
+	txt += ap_addApothecaryRow([
+		{text: `Potion Type`, classes: eFlex, header: true},
+		{text: `Brew Amount`, classes: cFlex, header: true},
+		{text: `Current`, classes: eFlex, header: true},
+		{text: `&nbsp;`, classes: cFlex, header: true},
+		{text: `After`, classes: eFlex, header: true},
+	]);
+
+	const potions = [...(b_potionsByBuff.get("Speed") ?? [])];
+	potions.sort((a, b) => {
+		const order = ["small", "medium", "large", "huge", "legendary"];
+		return order.indexOf(a.size) - order.indexOf(b.size);
+	});
+	for (let potion of potions) {
+		const id = potion.id;
+		const curr = nf(ap_ownedById[id] || 0);
+		const inp =
+			`<input type="number" id="ap_brew_${id}" data-potid="${id}" value="0" min="0" style="width:70%" oninput="ap_recalculateBrewValues()">` +
+			`<span style="width:5px">&nbsp;</span>` +
+			`<input type="button" id="ap_brew_max${id}" onclick="ap_maxBrewType(${id});" value="Max" style="width:20%">`;
+		txt += ap_addApothecaryRow([
+			{text: potion.name, classes: eFlex},
+			{text: inp, classes: cFlex},
+			{text: curr, classes: eFlex, id: `ap_brew_curr${id}`},
+			{text: `→`, classes: cFlex},
+			{text: curr, classes: eFlex, id: `ap_brew_after${id}`},
+		]);
+	}
+	txt += ap_addSingleApothecaryRow(`&nbsp;`);
+	txt += ap_addApothecaryRow([
+		{text: `Reagent Cost:`, classes: eFlex},
+		{text: `0`, classes: eFlex, id: `ap_brew_reagentCost`},
+		{text: `&nbsp;`, gridCol: `3 / -1`},
+		{text: `Vessel Cost:`, classes: eFlex},
+		{text: `0`, classes: eFlex, id: `ap_brew_vesselCost`},
+		{text: `&nbsp;`, gridCol: `3 / -1`},
+	]);
+	txt += ap_addSingleApothecaryRow(`&nbsp;`);
+	txt += ap_addApothecaryRow([
+		{
+			text:
+				`<input type="button" id="ap_brewPotionsButton" value="Brew Potions" onclick="ap_brewPotions()" style="display:none">` +
+				`<span class="f fr falc fjc" id="ap_brewPotionsHideButton">&nbsp;</span>`,
+			gridCol: `span 2`,
+			classes: `f fc falc fjc greenButton`,
+			id: `apothecaryBrewDetails`,
+		},
+		{text: `&nbsp;`, gridCol: `3 / -1`},
+	]);
+	return txt;
+}
+
+async function ap_brewPotions() {
+	ap_disableAllApothecaryInputs(true);
+	const brewDetails = document.getElementById(`apothecaryBrewDetails`);
+	brewDetails.style.gridColumn = `1 / -1`;
+
+	let txt = `<span class="f fr w100 p5">Brewing Potions:</span>`;
+	brewDetails.innerHTML = txt;
+
+	let potsToBrew = [];
+	const eles = document.querySelectorAll(
+		`#apothecaryWrapper input[type="number"][data-potid]`,
+	);
+	for (let ele of eles) {
+		if (ele == null) continue;
+		const id = Number(ele.dataset?.potid || -1);
+		const value = Number(ele.value || -1);
+		if (id < 1 || value <= 0) continue;
+		potsToBrew.push({id, value});
+	}
+
+	if (potsToBrew.length === 0) {
+		txt = `<span class="f fr w100 p5">No Potions to Brew</span>`;
+		brewDetails.innerHTML = txt;
+		ap_disableAllApothecaryInputs(false);
+		return;
+	}
+
+	for (let potToBrew of potsToBrew) {
+		const id = potToBrew?.id || -1;
+		const count = potToBrew?.value || -1;
+		if (id < 0 || count <= 0) continue;
+
+		const potion = b_potionsById.get(id || 0);
+		const name = potion?.name ?? `Unknown (${id})`;
+
+		const response = await brewPotions(id, count);
+		let successType = ``;
+		if (
+			response.success &&
+			Array.isArray(response.actions) &&
+			response.actions.length > 0 &&
+			response.brew_result
+		) {
+			successType = `Successfully brewed`;
+
+			let reagents = Number(ap_reagents || 0);
+			reagents -= Number(response.brew_result?.reagents_spent || 0);
+			if (isNaN(reagents) || reagents < 0) reagents = 0;
+			ap_reagents = reagents;
+			const reagentsEle = document.getElementById(`ap_inv_reagents`);
+			if (reagentsEle) {
+				reagentsEle.dataset.reagents = ap_reagents;
+				reagentsEle.innerHTML = nf(ap_reagents);
+			}
+
+			let vessels = Number(ap_vessels || 0);
+			vessels -= Number(response.brew_result?.vessels_spent || 0);
+			if (isNaN(vessels) || vessels < 0) vessels = 0;
+			ap_vessels = vessels;
+			const vesselsEle = document.getElementById(`ap_inv_vessels`);
+			if (vesselsEle) {
+				vesselsEle.dataset.vessels = vessels;
+				vesselsEle.innerHTML = nf(vessels);
+			}
+			for (let action of response.actions) {
+				if (action == null) continue;
+				const type = action.action || ``;
+				if (type !== "set_buff_amount") continue;
+				const id = Number(action?.buff_id || -1);
+				const newAmount = Number(action?.amount || -1);
+				ap_updateCurrentPotionCountAndDiff(id, newAmount);
+			}
+		} else {
+			successType = `Failed to brew`;
+			console.log("Reponse:", response);
+		}
+		txt +=
+			`<span class="f fr w100 p5">` +
+			`<span class="f falc fje mr2" style="width:160px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">${successType}:</span>` +
+			`<span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${nf(count)} ${name}</span>` +
+			`</span>`;
+		brewDetails.innerHTML = txt;
+		await sleep(200);
+	}
+
+	ap_disableAllApothecaryInputs(false);
+}
+
+function ap_maxBrewType(id) {
+	const ele = document.getElementById(`ap_brew_${id}`);
+	if (!ele) return;
+
+	const brewCost = ap_brewCosts[id];
+	const reagentsPer = Number(brewCost?.r || 0);
+	const vesselsPer = Number(brewCost?.v || 0);
+	if (reagentsPer === 0 && vesselsPer === 0) return;
+
+	const maxFromReagents =
+		reagentsPer > 0 ? Math.floor((ap_reagents || 0) / reagentsPer) : 0;
+	const maxFromVessels =
+		vesselsPer > 0 ? Math.floor((ap_vessels || 0) / vesselsPer) : 0;
+
+	const max =
+		vesselsPer === 0 ? maxFromReagents
+		: reagentsPer === 0 ? maxFromVessels
+		: Math.min(maxFromReagents, maxFromVessels);
+
+	ele.value = max;
+
+	ap_recalculateBrewValues();
+}
+
+function ap_recalculateBrewValues() {
+	let reagentCost = 0;
+	let vesselCost = 0;
+
+	const eles = document.querySelectorAll(
+		`#apothecaryWrapper input[type="number"][data-potid]`,
+	);
+	let atLeastOneNotZero = false;
+	for (let ele of eles) {
+		if (ele == null) continue;
+		const id = Number(ele.dataset?.potid || -1);
+		if (id < 1) continue;
+		let value = Number(ele.value || 0);
+		if (!Number.isFinite(value) || value < 0) value = 0;
+		if (!atLeastOneNotZero && value > 0) atLeastOneNotZero = true;
+		const brewCost = ap_brewCosts?.[id] ?? ap_brewCosts?.[String(id)];
+		reagentCost += value * Number(brewCost?.r || 0);
+		vesselCost += value * Number(brewCost?.v || 0);
+		const eleAfter = document.getElementById(`ap_brew_after${id}`);
+		if (eleAfter) eleAfter.innerHTML = nf((ap_ownedById[id] || 0) + value);
+	}
+	const haveEnoughReagents = (ap_reagents || 0) >= reagentCost;
+	const haveEnoughVessels = (ap_vessels || 0) >= vesselCost;
+
+	const eleReagentCost = document.getElementById(`ap_brew_reagentCost`);
+	if (eleReagentCost) {
+		eleReagentCost.innerHTML = nf(reagentCost);
+		eleReagentCost.style.color =
+			haveEnoughReagents ? `` : `var(--RedOrange)`;
+	}
+	const eleVesselCost = document.getElementById(`ap_brew_vesselCost`);
+	if (eleVesselCost) {
+		eleVesselCost.innerHTML = nf(vesselCost);
+		eleVesselCost.style.color = haveEnoughVessels ? `` : `var(--RedOrange)`;
+	}
+
+	const button = document.getElementById("ap_brewPotionsButton");
+	const message = document.getElementById("ap_brewPotionsHideButton");
+	if (button == null || message == null) return;
+
+	if (!atLeastOneNotZero) {
+		message.innerHTML = `Can't brew until you have set a valid brew amount.`;
+		message.style.display = ``;
+		button.style.display = `none`;
+	} else if (!haveEnoughReagents || !haveEnoughVessels) {
+		message.innerHTML = `You can't afford to brew the amounts you have chosen.`;
+		message.style.display = ``;
+		button.style.display = `none`;
+	} else {
+		message.innerHTML = `&nbsp;`;
+		message.style.display = `none`;
+		button.style.display = ``;
+	}
+}
+
+// =============================
+// ===== ENHANCE FUNCTIONS =====
+// =============================
+
+// None yet.
+
+// =============================
+// ===== UTILITY FUNCTIONS =====
+// =============================
+
+function ap_getGameRuleCosts(gameRules) {
+	for (let gameRule of gameRules) {
+		if (gameRule?.rule_name !== `apothecary_conversions`) continue;
+		const rule = gameRule?.rule;
+		if (rule == null) return null;
+		const brewCosts = rule?.brew_costs;
+		const enhanceCosts = rule?.enhance_costs;
+		return {brewCosts, enhanceCosts};
+	}
+	return null;
+}
+
+function ap_parseOwnedPotions(details) {
+	const ownedById = {};
+	for (let buff of details.buffs) {
+		const id = Number(buff.buff_id);
+		if (!b_potionsById.has(id)) continue;
+		ownedById[id] = buff.inventory_amount;
+	}
+	return ownedById;
+}
+
+function ap_updateCurrentPotionCountAndDiff(id, newAmount) {
+	if (id == null || newAmount == null || id < 1 || newAmount < 0) return null;
+	const oldAmount = ap_ownedById[id] || 0;
+	ap_ownedById[id] = newAmount;
+	const ele = document.getElementById(`ap_inv_${id}`);
+	if (ele && ele.dataset.id === `${id}`) {
+		ele.dataset.value = newAmount;
+		ele.innerHTML = nf(newAmount);
+	}
+	return oldAmount - newAmount;
+}
+
 function ap_disableAllApothecaryInputs(disable) {
+	const methodEle = document.getElementById(ap_METHOD_SELECTID);
+	if (methodEle) {
+		methodEle.disabled = disable;
+		methodEle.style.color = disable ? `#555` : ``;
+		methodEle.style.backgroundColor =
+			disable ? `hsl(calc(240*0.95),15%,calc(16%*0.8))` : ``;
+	}
 	if (disable) {
 		disablePullButtons();
 		for (let ele of document.querySelectorAll(`input[id^="ap_"]`)) {
@@ -376,6 +705,13 @@ function ap_addSingleApothecaryRow(msg, header, id) {
 	return `<span class="f falc fjs"${id} style="grid-column:1 / -1${header ? `;font-size:1.2em` : ``}">${msg}</span>`;
 }
 
+function ap_getInclusions() {
+	const incSpecs = document.getElementById(`apothecaryIncludeSpec`).checked;
+	const incPoPs = document.getElementById(`apothecaryIncludePoP`).checked;
+	const inc7Days = document.getElementById(`apothecaryInclude7Days`).checked;
+	return {incSpecs, incPoPs, inc7Days};
+}
+
 function ap_initApothecaryHideOptions() {
 	const includedDistills = ap_getIncludedDistills();
 	if (includedDistills.length === 0) return;
@@ -395,13 +731,12 @@ function ap_toggleIncludePotions(checkbox) {
 			distillHidden.style.display = checkbox.checked ? `` : `none`;
 		});
 
-	const incSpecs = document.getElementById(`apothecaryIncludeSpec`)?.checked;
-	const incPoPs = document.getElementById(`apothecaryIncludePoP`)?.checked;
-	const inc7Days = document.getElementById(`apothecaryInclude7Days`)?.checked;
+	const incs = ap_getInclusions();
 
 	const incGap = document.getElementById(`ap_distill_includeGap`);
 	if (incGap != null)
-		incGap.style.display = !incSpecs && !incPoPs && !inc7Days ? `none` : ``;
+		incGap.style.display =
+			!incs.incSpecs && !incs.incPoPs && !incs.inc7Days ? `none` : ``;
 
 	let strg = ap_getIncludedDistills();
 	if (checkbox.checked && !strg.includes(category)) strg.push(category);
@@ -427,7 +762,7 @@ function ap_saveIncludedDistills(eleIds) {
 	localStorage.setItem(ap_LSKey_includeDistills, JSON.stringify(strg));
 }
 
-function ap_buildMaintains() {
+function ap_buildDistillMaintains() {
 	const maintain = {};
 	for (const ele of document.querySelectorAll(
 		`input[id^="ap_distill_maintain_"]`,

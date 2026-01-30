@@ -700,8 +700,14 @@ input[type="checkbox"]:checked::before {
 	gap: 5px;
 }
 
-.apothecaryWrapper {
+.apothecaryDistillWrapper {
 	display: grid;
 	grid-template-columns: 200px 175px 250px;
+	gap: 5px;
+}
+
+.apothecaryBrewWrapper {
+	display: grid;
+	grid-template-columns: 200px 175px 100px 30px 100px;
 	gap: 5px;
 }

@@ -1,4 +1,4 @@
-const v = 4.033; // prettier-ignore
+const v = 4.034; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -458,7 +458,10 @@ function setFormsWrapperFormat(wrapper, type) {
 		wrapper.className = `serverStatusWrapper`;
 		wrapper.style = ``;
 	} else if (type === 5) {
-		wrapper.className = `apothecaryWrapper`;
+		wrapper.className = `apothecaryDistillWrapper`;
+		wrapper.style = ``;
+	} else if (type === 6) {
+		wrapper.className = `apothecaryBrewWrapper`;
 		wrapper.style = ``;
 	}
 }
