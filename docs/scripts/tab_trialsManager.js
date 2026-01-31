@@ -1,12 +1,13 @@
-const vtm = 1.014; // prettier-ignore
+const vtm = 1.015; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
 let tm_diffs;
 
-async function tm_pullData() {
+async function tm_pullData(forceCalled) {
 	clearTimers(`tm_`);
-	if (isBadUserData()) return;
+	if (forceCalled == null) forceCalled = false;
+	if (!forceCalled && isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`trialsWrapper`);
 	wrapper.innerHTML = `Waiting for response...`;
@@ -343,7 +344,7 @@ async function tm_joinTrial() {
 	if (trialsJoinButton != null) trialsJoinButton.disabled = false;
 	codeEnablePullButtons();
 
-	if (response.success & response.okay) tm_pullData();
+	if (response.success & response.okay) tm_pullData(true);
 }
 
 async function tm_createTrial() {
@@ -397,7 +398,7 @@ async function tm_createTrial() {
 	if (trialsCreateButton != null) trialsCreateButton.disabled = false;
 	codeEnablePullButtons();
 
-	if (response.success & response.okay) tm_pullData();
+	if (response.success & response.okay) tm_pullData(true);
 }
 
 /* =======================
@@ -638,7 +639,7 @@ async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
 	}
 	codeEnablePullButtons();
 
-	if (response.success & response.okay) tm_pullData();
+	if (response.success & response.okay) tm_pullData(true);
 }
 
 async function tm_trialsLeaveLobby(playerIndex, joinKey) {
@@ -667,7 +668,7 @@ async function tm_trialsLeaveLobby(playerIndex, joinKey) {
 	trialsInfo.innerHTML = txt;
 	codeEnablePullButtons();
 
-	if (response.success & response.okay) tm_pullData();
+	if (response.success & response.okay) tm_pullData(true);
 }
 
 async function tm_trialsStartTrial(campaignId) {
@@ -682,7 +683,7 @@ async function tm_trialsStartTrial(campaignId) {
 	trialsInfo.innerHTML = txt;
 	codeEnablePullButtons();
 
-	if (response.success) tm_pullData();
+	if (response.success) tm_pullData(true);
 }
 
 /* ================================
