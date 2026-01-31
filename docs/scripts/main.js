@@ -1,4 +1,4 @@
-const v = 4.034; // prettier-ignore
+const v = 4.035; // prettier-ignore
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -310,7 +310,7 @@ async function loadUserAccount() {
 		boilerplate = ``;
 		oc_initOpenChestsHideChests();
 	}
-	clearTimers();
+	clearTimers(null, "mpb_");
 	cleanup();
 }
 
@@ -614,8 +614,9 @@ function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
 	timerList[timerName] = {aim: timeAim, interval: timeInterval};
 }
 
-function clearTimers(prefix) {
+function clearTimers(prefix, excludePrefix) {
 	for (let name in timerList) {
+		if (excludePrefix && name.startsWith(excludePrefix)) continue;
 		if (prefix == null || name.startsWith(prefix)) {
 			if (timerList[name].interval != null) {
 				clearInterval(timerList[name].interval);
