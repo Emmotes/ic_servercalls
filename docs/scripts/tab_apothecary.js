@@ -1,6 +1,6 @@
-const vap = 2.001; // prettier-ignore
-const ap_LSKey_includeDistills = `scIncludeDistills`;
-const ap_LSKey_distillMaintains = `scDistillMaintains`;
+const vap = 2.002; // prettier-ignore
+const ap_LSKEY_includeDistills = `scIncludeDistills`;
+const ap_LSKEY_distillMaintains = `scDistillMaintains`;
 const ap_METHOD_SELECTID = "ap_method";
 const ap_MODES = [`-`, `Distill`, `Brew`];
 let ap_ownedById = null;
@@ -791,20 +791,11 @@ function ap_toggleIncludePotions(checkbox) {
 }
 
 function ap_getIncludedDistills() {
-	let strg = localStorage.getItem(ap_LSKey_includeDistills);
-	if (!strg) return [];
-	strg = JSON.parse(strg);
-	if (!strg[currAccount.name]) return [];
-	return strg[currAccount.name];
+	return ls_getPerAccount(ap_LSKEY_includeDistills, []);
 }
 
 function ap_saveIncludedDistills(eleIds) {
-	let strg = localStorage.getItem(ap_LSKey_includeDistills);
-	if (!strg) strg = {};
-	else strg = JSON.parse(strg);
-	if (eleIds.length === 0) delete strg[currAccount.name];
-	else strg[currAccount.name] = eleIds;
-	localStorage.setItem(ap_LSKey_includeDistills, JSON.stringify(strg));
+	ls_setPerAccount_arr(ap_LSKEY_includeDistills, eleIds);
 }
 
 function ap_buildDistillMaintains() {
@@ -821,18 +812,9 @@ function ap_buildDistillMaintains() {
 }
 
 function ap_getDistillMaintains() {
-	let strg = localStorage.getItem(ap_LSKey_distillMaintains);
-	if (!strg) return {};
-	strg = JSON.parse(strg);
-	if (!strg[currAccount.name]) return {};
-	return strg[currAccount.name];
+	return ls_getPerAccount(ap_LSKEY_distillMaintains, {});
 }
 
 function ap_saveDistillMaintains(categories) {
-	let strg = localStorage.getItem(ap_LSKey_distillMaintains);
-	if (!strg) strg = {};
-	else strg = JSON.parse(strg);
-	if (Object.keys(categories).length === 0) delete strg[currAccount.name];
-	else strg[currAccount.name] = categories;
-	localStorage.setItem(ap_LSKey_distillMaintains, JSON.stringify(strg));
+	ls_setPerAccount_obj(ap_LSKEY_distillMaintains, categories);
 }

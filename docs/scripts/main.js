@@ -1,4 +1,7 @@
-const v = 4.035; // prettier-ignore
+const v = 4.036; // prettier-ignore
+const LSKEY_accounts = `scAccounts`;
+const LSKEY_numFormat = `scNumberFormat`;
+const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
@@ -22,7 +25,6 @@ const settingsDelete = document.getElementById(
 const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
 const supportUrl = document.getElementById(`supportUrl`);
 const supportUrlButton = document.getElementById(`supportUrlMenuButton`);
-const lsSettings = `scSettings`;
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
 let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
 let updateInterval;
@@ -49,9 +51,35 @@ function isBadUserData() {
 function init() {
 	disabledUntilInit.hidden = true;
 	tabsContainer.hidden = false;
-	// Deal with account migration.
-	if (localStorage.scUserIdent != null) {
-		let userIdent = JSON.parse(localStorage.scUserIdent);
+
+	accountLoading();
+	oldLocalStorageMigrations();
+
+	refreshSettingsList();
+	window.addEventListener("hashchange", () => {
+		swapTab();
+	});
+	initSettingsNumberFormat();
+	initPullButtonStuff();
+	bc_initBuyChestsSliderFidelity();
+	oc_initOpenChestsSliderFidelity();
+	oc_initOpenChestsHideChests();
+	dc_initDismantleHideOptions();
+	ap_initApothecaryHideOptions();
+	et_initEventTiersSettings();
+
+	resumePullButtonCooldown();
+	ss_tryResumeCooldownOnLoad();
+
+	swapTab();
+
+	startUpdateCheckInterval(1800000); // 30 mins
+}
+
+function accountLoading() {
+	const old_LSKEY = `scUserIdent`;
+	if (ls_has(old_LSKEY)) {
+		let userIdent = ls_getGlobal(old_LSKEY);
 		settingsUserName.value = ``;
 		settingsUserId.value = userIdent[0];
 		settingsUserHash.value = userIdent[1];
@@ -60,7 +88,7 @@ function init() {
 		tabsContainer.hidden = true;
 		settingsClose.hidden = true;
 		currAccount = undefined;
-		localStorage.removeItem(`scUserIdent`);
+		ls_remove(old_LSKEY);
 		settingsToggle();
 		settingsUserName.focus();
 		settingsIconName.innerHTML = `&nbsp;`;
@@ -85,21 +113,36 @@ function init() {
 			settingsIconName.innerHTML = currAccount.name;
 		}
 	}
-	refreshSettingsList();
-	window.addEventListener("hashchange", () => {
-		swapTab();
-	});
-	initSettingsNumberFormat();
-	initPullButtonStuff();
-	bc_initBuyChestsSliderFidelity();
-	oc_initOpenChestsSliderFidelity();
-	oc_initOpenChestsHideChests();
-	dc_initDismantleHideOptions();
-	ap_initApothecaryHideOptions();
-	et_initEventTiersHideTier4();
-	ss_tryResumeCooldownOnLoad();
-	swapTab();
-	startUpdateCheckInterval(1800000); // 30 mins
+}
+
+function oldLocalStorageMigrations() {
+	// Change old number formatting setting name to the new name:
+	const oldSettingsKey = `scSettings`;
+	if (ls_has(oldSettingsKey)) {
+		if (!ls_has(LSKEY_numFormat)) {
+			const oldFormat = ls_getGlobal(oldSettingsKey, {});
+			ls_setGlobal_obj(LSKEY_numFormat, oldFormat);
+		} else ls_remove(oldSettingsKey);
+	}
+	// Migrate dismantle hide options to account-specific.
+	const distOpts = ls_getGlobal(dc_LSKEY_hideDismantleOpts, null);
+	if (distOpts != null && Array.isArray(distOpts)) {
+		if (distOpts.length === 0) {
+			ls_remove(dc_LSKEY_hideDismantleOpts);
+		} else {
+			let accs = ls_getGlobal(LSKEY_accounts, null);
+			if (accs != null) accs = Object.keys(accs?.accounts);
+			if (Array.isArray(accs) && accs.length > 0) {
+				const strg = {};
+				for (let acc of accs) strg[acc] = distOpts;
+				try {
+					ls_setGlobal_obj(dc_LSKEY_hideDismantleOpts, strg);
+				} catch {
+					ls_remove(dc_LSKEY_hideDismantleOpts);
+				}
+			}
+		}
+	}
 }
 
 function settingsToggle() {
@@ -138,7 +181,7 @@ function settingsToggle() {
 }
 
 function initSettingsNumberFormat() {
-	const settings = getLocalSettings();
+	const settings = ls_getGlobal(LSKEY_numFormat, {});
 	const settingNumFormat =
 		Object.prototype.hasOwnProperty.call(Object, settings, "nf") ?
 			settings.nf
@@ -172,8 +215,8 @@ function initSettingsNumberFormat() {
 function changeCurrentNumberFormat(code) {
 	if (code === "-") code = undefined;
 	numForm = new Intl.NumberFormat(code, NF_GROUPS);
-	if (code != null) setLocalSetting("nf", code);
-	else deleteLocalSetting("nf");
+	if (code != null) ls_setGlobal_obj(LSKEY_numFormat, {nf: code});
+	else ls_remove(LSKEY_numFormat);
 }
 
 function initPullButtonStuff() {
@@ -385,8 +428,10 @@ function setHash(hash) {
 	else window.location.hash = hash;
 }
 
-function togglePullButtons(disable) {
+function togglePullButtons(disable,customTimer) {
 	if (!disable && (pbCodeRunning || pbTimerRunning)) return;
+	if (customTimer == null || customTimer <= 0)
+		customTimer = globalButtonDisableTime;
 
 	for (let name of pbNames) {
 		const button = document.getElementById(`${name}PullButton`);
@@ -400,10 +445,10 @@ function togglePullButtons(disable) {
 			let suffix = ` to prevent spamming the servers.`;
 			message.innerHTML =
 				prefix +
-				getDisplayTime(globalButtonDisableTime - 1000) +
+				getDisplayTime(customTimer - 1000) +
 				suffix;
 			createTimer(
-				globalButtonDisableTime,
+				customTimer,
 				timerName,
 				`${name}PullButtonDisabled`,
 				`<span id="${name}PullButtonDisabled" style="font-size:0.9em">Still busy with other tasks. Please wait.</span>`,
@@ -423,22 +468,44 @@ function togglePullButtons(disable) {
 }
 
 function disablePullButtons() {
-	togglePullButtons(true);
-
 	pbCodeRunning = true;
-	pbTimerRunning = true;
 
-	if (pbTimerTimeout != null) clearTimeout(pbTimerTimeout);
-	pbTimerTimeout = setTimeout(() => {
-		pbTimerRunning = false;
-		pbTimerTimeout = null;
-		togglePullButtons(false);
-	}, globalButtonDisableTime);
+	const cooldownEnd = Date.now() + globalButtonDisableTime;
+	ls_setGlobal_num(LSKEY_pullButtonCooldown, cooldownEnd, 0);
+
+	startPullButtonCooldown(globalButtonDisableTime);
 }
 
 function codeEnablePullButtons() {
 	pbCodeRunning = false;
 	togglePullButtons(false);
+}
+
+function resumePullButtonCooldown() {
+	const cooldownEnd = Number(ls_getGlobal(LSKEY_pullButtonCooldown, 0));
+	if (!cooldownEnd) return;
+
+	const remaining = cooldownEnd - Date.now();
+	startPullButtonCooldown(remaining);
+}
+
+function startPullButtonCooldown(remainingMs) {
+	if (remainingMs <= 0) {
+		ls_remove(LSKEY_pullButtonCooldown);
+		return;
+	}
+
+	togglePullButtons(true,remainingMs);
+	pbTimerRunning = true;
+
+	if (pbTimerTimeout != null) clearTimeout(pbTimerTimeout);
+
+	pbTimerTimeout = setTimeout(() => {
+		pbTimerRunning = false;
+		pbTimerTimeout = null;
+		ls_remove(LSKEY_pullButtonCooldown);
+		togglePullButtons(false);
+	}, remainingMs);
 }
 
 function setFormsWrapperFormat(wrapper, type) {
@@ -550,12 +617,11 @@ async function sleep(ms) {
 }
 
 function getUserAccounts() {
-	if (localStorage.scAccounts == null) return {accounts: {}};
-	return JSON.parse(localStorage.scAccounts);
+	return ls_getGlobal(LSKEY_accounts, {});
 }
 
 function saveUserAccounts(accounts) {
-	localStorage.scAccounts = JSON.stringify(accounts);
+	ls_setGlobal_obj(LSKEY_accounts, accounts);
 }
 
 function addUserAccount(account) {
@@ -638,23 +704,116 @@ function getFirstLine(text) {
 	return text.substring(0, index);
 }
 
-function getLocalSettings() {
-	const strg = localStorage.getItem(lsSettings);
-	if (strg) return JSON.parse(strg);
-	return {};
+function ls_has(key) {
+	const v = localStorage.getItem(key);
+	return v !== null && v !== "";
 }
 
-function setLocalSetting(key, value) {
-	const strg = getLocalSettings();
-	strg[key] = value;
-	localStorage.setItem(lsSettings, JSON.stringify(strg));
+function ls_remove(key) {
+	localStorage.removeItem(key);
 }
 
-function deleteLocalSetting(key) {
-	const strg = getLocalSettings();
-	if (Object.prototype.hasOwnProperty.call(strg, key)) {
-		delete strg[key];
-		if (Object.keys(strg).length === 0) localStorage.removeItem(lsSettings);
-		else localStorage.setItem(lsSettings, JSON.stringify(strg));
+function ls_getGlobal(key, defaultValue) {
+	try {
+		const raw = localStorage.getItem(key);
+		if (raw == null) return defaultValue;
+		return JSON.parse(raw);
+	} catch {
+		return defaultValue;
 	}
+}
+
+function ls_setGlobal(key, value, isEmptyFn) {
+	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
+
+	if (isEmpty) localStorage.removeItem(key);
+	else localStorage.setItem(key, JSON.stringify(value));
+}
+
+function ls_setGlobal_num(key, value, defaultValue) {
+	const num = Number(value);
+	ls_setGlobal(key, num, (v) => !Number.isFinite(v) || v === defaultValue);
+}
+
+function ls_setGlobal_bool(key, value, defaultValue) {
+	const num = value ? 1 : 0;
+	const def = defaultValue ? 1 : 0;
+
+	ls_setGlobal(key, num, (v) => v === def);
+}
+
+function ls_setGlobal_arr(key, arr) {
+	ls_setGlobal(key, arr, (v) => !Array.isArray(v) || v.length === 0);
+}
+
+function ls_setGlobal_obj(key, obj) {
+	ls_setGlobal(
+		key,
+		obj,
+		(v) => !v || typeof v !== "object" || Object.keys(v).length === 0,
+	);
+}
+
+function ls_getPerAccount(key, defaultValue) {
+	try {
+		const raw = localStorage.getItem(key);
+		if (!raw) return defaultValue;
+
+		const parsed = JSON.parse(raw);
+		if (!parsed || typeof parsed !== "object") return defaultValue;
+
+		const value = parsed[currAccount.name];
+		return value ?? defaultValue;
+	} catch {
+		return defaultValue;
+	}
+}
+
+function ls_setPerAccount(key, value, isEmptyFn) {
+	let parsed = {};
+	try {
+		const raw = localStorage.getItem(key);
+		if (raw) parsed = JSON.parse(raw) || {};
+	} catch {
+		parsed = {};
+	}
+
+	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
+
+	if (isEmpty) {
+		delete parsed[currAccount.name];
+	} else {
+		parsed[currAccount.name] = value;
+	}
+
+	if (Object.keys(parsed).length === 0) ls_remove(key);
+	else localStorage.setItem(key, JSON.stringify(parsed));
+}
+
+function ls_setPerAccount_num(key, value, defaultValue) {
+	const num = Number(value);
+	ls_setPerAccount(
+		key,
+		num,
+		(v) => !Number.isFinite(v) || v === defaultValue,
+	);
+}
+
+function ls_setPerAccount_bool(key, value, defaultValue) {
+	const num = value ? 1 : 0;
+	const def = defaultValue ? 1 : 0;
+
+	ls_setPerAccount(key, num, (v) => v === def);
+}
+
+function ls_setPerAccount_arr(key, arr) {
+	ls_setPerAccount(key, arr, (v) => !Array.isArray(v) || v.length === 0);
+}
+
+function ls_setPerAccount_obj(key, obj) {
+	ls_setPerAccount(
+		key,
+		obj,
+		(v) => !v || typeof v !== "object" || Object.keys(v).length === 0,
+	);
 }

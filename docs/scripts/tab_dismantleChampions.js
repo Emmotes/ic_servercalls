@@ -1,5 +1,5 @@
-const vdc = 1.007; // prettier-ignore
-const dc_LSKey_hideDismantleOpts = `scHideDismantleOptions`;
+const vdc = 1.008; // prettier-ignore
+const dc_LSKEY_hideDismantleOpts = `scHideDismantleOptions`;
 
 async function dc_pullData() {
 	clearTimers(`dc_`);
@@ -314,7 +314,7 @@ function dc_initDismantleHideOptions() {
 
 function dc_toggleDismantleHideOptions(ele) {
 	const hideOption = ele.dataset.type;
-	if (!localStorage.getItem(dc_LSKey_hideDismantleOpts)) {
+	if (!ls_has(dc_LSKEY_hideDismantleOpts)) {
 		dc_setDismantleHideOptions([hideOption]);
 		return;
 	}
@@ -323,17 +323,13 @@ function dc_toggleDismantleHideOptions(ele) {
 	if (checked && !hideOptions.includes(hideOption))
 		hideOptions.push(hideOption);
 	else hideOptions.splice(hideOptions.indexOf(hideOption), 1);
-	if (hideOptions.length === 0)
-		localStorage.removeItem(dc_LSKey_hideDismantleOpts);
-	else dc_setDismantleHideOptions(hideOptions);
+	dc_setDismantleHideOptions(hideOptions);
 }
 
 function dc_getDismantleHideOptions() {
-	const hideOptions = localStorage.getItem(dc_LSKey_hideDismantleOpts);
-	if (!hideOptions) return [];
-	return JSON.parse(hideOptions);
+	return ls_getPerAccount(dc_LSKEY_hideDismantleOpts, []);
 }
 
 function dc_setDismantleHideOptions(opts) {
-	localStorage.setItem(dc_LSKey_hideDismantleOpts, JSON.stringify(opts));
+	ls_setPerAccount_arr(dc_LSKEY_hideDismantleOpts, opts);
 }

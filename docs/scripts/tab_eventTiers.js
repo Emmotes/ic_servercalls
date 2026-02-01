@@ -1,6 +1,8 @@
-const vet = 1.018; // prettier-ignore
+const vet = 1.019; // prettier-ignore
+const et_LSKEY_hideTier4 = `scEventTiersHideTier4`;
+const et_LSKEY_eventSort = `scEventTiersSort`;
+const et_DEFAULT_eventSort = `event`;
 const et_idMult = 10000;
-const et_LSKey_hideTier4 = `scEventTiersHideTier4`;
 
 async function et_pullEventTiersData() {
 	if (isBadUserData()) return;
@@ -146,8 +148,9 @@ function et_parseOwnedChamps(defsHeroes, detailsHeroes) {
 function et_changeOrder(type) {
 	if (type == null) {
 		const sortEle = document.getElementById(`eventTiersSort`);
-		type = sortEle?.value || `event`;
+		type = sortEle?.value || et_DEFAULT_eventSort;
 	}
+	et_setEventSort(type);
 	const wrapper = document.getElementById("eventTiersWrapper");
 	for (let ele of wrapper.childNodes) {
 		const eventId = Number(ele.dataset.eventidorder) + 1;
@@ -273,8 +276,11 @@ function et_buildSVG(tier, month, day) {
 	return `<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m13.73 3.51 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0" stroke="#000" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="svgEventTier${tier}"/></svg>`;
 }
 
-function et_initEventTiersHideTier4() {
-	document.getElementById("eventTiersHideTier4").checked = et_getHideTier4();
+function et_initEventTiersSettings() {
+	let hideTier4Ele = document.getElementById(`eventTiersHideTier4`);
+	if (hideTier4Ele) hideTier4Ele.checked = et_getHideTier4();
+	let sortTypeEle = document.getElementById(`eventTiersSort`);
+	if (sortTypeEle) sortTypeEle.value = et_getEventSort();
 }
 
 function et_toggleHideTier4(force) {
@@ -293,13 +299,23 @@ function et_toggleHideTier4(force) {
 }
 
 function et_getHideTier4() {
-	const strg = localStorage.getItem(et_LSKey_hideTier4);
-	if (!strg) return false;
-	return strg !== "0";
+	return ls_getGlobal(et_LSKEY_hideTier4, false) === 1;
 }
 
 function et_setHideTier4(hide) {
-	localStorage.setItem(et_LSKey_hideTier4, hide ? "1" : "0");
+	ls_setGlobal_bool(et_LSKEY_hideTier4, hide, false);
+}
+
+function et_getEventSort() {
+	return ls_getGlobal(et_LSKEY_eventSort, et_DEFAULT_eventSort);
+}
+
+function et_setEventSort(eventSort) {
+	return ls_setGlobal(
+		et_LSKEY_eventSort,
+		eventSort,
+		(v) => v == null || v === `` || v === et_DEFAULT_eventSort,
+	);
 }
 
 function et_getRandomLocale() {

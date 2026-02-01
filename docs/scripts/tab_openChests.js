@@ -1,6 +1,6 @@
-const voc = 1.032; // prettier-ignore
-const oc_LSKey_hide = `scHideOpenChests`;
-const oc_LSKey_fidelity = `scOpenChestsSliderFidelity`;
+const voc = 1.033; // prettier-ignore
+const oc_LSKEY_hideChests = `scHideOpenChests`;
+const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
 const oc_amountUndefined = `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
 
@@ -380,7 +380,7 @@ function oc_makeOpeningRow(amount, name, initAmount) {
 }
 
 function oc_initOpenChestsHideChests() {
-	if (localStorage.getItem(oc_LSKey_hide) == null) return;
+	if (!ls_has(oc_LSKEY_hideChests)) return;
 	const hideChests = oc_getHiddenChestIds();
 	for (let ele of document.querySelectorAll('[id^="openChestsHide"]')) {
 		const eleIds = JSON.parse(ele.dataset.ids);
@@ -399,26 +399,11 @@ function oc_toggleHideOpenChests() {
 }
 
 function oc_getHiddenChestIds() {
-	let strg = localStorage.getItem(oc_LSKey_hide);
-	if (!strg) return [];
-	strg = JSON.parse(strg);
-	// Detect migration required.
-	if (Array.isArray(strg)) {
-		oc_saveHiddenChestIds(strg);
-		return strg;
-	}
-	if (!strg[currAccount.name]) return [];
-	return strg[currAccount.name];
+	return ls_getPerAccount(oc_LSKEY_hideChests, []);
 }
 
 function oc_saveHiddenChestIds(chestIds) {
-	let strg = localStorage.getItem(oc_LSKey_hide);
-	if (!strg) strg = {};
-	else strg = JSON.parse(strg);
-	if (Array.isArray(strg)) strg = {};
-	if (chestIds.length === 0) delete strg[currAccount.name];
-	else strg[currAccount.name] = chestIds;
-	localStorage.setItem(oc_LSKey_hide, JSON.stringify(strg));
+	ls_setPerAccount_arr(oc_LSKEY_hideChests, chestIds);
 }
 
 function oc_initOpenChestsSliderFidelity() {
@@ -432,8 +417,8 @@ function oc_initOpenChestsSliderFidelity() {
 
 function oc_toggleOpenChestsSliderFidelity(fidelity) {
 	if (!fidelity) fidelity = oc_getOpenChestsSliderFidelity();
-	if (fidelity === 1 && localStorage.getItem(oc_LSKey_fidelity))
-		localStorage.removeItem(oc_LSKey_fidelity);
+	if (fidelity === 1 && ls_has(oc_LSKEY_fidelity))
+		ls_remove(oc_LSKEY_fidelity);
 	else if (fidelity !== 1) oc_saveOpenChestsSliderFidelity(fidelity);
 	for (let ele of document.querySelectorAll(
 		'input[id^="openChests"][id$="Slider"]',
@@ -469,11 +454,9 @@ function oc_disableSlidersButtonsAndHolders(disable) {
 }
 
 function oc_getOpenChestsSliderFidelity() {
-	const strg = localStorage.getItem(oc_LSKey_fidelity);
-	if (!strg) return 1;
-	return Number(strg);
+	return ls_getGlobal(oc_LSKEY_fidelity, 1);
 }
 
 function oc_saveOpenChestsSliderFidelity(fidelity) {
-	localStorage.setItem(oc_LSKey_fidelity, fidelity);
+	ls_setGlobal_num(oc_LSKEY_fidelity, fidelity, 1);
 }

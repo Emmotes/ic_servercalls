@@ -1,4 +1,5 @@
-const vbc = 1.020; // prettier-ignore
+const vbc = 1.021; // prettier-ignore
+const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
 const bc_goldChestCost = 500;
@@ -6,7 +7,6 @@ const bc_silverChestOpt = `<option value="1">Silver Chest</option>`;
 const bc_goldChestOpt = `<option value="2">Gold Chest</option>`;
 const bc_notEnoughGems = `<option value="-1">Not enough gems.</option>`;
 const bc_notEnoughEventTokens = `<option value="-1">Not enough event tokens.</option>`;
-const bc_sliderFidelity = `scBuyChestsSliderFidelity`;
 
 async function bc_pullBuyChestsData() {
 	if (isBadUserData()) return;
@@ -379,9 +379,10 @@ function bc_initBuyChestsSliderFidelity() {
 }
 
 function bc_toggleBuyChestsSliderFidelity(fidelity) {
-	if (fidelity === 1 && localStorage.getItem(bc_sliderFidelity))
-		localStorage.removeItem(`bc_sliderFidelity`);
+	if (fidelity === 1 && ls_has(bc_LSKEY_sliderFidelity))
+		ls_remove(bc_LSKEY_sliderFidelity);
 	else if (fidelity !== 1) bc_saveBuyChestsSliderFidelity(fidelity);
+
 	const buyChestsBuyAmount = document.getElementById(`buyChestsBuyAmount`);
 	if (buyChestsBuyAmount != null) {
 		buyChestsBuyAmount.step = fidelity;
@@ -393,11 +394,9 @@ function bc_toggleBuyChestsSliderFidelity(fidelity) {
 }
 
 function bc_getBuyChestsSliderFidelity() {
-	const fidelity = localStorage.getItem(bc_sliderFidelity);
-	if (!fidelity) return 1;
-	return Number(fidelity);
+	return ls_getGlobal(bc_LSKEY_sliderFidelity, 1);
 }
 
 function bc_saveBuyChestsSliderFidelity(fidelity) {
-	localStorage.setItem(bc_sliderFidelity, fidelity);
+	ls_setGlobal_num(bc_LSKEY_sliderFidelity, fidelity, 1);
 }

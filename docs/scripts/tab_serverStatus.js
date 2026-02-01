@@ -1,4 +1,5 @@
-const vss = 2.006; // prettier-ignore
+const vss = 2.007; // prettier-ignore
+const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
 const ss_SVG_down = `<svg width="22" height="22" viewBox="1 1 34 34" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".8"><path fill="var(--CarminePink)" d="M21.533 18.002 33.768 5.768a2.5 2.5 0 0 0-3.535-3.535L17.998 14.467 5.764 2.233a2.5 2.5 0 0 0-3.535 0 2.5 2.5 0 0 0 0 3.535l12.234 12.234L2.201 30.265a2.498 2.498 0 0 0 1.768 4.267c.64 0 1.28-.244 1.768-.732l12.262-12.263 12.234 12.234a2.5 2.5 0 0 0 1.768.732 2.5 2.5 0 0 0 1.768-4.267z"/></svg>`;
 const ss_SVG_slow = `<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".6" fill="var(--Saffron)"><rect height="4" rx="1.5" ry="1.5" width="21" x=".5" y="9"></rect></svg>`;
@@ -7,7 +8,6 @@ const ss_MIN_RECHECK_MS = 30 * 1000; // 30 seconds
 const ss_CACHE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
-const ss_COOLDOWN_STORAGE_KEY = `scServerStatusCooldown`;
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
 
@@ -157,7 +157,7 @@ function ss_setCooldownUntil(untilMs) {
 	if (!btn || !disabled) return;
 
 	try {
-		localStorage.setItem(ss_COOLDOWN_STORAGE_KEY, String(untilMs));
+		ls_setGlobal_num(ss_LSKEY_serverStatusCooldown, untilMs);
 	} catch {
 		// Do nothing.
 	}
@@ -184,7 +184,7 @@ function ss_setCooldownUntil(untilMs) {
 			btn.classList.remove(`greyButton`);
 			btn.disabled = false;
 			try {
-				localStorage.removeItem(ss_COOLDOWN_STORAGE_KEY);
+				ls_remove(ss_LSKEY_serverStatusCooldown);
 			} catch {
 				// Do nothing.
 			}
@@ -224,9 +224,7 @@ function ss_applyCooldownFromStatus(statusData) {
 
 function ss_tryResumeCooldownOnLoad() {
 	try {
-		const until = Number(
-			localStorage.getItem(ss_COOLDOWN_STORAGE_KEY) || 0,
-		);
+		const until = Number(ls_getGlobal(ss_LSKEY_serverStatusCooldown, 0));
 		if (until && until > Date.now()) ss_setCooldownUntil(until);
 	} catch {
 		// Do nothing.
