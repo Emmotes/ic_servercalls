@@ -1,4 +1,4 @@
-const vet = 1.017; // prettier-ignore
+const vet = 1.018; // prettier-ignore
 const et_idMult = 10000;
 const et_LSKey_hideTier4 = `scEventTiersHideTier4`;
 
@@ -120,7 +120,7 @@ async function et_displayEventTiersData(
 		`Displaying: ${numNotTier4} / ${numTotal}`;
 	et_hideEventSort(false);
 	if (et_getHideTier4()) et_toggleHideTier4(true);
-	et_changeOrder("event");
+	et_changeOrder();
 }
 
 function et_parseOwnedChamps(defsHeroes, detailsHeroes) {
@@ -144,6 +144,10 @@ function et_parseOwnedChamps(defsHeroes, detailsHeroes) {
 }
 
 function et_changeOrder(type) {
+	if (type == null) {
+		const sortEle = document.getElementById(`eventTiersSort`);
+		type = sortEle?.value || `event`;
+	}
 	const wrapper = document.getElementById("eventTiersWrapper");
 	for (let ele of wrapper.childNodes) {
 		const eventId = Number(ele.dataset.eventidorder) + 1;
