@@ -1,4 +1,4 @@
-const vlf = 1.000; // prettier-ignore
+const vlf = 1.001; // prettier-ignore
 const lf_LSKEY_maintainScales = `scLegendariesMaintain`;
 const lf_forgeState = {atMost: -1, maintainScales: -1};
 const lf_forgeOpts = [1, 2, 3, 4, 5, 6];
@@ -33,7 +33,8 @@ async function lf_displayData(wrapper, details, champDefs) {
 
 	const champ = lf_getNextForgeTarget(Math.max(...lf_forgeOpts));
 	if (!champ) {
-		wrapper.innerHTML = `Your champions all have the most amount of legendaries they can at present.`;
+		legInfo.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Your champions all have the most amount of legendaries they can at present.</span>`;
+		wrapper.innerHTML = `&nbsp;`;
 		return;
 	}
 
