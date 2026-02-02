@@ -482,6 +482,47 @@
 				</span>
 			</div>
 			<!-- END: Trials Calculator Tab -->
+			<!-- START: Legendaries Calculator Tab -->
+			<input onClick="setHash('legendariesTab')" type="radio" class="tabsRadio" name="serverTabs" id="legendariesTab">
+			<label for="legendariesTab" class="tabsLabel">Legendaries</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Legendary Forger</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+						<p>This page will let you forge legendaries on lots of champions up to a maximum of 1-6 (chooseable) per champion.
+							Primarily this is for forging all slot 1s in preparation for a Legendary Dismantle - so you can always forge at a cost of 500 scales
+							 - and then use the resulting potions later to Full Legendary.</p>
+						<p>This works by always forging the cheapest and lowest slot legendary it can on the lowest champion-id champion that it can.</p>
+						<p><em>Note: With the legendary rework apparently soon upon us - I have put little effort into the UI. It will likely have to be scrapped when the rework goes live.</em></p>
+					</span>
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="lf_pullData()" name="legendariesPullButton" id="legendariesPullButton" value="Pull Legendaries Data" style="min-width:175px">
+						<span id="legendariesPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="legendariesWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fc fals w100 fjc mr2" id="legendariesInfo">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Legendaries Calculator Tab -->
 			<!-- START: Event Tiers Tab -->
 			<input onClick="setHash('eventTiersTab')" type="radio" class="tabsRadio" name="serverTabs" id="eventTiersTab">
 			<label for="eventTiersTab" class="tabsLabel">Event Tiers</label>
@@ -830,6 +871,7 @@
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.016"></script>
 	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=2.003"></script>
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.015"></script>
+	<script type="text/javascript" src="scripts/tab_legendaryForger.js?vlf=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.021"></script>
 	<script type="text/javascript" src="scripts/tab_ilvlReport.js?vir=1.005"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.007"></script>

@@ -307,11 +307,11 @@ async function ap_distillPotions() {
 	let txt = `<span class="f fr w100 p5">Distilling Potions:</span>`;
 	distillDetails.innerHTML = txt;
 
-const incs = ap_getInclusions();
-const allowedCats = new Set(["small", "medium", "large", "huge"]);
-if (incs.incSpecs) allowedCats.add("spec");
-if (incs.incPoPs) allowedCats.add("pop");
-if (incs.inc7Days) allowedCats.add("7days");
+	const incs = ap_getInclusions();
+	const allowedCats = new Set(["small", "medium", "large", "huge"]);
+	if (incs.incSpecs) allowedCats.add("spec");
+	if (incs.incPoPs) allowedCats.add("pop");
+	if (incs.inc7Days) allowedCats.add("7days");
 
 	let potsToDistill = {};
 
