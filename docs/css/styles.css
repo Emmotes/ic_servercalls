@@ -702,12 +702,18 @@ input[type="checkbox"]:checked::before {
 
 .apothecaryDistillWrapper {
 	display: grid;
-	grid-template-columns: 200px 175px 250px;
+	grid-template-columns: 200px 175px 300px;
 	gap: 5px;
 }
 
 .apothecaryBrewWrapper {
 	display: grid;
 	grid-template-columns: 200px 175px 100px 30px 100px;
+	gap: 5px;
+}
+
+.apothecaryEnhanceWrapper {
+	display: grid;
+	grid-template-columns: 140px 225px 100px 30px 100px;
 	gap: 5px;
 }

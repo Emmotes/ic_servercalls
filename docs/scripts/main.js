@@ -1,4 +1,4 @@
-const v = 4.036; // prettier-ignore
+const v = 4.037; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -529,6 +529,9 @@ function setFormsWrapperFormat(wrapper, type) {
 		wrapper.style = ``;
 	} else if (type === 6) {
 		wrapper.className = `apothecaryBrewWrapper`;
+		wrapper.style = ``;
+	} else if (type === 7) {
+		wrapper.className = `apothecaryEnhanceWrapper`;
 		wrapper.style = ``;
 	}
 }

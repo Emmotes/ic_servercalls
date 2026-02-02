@@ -1,39 +1,40 @@
-const vb = 2.002; // prettier-ignore
-const buffRegistry = [
+const vb = 2.003; // prettier-ignore
+const b_potionSizes = ["small", "medium", "large", "huge", "legendary"];
+const b_buffRegistry = [
 	// Gold basics.
-	{id: 5, name: "Small Potion of Clairvoyance", type: "potion", category: "basic", size: "small", buff: "Clairvoyance"},
-	{id: 6, name: "Medium Potion of Clairvoyance", type: "potion", category: "basic", size: "medium", buff: "Clairvoyance"},
-	{id: 7, name: "Large Potion of Clairvoyance", type: "potion", category: "basic", size: "large", buff: "Clairvoyance"},
-	{id: 8, name: "Huge Potion of Clairvoyance", type: "potion", category: "basic", size: "huge", buff: "Clairvoyance"},
-	{id: 2165, name: "Legendary Potion of Clairvoyance", type: "potion", category: "basic", size: "legendary", buff: "Clairvoyance", legendary: true, distillBanned: true},
+	{id: 5, name: "Small Potion of Clairvoyance", type: "potion", category: "basic", size: b_potionSizes[0], buff: "Clairvoyance"},
+	{id: 6, name: "Medium Potion of Clairvoyance", type: "potion", category: "basic", size: b_potionSizes[1], buff: "Clairvoyance"},
+	{id: 7, name: "Large Potion of Clairvoyance", type: "potion", category: "basic", size: b_potionSizes[2], buff: "Clairvoyance"},
+	{id: 8, name: "Huge Potion of Clairvoyance", type: "potion", category: "basic", size: b_potionSizes[3], buff: "Clairvoyance"},
+	{id: 2165, name: "Legendary Potion of Clairvoyance", type: "potion", category: "basic", size: b_potionSizes[4], buff: "Clairvoyance", legendary: true, distillBanned: true},
 
 	// Click damage basics.
-	{id: 37, name: "Small Potion of Fire Breath", type: "potion", category: "basic", size: "small", buff: "Fire Breath"},
-	{id: 38, name: "Medium Potion of Fire Breath", type: "potion", category: "basic", size: "medium", buff: "Fire Breath"},
-	{id: 39, name: "Large Potion of Fire Breath", type: "potion", category: "basic", size: "large", buff: "Fire Breath"},
-	{id: 40, name: "Huge Potion of Fire Breath", type: "potion", category: "basic", size: "huge", buff: "Fire Breath"},
-	{id: 2167, name: "Legendary Fire Breath Potion", type: "potion", category: "basic", size: "legendary", buff: "Fire Breath", legendary: true, distillBanned: true},
+	{id: 37, name: "Small Potion of Fire Breath", type: "potion", category: "basic", size: b_potionSizes[0], buff: "Fire Breath"},
+	{id: 38, name: "Medium Potion of Fire Breath", type: "potion", category: "basic", size: b_potionSizes[1], buff: "Fire Breath"},
+	{id: 39, name: "Large Potion of Fire Breath", type: "potion", category: "basic", size: b_potionSizes[2], buff: "Fire Breath"},
+	{id: 40, name: "Huge Potion of Fire Breath", type: "potion", category: "basic", size: b_potionSizes[3], buff: "Fire Breath"},
+	{id: 2167, name: "Legendary Fire Breath Potion", type: "potion", category: "basic", size: b_potionSizes[4], buff: "Fire Breath", legendary: true, distillBanned: true},
 
 	// Damage basics.
-	{id: 1, name: "Small Potion of Giant's Strength", type: "potion", category: "basic", size: "small", buff: "Giant's Strength"},
-	{id: 2, name: "Medium Potion of Giant's Strength", type: "potion", category: "basic", size: "medium", buff: "Giant's Strength"},
-	{id: 3, name: "Large Potion of Giant's Strength", type: "potion", category: "basic", size: "large", buff: "Giant's Strength"},
-	{id: 4, name: "Huge Potion of Giant's Strength", type: "potion", category: "basic", size: "huge", buff: "Giant's Strength"},
-	{id: 2164, name: "Legendary Potion of Giant's Strength", type: "potion", category: "basic", size: "legendary", buff: "Giant's Strength", legendary: true, distillBanned: true},
+	{id: 1, name: "Small Potion of Giant's Strength", type: "potion", category: "basic", size: b_potionSizes[0], buff: "Giant's Strength"},
+	{id: 2, name: "Medium Potion of Giant's Strength", type: "potion", category: "basic", size: b_potionSizes[1], buff: "Giant's Strength"},
+	{id: 3, name: "Large Potion of Giant's Strength", type: "potion", category: "basic", size: b_potionSizes[2], buff: "Giant's Strength"},
+	{id: 4, name: "Huge Potion of Giant's Strength", type: "potion", category: "basic", size: b_potionSizes[3], buff: "Giant's Strength"},
+	{id: 2164, name: "Legendary Potion of Giant's Strength", type: "potion", category: "basic", size: b_potionSizes[4], buff: "Giant's Strength", legendary: true, distillBanned: true},
 
 	// Health basics.
-	{id: 13, name: "Small Potion of Heroism", type: "potion", category: "basic", size: "small", buff: "Heroism"},
-	{id: 14, name: "Medium Potion of Heroism", type: "potion", category: "basic", size: "medium", buff: "Heroism"},
-	{id: 15, name: "Large Potion of Heroism", type: "potion", category: "basic", size: "large", buff: "Heroism"},
-	{id: 16, name: "Huge Potion of Heroism", type: "potion", category: "basic", size: "huge", buff: "Heroism"},
-	{id: 2166, name: "Legendary Potion of Heroism", type: "potion", category: "basic", size: "legendary", buff: "Heroism", legendary: true, distillBanned: true},
+	{id: 13, name: "Small Potion of Heroism", type: "potion", category: "basic", size: b_potionSizes[0], buff: "Heroism"},
+	{id: 14, name: "Medium Potion of Heroism", type: "potion", category: "basic", size: b_potionSizes[1], buff: "Heroism"},
+	{id: 15, name: "Large Potion of Heroism", type: "potion", category: "basic", size: b_potionSizes[2], buff: "Heroism"},
+	{id: 16, name: "Huge Potion of Heroism", type: "potion", category: "basic", size: b_potionSizes[3], buff: "Heroism"},
+	{id: 2166, name: "Legendary Potion of Heroism", type: "potion", category: "basic", size: b_potionSizes[4], buff: "Heroism", legendary: true, distillBanned: true},
 
 	// Speed basics.
-	{id: 74, name: "Small Potion of Speed", type: "potion", category: "basic", size: "small", buff: "Speed"},
-	{id: 75, name: "Medium Potion of Speed", type: "potion", category: "basic", size: "medium", buff: "Speed"},
-	{id: 76, name: "Large Potion of Speed", type: "potion", category: "basic", size: "large", buff: "Speed"},
-	{id: 77, name: "Huge Potion of Speed", type: "potion", category: "basic", size: "huge", buff: "Speed"},
-	{id: 2168, name: "Legendary Potion of Speed", type: "potion", category: "basic", size: "legendary", buff: "Speed", legendary: true, distillBanned: true},
+	{id: 74, name: "Small Potion of Speed", type: "potion", category: "basic", size: b_potionSizes[0], buff: "Speed", distillBanned: true},
+	{id: 75, name: "Medium Potion of Speed", type: "potion", category: "basic", size: b_potionSizes[1], buff: "Speed", distillBanned: true},
+	{id: 76, name: "Large Potion of Speed", type: "potion", category: "basic", size: b_potionSizes[2], buff: "Speed", distillBanned: true},
+	{id: 77, name: "Huge Potion of Speed", type: "potion", category: "basic", size: b_potionSizes[3], buff: "Speed", distillBanned: true},
+	{id: 2168, name: "Legendary Potion of Speed", type: "potion", category: "basic", size: b_potionSizes[4], buff: "Speed", legendary: true, distillBanned: true},
 	
 	// Misc Potions
 	{id: 35, name: "Potion of Specialization", type: "potion", category: "spec"},
@@ -68,7 +69,7 @@ const b_potionsBySize = new Map();
 const b_potionsByBuff = new Map();
 const b_potionsByBuffAndSize = new Map();
 
-for (const buff of buffRegistry) {
+for (const buff of b_buffRegistry) {
 	if (buff.type === "potion") {
 		b_potionsById.set(buff.id, buff);
 		b_potionsByName.set(buff.name, buff);
@@ -95,3 +96,8 @@ for (const buff of buffRegistry) {
 		}
 	}
 } // prettier-ignore
+
+const b_speedPotionsSortedBySize = [...(b_potionsByBuff.get("Speed") ?? [])];
+b_speedPotionsSortedBySize.sort((a, b) => {
+	return b_potionSizes.indexOf(a.size) - b_potionSizes.indexOf(b.size);
+});
