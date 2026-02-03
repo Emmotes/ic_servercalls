@@ -1,4 +1,4 @@
-const v = 4.037; // prettier-ignore
+const v = 4.038; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -476,8 +476,14 @@ function disablePullButtons() {
 	startPullButtonCooldown(globalButtonDisableTime);
 }
 
-function codeEnablePullButtons() {
+function codeEnablePullButtons(skipCooldown) {
 	pbCodeRunning = false;
+	if (skipCooldown) {
+		pbTimerRunning = false;
+		pbTimerTimeout = null;
+		ls_remove(LSKEY_pullButtonCooldown);
+		clearTimers(`mpb_`);
+	}
 	togglePullButtons(false);
 }
 
