@@ -1,4 +1,4 @@
-const vlf = 1.001; // prettier-ignore
+const vlf = 1.002; // prettier-ignore
 const lf_LSKEY_maintainScales = `scLegendariesMaintain`;
 const lf_forgeState = {atMost: -1, maintainScales: -1};
 const lf_forgeOpts = [1, 2, 3, 4, 5, 6];
@@ -29,11 +29,11 @@ async function lf_displayData(wrapper, details, champDefs) {
 
 	lf_scales = Number(details.stats?.multiplayer_points ?? 0);
 	lf_champNamesById = getDefsNames(champDefs);
-	lf_buildMaps(details);
+	lf_buildMap(details);
 
-	const champ = lf_getNextForgeTarget(Math.max(...lf_forgeOpts));
+	const champ = lf_getNextForgeTarget(Infinity);
 	if (!champ) {
-		legInfo.innerHTML = `<span class="f w100 p5" style="padding-left:10%">Your champions all have the most amount of legendaries they can at present.</span>`;
+		legInfo.innerHTML = `<span class="f w100 p5" style="padding-left:10%">All of your champions have the most amount of legendaries they can at present.</span>`;
 		wrapper.innerHTML = `&nbsp;`;
 		return;
 	}
@@ -65,7 +65,7 @@ async function lf_displayData(wrapper, details, champDefs) {
 	lf_checkCanForge();
 }
 
-function lf_buildMaps(details) {
+function lf_buildMap(details) {
 	const champs = new Map();
 
 	// initialise owned champions
@@ -87,7 +87,7 @@ function lf_buildMaps(details) {
 
 	// epics
 	for (const loot of details.loot) {
-		if (Number(loot?.rarity) < 4) continue;
+		if (Number(loot?.rarity ?? 0) < 4) continue;
 		const champ = champs.get(Number(loot.hero_id));
 		if (!champ) continue;
 
@@ -131,12 +131,13 @@ async function lf_forgeLegendaries() {
 
 	let txt = ``;
 	const fin = lf_buildResultHeader(`Finished Forging.`);
+	const stop = `Stopped`;
 	while (true) {
 		const champ = lf_getNextForgeTarget();
 		if (!champ) {
 			header = fin;
 			txt += lf_buildResultLine(
-				`Stopped`,
+				stop,
 				`No more champions left to forge on.`,
 			);
 			break;
@@ -145,24 +146,29 @@ async function lf_forgeLegendaries() {
 		if (champ.currentCost <= 0 || !isFinite(champ.currentCost)) {
 			header = fin;
 			txt += lf_buildResultLine(
-				`Stopped`,
+				stop,
 				`Invalid forge cost of ${champ.currentCost} for ${champ.name}.`,
 			);
 		}
 
 		if (lf_scales - champ.currentCost < lf_forgeState.maintainScales) {
 			header = fin;
-			txt += lf_buildResultLine(
-				`Stopped`,
-				`Can't spend any more scales.`,
-			);
+			txt += lf_buildResultLine(stop, `Can't spend any more scales.`);
 			break;
 		}
 
 		const slotId = [...champ.epicSlots]
 			.sort((a, b) => a - b)
 			.find((s) => !champ.legendarySlots.has(s));
-		if (!slotId) break;
+		if (!slotId) {
+			// This should be impossible to reach - but who knows. It's CNE.
+			header = lf_buildResultHeader(`Stopped due to data error.`);
+			txt += lf_buildResultLine(
+				stop,
+				`Could not find an epic item to forge on ${champ.name}.`,
+			);
+			break;
+		}
 
 		const resultLine = `Slot ${nf(slotId)} on ${champ.name}`;
 
@@ -232,9 +238,10 @@ function lf_legsAtMostChanged(value) {
 }
 
 function lf_maintainScalesChanged(value) {
-	lf_forgeState.maintainScales = Number(value ?? lf_DEFAULT_maintainScales);
+	const m = Number(value ?? lf_DEFAULT_maintainScales);
+	lf_forgeState.maintainScales = m;
 
-	lf_setMaintainScalesAmount(lf_forgeState.maintainScales);
+	lf_setMaintainScalesAmount(m);
 
 	lf_checkCanForge();
 }
