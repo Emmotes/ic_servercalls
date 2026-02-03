@@ -1,4 +1,4 @@
-const v = 4.038; // prettier-ignore
+const v = 4.039; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -284,9 +284,9 @@ function getPatronNameById(id) {
 }
 
 async function saveUserData() {
-	const userName = settingsUserName.value || ``;
-	const userId = settingsUserId.value || ``;
-	const userHash = settingsUserHash.value || ``;
+	const userName = settingsUserName.value.trim() ?? ``;
+	const userId = settingsUserId.value.trim() ?? ``;
+	const userHash = settingsUserHash.value.trim() ?? ``;
 	if (userName !== `` && userId !== `` && userHash !== ``) {
 		const newAccount = {name: userName, id: userId, hash: userHash};
 		addUserAccount(newAccount);
@@ -301,8 +301,14 @@ async function saveUserData() {
 		}, 2000);
 	} else {
 		settingsSave.value = `ERROR`;
+		settingsSave.disabled = true;
+		settingsSave.style.color = `#555`;
+		settingsSave.style.backgroundColor = `hsl(calc(240*0.95),15%,calc(16%*0.8))`;
 		setTimeout(function () {
 			settingsSave.value = `Save`;
+			settingsSave.disabled = false;
+			settingsSave.style.color = ``;
+			settingsSave.style.backgroundColor = ``;
 		}, 2000);
 	}
 	refreshSettingsList();
@@ -428,7 +434,7 @@ function setHash(hash) {
 	else window.location.hash = hash;
 }
 
-function togglePullButtons(disable,customTimer) {
+function togglePullButtons(disable, customTimer) {
 	if (!disable && (pbCodeRunning || pbTimerRunning)) return;
 	if (customTimer == null || customTimer <= 0)
 		customTimer = globalButtonDisableTime;
@@ -444,9 +450,7 @@ function togglePullButtons(disable,customTimer) {
 			let prefix = `Disabled for `;
 			let suffix = ` to prevent spamming the servers.`;
 			message.innerHTML =
-				prefix +
-				getDisplayTime(customTimer - 1000) +
-				suffix;
+				prefix + getDisplayTime(customTimer - 1000) + suffix;
 			createTimer(
 				customTimer,
 				timerName,
@@ -501,7 +505,7 @@ function startPullButtonCooldown(remainingMs) {
 		return;
 	}
 
-	togglePullButtons(true,remainingMs);
+	togglePullButtons(true, remainingMs);
 	pbTimerRunning = true;
 
 	if (pbTimerTimeout != null) clearTimeout(pbTimerTimeout);
@@ -634,7 +638,13 @@ function saveUserAccounts(accounts) {
 }
 
 function addUserAccount(account) {
-	const userAccounts = getUserAccounts();
+	let userAccounts = getUserAccounts();
+
+	if (!userAccounts || typeof userAccounts !== "object") userAccounts = {};
+
+	if (!userAccounts.accounts || typeof userAccounts.accounts !== "object")
+		userAccounts.accounts = {};
+
 	userAccounts.accounts[account.name] = account;
 	userAccounts.current = account;
 	saveUserAccounts(userAccounts);
