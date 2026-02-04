@@ -719,7 +719,6 @@ input[type="checkbox"]:checked::before {
 }
 
 .timerTooltipHolder {
-	color: var(--White);
 	position: relative;
 }
 
@@ -734,7 +733,6 @@ input[type="checkbox"]:checked::before {
     visibility: hidden;
     width: max-content;
 	text-wrap-mode: nowrap;
-    color: var(--LanguidLavender);
     background-color: var(--Sooty);
     border: 1px solid var(--Black);
     border-radius: 5px;
