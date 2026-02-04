@@ -1,4 +1,4 @@
-const vtm = 1.016; // prettier-ignore
+const vtm = 1.017; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -87,6 +87,9 @@ async function tm_displayData(
 			trialsInfo,
 			trialsData,
 			timeUntilNext,
+			null,
+			null,
+			true,
 		);
 	} else if (campaign != null && !campaign.started) {
 		// Sitting in lobby.
@@ -268,6 +271,8 @@ function tm_displayJoinCreateCampaign(
 		`trialsJoinCannotJoinSpan`,
 		tm_createJoinButton(),
 		`Available in `,
+		null,
+		true,
 	);
 	createTimer(
 		timeMS,
@@ -275,6 +280,8 @@ function tm_displayJoinCreateCampaign(
 		`trialsCreateCannotCreateSpan`,
 		tm_createCreateButton(),
 		`Available in `,
+		null,
+		true,
 	);
 
 	trialsInfo.innerHTML = `&nbsp;`;
@@ -767,9 +774,27 @@ function tm_displayRunningTrial(wrapper, campaign) {
 		`trialsRunningDaySpan`,
 		` Ended`,
 		`Ends in: `,
+		null,
+		true,
 	);
-	createTimer(timeToDie, `tm_todie`, `trialsRunningDieSpan`, `Dead`);
-	createTimer(trialEnds, `tm_trialends`, `trialsRunningEndSpan`, `Ended`);
+	createTimer(
+		timeToDie,
+		`tm_todie`,
+		`trialsRunningDieSpan`,
+		`Dead`,
+		null,
+		null,
+		true,
+	);
+	createTimer(
+		trialEnds,
+		`tm_trialends`,
+		`trialsRunningEndSpan`,
+		`Ended`,
+		null,
+		null,
+		true,
+	);
 }
 
 /* ======================

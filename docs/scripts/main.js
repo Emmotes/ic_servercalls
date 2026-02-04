@@ -1,4 +1,4 @@
-const v = 4.039; // prettier-ignore
+const v = 4.040; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -569,10 +569,10 @@ function randInt(min, max) {
 }
 
 function dateFormat(input) {
-	return Intl.DateTimeFormat(undefined, {
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
+	return Intl.DateTimeFormat("en-GB", {
+		dateStyle: "long",
+		timeStyle: "long",
+		hour12: false,
 	}).format(input);
 }
 
@@ -662,7 +662,7 @@ function removeUserAccount(name) {
 	saveUserAccounts(userAccounts);
 }
 
-function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
+function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix, addTooltip) {
 	if (timeLength <= 0) return;
 
 	if (timerList[timerName]?.interval != null) {
@@ -687,12 +687,15 @@ function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix) {
 		}
 
 		const remaining = timerJson.aim - Date.now();
-		ele.innerHTML = `${prefix || ""}${getDisplayTime(remaining)}${suffix || ""}`;
+		const tooltipPrefix = addTooltip ? `<span class="timerTooltipHolder">` : ``;
+		const tooltipTime = addTooltip ? `<span class="timerTooltip">${dateFormat(timeAim)}</span>` : ``;
+		const tooltipSuffix = addTooltip ? `</span>` : ``;
+		ele.innerHTML = `${prefix ?? ""}${tooltipPrefix}${getDisplayTime(remaining)}${tooltipTime}${tooltipSuffix}${suffix ?? ""}`;
 
 		if (remaining < 0) {
 			clearInterval(timerJson.interval);
 			delete timerList[timerName];
-			ele.outerHTML = endMsg || ``;
+			ele.outerHTML = endMsg ?? ``;
 		}
 	}, 1000);
 

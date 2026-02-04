@@ -717,3 +717,26 @@ input[type="checkbox"]:checked::before {
 	grid-template-columns: 140px 225px 100px 30px 100px;
 	gap: 5px;
 }
+
+.timerTooltipHolder {
+	color: var(--White);
+	position: relative;
+}
+
+.timerTooltipHolder:hover .timerTooltip {
+	visibility: visible;
+}
+
+.timerTooltip {
+	position: absolute;
+    top: -40px;
+    left: -10px;
+    visibility: hidden;
+    width: max-content;
+	text-wrap-mode: nowrap;
+    color: var(--LanguidLavender);
+    background-color: var(--Sooty);
+    border: 1px solid var(--Black);
+    border-radius: 5px;
+    padding: 5px;
+}
