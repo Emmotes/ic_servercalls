@@ -1,4 +1,4 @@
-const v = 4.040; // prettier-ignore
+const v = 4.041; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -571,7 +571,7 @@ function randInt(min, max) {
 function dateFormat(input) {
 	return Intl.DateTimeFormat("en-GB", {
 		dateStyle: "long",
-		timeStyle: "long",
+		timeStyle: "medium",
 		hour12: false,
 	}).format(input);
 }
