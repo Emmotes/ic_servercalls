@@ -1,5 +1,6 @@
-const vap = 2.003; // prettier-ignore
+const vap = 2.004; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
+const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
 const ap_METHOD_SELECTID = "ap_method";
 const ap_MODES = [`-`, `Distill`, `Brew`, `Enhance`];
@@ -316,16 +317,16 @@ async function ap_distillPotions() {
 	let potsToDistill = {};
 
 	const maintain = ap_buildDistillMaintains();
+	const excludes = ap_getExcludedDistills();
 
 	for (const idStr in ap_ownedById) {
 		const id = Number(idStr);
 		const value = ap_ownedById[idStr];
 		if (isNaN(id) || isNaN(value)) continue;
-		const buff = b_potionsById.get(id);
-		if (buff == null || buff.distillBanned) continue;
-		if (!allowedCats.has(buff.size ?? buff.category)) continue;
-		if (buff?.buff === "Speed") continue;
-		const maintainAmount = maintain[buff.size ?? buff.category];
+		const potion = b_potionsById.get(id);
+		if (ap_isPotionBannedFromDistilling(potion, excludes)) continue;
+		if (!allowedCats.has(potion.size ?? potion.category)) continue;
+		const maintainAmount = maintain[potion.size ?? potion.category];
 		if (maintainAmount == null || isNaN(maintainAmount)) continue;
 		const distillAmount = value - maintainAmount;
 		if (distillAmount <= 0) continue;
@@ -390,7 +391,7 @@ async function ap_distillPotions() {
 function ap_recalculateDistillValues(save) {
 	const maintain = ap_buildDistillMaintains();
 	if (!maintain) return;
-	if (save) ap_saveDistillMaintains(maintain);
+	if (save) ap_setDistillMaintains(maintain);
 
 	const canDistill = ap_calculateAtLeastOneDistillPossible(maintain);
 	ap_hideDistillButton(!canDistill);
@@ -413,6 +414,7 @@ function ap_calculateAtLeastOneDistillPossible(maintain) {
 	if (incs.incSpecs) allowedCats.add("spec");
 	if (incs.incPoPs) allowedCats.add("pop");
 	if (incs.inc7Days) allowedCats.add("7days");
+	const excludes = ap_getExcludedDistills();
 
 	for (let type in maintain) {
 		if (!allowedCats.has(type)) continue;
@@ -422,14 +424,22 @@ function ap_calculateAtLeastOneDistillPossible(maintain) {
 			potions = [...(b_potionsBySize.get(type) || [])];
 		else potions = [...(b_potionsByCategory.get(type) || [])];
 		if (potions.length === 0) continue;
-		const potIds = potions.map((e) => e.id);
-		for (let potId of potIds) {
-			if (b_potionsById.get(potId).distillBanned) continue;
-			const owned = ap_ownedById[potId] ?? 0;
+		for (let potion of potions) {
+			if (ap_isPotionBannedFromDistilling(potion, excludes)) continue;
+			const owned = ap_ownedById[potion.id] ?? 0;
 			if (owned > amount) return true;
 		}
 	}
 	return false;
+}
+
+function ap_isPotionBannedFromDistilling(potion, excludes) {
+	if (potion == null) return true;
+	if (potion.distillBanned) return true;
+	if (potion.buff === "Speed") return true;
+
+	if (excludes == null) excludes = ap_getExcludedDistills();
+	return excludes.has(potion.buff);
 }
 
 // ==========================
@@ -1194,13 +1204,24 @@ function ap_getInclusions() {
 }
 
 function ap_initApothecaryHideOptions() {
+	const excludedDistills = ap_getExcludedDistills();
+	if (excludedDistills.size > 0) {
+		for (let ele of document.querySelectorAll(
+			'input[id^="apothecaryExclude"]',
+		)) {
+			const buff = ele.dataset.buff;
+			ele.checked = excludedDistills.has(buff);
+		}
+	}
+
 	const includedDistills = ap_getIncludedDistills();
-	if (includedDistills.length === 0) return;
-	for (let ele of document.querySelectorAll(
-		'input[id^="apothecaryInclude"]',
-	)) {
-		const eleId = ele.id.replace(`apothecaryInclude`, ``).toLowerCase();
-		ele.checked = includedDistills.includes(eleId);
+	if (includedDistills.size > 0) {
+		for (let ele of document.querySelectorAll(
+			'input[id^="apothecaryInclude"]',
+		)) {
+			const eleId = ele.id.replace(`apothecaryInclude`, ``).toLowerCase();
+			ele.checked = includedDistills.has(eleId);
+		}
 	}
 }
 
@@ -1219,21 +1240,40 @@ function ap_toggleIncludePotions(checkbox) {
 		incGap.style.display =
 			!incs.incSpecs && !incs.incPoPs && !incs.inc7Days ? `none` : ``;
 
-	let strg = ap_getIncludedDistills();
-	if (checkbox.checked && !strg.includes(category)) strg.push(category);
-	else if (!checkbox.checked && strg.includes(category))
-		strg = strg.filter((x) => x !== category);
-	ap_saveIncludedDistills(strg);
+	const strg = ap_getIncludedDistills();
+	checkbox.checked ? strg.add(category) : strg.delete(category);
+
+	ap_saveIncludedDistills([...strg]);
 
 	ap_recalculateDistillValues();
 }
 
 function ap_getIncludedDistills() {
-	return ls_getPerAccount(ap_LSKEY_includeDistills, []);
+	return new Set(ls_getPerAccount(ap_LSKEY_includeDistills, []));
 }
 
-function ap_saveIncludedDistills(eleIds) {
-	ls_setPerAccount_arr(ap_LSKEY_includeDistills, eleIds);
+function ap_saveIncludedDistills(types) {
+	ls_setPerAccount_arr(ap_LSKEY_includeDistills, types);
+}
+
+function ap_toggleExcludePotions(checkbox) {
+	const buff = checkbox.dataset.buff;
+	if (!buff) return;
+
+	const strg = ap_getExcludedDistills();
+	checkbox.checked ? strg.add(buff) : strg.delete(buff);
+
+	ap_saveExcludedDistills([...strg]);
+
+	ap_recalculateDistillValues();
+}
+
+function ap_getExcludedDistills() {
+	return new Set(ls_getPerAccount(ap_LSKEY_excludeDistills, []));
+}
+
+function ap_saveExcludedDistills(buffs) {
+	ls_setPerAccount_arr(ap_LSKEY_excludeDistills, buffs);
 }
 
 function ap_buildDistillMaintains() {
@@ -1253,7 +1293,7 @@ function ap_getDistillMaintains() {
 	return ls_getPerAccount(ap_LSKEY_distillMaintains, {});
 }
 
-function ap_saveDistillMaintains(categories) {
+function ap_setDistillMaintains(categories) {
 	ls_setPerAccount_obj(ap_LSKEY_distillMaintains, categories);
 }
 
