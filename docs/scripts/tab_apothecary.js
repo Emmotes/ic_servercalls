@@ -1,4 +1,4 @@
-const vap = 2.004; // prettier-ignore
+const vap = 2.005; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
@@ -391,6 +391,7 @@ async function ap_distillPotions() {
 function ap_recalculateDistillValues(save) {
 	const maintain = ap_buildDistillMaintains();
 	if (!maintain) return;
+
 	if (save) ap_setDistillMaintains(maintain);
 
 	const canDistill = ap_calculateAtLeastOneDistillPossible(maintain);
@@ -1197,9 +1198,9 @@ function ap_addSingleApothecaryRow(msg, header, id) {
 }
 
 function ap_getInclusions() {
-	const incSpecs = document.getElementById(`apothecaryIncludeSpec`).checked;
-	const incPoPs = document.getElementById(`apothecaryIncludePoP`).checked;
-	const inc7Days = document.getElementById(`apothecaryInclude7Days`).checked;
+	const incSpecs = document.getElementById(`apothecaryDistIncludeSpec`).checked;
+	const incPoPs = document.getElementById(`apothecaryDistIncludePoP`).checked;
+	const inc7Days = document.getElementById(`apothecaryDistInclude7Days`).checked;
 	return {incSpecs, incPoPs, inc7Days};
 }
 
@@ -1207,7 +1208,7 @@ function ap_initApothecaryHideOptions() {
 	const excludedDistills = ap_getExcludedDistills();
 	if (excludedDistills.size > 0) {
 		for (let ele of document.querySelectorAll(
-			'input[id^="apothecaryExclude"]',
+			'input[id^="apothecaryDistExclude"]',
 		)) {
 			const buff = ele.dataset.buff;
 			ele.checked = excludedDistills.has(buff);
@@ -1217,16 +1218,16 @@ function ap_initApothecaryHideOptions() {
 	const includedDistills = ap_getIncludedDistills();
 	if (includedDistills.size > 0) {
 		for (let ele of document.querySelectorAll(
-			'input[id^="apothecaryInclude"]',
+			'input[id^="apothecaryDistInclude"]',
 		)) {
-			const eleId = ele.id.replace(`apothecaryInclude`, ``).toLowerCase();
+			const eleId = ele.id.replace(`apothecaryDistInclude`, ``).toLowerCase();
 			ele.checked = includedDistills.has(eleId);
 		}
 	}
 }
 
 function ap_toggleIncludePotions(checkbox) {
-	const category = checkbox.id.replace(`apothecaryInclude`, ``).toLowerCase();
+	const category = checkbox.id.replace(`apothecaryDistInclude`, ``).toLowerCase();
 	document
 		.querySelectorAll(`[data-hidecat="${category}"]`)
 		.forEach((distillHidden) => {
@@ -1243,17 +1244,17 @@ function ap_toggleIncludePotions(checkbox) {
 	const strg = ap_getIncludedDistills();
 	checkbox.checked ? strg.add(category) : strg.delete(category);
 
-	ap_saveIncludedDistills([...strg]);
+	ap_setIncludedDistills([...strg]);
 
 	ap_recalculateDistillValues();
 }
 
 function ap_getIncludedDistills() {
-	return new Set(ls_getPerAccount(ap_LSKEY_includeDistills, []));
+	return ls_getPerAccount_set(ap_LSKEY_includeDistills, []);
 }
 
-function ap_saveIncludedDistills(types) {
-	ls_setPerAccount_arr(ap_LSKEY_includeDistills, types);
+function ap_setIncludedDistills(distills) {
+	ls_setPerAccount_arr(ap_LSKEY_includeDistills, distills);
 }
 
 function ap_toggleExcludePotions(checkbox) {
@@ -1263,17 +1264,17 @@ function ap_toggleExcludePotions(checkbox) {
 	const strg = ap_getExcludedDistills();
 	checkbox.checked ? strg.add(buff) : strg.delete(buff);
 
-	ap_saveExcludedDistills([...strg]);
+	ap_setExcludedDistills([...strg]);
 
 	ap_recalculateDistillValues();
 }
 
 function ap_getExcludedDistills() {
-	return new Set(ls_getPerAccount(ap_LSKEY_excludeDistills, []));
+	return ls_getPerAccount_set(ap_LSKEY_excludeDistills, []);
 }
 
-function ap_saveExcludedDistills(buffs) {
-	ls_setPerAccount_arr(ap_LSKEY_excludeDistills, buffs);
+function ap_setExcludedDistills(distills) {
+	ls_setPerAccount_arr(ap_LSKEY_excludeDistills, distills);
 }
 
 function ap_buildDistillMaintains() {
@@ -1293,8 +1294,8 @@ function ap_getDistillMaintains() {
 	return ls_getPerAccount(ap_LSKEY_distillMaintains, {});
 }
 
-function ap_setDistillMaintains(categories) {
-	ls_setPerAccount_obj(ap_LSKEY_distillMaintains, categories);
+function ap_setDistillMaintains(maintains) {
+	ls_setPerAccount_obj(ap_LSKEY_distillMaintains, maintains);
 }
 
 function buildEnhanceGraph(enhanceCosts) {

@@ -1,4 +1,4 @@
-const v = 4.041; // prettier-ignore
+const v = 4.042; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -744,6 +744,9 @@ function ls_getGlobal(key, defaultValue) {
 		return defaultValue;
 	}
 }
+function ls_getGlobal_set(key, defaultValue) {
+	return new Set(ls_getGlobal(key, defaultValue));
+}
 
 function ls_setGlobal(key, value, isEmptyFn) {
 	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
@@ -789,6 +792,9 @@ function ls_getPerAccount(key, defaultValue) {
 	} catch {
 		return defaultValue;
 	}
+}
+function ls_getPerAccount_set(key, defaultValue) {
+	return new Set(ls_getPerAccount(key, defaultValue));
 }
 
 function ls_setPerAccount(key, value, isEmptyFn) {
