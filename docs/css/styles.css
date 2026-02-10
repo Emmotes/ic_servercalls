@@ -695,7 +695,7 @@ input[type="checkbox"]:checked::before {
 }
 
 .serverStatusDetailsColumns {
-	grid-template-columns: minmax(120px,max-content) minmax(80px,max-content) minmax(100px,max-content) minmax(40px,max-content) minmax(10px,max-content) minmax(80px,max-content) minmax(320px,max-content);
+	grid-template-columns: minmax(120px,max-content) minmax(80px,max-content) minmax(120px,max-content) minmax(20px,max-content) minmax(10px,max-content) minmax(80px,max-content) minmax(320px,max-content);
 }
 
 .apothecaryInventoryWrapper {
