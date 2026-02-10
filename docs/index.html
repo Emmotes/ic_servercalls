@@ -834,9 +834,19 @@
 					</span>
 				</span>
 				<span class="f fr w100 p5">
-					<span class="f fc fals fjs ml2" style="width:100%">
+					<span class="f fc fals fjs ml2" style="width:100%;position:relative">
 						<p>Press the button to load the latest cached server status.</p>
 						<p><em>Note: The cache is only updated approximately once every 10 minutes.</em></p>
+						<span class="f fc falc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
+							<span class="f fr falc">
+								<input type="checkbox" id="serverStatusShowMoreDetails" onclick="ss_toggleShowMoreDetails(this.checked)"> Show More Details
+							</span>
+							<span class="f fc falc" style="text-align:center">
+								<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+									<span><em>Note: Response times are measured from my<br>server running the status checks so won't be<br>representative of your connection.</em></span>
+								</span>
+							</span>
+						</span>
 					</span>
 				</span>
 				<span class="f fr w100 p5">
@@ -882,9 +892,9 @@
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.008"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.006"></script>
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.008"></script>
-	<script type="text/javascript" src="scripts/tab_serverStatus.js?vss=2.007"></script>
+	<script type="text/javascript" src="scripts/tab_serverStatus.js?vss=2.008"></script>
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.022"></script>
-	<script type="text/javascript" src="scripts/main.js?v=4.042"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.043"></script>
 </body>
 </html>

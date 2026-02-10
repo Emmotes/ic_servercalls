@@ -1,4 +1,4 @@
-const v = 4.042; // prettier-ignore
+const v = 4.043; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -26,6 +26,11 @@ const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
 const supportUrl = document.getElementById(`supportUrl`);
 const supportUrlButton = document.getElementById(`supportUrlMenuButton`);
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
+const TIME_UNITS = {
+	long: {d: ["day", "days"], h: ["hour", "hours"], m: ["minute", "minutes"], s: ["second", "seconds"], ms: ["millisecond", "milliseconds"]},
+	medium: {d: ["day", "days"], h: ["hr", "hrs"], m: ["min", "mins"], s: ["sec", "secs"], ms: ["ms", "ms"]},
+	short: {d: ["d", "d"], h: ["h", "h"], m: ["m", "m"], s: ["s", "s"], ms: ["ms", "ms"]},
+}; // prettier-ignore
 let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
 let updateInterval;
 const timerList = {};
@@ -67,6 +72,7 @@ function init() {
 	dc_initDismantleHideOptions();
 	ap_initApothecaryHideOptions();
 	et_initEventTiersSettings();
+	ss_initServerStatusSettings();
 
 	resumePullButtonCooldown();
 	ss_tryResumeCooldownOnLoad();
@@ -576,23 +582,50 @@ function dateFormat(input) {
 	}).format(input);
 }
 
-function getDisplayTime(timeMs) {
+function getDisplayTime(timeMs, options = {}) {
+	const {showMs = false, style = "medium"} = options;
+
 	let ms = Math.max(0, Number(timeMs) || 0);
 
 	const totalSeconds = Math.floor(ms / 1000);
-	const days = Math.floor(totalSeconds / 86400);
-	const hours = Math.floor((totalSeconds % 86400) / 3600);
-	const minutes = Math.floor((totalSeconds % 3600) / 60);
-	const seconds = totalSeconds % 60;
+	const milliseconds = ms % 1000;
 
+	let seconds = totalSeconds % 60;
+	let minutes = Math.floor(totalSeconds / 60) % 60;
+	let hours = Math.floor(totalSeconds / 3600) % 24;
+	let days = Math.floor(totalSeconds / 86400);
+
+	if (style === "clock") {
+		const totalHours = Math.floor(totalSeconds / 3600);
+		const base =
+			padZeros(totalHours, 2) +
+			":" +
+			padZeros(minutes, 2) +
+			":" +
+			padZeros(seconds, 2);
+
+		return showMs ? base + "." + padZeros(milliseconds, 3) : base;
+	}
+
+	const u = TIME_UNITS[style] || TIME_UNITS.medium;
 	const parts = [];
 
-	if (days > 0) parts.push(`${days} day${days === 1 ? "" : "s"}`);
+	if (days > 0) parts.push(`${days} ${days === 1 ? u.d[0] : u.d[1]}`);
+
 	if (days > 0 || hours > 0)
-		parts.push(`${hours} hour${hours === 1 ? "" : "s"}`);
+		parts.push(`${hours} ${hours === 1 ? u.h[0] : u.h[1]}`);
+
 	if (days > 0 || hours > 0 || minutes > 0)
-		parts.push(`${padZeros(minutes, 2)} min${minutes === 1 ? "" : "s"}`);
-	parts.push(`${padZeros(seconds, 2)} sec${seconds === 1 ? "" : "s"}`);
+		parts.push(
+			`${padZeros(minutes, 2)} ${minutes === 1 ? u.m[0] : u.m[1]}`,
+		);
+
+	if (!showMs || days > 0 || hours > 0 || minutes > 0 || seconds > 0)
+		parts.push(
+			`${padZeros(seconds, 2)} ${seconds === 1 ? u.s[0] : u.s[1]}`,
+		);
+
+	if (showMs) parts.push(`${padZeros(milliseconds, 3)} ${u.ms[0]}`);
 
 	return parts.join(" ");
 }
@@ -662,7 +695,15 @@ function removeUserAccount(name) {
 	saveUserAccounts(userAccounts);
 }
 
-function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix, addTooltip) {
+function createTimer(
+	timeLength,
+	timerName,
+	eleName,
+	endMsg,
+	prefix,
+	suffix,
+	addTooltip,
+) {
 	if (timeLength <= 0) return;
 
 	if (timerList[timerName]?.interval != null) {
@@ -687,8 +728,12 @@ function createTimer(timeLength, timerName, eleName, endMsg, prefix, suffix, add
 		}
 
 		const remaining = timerJson.aim - Date.now();
-		const tooltipPrefix = addTooltip ? `<span class="timerTooltipHolder">` : ``;
-		const tooltipTime = addTooltip ? `<span class="timerTooltip">${dateFormat(timeAim)}</span>` : ``;
+		const tooltipPrefix =
+			addTooltip ? `<span class="timerTooltipHolder">` : ``;
+		const tooltipTime =
+			addTooltip ?
+				`<span class="timerTooltip">${dateFormat(timeAim)}</span>`
+			:	``;
 		const tooltipSuffix = addTooltip ? `</span>` : ``;
 		ele.innerHTML = `${prefix ?? ""}${tooltipPrefix}${getDisplayTime(remaining)}${tooltipTime}${tooltipSuffix}${suffix ?? ""}`;
 
@@ -724,6 +769,18 @@ function getFirstLine(text) {
 	let index = text.indexOf("\n");
 	if (index === -1) index = undefined;
 	return text.substring(0, index);
+}
+
+function arrayToListReadable(arr, options) {
+	const {symbolAnd = false} = options;
+	if (!Array.isArray(arr)) return ``;
+	arr = arr.filter((v) => v != null && v !== ``);
+	if (arr.length === 0) return ``;
+	if (arr.length === 1) return arr[0];
+	const and = symbolAnd ? ` & ` : ` and `;
+	if (arr.length === 2) return arr[0] + and + arr[1];
+
+	return arr.slice(0, -1).join(`, `) + and + arr[arr.length - 1];
 }
 
 function ls_has(key) {
