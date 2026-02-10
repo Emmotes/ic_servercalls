@@ -1,4 +1,4 @@
-const vss = 2.008; // prettier-ignore
+const vss = 2.009; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -101,10 +101,18 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			text: `Response Times`,
 			classes: cFlex,
 			header: true,
+			dim: true,
 			gridCol: `span 2`,
 			data: sssrt,
 		},
-		{text: `Pointed At`, classes: sFlex, header: true, data: sssrt},
+		{
+			text: `Pointed At`,
+			classes: sFlex,
+			header: true,
+			dim: true,
+			gridCol: `span 2`,
+			data: sssrt,
+		},
 		{text: `&nbsp;`, classes: sFlex, header: true, dim: true},
 	]);
 
@@ -129,14 +137,16 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			{
 				text: getDisplayTime(r.responseTimeMs, {showMs: true}),
 				classes: eFlex,
+				dim: true,
 				data: sssrt,
 			},
+			{text: `&nbsp;`, data: sssrt},
 			{text: `&nbsp;`, data: sssrt},
 			{
 				text: r?.pointedTo || `Unknown`,
 				classes: sFlex,
+				dim: true,
 				data: sssrt,
-				styles: `padding-left:20px;`,
 			},
 			{text: lastUp, classes: eFlex, dim: lastUp !== `&nbsp;`},
 		]);
@@ -328,8 +338,8 @@ function ss_toggleShowMoreDetails(checked) {
 	if (wrapper == null) return;
 
 	checked ?
-		wrapper.classList.add(`serverStatusResponseColumn`)
-	:	wrapper.classList.remove(`serverStatusResponseColumn`);
+		wrapper.classList.add(`serverStatusDetailsColumns`)
+	:	wrapper.classList.remove(`serverStatusDetailsColumns`);
 
 	const eles = document.querySelectorAll(`#serverStatusWrapper [data-sssrt]`);
 	for (let ele of eles) ele.style.display = checked ? `` : `none`;
