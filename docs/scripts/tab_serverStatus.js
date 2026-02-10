@@ -1,4 +1,4 @@
-const vss = 2.009; // prettier-ignore
+const vss = 2.010; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -131,11 +131,17 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 				`Down (last seen up ${ss_buildTimestampSpan(r.lastSeenUp, paddingStyle)} ago)`
 			:	`&nbsp;`;
 
+		const resTime =
+			r.error != null ?
+				r.error === `AbortError` ?
+					"Timed Out"
+				:	r.error
+			:	getDisplayTime(r.responseTimeMs, {showMs: true});
 		txt += ss_addServerStatusRow([
 			{text: r.server + `:`, classes: eFlex},
 			{text: alive, classes: cFlex},
 			{
-				text: getDisplayTime(r.responseTimeMs, {showMs: true}),
+				text: resTime,
 				classes: eFlex,
 				dim: true,
 				data: sssrt,
@@ -143,12 +149,12 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			{text: `&nbsp;`, data: sssrt},
 			{text: `&nbsp;`, data: sssrt},
 			{
-				text: r?.pointedTo || `Unknown`,
+				text: r?.pointedTo || `-`,
 				classes: sFlex,
 				dim: true,
 				data: sssrt,
 			},
-			{text: lastUp, classes: eFlex, dim: lastUp !== `&nbsp;`},
+			{text: lastUp, classes: sFlex, dim: lastUp !== `&nbsp;`},
 		]);
 	}
 

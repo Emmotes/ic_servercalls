@@ -690,12 +690,12 @@ input[type="checkbox"]:checked::before {
 
 .serverStatusWrapper {
 	display: grid;
-	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(200px,max-content);
+	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(320px,max-content);
 	gap: 10px;
 }
 
 .serverStatusDetailsColumns {
-	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(100px,max-content) minmax(40px,max-content) minmax(10px,max-content) minmax(80px,max-content) minmax(200px,max-content);
+	grid-template-columns: minmax(120px,max-content) minmax(80px,max-content) minmax(100px,max-content) minmax(40px,max-content) minmax(10px,max-content) minmax(80px,max-content) minmax(320px,max-content);
 }
 
 .apothecaryInventoryWrapper {
