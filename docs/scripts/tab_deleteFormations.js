@@ -1,11 +1,10 @@
-const vdf = 1.017; // prettier-ignore
+const vdf = 1.018; // prettier-ignore
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`formsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		const forms = await getFormationSaves();

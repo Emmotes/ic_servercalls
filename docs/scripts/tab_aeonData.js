@@ -1,10 +1,9 @@
-const vad = 1.008; // prettier-ignore
+const vad = 1.009; // prettier-ignore
 
 async function ad_pullAeonData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`aeonWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for patron data...`;
 		const details = await getPatronDetails();

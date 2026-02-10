@@ -1,10 +1,9 @@
-const vir = 1.005; // prettier-ignore
+const vir = 1.006; // prettier-ignore
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`ilvlreportWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;

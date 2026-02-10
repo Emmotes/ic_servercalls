@@ -1,11 +1,10 @@
-const vbf = 1.013; // prettier-ignore
+const vbf = 1.014; // prettier-ignore
 
 async function bf_pullFeatsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`featsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = await getUserDetails();

@@ -1,4 +1,4 @@
-const vbs = 1.016; // prettier-ignore
+const vbs = 1.017; // prettier-ignore
 let bs_ownedChamps = {};
 let bs_ownedChampsByName = {};
 let bs_champLoot = {};
@@ -9,7 +9,6 @@ async function bs_pullBSCData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`bscWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	const bscSpender = document.getElementById(`bscSpender`);
 	bscSpender.innerHTML = `&nbsp;`;
 	const wrapperType = document.getElementById(`bscWrapperType`);

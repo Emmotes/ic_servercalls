@@ -1,11 +1,10 @@
-const vpm = 1.011; // prettier-ignore
+const vpm = 1.012; // prettier-ignore
 
 async function pm_pullPartyData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`partyWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const gameInstances = (await getUserDetails()).details.game_instances;

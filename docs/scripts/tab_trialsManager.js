@@ -1,4 +1,4 @@
-const vtm = 1.017; // prettier-ignore
+const vtm = 1.018; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -10,7 +10,6 @@ async function tm_pullData(forceCalled) {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`trialsWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for trials data...`;
 		const trialsData = (await trialsRefreshData()).trials_data;

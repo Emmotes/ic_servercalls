@@ -1,11 +1,10 @@
-const vcc = 1.006; // prettier-ignore
+const vcc = 1.007; // prettier-ignore
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`celebrationsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const customNotes = (await getUserDetails()).details

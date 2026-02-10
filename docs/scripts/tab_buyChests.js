@@ -1,4 +1,4 @@
-const vbc = 1.021; // prettier-ignore
+const vbc = 1.022; // prettier-ignore
 const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
@@ -12,7 +12,6 @@ async function bc_pullBuyChestsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`buyChestsWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	const buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	if (buyChestsBuyer.innerHTML.includes("buyChestsButton"))
 		buyChestsBuyer.innerHTML = `&nbsp;`;

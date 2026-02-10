@@ -1,4 +1,4 @@
-const vap = 2.005; // prettier-ignore
+const vap = 2.006; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
@@ -19,7 +19,6 @@ async function ap_pullApothecaryData() {
 	const inventory = document.getElementById(`apothecaryInventory`);
 	inventory.innerHTML = `&nbsp;`;
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;
@@ -1198,9 +1197,13 @@ function ap_addSingleApothecaryRow(msg, header, id) {
 }
 
 function ap_getInclusions() {
-	const incSpecs = document.getElementById(`apothecaryDistIncludeSpec`).checked;
+	const incSpecs = document.getElementById(
+		`apothecaryDistIncludeSpec`,
+	).checked;
 	const incPoPs = document.getElementById(`apothecaryDistIncludePoP`).checked;
-	const inc7Days = document.getElementById(`apothecaryDistInclude7Days`).checked;
+	const inc7Days = document.getElementById(
+		`apothecaryDistInclude7Days`,
+	).checked;
 	return {incSpecs, incPoPs, inc7Days};
 }
 
@@ -1220,14 +1223,18 @@ function ap_initApothecaryHideOptions() {
 		for (let ele of document.querySelectorAll(
 			'input[id^="apothecaryDistInclude"]',
 		)) {
-			const eleId = ele.id.replace(`apothecaryDistInclude`, ``).toLowerCase();
+			const eleId = ele.id
+				.replace(`apothecaryDistInclude`, ``)
+				.toLowerCase();
 			ele.checked = includedDistills.has(eleId);
 		}
 	}
 }
 
 function ap_toggleIncludePotions(checkbox) {
-	const category = checkbox.id.replace(`apothecaryDistInclude`, ``).toLowerCase();
+	const category = checkbox.id
+		.replace(`apothecaryDistInclude`, ``)
+		.toLowerCase();
 	document
 		.querySelectorAll(`[data-hidecat="${category}"]`)
 		.forEach((distillHidden) => {

@@ -1,4 +1,4 @@
-const vdc = 1.008; // prettier-ignore
+const vdc = 1.009; // prettier-ignore
 const dc_LSKEY_hideDismantleOpts = `scHideDismantleOptions`;
 
 async function dc_pullData() {
@@ -7,7 +7,6 @@ async function dc_pullData() {
 	disablePullButtons();
 	const wrapper = document.getElementById(`dismantleWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for dismantle data...`;
 		let dismantleData = await getDismantleData();

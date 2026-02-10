@@ -1,4 +1,4 @@
-const voc = 1.033; // prettier-ignore
+const voc = 1.034; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
@@ -9,7 +9,6 @@ async function oc_pullOpenChestsData() {
 	disablePullButtons();
 	const wrapper = document.getElementById(`openChestsWrapper`);
 	setFormsWrapperFormat(wrapper, 0);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;

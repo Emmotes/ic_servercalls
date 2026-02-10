@@ -1,14 +1,10 @@
-const v = 4.043; // prettier-ignore
+const v = 4.044; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
 const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
-const disabledVersionLockdown = document.getElementById(
-	`disabledVersionLockdown`,
-);
-const updateContainer = document.getElementById(`updateContainer`);
 const tabsContainer = document.getElementById(`tabsContainer`);
 const settingsIconName = document.getElementById(`settingsIconName`);
 const settingsMenu = document.getElementById(`settingsMenu`);
@@ -19,12 +15,8 @@ const settingsSave = document.getElementById(`settingsMenuButtonSave`);
 const settingsClose = document.getElementById(`settingsMenuButtonClose`);
 const settingsList = document.getElementById(`settingsMenuAccountsList`);
 const settingsLoad = document.getElementById(`settingsMenuButtonLoadAccount`);
-const settingsDelete = document.getElementById(
-	`settingsMenuButtonDeleteAccount`,
-);
 const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
 const supportUrl = document.getElementById(`supportUrl`);
-const supportUrlButton = document.getElementById(`supportUrlMenuButton`);
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
 const TIME_UNITS = {
 	long: {d: ["day", "days"], h: ["hour", "hours"], m: ["minute", "minutes"], s: ["second", "seconds"], ms: ["millisecond", "milliseconds"]},
@@ -64,6 +56,7 @@ function init() {
 	window.addEventListener("hashchange", () => {
 		swapTab();
 	});
+	
 	initSettingsNumberFormat();
 	initPullButtonStuff();
 	bc_initBuyChestsSliderFidelity();
@@ -634,14 +627,6 @@ function padZeros(num, places) {
 	return String(num).padStart(places, "0");
 }
 
-function compress(input) {
-	return LZString.compress(input);
-}
-
-function decompress(input) {
-	return LZString.decompress(input);
-}
-
 function findWord(word, str) {
 	if (ciEquals(word, `Test`) && ciEquals(str, `Test of High Sorcery`))
 		return false;
@@ -765,12 +750,6 @@ function capitalise(s) {
 	return s && s[0].toUpperCase() + s.slice(1);
 }
 
-function getFirstLine(text) {
-	let index = text.indexOf("\n");
-	if (index === -1) index = undefined;
-	return text.substring(0, index);
-}
-
 function arrayToListReadable(arr, options) {
 	const {symbolAnd = false} = options;
 	if (!Array.isArray(arr)) return ``;
@@ -801,6 +780,7 @@ function ls_getGlobal(key, defaultValue) {
 		return defaultValue;
 	}
 }
+
 function ls_getGlobal_set(key, defaultValue) {
 	return new Set(ls_getGlobal(key, defaultValue));
 }

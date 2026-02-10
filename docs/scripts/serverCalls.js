@@ -1,4 +1,4 @@
-const vs = 3.022; // prettier-ignore
+const vs = 3.023; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -41,13 +41,15 @@ async function getUpdatedInstanceId(deets) {
 	instanceId = deets.details.instance_id;
 }
 
-async function getDefinitions(filter) {
+async function getDefinitions(filter, checksum) {
 	const params = [
 		["supports_chunked_defs", 0],
 		["new_achievements", 1],
 		["challenge_sets_no_deltas", 0],
 	];
-	if (filter != null && filter !== ``) params.push(["filter", filter]);
+	if (checksum != null) params.push(["checksum", checksum]);
+	if (checksum == null && filter != null && filter !== ``)
+		params.push(["filter", filter]);
 	return await sendServerCall(SERVER, "getdefinitions", params);
 }
 

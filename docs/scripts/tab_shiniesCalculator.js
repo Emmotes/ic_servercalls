@@ -1,10 +1,9 @@
-const vsc = 1.007; // prettier-ignore
+const vsc = 1.008; // prettier-ignore
 
 async function sc_pullShiniesData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`shiniesWrapper`);
-	wrapper.innerHTML = `Waiting for response...`;
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const userData = await getUserDetails();
