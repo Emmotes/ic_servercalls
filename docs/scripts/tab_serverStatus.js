@@ -1,4 +1,4 @@
-const vss = 2.011; // prettier-ignore
+const vss = 2.012; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -38,7 +38,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 	const sFlex = `f fr falc fjs`;
 	const cFlex = `f fr falc fjc`;
 	const eFlex = `f fr falc fje`;
-	const sssrt = {sssrt: `1`};
+	const sssmo = {sssmo: `1`};
 	const sCol = `1 / -1`;
 
 	const lastChecked =
@@ -58,7 +58,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			dim: true,
 			small: true,
 			gridCol: sCol,
-			data: sssrt,
+			data: sssmo,
 		});
 	}
 	const pruned = statusData?.pruned || [];
@@ -76,7 +76,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 				dim: true,
 				small: true,
 				gridCol: sCol,
-				data: sssrt,
+				data: sssmo,
 			});
 			blurbRows.push({
 				text: msg,
@@ -85,7 +85,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 				dim: true,
 				small: true,
 				gridCol: sCol,
-				data: sssrt,
+				data: sssmo,
 			});
 		}
 	}
@@ -103,7 +103,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			header: true,
 			dim: true,
 			gridCol: `span 2`,
-			data: sssrt,
+			data: sssmo,
 		},
 		{
 			text: `Pointed At`,
@@ -111,7 +111,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			header: true,
 			dim: true,
 			gridCol: `span 2`,
-			data: sssrt,
+			data: sssmo,
 		},
 		{text: `&nbsp;`, classes: sFlex, header: true, dim: true},
 	]);
@@ -144,15 +144,15 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 				text: resTime,
 				classes: eFlex,
 				dim: true,
-				data: sssrt,
+				data: sssmo,
 			},
-			{text: `&nbsp;`, data: sssrt},
-			{text: `&nbsp;`, data: sssrt},
+			{text: `&nbsp;`, data: sssmo},
+			{text: `&nbsp;`, data: sssmo},
 			{
 				text: r?.pointedTo || `-`,
 				classes: sFlex,
 				dim: true,
-				data: sssrt,
+				data: sssmo,
 			},
 			{text: lastUp, classes: sFlex, dim: lastUp !== `&nbsp;`},
 		]);
@@ -347,7 +347,7 @@ function ss_toggleShowMoreDetails(checked) {
 		wrapper.classList.add(`serverStatusDetailsColumns`)
 	:	wrapper.classList.remove(`serverStatusDetailsColumns`);
 
-	const eles = document.querySelectorAll(`#serverStatusWrapper [data-sssrt]`);
+	const eles = document.querySelectorAll(`#serverStatusWrapper [data-sssmo]`);
 	for (let ele of eles) ele.style.display = checked ? `` : `none`;
 }
 
