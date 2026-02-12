@@ -1,4 +1,4 @@
-const v = 4.044; // prettier-ignore
+const v = 4.045; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -52,11 +52,13 @@ function init() {
 	accountLoading();
 	oldLocalStorageMigrations();
 
+	u_displayUnseenUpdates();
+
 	refreshSettingsList();
 	window.addEventListener("hashchange", () => {
 		swapTab();
 	});
-	
+
 	initSettingsNumberFormat();
 	initPullButtonStuff();
 	bc_initBuyChestsSliderFidelity();
@@ -431,6 +433,9 @@ function setHash(hash) {
 	hash = "#" + hash;
 	if (history.replaceState) history.replaceState(null, null, hash);
 	else window.location.hash = hash;
+
+	const tab = document.querySelector(`label[for='${hash.replace(`#`,``)}']`);
+	if (tab) tab.classList.remove(`hasUnseenUpdate`);
 }
 
 function togglePullButtons(disable, customTimer) {
@@ -567,12 +572,16 @@ function randInt(min, max) {
 	return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
 }
 
-function dateFormat(input) {
-	return Intl.DateTimeFormat("en-GB", {
-		dateStyle: "long",
-		timeStyle: "medium",
-		hour12: false,
-	}).format(input);
+function dateFormat(input, options = {}) {
+	const {showDate = true, showTime = true} = options;
+
+	const params = {};
+	if (showDate) params.dateStyle = "long";
+	if (showTime) {
+		params.timeStyle = "medium";
+		params.hour12 = false;
+	}
+	return Intl.DateTimeFormat("en-GB", params).format(input);
 }
 
 function getDisplayTime(timeMs, options = {}) {
@@ -782,7 +791,9 @@ function ls_getGlobal(key, defaultValue) {
 }
 
 function ls_getGlobal_set(key, defaultValue) {
-	return new Set(ls_getGlobal(key, defaultValue));
+	const val = ls_getGlobal(key, defaultValue);
+	if (!Array.isArray(val)) return new Set(defaultValue || []);
+	return new Set(val);
 }
 
 function ls_setGlobal(key, value, isEmptyFn) {

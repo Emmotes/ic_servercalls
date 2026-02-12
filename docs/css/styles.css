@@ -742,3 +742,51 @@ input[type="checkbox"]:checked::before {
     border-radius: 5px;
     padding: 5px;
 }
+
+.unseenUpdatesContainer {
+	width: 100%;
+    display: flex;
+    padding: 0;
+    margin: 0 0 -40px 0;
+    padding-top: 70px;
+    justify-content: center;
+    align-items: center;
+}
+
+.unseenUpdates {
+	display: flex;
+    flex-wrap: wrap;
+    max-width: 1192px;
+    min-width: 612px;
+    width: 90%;
+    font-size: 0.97em;
+    margin: auto;
+}
+
+.unseenUpdatesGrid {
+	order: 1;
+    width: 100%;
+    border: 1px solid var(--TangerineYellow);
+    background-color: var(--DarkGunmetal);
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+
+    padding: 12px 20px 12px 20px;
+}
+
+.unseenUpdatesGrid ul,.unseenUpdatesGrid ol {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.unseenUpdatesBlob {
+	background-color: var(--Gunmetal);
+	border-radius: 5px;
+}
+
+.hasUnseenUpdate {
+	border: 1px solid var(--TangerineYellow);
+	border-radius: 5px;
+}
