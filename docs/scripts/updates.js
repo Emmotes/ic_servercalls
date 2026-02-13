@@ -1,4 +1,4 @@
-const vu = 1.000; // prettier-ignore
+const vu = 1.001; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = [
@@ -16,15 +16,20 @@ const u_FEATURE_UPDATES = [
 let u_currentUnseenUpdateIds = new Set([]);
 
 function u_displayUnseenUpdates() {
-	const tabsContainer = document.getElementById(`tabsContainer`);
-	if (!tabsContainer) return;
-
 	const allIds = u_FEATURE_UPDATES.map((u) => u.id);
 	const seenIds = u_getSeenUpdates();
 	const unseenIds = new Set(allIds.filter((id) => !seenIds.has(id)));
 	if (unseenIds.size === 0) return;
 
 	u_currentUnseenUpdateIds = unseenIds;
+
+	if (u_isNewUser()) {
+		u_userConfirmSeenChanges();
+		return;
+	}
+
+	const tabsContainer = document.getElementById(`tabsContainer`);
+	if (!tabsContainer) return;
 
 	const updatesHeader = document.createElement(`div`);
 	updatesHeader.classList.add(u_updatesContainer);
@@ -133,6 +138,15 @@ function u_userConfirmSeenChanges() {
 
 	const container = document.getElementById(u_updatesContainer);
 	if (container) container.remove();
+}
+
+function u_isNewUser() {
+	return (
+		currAccount == null ||
+		currAccount.name == null ||
+		currAccount.id == null ||
+		currAccount.hash == null
+	);
 }
 
 function u_getSeenUpdates() {
