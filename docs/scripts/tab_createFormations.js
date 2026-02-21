@@ -1,4 +1,4 @@
-vcf = 1.000; // prettier-ignore
+vcf = 1.001; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -288,7 +288,7 @@ function cf_renderImportGameSelector() {
 		const groupLabel = campaign.name;
 		if (groupLabel !== currentGroup) {
 			if (currentGroup !== null) txt += `</optgroup>`;
-			txt += `<optgroup label="${groupLabel}">`;
+			txt += `<optgroup label="${cf_escapeHtml(groupLabel)}">`;
 			currentGroup = groupLabel;
 		}
 
@@ -297,11 +297,11 @@ function cf_renderImportGameSelector() {
 			let patronSuffix = ``;
 			if (formCamp.patronId ?? 0 > 0) {
 				const patronName = c_patronById.get(formCamp.patronId);
-				if (patronName) patronSuffix = ` (${patronName})`;
+				if (patronName) patronSuffix = ` (${cf_escapeHtml(patronName)})`;
 			}
 			txt +=
 				`<option value="${form.id}">` +
-				`${form.name}${patronSuffix}` +
+				`${cf_escapeHtml(form.name)}${patronSuffix}` +
 				`</option>`;
 		}
 	}
@@ -343,17 +343,17 @@ function cf_renderImportLocalSelector() {
 		if (groupLabel !== currentGroup) {
 			if (currentGroup !== null) txt += `</optgroup>`;
 
-			txt += `<optgroup label="${groupLabel}">`;
+			txt += `<optgroup label="${cf_escapeHtml(groupLabel)}">`;
 			currentGroup = groupLabel;
 		}
 		let patronSuffix = ``;
 		if (campaign.patronId ?? 0 > 0) {
 			const patronName = c_patronById.get(campaign.patronId);
-			if (patronName) patronSuffix = ` (${patronName})`;
+			if (patronName) patronSuffix = ` (${cf_escapeHtml(patronName)})`;
 		}
 		txt +=
 			`<option value="${index}">` +
-			`${save.name}${patronSuffix}` +
+			`${cf_escapeHtml(save.name)}${patronSuffix}` +
 			`</option>`;
 	}
 
@@ -508,7 +508,7 @@ function cf_renderChampionsGrid() {
 					` draggable="true" ondragstart="cf_onDragStart(event, 'champion', ${champ.id}, 'championGrid', -1)"`
 				:	``;
 			txt += `<span id="cf_champBox_${champ.id}" ${boxClass} data-id="${champ.id}" ${style}${drag}>`;
-			txt += `<span ${nameClass}>${champ.name}</span>`;
+			txt += `<span ${nameClass}>${cf_escapeHtml(champ.name)}</span>`;
 			txt += `</span>`;
 		}
 		txt += `</span>`;
@@ -566,7 +566,7 @@ function cf_renderCampaignSelector() {
 	for (const id of cf_data.campaigns.campaignIds) {
 		const campaign = cf_data.campaigns.byActualId.get(id);
 		if (!campaign) continue;
-		txt += `<option value="${id}">${campaign.name}</option>`;
+		txt += `<option value="${id}">${cf_escapeHtml(campaign.name)}</option>`;
 	}
 	txt += `</optgroup>`;
 	txt += `<optgroup label="Events">`;
@@ -574,7 +574,7 @@ function cf_renderCampaignSelector() {
 		const event = cf_data.campaigns.byActualId.get(id);
 		if (!event.visible) continue;
 
-		txt += `<option value="${id}">${event.name}</option>`;
+		txt += `<option value="${id}">${cf_escapeHtml(event.name)}</option>`;
 	}
 	txt += `</optgroup>`;
 
@@ -590,7 +590,7 @@ function cf_renderPatronSelector() {
 	const patronIds = [...c_patronById.keys()];
 	patronIds.sort((a, b) => a - b);
 	for (const patronId of patronIds)
-		txt += `<option value="${patronId}">${c_patronById.get(patronId)}</option>`;
+		txt += `<option value="${patronId}">${cf_escapeHtml(c_patronById.get(patronId))}</option>`;
 
 	txt += `</select>`;
 	return txt;
@@ -797,7 +797,7 @@ function cf_renderSpecialisationChoicePopup(slotIndex) {
 		for (const option of validOptions) {
 			const isSelected = selected.has(option.upgradeId);
 			txt +=
-				`<input type="button" data-set="${i}" data-id="${option.upgradeId}" value="${option.name}" ` +
+				`<input type="button" data-set="${i}" data-id="${option.upgradeId}" value="${cf_escapeHtml(option.name)}" ` +
 				(isSelected ? selectedStyle : ``) +
 				`onclick="cf_setSpecialisationChoice(${heroId},${i},${option.upgradeId})">`;
 		}
@@ -2986,7 +2986,7 @@ function cf_getFamiliarImageAndStyleById(famId) {
 		};
 
 	return {
-		img: `<img src="images/familiars/${famId}.png" alt="${familiar.name}">`,
+		img: `<img src="images/familiars/${famId}.png" alt="${cf_escapeHtml(familiar.name)}">`,
 		style: `background-color:var(--ChineseBlack);border:1px solid var(--Emperor);`,
 	};
 }
@@ -3081,6 +3081,16 @@ function cf_importFamiliars(data) {
 		AutoProgress: data.AutoProgress?.slice() ?? [],
 		UmbertoInvestigation: cf_importGapArray(data.UmbertoInvestigation),
 	};
+}
+
+function cf_escapeHtml(str) {
+	if (str == null) return "";
+	return String(str)
+		.replace(/&/g, "&amp;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;");
 }
 
 // =====================
