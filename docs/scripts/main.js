@@ -1,4 +1,4 @@
-const v = 4.045; // prettier-ignore
+const v = 4.046; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -23,6 +23,7 @@ const TIME_UNITS = {
 	medium: {d: ["day", "days"], h: ["hr", "hrs"], m: ["min", "mins"], s: ["sec", "secs"], ms: ["ms", "ms"]},
 	short: {d: ["d", "d"], h: ["h", "h"], m: ["m", "m"], s: ["s", "s"], ms: ["ms", "ms"]},
 }; // prettier-ignore
+const cleanupExtras = new Set([]);
 let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
 let updateInterval;
 const timerList = {};
@@ -267,23 +268,6 @@ function enableVersionUpdate() {
 	clearAsyncInterval(updateInterval);
 }
 
-function getPatronNameById(id) {
-	switch (id) {
-		case 1:
-			return c_patronAdvIds["1100000"];
-		case 2:
-			return c_patronAdvIds["1200000"];
-		case 3:
-			return c_patronAdvIds["1300000"];
-		case 4:
-			return c_patronAdvIds["1400000"];
-		case 5:
-			return c_patronAdvIds["1500000"];
-		default:
-			return `??? (id: ${id})`;
-	}
-}
-
 async function saveUserData() {
 	const userName = settingsUserName.value.trim() ?? ``;
 	const userId = settingsUserId.value.trim() ?? ``;
@@ -426,7 +410,12 @@ function cleanup() {
 	for (let ele of [
 		...document.querySelectorAll(`div[class="tabsContent"] > span`),
 	].filter((e) => e.id !== ""))
-		ele.innerHTML = `&nbsp;`;
+		if (ele) ele.innerHTML = `&nbsp;`;
+
+	for (const eleId of cleanupExtras) {
+		const ele = document.getElementById(eleId);
+		if (ele) ele.innerHTML = `&nbsp;`;
+	}
 }
 
 function setHash(hash) {
@@ -434,7 +423,7 @@ function setHash(hash) {
 	if (history.replaceState) history.replaceState(null, null, hash);
 	else window.location.hash = hash;
 
-	const tab = document.querySelector(`label[for='${hash.replace(`#`,``)}']`);
+	const tab = document.querySelector(`label[for='${hash.replace(`#`, ``)}']`);
 	if (tab) tab.classList.remove(`hasUnseenUpdate`);
 }
 
@@ -522,7 +511,7 @@ function startPullButtonCooldown(remainingMs) {
 	}, remainingMs);
 }
 
-function setFormsWrapperFormat(wrapper, type) {
+function setWrapperFormat(wrapper, type) {
 	if (type === 0) {
 		wrapper.className = `f falc fje mr2`;
 		wrapper.style = `flex-direction:column;`;
@@ -771,6 +760,28 @@ function arrayToListReadable(arr, options) {
 	return arr.slice(0, -1).join(`, `) + and + arr[arr.length - 1];
 }
 
+function stringifyReplacer(key, value) {
+	if (value instanceof Map)
+		return {
+			dataType: "Map",
+			value: Array.from(value.entries()),
+		};
+	if (value instanceof Set)
+		return {
+			dataType: "Set",
+			value: [...value],
+		};
+	return value;
+}
+
+function parseReviver(key, value) {
+	if (value !== null && typeof value === "object")
+		if (value.dataType === "Map") return new Map(value.value);
+	if (value != null && Array.isArray(value))
+		if (value.dataType === "Set") return new Set(value);
+	return value;
+}
+
 function ls_has(key) {
 	const v = localStorage.getItem(key);
 	return v !== null && v !== "";
@@ -784,7 +795,7 @@ function ls_getGlobal(key, defaultValue) {
 	try {
 		const raw = localStorage.getItem(key);
 		if (raw == null) return defaultValue;
-		return JSON.parse(raw);
+		return JSON.parse(raw, parseReviver);
 	} catch {
 		return defaultValue;
 	}
@@ -800,7 +811,7 @@ function ls_setGlobal(key, value, isEmptyFn) {
 	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
 
 	if (isEmpty) localStorage.removeItem(key);
-	else localStorage.setItem(key, JSON.stringify(value));
+	else localStorage.setItem(key, JSON.stringify(value, stringifyReplacer));
 }
 
 function ls_setGlobal_num(key, value, defaultValue) {
@@ -832,7 +843,7 @@ function ls_getPerAccount(key, defaultValue) {
 		const raw = localStorage.getItem(key);
 		if (!raw) return defaultValue;
 
-		const parsed = JSON.parse(raw);
+		const parsed = JSON.parse(raw, parseReviver);
 		if (!parsed || typeof parsed !== "object") return defaultValue;
 
 		const value = parsed[currAccount.name];
@@ -849,7 +860,7 @@ function ls_setPerAccount(key, value, isEmptyFn) {
 	let parsed = {};
 	try {
 		const raw = localStorage.getItem(key);
-		if (raw) parsed = JSON.parse(raw) || {};
+		if (raw) parsed = JSON.parse(raw, parseReviver) || {};
 	} catch {
 		parsed = {};
 	}
@@ -863,7 +874,7 @@ function ls_setPerAccount(key, value, isEmptyFn) {
 	}
 
 	if (Object.keys(parsed).length === 0) ls_remove(key);
-	else localStorage.setItem(key, JSON.stringify(parsed));
+	else localStorage.setItem(key, JSON.stringify(parsed, stringifyReplacer));
 }
 
 function ls_setPerAccount_num(key, value, defaultValue) {

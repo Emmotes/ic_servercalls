@@ -1,10 +1,10 @@
-const vcc = 1.007; // prettier-ignore
+const vcc = 1.008; // prettier-ignore
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`celebrationsWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const customNotes = (await getUserDetails()).details
@@ -12,7 +12,7 @@ async function cc_pullCelebrationsData() {
 		await cc_displayCelebrationsData(wrapper, customNotes);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -93,7 +93,7 @@ async function cc_displayCelebrationsData(wrapper, customNotes) {
 		}
 		txt += `<span class="formsCampaignSelect"><input id="celeb_selectAll_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',true)" value="Select All"><input id="celeb_selectNone_${ident}" type="button" onClick="cc_celebrationsSelectAll('${ident}',false)" value="Deselect All"></span></span></span>`;
 	}
-	setFormsWrapperFormat(wrapper, 1);
+	setWrapperFormat(wrapper, 1);
 	if (txt !== ``) {
 		wrapper.innerHTML = txt;
 		celebrationsClaimer.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="celebrationsSelectAllTheCelebrationsRow"><input type="button" onClick="cc_celebrationsSelectAllTheCelebrations()" name="celebrationsSelectAllTheCelebrationsButton" id="celebrationsSelectAllTheCelebrationsButton" style="font-size:0.9em;min-width:180px" value="Select All Codes"></span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="celebrationsBuyRow"><input type="button" onClick="cc_claimCelebrations()" name="celebrationsBuyButton" id="celebrationsBuyButton" style="font-size:0.9em;min-width:180px" value="Claim Selected Codes"></span></span>`;

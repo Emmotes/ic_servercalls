@@ -1,10 +1,10 @@
-const vpm = 1.012; // prettier-ignore
+const vpm = 1.013; // prettier-ignore
 
 async function pm_pullPartyData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`partyWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const gameInstances = (await getUserDetails()).details.game_instances;
@@ -14,7 +14,7 @@ async function pm_pullPartyData() {
 		await pm_displayPartyData(wrapper, gameInstances, adventures);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -40,7 +40,7 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		}
 		const name = adventure.name;
 		const adv = gameInstance.defines.adventure_defines.slice(-1)[0].name;
-		const camp = c_campaignIds[adventure.campaign_id];
+		const camp = c_campaignIds.get(Number(adventure?.campaign_id ?? 0));
 		const patronId = Number(gameInstance.current_patron_id || 0);
 		let areaGoal;
 		if (gameInstance.defines.adventure_defines.length > 0) {
@@ -71,14 +71,14 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		txt += pm_addPartyRow(`Adventure`, adv);
 		txt += pm_addPartyRow(`Campaign`, camp);
 		if (patronId > 0)
-			txt += pm_addPartyRow(`Patron`, getPatronNameById(patronId));
+			txt += pm_addPartyRow(`Patron`, c_patronById.get(patronId) ?? `??? (id: ${patronId})`);
 		txt += pm_addPartyRow(`Current Area`, `z${gameInstance.current_area}`);
 		if (areaGoal != null)
 			txt += pm_addPartyRow(`Area Goal`, `z${areaGoal}`);
 		txt += `<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="pm_partyEndAdventure(${id})" value="End Party ${id}"></span>`;
 		txt += `</span></span>`;
 	}
-	setFormsWrapperFormat(wrapper, 2);
+	setWrapperFormat(wrapper, 2);
 	wrapper.innerHTML = txt;
 }
 

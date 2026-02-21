@@ -1,4 +1,4 @@
-const vss = 2.013; // prettier-ignore
+const vss = 2.014; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -15,13 +15,13 @@ let ss_recheckTimer = null;
 async function ss_pullServerStatusData() {
 	ss_setCooldownUntil(Date.now() + ss_MIN_RECHECK_MS);
 	const wrapper = document.getElementById(`serverStatusWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for server status...`;
 		const statusData = await getServerStatus();
 		await ss_displayServerStatusData(wrapper, statusData);
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -169,7 +169,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 	];
 	for (const k of keys) txt += ss_addSingleServerStatusRow(k);
 
-	setFormsWrapperFormat(wrapper, 4);
+	setWrapperFormat(wrapper, 4);
 	wrapper.innerHTML = txt;
 	ss_toggleShowMoreDetails();
 	ss_startAgeTicker(wrapper);

@@ -1,17 +1,17 @@
-const vdf = 1.018; // prettier-ignore
+const vdf = 1.019; // prettier-ignore
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;
 	disablePullButtons();
-	const wrapper = document.getElementById(`formsWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	const wrapper = document.getElementById(`deleteFormsWrapper`);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for formation saves data...`;
 		const forms = await getFormationSaves();
 		await df_displayFormationSaves(wrapper, forms);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -31,10 +31,10 @@ async function df_displayFormationSaves(wrapper, saves) {
 		const camp = id % 1000;
 		const patron = id - camp;
 		const formObj = formObjs[`${id}`];
-		let campName = c_campaignIds[`${camp}`];
+		let campName = c_campaignIds.get(camp);
 		if (id > 1000 && id < 1000000) campName = formObj.campaign_name;
 		if (campName == null) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron === 0 ? `` : c_patronAdvIds[`${patron}`];
+		let patronName = patron === 0 ? `` : c_patronById.get(`${patron}`);
 		if (patronName == null) patronName = ``;
 		const patronDisplay = patronName === `` ? `No Patron` : patronName;
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;
@@ -68,9 +68,9 @@ async function df_displayFormationSaves(wrapper, saves) {
 		}
 		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="df_formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="df_formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
-	setFormsWrapperFormat(wrapper, 1);
+	setWrapperFormat(wrapper, 1);
 	wrapper.innerHTML = c;
-	const formsDeleter = document.getElementById(`formsDeleter`);
+	const deleteFormsDeleter = document.getElementById(`deleteFormsDeleter`);
 	let fd = ``;
 	if (document.querySelectorAll('input[name="___AUTO___SAVE___"]').length > 0)
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="df_toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
@@ -78,7 +78,7 @@ async function df_displayFormationSaves(wrapper, saves) {
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="df_deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
 	else
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow">You have no formations to delete.</span></span>`;
-	formsDeleter.innerHTML = fd;
+	deleteFormsDeleter.innerHTML = fd;
 }
 
 function df_createFormationTooltip(name, champs, formation) {
@@ -127,7 +127,7 @@ function df_createFormationTooltip(name, champs, formation) {
 		const yPos = Math.floor(currObj.y / 10);
 		const x = (maxCol - currObj.col) * colMult;
 		const y = (yPos - minY) * rowMult;
-		svg += `<image x="${x}" y="${y}" width="${circleDiameter}" height="${circleDiameter}" href="images/portraits/${champ}.png" />`;
+		svg += `<image x="${x}" y="${y}" width="${circleDiameter}" height="${circleDiameter}" href="images/circularised/${champ}.png" />`;
 	}
 	svg += `</svg>`;
 	return `<span class="tooltipContents">${name}${svg}</span>`;
@@ -152,9 +152,9 @@ function df_toggleSelectAutosaveForms() {
 
 async function df_deleteFormationSaves() {
 	df_disableAllFormationsButtonsAndCheckboxes(true);
-	const formsDeleter = document.getElementById(`formsDeleter`);
+	const deleteFormsDeleter = document.getElementById(`deleteFormsDeleter`);
 	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
-	formsDeleter.innerHTML = c;
+	deleteFormsDeleter.innerHTML = c;
 	let count = 0;
 	for (let form of document.querySelectorAll('[id^="form_"]')) {
 		if (!form.checked) continue;
@@ -179,7 +179,7 @@ async function df_deleteFormationSaves() {
 				autosaveError = true;
 				form.parentNode.style.display = `none`;
 				form.checked = false;
-				formsDeleter.innerHTML = c;
+				deleteFormsDeleter.innerHTML = c;
 				continue;
 			}
 		}
@@ -192,11 +192,11 @@ async function df_deleteFormationSaves() {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
 		form.parentNode.style.display = `none`;
 		form.checked = false;
-		formsDeleter.innerHTML = c;
+		deleteFormsDeleter.innerHTML = c;
 	}
 	if (count === 0) {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
-		formsDeleter.innerHTML = c;
+		deleteFormsDeleter.innerHTML = c;
 	}
 	df_disableAllFormationsButtonsAndCheckboxes(false);
 }

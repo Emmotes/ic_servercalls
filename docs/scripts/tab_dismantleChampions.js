@@ -1,4 +1,4 @@
-const vdc = 1.009; // prettier-ignore
+const vdc = 1.010; // prettier-ignore
 const dc_LSKEY_hideDismantleOpts = `scHideDismantleOptions`;
 
 async function dc_pullData() {
@@ -6,7 +6,7 @@ async function dc_pullData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`dismantleWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for dismantle data...`;
 		let dismantleData = await getDismantleData();
@@ -15,7 +15,7 @@ async function dc_pullData() {
 			dismantleData.redistribute_hero == null ||
 			Object.keys(dismantleData.redistribute_hero).length === 0
 		) {
-			setFormsWrapperFormat(wrapper, 1);
+			setWrapperFormat(wrapper, 1);
 			wrapper.innerHTML = `&nbsp;`;
 			document.getElementById(`dismantleDismantler`).innerHTML =
 				`<span class="f w100 p5" style="padding-left:10%">There is no dismantle running at the moment.</span>`;
@@ -38,7 +38,7 @@ async function dc_pullData() {
 		);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -155,7 +155,7 @@ async function dc_displayData(
 		}
 	}
 	const dismantleDismantler = document.getElementById(`dismantleDismantler`);
-	setFormsWrapperFormat(wrapper, 1);
+	setWrapperFormat(wrapper, 1);
 	if (txt !== ``) {
 		wrapper.innerHTML = txt;
 		dismantleDismantler.innerHTML = `<span class="f fc w100 p5"><span class="f fc falc fje mr2" style="width:50%;padding-bottom:10px" id="dc_selectAllRow"><input type="button" onClick="dc_selectAll()" name="dc_selectAll" id="dc_selectAll" style="font-size:0.9em;min-width:180px" value="Select All Champions"></span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:15px;color:var(--TangerineYellow)" id="dismantleDismantleWarningRow">&nbsp;</span><span class="f fc falc fje mr2 redButton" style="width:50%" id="dismantleDismantleRow">&nbsp;</span></span>`;

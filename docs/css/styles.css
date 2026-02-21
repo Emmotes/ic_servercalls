@@ -10,43 +10,49 @@ html {
 }
 
 body {
-	font-family:'OpenSansSemibold', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-family:
+		"OpenSansSemibold", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 	color: var(--LanguidLavender);
 	background-color: var(--Charade);
 }
 
-h1{
-	font-size:2em;
-	margin:0.67em 0
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
 }
-h2{
-	font-size:1.5em;
-	margin:0.83em 0
+h2 {
+	font-size: 1.5em;
+	margin: 0.83em 0;
 }
-h3{
-	font-size:1.17em;
-	margin:1em 0
+h3 {
+	font-size: 1.17em;
+	margin: 1em 0;
 }
-h4{
-	font-size:1em;
-	margin:1.33em 0
+h4 {
+	font-size: 1em;
+	margin: 1.33em 0;
 }
-h5{
-	font-size:0.83em;
-	margin:1.67em 0
+h5 {
+	font-size: 0.83em;
+	margin: 1.67em 0;
 }
-h6{
-	font-size:0.75em;
-	margin:2.33em 0
+h6 {
+	font-size: 0.75em;
+	margin: 2.33em 0;
 }
-h1,h2,h3 {
+h1,
+h2,
+h3 {
 	line-height: 1em;
 	color: var(--SentimentalPink);
 }
-h4,h5 {
+h4,
+h5 {
 	line-height: 1em;
 }
-h3,h4,h5 {
+h3,
+h4,
+h5 {
 	color: var(--Spangle);
 }
 h6 {
@@ -56,35 +62,41 @@ h6 {
 ul {
 	padding-left: 3em;
 }
-table{
-	border-collapse:collapse;
-	border-spacing:0;
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
 }
-.highlight table td{
-	padding:5px;
+.highlight table td {
+	padding: 5px;
 }
-.highlight table pre{
-	margin:0;
+.highlight table pre {
+	margin: 0;
 }
-p,ul,ol,table,pre,dl{
-	margin:0 0 20px;
+p,
+ul,
+ol,
+table,
+pre,
+dl {
+	margin: 0 0 20px;
 }
-table{
-	width:70vh;
-	border-collapse:collapse;
+table {
+	width: 70vh;
+	border-collapse: collapse;
 }
-th{
-	text-align:left;
-	padding:5px 10px;
-	border-bottom:1px solid var(--Arsenic);
-	color:var(--Wolfram);
-	font-family:'OpenSansSemibold', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-	font-weight:bold;
+th {
+	text-align: left;
+	padding: 5px 10px;
+	border-bottom: 1px solid var(--Arsenic);
+	color: var(--Wolfram);
+	font-family:
+		"OpenSansSemibold", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-weight: bold;
 }
-td{
-	text-align:left;
-	padding:5px 10px;
-	border-bottom:1px solid var(--Arsenic);
+td {
+	text-align: left;
+	padding: 5px 10px;
+	border-bottom: 1px solid var(--Arsenic);
 }
 
 a {
@@ -131,13 +143,47 @@ pre {
 	overflow-y: hidden;
 }
 
-@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+@-moz-keyframes spin {
+	100% {
+		-moz-transform: rotate(360deg);
+	}
+}
+@-webkit-keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+@keyframes spin {
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
 
-@-moz-keyframes spin180 { 0% { -moz-transform: rotate(0); } 100% { -moz-transform: rotate(180deg); } }
-@-webkit-keyframes spin180 { 0% { -webkit-transform: rotate(0); } 100% { -webkit-transform: rotate(180deg); } }
-@keyframes spin180 { 0% { transform: rotate(0); } 100% { transform: rotate(180deg); } }
+@-moz-keyframes spin180 {
+	0% {
+		-moz-transform: rotate(0);
+	}
+	100% {
+		-moz-transform: rotate(180deg);
+	}
+}
+@-webkit-keyframes spin180 {
+	0% {
+		-webkit-transform: rotate(0);
+	}
+	100% {
+		-webkit-transform: rotate(180deg);
+	}
+}
+@keyframes spin180 {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(180deg);
+	}
+}
 
 .menuPopupContainer {
 	position: absolute;
@@ -163,22 +209,69 @@ pre {
 	padding: 8px;
 }
 
-.f {display:flex}
-.fr {flex-direction:row}
-.fc {flex-direction:column}
-.fals {align-items:flex-start}
-.fale {align-items:flex-end}
-.falc {align-items:center}
-.fjs {justify-content:flex-start}
-.fje {justify-content:flex-end}
-.fjc {justify-content:center}
-.fgr {flex-grow:1}
-.fsh {flex-shrink:1}
-.ml2 {margin-left:2px}
-.mr2 {margin-right:2px}
-.mb2 {margin:0 2px}
-.w100 {width:100%}
-.p5 {padding:5px}
+.f {
+	display: flex;
+}
+.fr {
+	flex-direction: row;
+}
+.fc {
+	flex-direction: column;
+}
+.fals {
+	align-items: flex-start;
+}
+.fale {
+	align-items: flex-end;
+}
+.falc {
+	align-items: center;
+}
+.falst {
+	align-items: stretch;
+}
+.fjs {
+	justify-content: flex-start;
+}
+.fje {
+	justify-content: flex-end;
+}
+.fjc {
+	justify-content: center;
+}
+.fgr {
+	flex-grow: 1;
+}
+.fsh {
+	flex-shrink: 1;
+}
+.ml2 {
+	margin-left: 2px;
+}
+.mr2 {
+	margin-right: 2px;
+}
+.mb2 {
+	margin: 0 2px;
+}
+.w100 {
+	width: 100%;
+}
+.h100 {
+	height: 100%;
+}
+.p5 {
+	padding: 5px;
+}
+.posRel {
+	position: relative;
+}
+.posAbs {
+	position: absolute;
+}
+.posFix {
+	position: fixed;
+}
 
 input[type="input"] {
 	width: 80%;
@@ -199,8 +292,8 @@ input[type="range"] {
 	background: var(--ChineseBlack);
 	outline: none;
 	opacity: 0.7;
-	-webkit-transition: .2s;
-	transition: opacity .2s;
+	-webkit-transition: 0.2s;
+	transition: opacity 0.2s;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -240,8 +333,17 @@ input[type="number"] {
 	border-radius: 6px;
 }
 
-input[type="text"],input[type="text"].focus {
+input[type="text"],
+input[type="text"].focus {
 	width: 80%;
+	background-color: var(--ChineseBlack);
+	color: var(--LanguidLavender);
+	padding: 3px;
+	border: 1px solid var(--Boulder);
+	border-radius: 6px;
+}
+
+textarea {
 	background-color: var(--ChineseBlack);
 	color: var(--LanguidLavender);
 	padding: 3px;
@@ -258,7 +360,7 @@ select {
 	border-radius: 5px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	box-sizing: border-box; 
+	box-sizing: border-box;
 }
 
 input[type="button"]:hover {
@@ -307,8 +409,16 @@ input[type="checkbox"]::before {
 	transform-origin: center;
 	/* Windows High Contrast Mode */
 	background-color: CanvasText;
-	
-	clip-path: polygon(17% 54%, 28% 43%, 38% 54%, 70% 22%, 81% 33%, 38% 75%, 17% 54%);
+
+	clip-path: polygon(
+		17% 54%,
+		28% 43%,
+		38% 54%,
+		70% 22%,
+		81% 33%,
+		38% 75%,
+		17% 54%
+	);
 }
 
 input[type="checkbox"]:checked {
@@ -325,7 +435,8 @@ input[type="checkbox"]:checked::before {
 	width: 100%;
 }
 
-.settingsContainer,.versioningContainer {
+.settingsContainer,
+.versioningContainer {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -357,7 +468,8 @@ input[type="checkbox"]:checked::before {
 	color: var(--White);
 }
 
-.setting,.update {
+.setting,
+.update {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -395,8 +507,8 @@ input[type="checkbox"]:checked::before {
 
 .updateContainer {
 	display: flex;
-    align-items: center;
-    justify-content: center;
+	align-items: center;
+	justify-content: center;
 	padding: 0 5px;
 }
 
@@ -420,9 +532,9 @@ input[type="checkbox"]:checked::before {
 .tabs {
 	display: flex;
 	flex-wrap: wrap;
-	max-width: 1192px;
-	min-width: 612px;
-	width: 90%;
+	min-width: 1100px;
+	max-width: 1200px;
+	width: 95%;
 	font-size: 0.97em;
 	margin: auto;
 }
@@ -457,17 +569,17 @@ input[type="checkbox"]:checked::before {
 	border-radius: 0 5px 5px 5px;
 }
 
-.tabsRadio:checked+.tabsLabel {
+.tabsRadio:checked + .tabsLabel {
 	color: var(--CrystalBell);
 	background-color: var(--Gunpowder);
 	border-bottom: 2px ridge var(--Eagle);
 }
 
-.tabsRadio:focus+.tabsLabel {
+.tabsRadio:focus + .tabsLabel {
 	color: var(--DrWhite);
 	background-color: var(--Gunpowder);
 }
-.tabsRadio:checked+.tabsLabel+.tabsContent {
+.tabsRadio:checked + .tabsLabel + .tabsContent {
 	display: initial;
 }
 .tabs code {
@@ -476,7 +588,7 @@ input[type="checkbox"]:checked::before {
 
 .formsWrapper {
 	display: grid;
-	grid-template-columns: repeat(auto-fill,280px);
+	grid-template-columns: repeat(auto-fill, 280px);
 	column-gap: 10px;
 	row-gap: 10px;
 	font-size: 0.875rem;
@@ -530,7 +642,7 @@ input[type="checkbox"]:checked::before {
 	padding: 25px;
 	border-radius: 5px;
 	background-color: var(--Sooty);
-	
+
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -581,14 +693,14 @@ input[type="checkbox"]:checked::before {
 
 .partiesWrapper {
 	display: grid;
-	grid-template-columns: repeat(auto-fill,375px);
+	grid-template-columns: repeat(auto-fill, 375px);
 	column-gap: 10px;
 	row-gap: 10px;
 	font-size: 0.875rem;
 }
 .partiesLeft {
 	width: 25%;
-	margin-right:5px;
+	margin-right: 5px;
 }
 .partiesRight {
 	width: 75%;
@@ -615,7 +727,7 @@ input[type="checkbox"]:checked::before {
 
 .eventTiersWrapper {
 	display: grid;
-	grid-template-columns: repeat(auto-fill,110px 120px);
+	grid-template-columns: repeat(auto-fill, 110px 120px);
 	column-gap: 10px;
 	row-gap: 4px;
 	font-size: 0.875rem;
@@ -625,7 +737,8 @@ input[type="checkbox"]:checked::before {
 	grid-column: 1/-1;
 	padding: 30px 0 5px 0;
 }
-.eventGridName,.eventGridTier {
+.eventGridName,
+.eventGridTier {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
@@ -681,7 +794,7 @@ input[type="checkbox"]:checked::before {
 	width: max-content;
 	z-index: 1;
 	font-size: 1.1em;
-	
+
 	display: grid;
 	grid-template-columns: 75px 50px;
 	column-gap: 5px;
@@ -690,12 +803,20 @@ input[type="checkbox"]:checked::before {
 
 .serverStatusWrapper {
 	display: grid;
-	grid-template-columns: minmax(160px,max-content) minmax(80px,max-content) minmax(320px,max-content);
+	grid-template-columns:
+		minmax(160px, max-content) minmax(80px, max-content)
+		minmax(320px, max-content);
 	gap: 10px;
 }
 
 .serverStatusDetailsColumns {
-	grid-template-columns: minmax(120px,max-content) minmax(80px,max-content) minmax(120px,max-content) minmax(20px,max-content) minmax(10px,max-content) minmax(80px,max-content) minmax(320px,max-content);
+	grid-template-columns:
+		minmax(120px, max-content) minmax(80px, max-content)
+		minmax(120px, max-content) minmax(20px, max-content) minmax(
+			10px,
+			max-content
+		)
+		minmax(80px, max-content) minmax(320px, max-content);
 }
 
 .apothecaryInventoryWrapper {
@@ -732,51 +853,52 @@ input[type="checkbox"]:checked::before {
 
 .timerTooltip {
 	position: absolute;
-    top: -40px;
-    left: -10px;
-    visibility: hidden;
-    width: max-content;
+	top: -40px;
+	left: -10px;
+	visibility: hidden;
+	width: max-content;
 	text-wrap-mode: nowrap;
-    background-color: var(--Sooty);
-    border: 1px solid var(--Black);
-    border-radius: 5px;
-    padding: 5px;
+	background-color: var(--Sooty);
+	border: 1px solid var(--Black);
+	border-radius: 5px;
+	padding: 5px;
 }
 
 .unseenUpdatesContainer {
 	width: 100%;
-    display: flex;
-    padding: 0;
-    margin: 0 0 -40px 0;
-    padding-top: 70px;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	padding: 0;
+	margin: 0 0 -40px 0;
+	padding-top: 70px;
+	justify-content: center;
+	align-items: center;
 }
 
 .unseenUpdates {
 	display: flex;
-    flex-wrap: wrap;
-    max-width: 1192px;
-    min-width: 612px;
-    width: 90%;
-    font-size: 0.97em;
-    margin: auto;
+	flex-wrap: wrap;
+	max-width: 1192px;
+	min-width: 612px;
+	width: 90%;
+	font-size: 0.97em;
+	margin: auto;
 }
 
 .unseenUpdatesGrid {
 	order: 1;
-    width: 100%;
-    border: 1px solid var(--TangerineYellow);
-    background-color: var(--DarkGunmetal);
-    border-radius: 5px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+	width: 100%;
+	border: 1px solid var(--TangerineYellow);
+	background-color: var(--DarkGunmetal);
+	border-radius: 5px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
 
-    padding: 12px 20px 12px 20px;
+	padding: 12px 20px 12px 20px;
 }
 
-.unseenUpdatesGrid ul,.unseenUpdatesGrid ol {
+.unseenUpdatesGrid ul,
+.unseenUpdatesGrid ol {
 	margin: 0;
 	padding-left: 20px;
 }
@@ -789,4 +911,289 @@ input[type="checkbox"]:checked::before {
 .hasUnseenUpdate {
 	border: 1px solid var(--TangerineYellow);
 	border-radius: 5px;
+}
+
+.createFormsImport {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 150px 300px 1.4fr;
+	gap: 10px;
+}
+
+.cf_champBox {
+	border: 1px solid var(--Emperor);
+	background-size: contain;
+	background-repeat: no-repeat;
+	margin: 0 -1px -1px 0;
+	cursor: pointer;
+}
+
+.cf_champBoxName {
+	padding: 2px 0;
+	font-size: 0.55em;
+	background-color: rgb(0 0 0 / 40%);
+	text-align: center;
+	text-wrap-style: pretty;
+}
+
+.cf_campaignGrid {
+	display: grid;
+	grid-template-columns: 1fr 3.2fr;
+	gap: 10px;
+	padding: 0 0 10px 0;
+	width: 100%;
+}
+
+.cf_slotCircle {
+	position: absolute;
+	width: 60px;
+	height: 60px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--Flavescent);
+	cursor: pointer;
+}
+
+.cf_slotCircle img,
+.cf_slotCircle svg {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	pointer-events: none;
+	object-fit: cover;
+}
+
+.cf_slotSpec {
+	position: absolute;
+	width: 60px;
+	transform: translate(-50%, 45px);
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	flex-wrap: wrap;
+	cursor: pointer;
+}
+
+.cf_slotSpecChoice {
+	width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 1px;
+	background-color: rgb(0 0 0 / 60%);
+	fill: var(--White);
+	font-size: 12px;
+}
+
+.cf_slotSpecChoice svg {
+	width: 10px;
+	height: 10px;
+}
+
+.cf_specChoicePopup {
+	position: fixed;
+	z-index: 1;
+	background-color: var(--Gunpowder);
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.cf_specChoicePopup input {
+	width: 120px;
+	height: 60px;
+	text-wrap-mode: wrap;
+	text-wrap-style: pretty;
+	margin: 5px;
+}
+
+.cf_favouriteStar {
+	position: absolute;
+	left: -3px;
+	top: 0;
+	font-size: 8px;
+	cursor: pointer;
+}
+
+.cf_favouriteChoicePopup {
+	position: fixed;
+	z-index: 1;
+	background-color: var(--Gunpowder);
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.cf_favouriteChoicePopup input {
+	width: 80px;
+	height: 40px;
+	text-wrap-mode: wrap;
+	text-wrap-style: pretty;
+	margin: 5px;
+}
+
+.cf_includeFeatsContainer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	position: absolute;
+	right: -3px;
+	top: 0;
+}
+
+.cf_includeFeatsContainer input {
+	background-color: var(--ChineseBlack);
+	color: var(--Boulder);
+}
+
+.cf_includeFeatsContainer input:checked {
+	background-color: var(--ChineseBlack);
+	color: var(--Wolfram);
+}
+
+.cf_slotFeat {
+	position: absolute;
+	transform: translate(-220%, 0);
+	display: grid;
+	grid-template-columns: repeat(2, 9px);
+	grid-auto-rows: 9px;
+	gap: 1px;
+	cursor: pointer;
+}
+
+.cf_slotFeatChoice {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 1px;
+	background-color: rgb(0 0 0 / 60%);
+	fill: var(--White);
+	font-size: 10px;
+}
+
+.cf_slotFeatChoice img {
+	width: 16px;
+	height: 16px;
+}
+
+.cf_slotFeatChoice svg {
+	width: 7px;
+	height: 7px;
+}
+
+.cf_featChoicePopup {
+	position: fixed;
+	z-index: 1;
+	background-color: var(--Gunpowder);
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.cf_featChoicePopup input {
+	width: 120px;
+	height: 60px;
+	text-wrap-mode: wrap;
+	text-wrap-style: pretty;
+	margin: 5px;
+}
+
+.cf_featChoicePopupSlot {
+	height: 40px;
+	display: grid;
+	grid-template-columns: 40px 200px;
+	gap: 10px;
+	background-color: var(--ChineseBlack);
+	border: 1px solid var(--Boulder);
+	text-wrap-style: pretty;
+	font-size: 0.9em;
+	margin: 1px;
+}
+
+.cf_featChoicePopupSlot img {
+	width: 20px;
+	height: 20px;
+	margin: 5px;
+	flex-direction: column-reverse;
+}
+
+.cf_famBox {
+	border: 1px solid var(--Emperor);
+	background-color: var(--ChineseBlack);
+	background-position: center;
+	background-position-x: center;
+	background-repeat: no-repeat;
+	margin: 0 -1px -1px 0;
+	cursor: pointer;
+}
+
+.cf_familiarControlGrid {
+	display: grid;
+	grid-template-columns: 1fr 1.3fr;
+	gap: 10px;
+	padding: 0 0 10px 0;
+	width: 100%;
+}
+
+.cf_famPlaceSpot {
+	background-color: var(--Boulder);
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.cf_famPlaceSpot img {
+	width: 44px;
+	height: 44px;
+}
+
+.cf_selected {
+	z-index: 1;
+	border: 2px solid var(--TangerineYellow);
+}
+
+.cf_exportsSection {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.cf_exportsExporter {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 10px;
+	padding: 5px;
+}
+
+.cf_importsImporter {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 10px;
+	padding: 5px;
+}
+
+.cf_importPopup,
+.cf_exportPopup {
+	position: fixed;
+	z-index: 1;
+	background-color: var(--Gunpowder);
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.cf_importPopup input,
+.cf_exportPopup input {
+	width: 120px;
+	height: 60px;
+	text-wrap-mode: wrap;
+	text-wrap-style: pretty;
+	margin: 5px;
 }

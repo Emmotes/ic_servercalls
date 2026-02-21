@@ -1,4 +1,4 @@
-const vap = 2.006; // prettier-ignore
+const vap = 2.007; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
@@ -18,7 +18,7 @@ async function ap_pullApothecaryData() {
 	const wrapper = document.getElementById(`apothecaryWrapper`);
 	const inventory = document.getElementById(`apothecaryInventory`);
 	inventory.innerHTML = `&nbsp;`;
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;
@@ -28,7 +28,7 @@ async function ap_pullApothecaryData() {
 		await ap_displayApothecaryData(wrapper, details, gameRules);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -201,16 +201,16 @@ function ap_changeMethod(value) {
 
 	if (value === `Distill`) {
 		txt = ap_buildDistillDisplay();
-		setFormsWrapperFormat(wrapper, 5);
+		setWrapperFormat(wrapper, 5);
 	} else if (value === `Brew`) {
 		txt = ap_buildBrewDisplay();
-		setFormsWrapperFormat(wrapper, 6);
+		setWrapperFormat(wrapper, 6);
 	} else if (value === `Enhance`) {
 		txt = ap_buildEnhanceDisplay();
-		setFormsWrapperFormat(wrapper, 7);
+		setWrapperFormat(wrapper, 7);
 	} else {
 		txt = `&nbsp;`;
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 	}
 
 	wrapper.innerHTML = txt;

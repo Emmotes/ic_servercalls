@@ -1,4 +1,4 @@
-const voc = 1.034; // prettier-ignore
+const voc = 1.035; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
@@ -8,7 +8,7 @@ async function oc_pullOpenChestsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`openChestsWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;
@@ -25,7 +25,7 @@ async function oc_pullOpenChestsData() {
 		);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -136,7 +136,7 @@ async function oc_displayOpenChestsData(
 		}
 	}
 
-	setFormsWrapperFormat(wrapper, 1);
+	setWrapperFormat(wrapper, 1);
 	if (txt !== ``) wrapper.innerHTML = txt;
 	else wrapper.innerHTML = `&nbsp;`;
 }

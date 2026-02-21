@@ -1,27 +1,48 @@
-const vu = 1.001; // prettier-ignore
+const vu = 1.002; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
-const u_FEATURE_UPDATES = [
-	{
-		id: 1,
-		date: "2026-02-12",
-		title: "Update Notifications",
-		list: [
-			"Tells you what's been updated when there's been a big change or addition.",
-			"Why is it telling you about itself?",
-			"... Because it can? 🤷‍♀️",
-		],
-	},
-];
+const u_FEATURE_UPDATES = new Map([
+	[
+		1,
+		{
+			id: 1,
+			date: "2026-02-12",
+			title: "Update Notifications",
+			list: [
+				"Tells you what's been updated when there's been a big change or addition.",
+				"Why is it telling you about itself?",
+				"... Because it can? 🤷‍♀️",
+			],
+		},
+	],
+	[
+		2,
+		{
+			id: 2,
+			date: "2026-02-21",
+			title: "New Tab: Create Formations",
+			list: [
+				"Let's you build formations for any campaign/event.",
+				"You can use this to build formations from scratch or modify existing ones.",
+				"Right now you can save and load from browser storage - but you cannot delete from there yet.",
+				"There will be bugs. This turned out way more complicated than I expected - and I expected complicated.",
+				"Please do tell me if something doesn't work.",
+			],
+			tab: "createFormations",
+		},
+	],
+]);
 let u_currentUnseenUpdateIds = new Set([]);
 
 function u_displayUnseenUpdates() {
-	const allIds = u_FEATURE_UPDATES.map((u) => u.id);
+	const allIds = [...u_FEATURE_UPDATES.keys()];
 	const seenIds = u_getSeenUpdates();
-	const unseenIds = new Set(allIds.filter((id) => !seenIds.has(id)));
-	if (unseenIds.size === 0) return;
+	const unseenIds = allIds
+		.filter((id) => !seenIds.has(id))
+		.sort((a, b) => a - b);
+	if (unseenIds.length === 0) return;
 
-	u_currentUnseenUpdateIds = unseenIds;
+	u_currentUnseenUpdateIds = new Set(unseenIds);
 
 	if (u_isNewUser()) {
 		u_userConfirmSeenChanges();
@@ -46,11 +67,16 @@ function u_displayUnseenUpdates() {
 		{text: updateBlurb, gridCol: sCol},
 	]);
 
-	for (const update of u_FEATURE_UPDATES) {
-		txt += u_buildUpdateGridItem(update);
-		if (update?.tab != null) {
-			let tab = document.querySelector(`label[for='${update.tab}Tab']`);
-			if (tab) tab.classList.add(`hasUnseenUpdate`);
+	for (const unseenId of unseenIds) {
+		const update = u_FEATURE_UPDATES.get(unseenId);
+		if (update) {
+			txt += u_buildUpdateGridItem(update);
+			if (update?.tab != null) {
+				let tab = document.querySelector(
+					`label[for='${update.tab}Tab']`,
+				);
+				if (tab) tab.classList.add(`hasUnseenUpdate`);
+			}
 		}
 	}
 
@@ -154,5 +180,6 @@ function u_getSeenUpdates() {
 }
 
 function u_setSeenUpdates(ids) {
+	ids.sort((a, b) => a - b);
 	ls_setGlobal_arr(u_LSKEY_updates, ids);
 }

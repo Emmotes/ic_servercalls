@@ -1,4 +1,4 @@
-const vet = 1.022; // prettier-ignore
+const vet = 1.023; // prettier-ignore
 const et_LSKEY_hideTier4 = `scEventTiersHideTier4`;
 const et_LSKEY_eventSort = `scEventTiersSort`;
 const et_DEFAULT_eventSort = `event`;
@@ -9,7 +9,7 @@ async function et_pullEventTiersData() {
 	disablePullButtons();
 	const wrapper = document.getElementById(`eventTiersWrapper`);
 	et_hideEventSort(true);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = (await getUserDetails()).details;
@@ -21,7 +21,7 @@ async function et_pullEventTiersData() {
 		codeEnablePullButtons();
 	} catch (error) {
 		et_hideEventSort(true);
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -36,7 +36,7 @@ async function et_displayEventTiersData(
 	const ownedById = owned[0];
 	const ownedIds = Object.keys(ownedById);
 	if (ownedIds.length === 0) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		wrapper.innerHTML = `<span class="f fr w100 p5">You have not unlocked any event champions.</span>`;
 		return;
 	}
@@ -115,7 +115,7 @@ async function et_displayEventTiersData(
 				day,
 			);
 	}
-	setFormsWrapperFormat(wrapper, 3);
+	setWrapperFormat(wrapper, 3);
 	wrapper.innerHTML = txt;
 	document.getElementById("eventTiersHideTier4Amount").innerHTML =
 		`Displaying: ${numNotTier4} / ${numTotal}`;

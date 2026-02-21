@@ -1,10 +1,10 @@
-const vbf = 1.014; // prettier-ignore
+const vbf = 1.015; // prettier-ignore
 
 async function bf_pullFeatsData() {
 	if (isBadUserData()) return;
 	disablePullButtons();
 	const wrapper = document.getElementById(`featsWrapper`);
-	setFormsWrapperFormat(wrapper, 0);
+	setWrapperFormat(wrapper, 0);
 	try {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const details = await getUserDetails();
@@ -13,7 +13,7 @@ async function bf_pullFeatsData() {
 		await bf_displayFeatsData(wrapper, details, defs);
 		codeEnablePullButtons();
 	} catch (error) {
-		setFormsWrapperFormat(wrapper, 0);
+		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
 }
@@ -86,7 +86,7 @@ async function bf_displayFeatsData(wrapper, details, defs) {
 		txt += `<span class="formsCampaignSelect"><input id="feat_selectAll_${id}" type="button" onClick="bf_featsSelectAll('${id}',true)" value="Select All"><input id="feat_selectNone_${id}" type="button" onClick="bf_featsSelectAll('${id}',false)" value="Deselect All"></span></span></span>`;
 	}
 	const featsBuyer = document.getElementById(`featsBuyer`);
-	setFormsWrapperFormat(wrapper, 1);
+	setWrapperFormat(wrapper, 1);
 	if (txt !== ``) {
 		wrapper.innerHTML = txt;
 		featsBuyer.innerHTML = `<span class="f fc w100 p5"><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyCost">&nbsp;</span><span class="f falc fjs mr2 p5" style="width:50%;padding-left:15%" id="featsBuyAvailable">&nbsp;</span><span class="f fc falc fje mr2" style="width:50%;padding-bottom:20px" id="featsSelectAllTheFeatsRow">&nbsp;</span><span class="f fc falc fje mr2 greenButton" style="width:50%" id="featsBuyRow">&nbsp;</span></span>`;

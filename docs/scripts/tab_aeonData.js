@@ -1,4 +1,4 @@
-const vad = 1.009; // prettier-ignore
+const vad = 1.010; // prettier-ignore
 
 async function ad_pullAeonData() {
 	if (isBadUserData()) return;
@@ -20,8 +20,8 @@ async function ad_displayAeonData(wrapper, details) {
 		Number(aeonData.seconds_until_patron_rollover) * 1000;
 	const currPatronId = Number(aeonData.current_patron_id);
 	const nextPatronId = Number(aeonData.next_patron_id);
-	const currPatron = getPatronNameById(currPatronId);
-	const nextPatron = getPatronNameById(nextPatronId);
+	const currPatron = c_patronById.get(currPatronId) ?? `??? (id: ${currPatronId})`;
+	const nextPatron = c_patronById.get(nextPatronId) ?? `??? (id: ${nextPatronId})`;
 	let count = 0;
 	let goal = 0;
 	outerLoop: for (let patron of details.patrons) {
