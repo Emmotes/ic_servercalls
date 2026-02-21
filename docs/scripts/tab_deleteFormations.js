@@ -1,4 +1,4 @@
-const vdf = 1.019; // prettier-ignore
+const vdf = 1.020; // prettier-ignore
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;
@@ -29,12 +29,13 @@ async function df_displayFormationSaves(wrapper, saves) {
 		if (key === "-1") continue;
 		const id = Number(key);
 		const camp = id % 1000;
-		const patron = id - camp;
+		let patron = id - camp;
 		const formObj = formObjs[`${id}`];
 		let campName = c_campaignIds.get(camp);
 		if (id > 1000 && id < 1000000) campName = formObj.campaign_name;
+		if (patron > 1000000) patron = (patron - 1000000) / 100000;
 		if (campName == null) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron === 0 ? `` : c_patronById.get(`${patron}`);
+		let patronName = patron === 0 ? `` : c_patronById.get(patron);
 		if (patronName == null) patronName = ``;
 		const patronDisplay = patronName === `` ? `No Patron` : patronName;
 		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;
