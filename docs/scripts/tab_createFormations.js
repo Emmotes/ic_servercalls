@@ -1,4 +1,4 @@
-vcf = 1.002; // prettier-ignore
+vcf = 1.003; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -264,16 +264,18 @@ function cf_renderImportMode() {
 }
 
 function cf_renderImportGameSelector() {
-	const byCampaign = cf_data.formationSaves.byBaseCampaignId;
+	const byCampaign = cf_data.formationSaves.byActualCampaignId;
 	const campaigns = cf_data.campaigns.byActualId;
 
-	const campaignIds = [...byCampaign.keys()].sort((a, b) => {
-		const ca = campaigns.get(a);
-		const cb = campaigns.get(b);
-		if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
-		if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
-		return (ca.patronId ?? 0) - (cb.patronId ?? 0);
-	});
+	const campaignIds = [...byCampaign.keys()]
+		.filter((id) => campaigns.get(id)?.visible)
+		.sort((a, b) => {
+			const ca = campaigns.get(a);
+			const cb = campaigns.get(b);
+			if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
+			if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
+			return (ca.patronId ?? 0) - (cb.patronId ?? 0);
+		});
 
 	let txt = `<select id="cf_importGameSelect" style="width:100%">`;
 	txt += `<option value="-">-</option>`;
@@ -297,7 +299,8 @@ function cf_renderImportGameSelector() {
 			let patronSuffix = ``;
 			if (formCamp.patronId ?? 0 > 0) {
 				const patronName = c_patronById.get(formCamp.patronId);
-				if (patronName) patronSuffix = ` (${cf_escapeHtml(patronName)})`;
+				if (patronName)
+					patronSuffix = ` (${cf_escapeHtml(patronName)})`;
 			}
 			txt +=
 				`<option value="${form.id}">` +
