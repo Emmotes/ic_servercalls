@@ -1,4 +1,4 @@
-vcf = 1.001; // prettier-ignore
+vcf = 1.002; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -3209,6 +3209,7 @@ function cf_importFormationFromBrowser() {
 	const saves = cf_ls_getSavedFormations();
 	const state = saves[index];
 	if (!state) return;
+	state.formationId = -1;
 
 	cf_applyImportedBuilderState(structuredClone(state));
 }
@@ -3550,7 +3551,10 @@ function cf_ls_addSavedFormation() {
 	const saved = cf_ls_getSavedFormations();
 	if (saved.length >= cf_MAX_LS_SAVES) return;
 
-	saved.push(cf_builderState);
+	const state = structuredClone(cf_builderState);
+	state.formationId = -1;
+	saved.push(state);
+
 	ls_setGlobal_arr(cf_LSKEY_savedFormations, saved);
 }
 
