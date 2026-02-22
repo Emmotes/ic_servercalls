@@ -1,4 +1,4 @@
-vcf = 1.008; // prettier-ignore
+vcf = 1.009; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -3330,18 +3330,21 @@ function cf_decodeByteglowSpecs(formation, specSegment) {
 	for (const champId of formation) {
 		const specDefs = cf_data.specialisations.byChampionId.get(champId);
 		if (!specDefs) continue;
+		const name = cf_data.champions.byId.get(champId).name;
 
 		specs.set(champId, []);
 		for (const specSet of specDefs) {
 			if (index >= specSegment.length) break;
 
 			const choice = Number(specSegment[index++]) - 1;
-			if (choice < 0 || choice >= specSet.options.length)
-				throw new Error(`Invalid spec for champion ${champId}`);
+			if (choice < 0)
+				continue;
+			if (choice >= specSet.options.length)
+				throw new Error(`Invalid spec for champion ${name}.`);
 
 			const upgId = specSet.options?.[choice]?.upgradeId ?? -1;
 			if (upgId < 0)
-				throw new Error(`Invalid spec for champion ${champId}`);
+				continue; // throw new Error(`Invalid spec for champion ${name}.`);
 
 			specs.get(champId).push(upgId);
 		}
