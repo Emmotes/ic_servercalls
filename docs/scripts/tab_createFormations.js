@@ -1,4 +1,4 @@
-vcf = 1.006; // prettier-ignore
+vcf = 1.007; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -1543,9 +1543,16 @@ function cf_renderExportMode() {
 	let txt = `<span class="f fr falc fje p5 greenButton" style="margin-top:10px;width:80%;">`;
 
 	if (type === `game`) {
+		const isExisting = cf_builderState.formationId >= 0;
+		txt += `<span class="f fc falc fjc p5 w100">`;
 		txt +=
 			`<input id="cf_exportGameButton" type="button" style="width:100%;" ` +
-			`value="Save to Game" onclick="cf_saveFormationToGame()">`;
+			`value="${isExisting ? `Save as New to Game` : `Save to Game`}" onclick="cf_saveFormationToGame(true)">`;
+		if (isExisting)
+			txt +=
+				`<input id="cf_exportGameButton" type="button" style="width:100%;margin-top:20px;" ` +
+				`value="Overwrite Existing Game Formation" onclick="cf_saveFormationToGame(false)">`;
+		txt += `</span>`;
 	} else if (type === `local`) {
 		const saved = cf_ls_getSavedFormations().length;
 		txt += `<span class="f fc falc fjs w100">`;
@@ -1644,7 +1651,9 @@ function cf_updateUI(flags = cf_UI.ALL, context) {
 		cf_renderExportShareString();
 
 		const delEle = document.getElementById(`cf_deleteLocalSelectContainer`);
-		if (delEle) delEle.innerHTML = cf_renderImportLocalSelector(`cf_deleteLocalSelect`);
+		if (delEle)
+			delEle.innerHTML =
+				cf_renderImportLocalSelector(`cf_deleteLocalSelect`);
 	}
 
 	const nameEle = document.getElementById(`cf_nameInput`);
@@ -3572,9 +3581,7 @@ function cf_validateImportedState(state) {
 // ===== Exporting =====
 // =====================
 
-function cf_exportFormation() {
-	const state = cf_builderState;
-
+function cf_exportFormation(state = cf_builderState) {
 	if (!state) return null;
 
 	return {
@@ -3582,10 +3589,11 @@ function cf_exportFormation() {
 		campId: state.campaignId,
 		name: state.name ?? `New Formation Save`,
 		fav: state.favorite ?? 0,
-		formation: cf_exportFormationSlots(),
-		familiars: cf_exportFamiliars(),
-		specs: JSON.stringify(cf_exportSpecialisations()),
-		feats: state.includeFeats ? JSON.stringify(cf_exportFeats()) : `[]`,
+		formation: cf_exportFormationSlots(state),
+		familiars: cf_exportFamiliars(state),
+		specs: JSON.stringify(cf_exportSpecialisations(state)),
+		feats:
+			state.includeFeats ? JSON.stringify(cf_exportFeats(state)) : `[]`,
 	};
 }
 
@@ -3601,13 +3609,13 @@ function cf_resolveCampaignId(baseId, patronDisabled, patronId) {
 	return baseId; // safe fallback
 }
 
-function cf_exportFormationSlots() {
-	const unmapped = cf_builderState.formation.map((id) => (id > 0 ? id : -1));
+function cf_exportFormationSlots(state = cf_builderState) {
+	const unmapped = state.formation.map((id) => (id > 0 ? id : -1));
 	return JSON.stringify(unmapped);
 }
 
-function cf_exportSpecialisations() {
-	const map = cf_builderState.specializations;
+function cf_exportSpecialisations(state = cf_builderState) {
+	const map = state.specializations;
 	if (!map || map.size === 0) return [];
 
 	const obj = {};
@@ -3624,8 +3632,8 @@ function cf_exportSpecialisations() {
 	return obj;
 }
 
-function cf_exportFeats() {
-	const map = cf_builderState.feats;
+function cf_exportFeats(state = cf_builderState) {
+	const map = state.feats;
 	if (!map || map.size === 0) return [];
 
 	const obj = {};
@@ -3639,8 +3647,8 @@ function cf_exportFeats() {
 
 	return obj;
 }
-function cf_exportFamiliars() {
-	const fams = cf_builderState.familiars;
+function cf_exportFamiliars(state = cf_builderState) {
+	const fams = state.familiars;
 	const remapped = {
 		Ultimates: cf_exportUltimates(fams.Ultimates, 4),
 		Clicks: cf_exportGapArray(fams.Clicks, 6),
@@ -3721,11 +3729,14 @@ function cf_exportGapArray(arr, maxSize) {
 	return hasAny ? result : [];
 }
 
-async function cf_saveFormationToGame() {
+async function cf_saveFormationToGame(saveFresh = false) {
 	const output = document.getElementById(`cf_exportResult`);
 	if (!output) return;
 
-	const f = cf_exportFormation();
+	const state = structuredClone(cf_builderState);
+	if (saveFresh) state.formationId = -1;
+
+	const f = cf_exportFormation(state);
 
 	const response = await saveFormation(
 		f.formId,
