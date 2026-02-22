@@ -1,4 +1,4 @@
-const vu = 1.002; // prettier-ignore
+const vu = 1.003; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -24,7 +24,6 @@ const u_FEATURE_UPDATES = new Map([
 			list: [
 				"Let's you build formations for any campaign/event.",
 				"You can use this to build formations from scratch or modify existing ones.",
-				"Right now you can save and load from browser storage - but you cannot delete from there yet.",
 				"There will be bugs. This turned out way more complicated than I expected - and I expected complicated.",
 				"Please do tell me if something doesn't work.",
 			],

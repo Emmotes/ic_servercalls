@@ -1,4 +1,4 @@
-vcf = 1.005; // prettier-ignore
+vcf = 1.006; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -277,14 +277,13 @@ function cf_renderImportGameSelector() {
 	const byCampaign = cf_data.formationSaves.byActualCampaignId;
 	const campaigns = cf_data.campaigns.byActualId;
 
-	const campaignIds = [...byCampaign.keys()]
-		.sort((a, b) => {
-			const ca = campaigns.get(a);
-			const cb = campaigns.get(b);
-			if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
-			if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
-			return (ca.patronId ?? 0) - (cb.patronId ?? 0);
-		});
+	const campaignIds = [...byCampaign.keys()].sort((a, b) => {
+		const ca = campaigns.get(a);
+		const cb = campaigns.get(b);
+		if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
+		if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
+		return (ca.patronId ?? 0) - (cb.patronId ?? 0);
+	});
 
 	let txt = `<select id="cf_importGameSelect" style="width:100%">`;
 	txt += `<option value="-">-</option>`;
@@ -324,7 +323,7 @@ function cf_renderImportGameSelector() {
 	return txt;
 }
 
-function cf_renderImportLocalSelector() {
+function cf_renderImportLocalSelector(id) {
 	const saves = cf_ls_getSavedFormations();
 	if (!Array.isArray(saves) || saves.length === 0)
 		return `<select style="width:100%"><option>No saved formations</option></select>`;
@@ -341,7 +340,7 @@ function cf_renderImportLocalSelector() {
 			return ca.patronId - cb.patronId;
 		});
 
-	let txt = `<select id="cf_importLocalSelect" style="width:100%">`;
+	let txt = `<select id="${id ?? `cf_importLocalSelect`}" style="width:100%">`;
 	txt += `<option value="-">-</option>`;
 
 	let currentGroup = null;
@@ -1463,6 +1462,7 @@ function cf_renderExportsSection() {
 	txt += `</span>`;
 
 	txt += `<span id="cf_exportContainer" class="f fr falc fje w100">&nbsp;</span>`;
+	txt += `<span id="cf_exportResult" class="f fr falc fjc w100">&nbsp;</span>`;
 
 	txt += `</span>`;
 
@@ -1473,9 +1473,65 @@ function cf_renderExportsSection() {
 		`<textarea id="cf_exportShareString" rows="8" style="width:100%;resize:none"></textarea>` +
 		`</span>`;
 
+	// Delete row
+	for (let i = 0; i < 3; i++)
+		txt += `<span${i < 2 ? ` style="height:50px;"` : ``}>&nbsp;</span>`;
+	txt +=
+		`<span class="f fc falc fjs p5 w100">` +
+		`<span class="f fr fals fjs p5 w100">Delete Formations from Browser Storage:</span>` +
+		`<span class="p5 w100" id="cf_deleteLocalSelectContainer">${cf_renderImportLocalSelector(`cf_deleteLocalSelect`)}</span>` +
+		`<input id="cf_deleteLocalButton" type="button" style="width:72%;margin-top:10px;" ` +
+		`value="Delete from Browser Formation" onclick="cf_renderDeleteLocalConfirmationPopup()">` +
+		`</span>`;
+
 	txt += `</span>`;
 
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_deleteLocalPopup" style="display:none;">&nbsp;</span>`;
+
 	return txt;
+}
+
+function cf_renderDeleteLocalConfirmationPopup() {
+	const deleteButtonEle = document.getElementById(`cf_deleteLocalButton`);
+	const container = document.getElementById(`cf_deleteLocalPopup`);
+	if (!deleteButtonEle || !container) return;
+
+	const click = "cf_closeDeleteLocalConfirmationPopup()";
+
+	let txt = ``;
+	txt += `<span class="f fr falc fjs"><h3 style="padding-left:5px;">Are you sure?</h3></span>`;
+	txt += `<span class="f fr falc fjs p5">Do you really want to delete this formation?</span>`;
+	txt += `<span class="f fr falc fjs w100 p5" style="padding-top:10px;">`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="cf_deleteLocalFormation();${click}"></span>`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="${click}"></span>`;
+	txt += `</span>`;
+
+	container.innerHTML = txt;
+	container.style.display = ``;
+
+	const contRect = container.getBoundingClientRect();
+	const deleRect = deleteButtonEle.getBoundingClientRect();
+
+	let left = deleRect.left + deleRect.width / 2 - contRect.width / 2;
+	let top = deleRect.top + deleRect.height / 2 - contRect.height / 2;
+
+	const margin = 20;
+	const maxLeft = window.innerWidth - contRect.width - margin;
+	const maxTop = window.innerHeight - contRect.height - margin;
+
+	container.style.left = Math.max(margin, Math.min(left, maxLeft)) + `px`;
+	container.style.top = Math.max(margin, Math.min(top, maxTop)) + `px`;
+
+	setTimeout(() => {
+		document.removeEventListener(
+			"mousedown",
+			cf_handleDeleteLocalConfirmationOutsideClick,
+		);
+		document.addEventListener(
+			"mousedown",
+			cf_handleDeleteLocalConfirmationOutsideClick,
+		);
+	}, 0);
 }
 
 function cf_renderExportMode() {
@@ -1584,7 +1640,12 @@ function cf_updateUI(flags = cf_UI.ALL, context) {
 		cf_renderExportMode();
 	}
 
-	if (flags & cf_UI.EXPORT_STRING) cf_renderExportShareString();
+	if (flags & cf_UI.EXPORT_STRING) {
+		cf_renderExportShareString();
+
+		const delEle = document.getElementById(`cf_deleteLocalSelectContainer`);
+		if (delEle) delEle.innerHTML = cf_renderImportLocalSelector(`cf_deleteLocalSelect`);
+	}
 
 	const nameEle = document.getElementById(`cf_nameInput`);
 	if (nameEle) nameEle.value = cf_builderState.name;
@@ -1734,6 +1795,9 @@ function cf_onExportModeChange(value) {
 	if (!value) return;
 
 	cf_builderState.exportMode = value;
+
+	const result = document.getElementById(`cf_exportResult`);
+	if (result) result.innerHTML = `&nbsp;`;
 
 	cf_updateUI(cf_UI.EXPORT);
 }
@@ -1895,7 +1959,9 @@ function cf_buildCampaigns(data, formationObjects) {
 		if (!name) continue;
 
 		if (!isEvent && !c_campaignIds.has(baseId)) {
-			console.warn(`Skipping spoiler campaign ${name} with unknown baseId ${baseId}.`);
+			console.warn(
+				`Skipping spoiler campaign ${name} with unknown baseId ${baseId}.`,
+			);
 			continue;
 		}
 
@@ -2470,6 +2536,31 @@ function cf_handleImportWarningPopupOutsideClick(event) {
 		document.removeEventListener(
 			"mousedown",
 			cf_handleImportWarningPopupOutsideClick,
+		);
+	}
+}
+
+function cf_closeDeleteLocalConfirmationPopup() {
+	const popup = document.getElementById(`cf_deleteLocalPopup`);
+	if (!popup) return;
+
+	popup.style.display = `none`;
+	popup.innerHTML = `&nbsp;`;
+	document.removeEventListener(
+		"mousedown",
+		cf_handleDeleteLocalConfirmationOutsideClick,
+	);
+}
+
+function cf_handleDeleteLocalConfirmationOutsideClick(event) {
+	const popup = document.getElementById(`cf_deleteLocalPopup`);
+	if (!popup) return;
+
+	if (!popup.contains(event.target)) {
+		cf_closeDeleteLocalConfirmationPopup();
+		document.removeEventListener(
+			"mousedown",
+			cf_handleDeleteLocalConfirmationOutsideClick,
 		);
 	}
 }
@@ -3204,6 +3295,16 @@ function cf_decodeByteglowSpecs(formation, specSegment) {
 	return specs;
 }
 
+function cf_deleteLocalFormation() {
+	const select = document.getElementById("cf_deleteLocalSelect");
+	if (!select) return;
+	const index = Number(select?.value);
+	if (isNaN(index) || index < 0) return;
+
+	cf_ls_deleteSavedFormation(index);
+	cf_updateUI(cf_UI.IMPORT | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
+}
+
 // =====================
 // ===== Importing =====
 // =====================
@@ -3621,7 +3722,7 @@ function cf_exportGapArray(arr, maxSize) {
 }
 
 async function cf_saveFormationToGame() {
-	const output = document.getElementById(`createFormsCreator`);
+	const output = document.getElementById(`cf_exportResult`);
 	if (!output) return;
 
 	const f = cf_exportFormation();
@@ -3656,7 +3757,7 @@ async function cf_saveFormationToGame() {
 }
 
 function cf_saveFormationToBrowser() {
-	const output = document.getElementById(`createFormsCreator`);
+	const output = document.getElementById(`cf_exportResult`);
 	if (!output) return;
 
 	let txt;
@@ -3695,16 +3796,11 @@ function cf_ls_getSavedFormations() {
 	return ls_getGlobal(cf_LSKEY_savedFormations, []);
 }
 
-function cf_ls_deleteSavedFormation(formId) {
-	if (!formId || formId <= 0) return;
-
+function cf_ls_deleteSavedFormation(index) {
 	const saved = cf_ls_getSavedFormations();
-	for (let i = saved.length - 1; i >= 0; i--) {
-		if (saved[i].formationId === formId) {
-			saved.splice(i, 1);
-			break;
-		}
-	}
+	if (index < 0 || index >= saved.length) return;
+
+	saved.splice(index, 1);
 
 	ls_setGlobal_arr(cf_LSKEY_savedFormations, saved);
 }
