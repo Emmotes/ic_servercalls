@@ -1,4 +1,4 @@
-vcf = 1.007; // prettier-ignore
+vcf = 1.008; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -68,6 +68,7 @@ const cf_famGridSizes = {w: "50px", h: "50px"};
 let cf_data;
 let cf_builderState;
 let cf_activeFeatHeroId = -1;
+let cf_selectedHeroId = null;
 
 // TODO:
 //  [x] Make it so that swapping accounts deletes the contents of cf_importsSection.
@@ -517,7 +518,8 @@ function cf_renderChampionsGrid() {
 				champ.owned ?
 					` draggable="true" ondragstart="cf_onDragStart(event, 'champion', ${champ.id}, 'championGrid', -1)"`
 				:	``;
-			txt += `<span id="cf_champBox_${champ.id}" ${boxClass} data-id="${champ.id}" ${style}${drag}>`;
+			const onclick = ` onclick="cf_selectChampionForPlacement(${champ.id})"`;
+			txt += `<span id="cf_champBox_${champ.id}" ${boxClass} data-id="${champ.id}" ${style}${drag}${onclick}>`;
 			txt += `<span ${nameClass}>${cf_escapeHtml(champ.name)}</span>`;
 			txt += `</span>`;
 		}
@@ -546,9 +548,11 @@ function cf_renderCampaignSection() {
 		{text: patronLabel, classes: fEnd},
 		{text: cf_renderPatronSelector(), classes: fStart},
 		{
-			text: `To place a champion - click and drag from the grid.`,
+			text:
+				`To place a champion - either click and drag from the grid - ` +
+				`or click on a champion in the grid and then a slot in the formation.`,
 			classes: `f fr falc fjc`,
-			styles: `font-size:0.9em;`,
+			styles: `font-size:0.9em;text-wrap-style:pretty;text-align:center;`,
 			gridCol: `span 2`,
 		},
 	]);
@@ -650,12 +654,17 @@ function cf_renderFormationGrid() {
 			`ondragover="cf_onDragOver(event)" ` +
 			`ondrop="cf_onDrop(event, 'formationSlot', ${slot.index})" ` +
 			`ondragend="cf_onDragEnd(event)" `;
+		const click =
+			blocked ? `` : (
+				` onclick="cf_placeSelectedChampion(${slot.index});"`
+			);
 		txt +=
 			`<span ` +
 			`class="cf_slotCircle" ` +
 			`data-slot="${slot.index}" ` +
 			`style="left:${left}px;top:${top}px;${blocked ? `cursor:unset;` : ``}" ` +
 			drag +
+			click +
 			`>${img || `&nbsp;`}</span>`;
 		if (!blocked) {
 			txt +=
@@ -1781,14 +1790,18 @@ function cf_styleSelectedFamiliar(famId, selected) {
 	cf_setElementsSelected([`cf_famBox_${famId}`], selected);
 }
 
-function cf_setElementsSelected(eleIds, selected) {
+function cf_setElementsSelected(eleIds, selected, special = false) {
 	if (!eleIds || !Array.isArray(eleIds)) return;
 
 	for (const eleId of eleIds) {
 		const ele = document.getElementById(eleId);
 		if (!ele) continue;
-		if (selected) ele.classList.add(`cf_selected`);
-		else ele.classList.remove(`cf_selected`);
+		if (selected)
+			ele.classList.add(special ? `cf_selectedSpecial` : `cf_selected`);
+		else {
+			ele.classList.remove(`cf_selected`);
+			ele.classList.remove(`cf_selectedSpecial`);
+		}
 	}
 }
 
@@ -2588,6 +2601,36 @@ function cf_rebuildUsedHeroIds() {
 		if (heroId > 0) cf_builderState.usedHeroIds.add(heroId);
 }
 
+function cf_selectChampionForPlacement(heroId) {
+	if (cf_selectedHeroId != null)
+		cf_setElementsSelected(
+			[`cf_champBox_${cf_selectedHeroId}`],
+			cf_builderState.usedHeroIds.has(cf_selectedHeroId),
+			false,
+		);
+
+	cf_selectedHeroId = cf_selectedHeroId === heroId ? null : heroId;
+
+	if (cf_selectedHeroId != null)
+		cf_setElementsSelected(
+			[`cf_champBox_${cf_selectedHeroId}`],
+			true,
+			true,
+		);
+}
+
+function cf_placeSelectedChampion(slotIndex) {
+	if (!cf_selectedHeroId) return;
+
+	cf_setElementsSelected([`cf_champBox_${cf_selectedHeroId}`], false);
+	const heroId = cf_selectedHeroId;
+	cf_selectedHeroId = null;
+
+	cf_placeChampion(heroId, slotIndex);
+
+	cf_updateUI(cf_UI.FORMATION);
+}
+
 function cf_canPlaceChampion(heroId, slotIndex) {
 	if (heroId <= 0) return false;
 
@@ -2645,6 +2688,9 @@ function cf_placeChampion(heroId, slotIndex) {
 	cf_syncFeats();
 
 	cf_markDirtyAndUpdate(cf_UI.FORMATION);
+
+	cf_setElementsSelected([`cf_champBox_${cf_selectedHeroId}`], false);
+	cf_selectedHeroId = null;
 
 	return true;
 }

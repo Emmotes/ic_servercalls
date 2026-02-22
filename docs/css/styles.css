@@ -1156,6 +1156,11 @@ input[type="checkbox"]:checked::before {
 	border: 2px solid var(--TangerineYellow);
 }
 
+.cf_selectedSpecial {
+	z-index: 1;
+	border: 2px dashed var(--TangerineYellow);
+}
+
 .cf_exportsSection {
 	width: 100%;
 	display: grid;
