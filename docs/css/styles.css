@@ -1197,3 +1197,20 @@ input[type="checkbox"]:checked::before {
 	text-wrap-style: pretty;
 	margin: 5px;
 }
+
+.deleteAcccountPopup {
+	position: fixed;
+	z-index: 1;
+	background-color: var(--VampireBlack);
+	border: 2px solid var(--CarminePink);
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.deleteAcccountPopup input {
+	width: 120px;
+	height: 60px;
+	text-wrap-mode: wrap;
+	text-wrap-style: pretty;
+	margin: 5px;
+}

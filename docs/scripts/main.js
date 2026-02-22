@@ -1,4 +1,4 @@
-const v = 4.046; // prettier-ignore
+const v = 4.047; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -457,11 +457,8 @@ function togglePullButtons(disable, customTimer) {
 			delete timerList[timerName];
 		}
 		message.hidden = !disable;
-		button.className =
-			disable ?
-				button.className + ` greyButton`
-			:	button.className.replace(` greyButton`, ``);
 	}
+	toggleLoadAccountButton(disable);
 }
 
 function disablePullButtons() {
@@ -482,6 +479,17 @@ function codeEnablePullButtons(skipCooldown) {
 		clearTimers(`mpb_`);
 	}
 	togglePullButtons(false);
+	toggleLoadAccountButton(false);
+}
+
+function toggleLoadAccountButton(disable) {
+	const loadAccount = document.getElementById(`settingsMenuButtonLoadAccount`);
+	if (!loadAccount) return;
+
+	loadAccount.disabled = disable;
+	loadAccount.style.opacity = disable ? `0.5` : ``;
+	loadAccount.style.pointerEvents = disable ? `none` : ``;
+	loadAccount.value = disable ? `Disabled` : `Load`;
 }
 
 function resumePullButtonCooldown() {
@@ -509,6 +517,71 @@ function startPullButtonCooldown(remainingMs) {
 		ls_remove(LSKEY_pullButtonCooldown);
 		togglePullButtons(false);
 	}, remainingMs);
+}
+
+function renderDeleteAccountConfirmationPopup() {
+	const importButtonEle = document.getElementById(`settingsMenuButtonDeleteAccount`);
+	const container = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	if (!importButtonEle || !container) return;
+
+
+
+	let txt = ``;
+	txt += `<span class="f fr falc fjs"><h3 style="padding-left:5px;">Are you sure?</h3></span>`;
+	txt += `<span class="f fr falc fjs p5">Do you really want to delete your '${settingsList.value}' account?</span>`;
+	txt += `<span class="f fr falc fjs w100 p5" style="padding-top:10px;">`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="deleteUserAccount()"></span>`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="closeDeleteAccountConfirmationPopup()"></span>`;
+	txt += `</span>`;
+
+	container.innerHTML = txt;
+	container.style.display = ``;
+
+	const contRect = container.getBoundingClientRect();
+	const impoRect = importButtonEle.getBoundingClientRect();
+
+	let left = impoRect.left + impoRect.width / 2 - contRect.width / 2;
+	let top = impoRect.top + impoRect.height / 2 - contRect.height / 2;
+
+	const margin = 20;
+	const maxLeft = window.innerWidth - contRect.width - margin;
+	const maxTop = window.innerHeight - contRect.height - margin;
+
+	container.style.left = Math.max(margin, Math.min(left, maxLeft)) + `px`;
+	container.style.top = Math.max(margin, Math.min(top, maxTop)) + `px`;
+
+	setTimeout(() => {
+		document.removeEventListener(
+			"mousedown",
+			handleDeleteAccountConfirmationOutsideClick,
+		);
+		document.addEventListener(
+			"mousedown",
+			handleDeleteAccountConfirmationOutsideClick,
+		);
+	}, 0);
+}
+
+function closeDeleteAccountConfirmationPopup() {
+	const popup = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	if (!popup) return;
+
+	popup.style.display = `none`;
+	popup.innerHTML = `&nbsp;`;
+	document.removeEventListener("mousedown", handleDeleteAccountConfirmationOutsideClick);
+}
+
+function handleDeleteAccountConfirmationOutsideClick(event) {
+	const popup = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	if (!popup) return;
+
+	if (!popup.contains(event.target)) {
+		closeDeleteAccountConfirmationPopup();
+		document.removeEventListener(
+			"mousedown",
+			handleDeleteAccountConfirmationOutsideClick,
+		);
+	}
 }
 
 function setWrapperFormat(wrapper, type) {

@@ -52,7 +52,8 @@
 			</div>
 			<div class="f fr w100 p5">	
 				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="loadUserAccount()" id="settingsMenuButtonLoadAccount" value="Load"></div>
-				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="deleteUserAccount()" id="settingsMenuButtonDeleteAccount" value="Delete"></div>
+				<div class="f falc fjs ml2 redButton" style="width:50%"><input type="button" onClick="renderDeleteAccountConfirmationPopup()" id="settingsMenuButtonDeleteAccount" value="Delete"></div>
+				<div class="f fc fals fjs p5 posAbs deleteAcccountPopup" id="settingsMenuDeleteAccountConfirmationPopup" style="display:none;">&nbsp;</div>
 			</div>
 			<div class="f fr w100 p5">
 				&nbsp;
@@ -945,6 +946,6 @@
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.023"></script>
 
-	<script type="text/javascript" src="scripts/main.js?v=4.046"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.047"></script>
 </body>
 </html>
