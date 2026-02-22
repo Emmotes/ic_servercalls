@@ -1,4 +1,4 @@
-vcf = 1.003; // prettier-ignore
+vcf = 1.004; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -191,6 +191,7 @@ function cf_renderImportsSection() {
 		`<option value="new">Empty</option>` +
 		`<option value="game">Game</option>` +
 		`<option value="local">Browser Storage</option>` +
+		`<option value="byteglow">Byteglow URL</option>` +
 		`<option value="string">Share String</option>` +
 		`</select>`;
 
@@ -256,6 +257,15 @@ function cf_renderImportMode() {
 		txt +=
 			`<input id="cf_importStringButton" type="button" style="width:72%;margin-top:10px;" ` +
 			`value="Create from Share String" onclick="${click}">`;
+	} else if (type === `byteglow`) {
+		const click =
+			dirty ?
+				`cf_renderImportConfirmationPopup(this, 'cf_importFormationFromByteglow()')`
+			:	`cf_importFormationFromByteglow()`;
+		txt += `<input type="text" id="cf_importShareByteglow" placeholder="Paste Byteglow URL here..." style="width:100%;resize:none">`;
+		txt +=
+			`<input id="cf_importByteglowButton" type="button" style="width:72%;margin-top:10px;" ` +
+			`value="Create from Byteglow URL" onclick="${click}">`;
 	} else txt += `&nbsp;`;
 
 	txt += `</span>`;
@@ -1878,12 +1888,18 @@ function cf_buildCampaigns(data, formationObjects) {
 		if (actualId <= 0) continue;
 
 		const obj = formationObjects[key];
+		const isEvent = Boolean(obj?.is_event_campaign);
 
 		const baseId = Number(obj?.campaign_id ?? 0);
 		if (baseId <= 0) continue;
 
 		let name = obj?.campaign_name;
 		if (!name) continue;
+
+		if (!isEvent && !c_campaignIds.has(baseId)) {
+			console.warn(`Skipping spoiler campaign ${name} with unknown baseId ${baseId}.`);
+			continue;
+		}
 
 		if (actualId === 23) name = "Split the Party";
 		else if (actualId === 26) name = "Mad God";
@@ -1909,7 +1925,7 @@ function cf_buildCampaigns(data, formationObjects) {
 			baseId,
 			name,
 			patronId,
-			isEvent: Boolean(obj?.is_event_campaign),
+			isEvent,
 			formation: {
 				slots: formation,
 				blockedSlots,
@@ -3096,6 +3112,100 @@ function cf_escapeHtml(str) {
 		.replace(/>/g, "&gt;");
 }
 
+function cf_extractByteglowCode(input) {
+	// Raw code directly
+	if (/^[0-9a-z]+_/i.test(input)) return input;
+
+	// Try URL parse
+	let url;
+	try {
+		url = new URL(input);
+	} catch {
+		throw new Error("Invalid Byteglow URL or code.");
+	}
+	if (!url.hostname.endsWith("byteglow.com"))
+		throw new Error("Not a Byteglow URL.");
+
+	const parts = url.pathname.split("/");
+	const code = parts.pop() || parts.pop();
+	if (!code) throw new Error("No formation code found.");
+
+	return code;
+}
+
+function cf_decodeByteglowCode(code) {
+	const segments = code.split("_");
+	if (segments.length < 2 || segments.length > 3)
+		throw new Error("Invalid Byteglow code format.");
+
+	const campaignId = cf_resolveByteglowCampaign(segments[0]);
+	const formation = cf_decodeByteglowFormation(segments[1]);
+	const specs = cf_decodeByteglowSpecs(formation, segments[2] ?? "");
+	return {
+		campaignId,
+		formation,
+		specs,
+	};
+}
+
+function cf_resolveByteglowCampaign(encoded) {
+	const byteglowId = parseInt(encoded, 36);
+	if (isNaN(byteglowId)) throw new Error("Invalid campaign ID.");
+
+	if (byteglowId <= 100) {
+		const id = c_byteglow.get(byteglowId);
+		if (id) return id;
+	} else {
+		const champId = byteglowId - 100;
+		const id = cf_data.champions.byId.get(champId)?.eventFormCampaignId;
+		if (id) return id;
+	}
+	throw new Error("Unknown Byteglow campaign.");
+}
+
+function cf_decodeByteglowFormation(segment) {
+	if (segment.length % 2 !== 0)
+		throw new Error("Invalid champion segment length.");
+
+	const formation = [];
+	for (let i = 0; i < segment.length; i += 2) {
+		const champId = parseInt(segment.substring(i, i + 2), 16);
+		if (isNaN(champId)) throw new Error("Invalid champion ID.");
+		formation.push(champId);
+	}
+	if (new Set(formation).size !== formation.length)
+		throw new Error("Duplicate champions detected.");
+
+	return formation;
+}
+
+function cf_decodeByteglowSpecs(formation, specSegment) {
+	const specs = new Map();
+
+	let index = 0;
+	for (const champId of formation) {
+		const specDefs = cf_data.specialisations.byChampionId.get(champId);
+		if (!specDefs) continue;
+
+		specs.set(champId, []);
+		for (const specSet of specDefs) {
+			if (index >= specSegment.length) break;
+
+			const choice = Number(specSegment[index++]) - 1;
+			if (choice < 0 || choice >= specSet.options.length)
+				throw new Error(`Invalid spec for champion ${champId}`);
+
+			const upgId = specSet.options?.[choice]?.upgradeId ?? -1;
+			if (upgId < 0)
+				throw new Error(`Invalid spec for champion ${champId}`);
+
+			specs.get(champId).push(upgId);
+		}
+	}
+
+	return specs;
+}
+
 // =====================
 // ===== Importing =====
 // =====================
@@ -3215,6 +3325,28 @@ function cf_importFormationFromBrowser() {
 	state.formationId = -1;
 
 	cf_applyImportedBuilderState(structuredClone(state));
+}
+
+function cf_importFormationFromByteglow() {
+	const inputEle = document.getElementById("cf_importShareByteglow");
+	if (!inputEle) return;
+
+	let state;
+	try {
+		const raw = inputEle.value.trim();
+		if (!raw) throw new Error("No input provided.");
+
+		const code = cf_extractByteglowCode(raw);
+		const {campaignId, formation, specs} = cf_decodeByteglowCode(code);
+		state = cf_newFormationForCampaign(campaignId);
+		state.formation = formation;
+		state.specializations = specs;
+	} catch (err) {
+		alert(err.message ?? err);
+		return;
+	}
+
+	cf_applyImportedBuilderState(state);
 }
 
 function cf_importFormationFromString() {
