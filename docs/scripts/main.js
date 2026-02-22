@@ -483,7 +483,9 @@ function codeEnablePullButtons(skipCooldown) {
 }
 
 function toggleLoadAccountButton(disable) {
-	const loadAccount = document.getElementById(`settingsMenuButtonLoadAccount`);
+	const loadAccount = document.getElementById(
+		`settingsMenuButtonLoadAccount`,
+	);
 	if (!loadAccount) return;
 
 	loadAccount.disabled = disable;
@@ -520,11 +522,13 @@ function startPullButtonCooldown(remainingMs) {
 }
 
 function renderDeleteAccountConfirmationPopup() {
-	const importButtonEle = document.getElementById(`settingsMenuButtonDeleteAccount`);
-	const container = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	const importButtonEle = document.getElementById(
+		`settingsMenuButtonDeleteAccount`,
+	);
+	const container = document.getElementById(
+		`settingsMenuDeleteAccountConfirmationPopup`,
+	);
 	if (!importButtonEle || !container) return;
-
-
 
 	let txt = ``;
 	txt += `<span class="f fr falc fjs"><h3 style="padding-left:5px;">Are you sure?</h3></span>`;
@@ -563,16 +567,23 @@ function renderDeleteAccountConfirmationPopup() {
 }
 
 function closeDeleteAccountConfirmationPopup() {
-	const popup = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	const popup = document.getElementById(
+		`settingsMenuDeleteAccountConfirmationPopup`,
+	);
 	if (!popup) return;
 
 	popup.style.display = `none`;
 	popup.innerHTML = `&nbsp;`;
-	document.removeEventListener("mousedown", handleDeleteAccountConfirmationOutsideClick);
+	document.removeEventListener(
+		"mousedown",
+		handleDeleteAccountConfirmationOutsideClick,
+	);
 }
 
 function handleDeleteAccountConfirmationOutsideClick(event) {
-	const popup = document.getElementById(`settingsMenuDeleteAccountConfirmationPopup`);
+	const popup = document.getElementById(
+		`settingsMenuDeleteAccountConfirmationPopup`,
+	);
 	if (!popup) return;
 
 	if (!popup.contains(event.target)) {

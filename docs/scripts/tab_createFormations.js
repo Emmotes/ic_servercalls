@@ -1,4 +1,4 @@
-vcf = 1.004; // prettier-ignore
+vcf = 1.005; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -278,7 +278,6 @@ function cf_renderImportGameSelector() {
 	const campaigns = cf_data.campaigns.byActualId;
 
 	const campaignIds = [...byCampaign.keys()]
-		.filter((id) => campaigns.get(id)?.visible)
 		.sort((a, b) => {
 			const ca = campaigns.get(a);
 			const cb = campaigns.get(b);
@@ -295,7 +294,6 @@ function cf_renderImportGameSelector() {
 	for (const campaignId of campaignIds) {
 		const campaign = campaigns.get(campaignId);
 		const forms = byCampaign.get(campaignId);
-		if (!campaign.visible) continue;
 
 		const groupLabel = campaign.name;
 		if (groupLabel !== currentGroup) {
