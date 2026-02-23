@@ -1,4 +1,4 @@
-vcf = 1.009; // prettier-ignore
+vcf = 1.010; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -1066,7 +1066,7 @@ function cf_renderFamiliarsGridSection() {
 		{
 			text: cf_renderFamiliarsGrid(),
 			classes: `f fr fals fjc`,
-			styles: `max-width:550px`,
+			styles: `width:550px`,
 		},
 		{
 			text: cf_renderFamiliarsControlSections(),
@@ -3527,6 +3527,7 @@ function cf_importFormationFromEmpty() {
 
 	cf_builderState = cf_newFormationForCampaign(campaignId);
 
+	cf_globalStyleChampions();
 	cf_globalStyleFamiliars();
 	cf_updateUI(cf_UI.ALL);
 }
