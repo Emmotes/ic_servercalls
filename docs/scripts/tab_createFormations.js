@@ -1,4 +1,4 @@
-vcf = 1.010; // prettier-ignore
+vcf = 1.011; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -64,11 +64,12 @@ const cf_specSVGs = {
 	right: `<svg viewBox="0 0 5 10"><path d="m0 0 5 5-5 5z"/></svg>`,
 };
 const cf_champGridSizes = {w: "50px", h: "47px", sh: "20px"};
-const cf_famGridSizes = {w: "50px", h: "50px"};
+const cf_famGridSizes = {w: "50px", h: "50px", c: 10, r: 13};
 let cf_data;
 let cf_builderState;
 let cf_activeFeatHeroId = -1;
 let cf_selectedHeroId = null;
+let cf_familiarGridPages = {curr: 1, max: -1};
 
 // TODO:
 //  [x] Make it so that swapping accounts deletes the contents of cf_importsSection.
@@ -108,12 +109,22 @@ async function cf_pullFormationSaves() {
 			codeEnablePullButtons();
 			return;
 		}
+		cf_setMaxFamiliarPages();
 		cf_displayFormationCreator(wrapper);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);
 		handleError(wrapper, error);
 	}
+}
+
+function cf_setMaxFamiliarPages() {
+	const len = [...cf_data.familiars.byId.keys()].length;
+	cf_familiarGridPages.max = Math.ceil(
+		len / (cf_famGridSizes.c * cf_famGridSizes.r),
+	);
+	if (cf_familiarGridPages.max < 1) cf_familiarGridPages.max = 1;
+	console.log("Set max to " + cf_familiarGridPages.max);
 }
 
 function cf_buildMaps(details, forms, defs) {
@@ -170,6 +181,7 @@ function cf_displayFormationCreator(wrapper) {
 
 	cf_renderImportsSection();
 	cf_renderFormationGrid();
+	cf_renderFamiliarsGrid();
 	cf_renderFamiliarsPlacementGrids();
 	cf_renderExportMode();
 	cf_renderExportShareString();
@@ -1064,9 +1076,15 @@ function cf_renderFamiliarsGridSection() {
 
 	txt += cf_addElements([
 		{
-			text: cf_renderFamiliarsGrid(),
-			classes: `f fr fals fjc`,
-			styles: `width:550px`,
+			text: `&nbsp;`,
+			classes: `f fr fals fjs`,
+			styles: `align-content:flex-start;width:${cf_familiarGridPages.max === 1 ? `550` : `495`}px;height:640px;flex-wrap:wrap;`,
+			id: `cf_familiarsGridContainer`,
+		},
+		{
+			text: cf_renderFamiliarsPageControls(),
+			classes: `f fc falc fjs`,
+			styles: `width:50px;`,
 		},
 		{
 			text: cf_renderFamiliarsControlSections(),
@@ -1080,11 +1098,20 @@ function cf_renderFamiliarsGridSection() {
 }
 
 function cf_renderFamiliarsGrid() {
+	const container = document.getElementById(`cf_familiarsGridContainer`);
+	if (!container) return;
+
 	const familiarIds = [...cf_data.familiars.byId.keys()];
 	const boxClass = `class="f fc falc fjs cf_famBox"`;
 
-	let txt = `<span class="f fr fals fjs" style="flex-wrap:wrap;">`;
-	for (const familiarId of familiarIds) {
+	let txt = ``;
+
+	const maxPerPage = cf_famGridSizes.c * cf_famGridSizes.r;
+
+	let index = (cf_familiarGridPages.curr - 1) * maxPerPage;
+	let placed = 0;
+	while (placed < maxPerPage && index < familiarIds.length) {
+		const familiarId = familiarIds[index++];
 		const familiar = cf_data.familiars.byId.get(familiarId);
 
 		const style =
@@ -1093,8 +1120,32 @@ function cf_renderFamiliarsGrid() {
 		const drag = ` draggable="${familiar.id > 0}" ondragstart="cf_onDragStart(event, 'familiar', ${familiar.id}, 'familiarGrid', -1)"`;
 
 		txt += `<span id="cf_famBox_${familiar.id}" ${boxClass} data-id="${familiar.id}" ${style}${drag}>&nbsp;</span>`;
+		placed++;
 	}
-	txt += `</span>`;
+
+	cf_updateFamiliarsGridPageCount();
+
+	container.innerHTML = txt;
+}
+
+function cf_renderFamiliarsPageControls() {
+	let txt = ``;
+
+	if (cf_familiarGridPages.curr === 1 && cf_familiarGridPages.max === 1)
+		return txt;
+
+	const svgBits = ` xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" style="width:20px;height:20px;cursor:pointer;"`;
+
+	txt +=
+		`<span class="f falc fjc p5 w100">` +
+		`<svg ${svgBits} onclick="cf_onFamiliarGridPageChange(-1)"><path d="M0 10.5v-3l6-6 6 6v3l-6-6Z"/></svg>` +
+		`</span>`;
+	txt += `<span class="f falc fjc p5 w100">Page</span>`;
+	txt += `<span class="f falc fjc p5 w100" id="cf_familiarGridPageCount">&nbsp;</span>`;
+	txt +=
+		`<span class="f falc fjc p5 w100">` +
+		`<svg ${svgBits} onclick="cf_onFamiliarGridPageChange(1)"><path d="M12 1.5v3l-6 6-6-6v-3l6 6Z"/></svg>` +
+		`</span>`;
 
 	return txt;
 }
@@ -1124,7 +1175,7 @@ function cf_renderFamiliarsControlSections() {
 	txt += `</span>`;
 
 	txt += `<span class="f falc fjc fgr posRel" id="cf_familiarGridContainer">&nbsp;</span>`;
-	txt += `<span class="f falc fjs" style="flex-direction:column-reverse;height:30%">&nbsp;</span>`;
+	txt += `<span class="f falc fjs fgr" style="flex-direction:column-reverse;">&nbsp;</span>`;
 
 	txt += `</span>`;
 
@@ -1822,6 +1873,27 @@ function cf_onExportModeChange(value) {
 	if (result) result.innerHTML = `&nbsp;`;
 
 	cf_updateUI(cf_UI.EXPORT);
+}
+
+function cf_updateFamiliarsGridPageCount() {
+	const pageCount = document.getElementById(`cf_familiarGridPageCount`);
+	if (!pageCount) return;
+	pageCount.innerHTML = `${cf_familiarGridPages.curr} / ${cf_familiarGridPages.max}`;
+}
+
+function cf_onFamiliarGridPageChange(value) {
+	const page = Number(value);
+	if (isNaN(page)) return;
+
+	let curr = cf_familiarGridPages.curr + value;
+	if (curr < 1) curr += cf_familiarGridPages.max;
+	else if (curr > cf_familiarGridPages.max) curr -= cf_familiarGridPages.max;
+
+	cf_familiarGridPages.curr = curr;
+
+	cf_updateFamiliarsGridPageCount();
+	cf_renderFamiliarsGrid();
+	cf_globalStyleFamiliars();
 }
 
 // ====================
@@ -3337,14 +3409,12 @@ function cf_decodeByteglowSpecs(formation, specSegment) {
 			if (index >= specSegment.length) break;
 
 			const choice = Number(specSegment[index++]) - 1;
-			if (choice < 0)
-				continue;
+			if (choice < 0) continue;
 			if (choice >= specSet.options.length)
 				throw new Error(`Invalid spec for champion ${name}.`);
 
 			const upgId = specSet.options?.[choice]?.upgradeId ?? -1;
-			if (upgId < 0)
-				continue; // throw new Error(`Invalid spec for champion ${name}.`);
+			if (upgId < 0) continue;
 
 			specs.get(champId).push(upgId);
 		}
