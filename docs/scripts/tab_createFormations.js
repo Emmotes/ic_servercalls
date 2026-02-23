@@ -124,7 +124,6 @@ function cf_setMaxFamiliarPages() {
 		len / (cf_famGridSizes.c * cf_famGridSizes.r),
 	);
 	if (cf_familiarGridPages.max < 1) cf_familiarGridPages.max = 1;
-	console.log("Set max to " + cf_familiarGridPages.max);
 }
 
 function cf_buildMaps(details, forms, defs) {
