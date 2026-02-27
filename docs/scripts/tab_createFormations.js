@@ -1,4 +1,4 @@
-vcf = 1.012; // prettier-ignore
+vcf = 1.013; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -2201,7 +2201,7 @@ function cf_buildChampions(data, heroDefs, heroDetails, adventureDefs) {
 					champion.eventFormCampaignId =
 						adventureCampaignMap.get(advId);
 					if (
-						data.camapaigns.byActualId.has(
+						data.campaigns.byActualId.has(
 							champion.eventFormCampaignId,
 						)
 					)
