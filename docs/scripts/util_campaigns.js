@@ -1,4 +1,4 @@
-const vc = 2.001; // prettier-ignore
+const vc = 2.002; // prettier-ignore
 const c_campaignIds = new Map([
 	[1, "Grand Tour of the Sword Coast"],
 	[2, "Tomb of Annihilation"],
@@ -39,7 +39,7 @@ const c_patronById = new Map([
 	[4, "Zariel"],
 	[5, "Elminster"],
 ]);
-const c_byteglow = new Map([
+const c_byteglowFrom = new Map([
 	[1, 1],
 	[2, 2],
 	[3, 11],
@@ -53,3 +53,6 @@ const c_byteglow = new Map([
 	[90, 23],
 	[91, 25],
 ]);
+const c_byteglowTo = new Map();
+for (const [from, to] of c_byteglowFrom) c_byteglowTo.set(to, from);
+c_byteglowTo.set(26, 6);

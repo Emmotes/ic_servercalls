@@ -1,4 +1,4 @@
-vcf = 1.011; // prettier-ignore
+vcf = 1.012; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -70,16 +70,6 @@ let cf_builderState;
 let cf_activeFeatHeroId = -1;
 let cf_selectedHeroId = null;
 let cf_familiarGridPages = {curr: 1, max: -1};
-
-// TODO:
-//  [x] Make it so that swapping accounts deletes the contents of cf_importsSection.
-//  [ ] Make it so that when importing a formation that contains any unowned champions feats or familiars
-//      that they are dealt with somehow. Either ban the formation from being saved to the game (but allow
-//      saving to local storage) or simply filter out anything unowned.
-
-// Wishlist:
-//   - Mark champions in the champion grid as unavailable based on patron availability.
-//     - Will require pulling patron defines.
 
 async function cf_pullFormationSaves() {
 	if (isBadUserData()) return;
@@ -184,6 +174,7 @@ function cf_displayFormationCreator(wrapper) {
 	cf_renderFamiliarsPlacementGrids();
 	cf_renderExportMode();
 	cf_renderExportShareString();
+	cf_renderExportByteglowURL();
 }
 
 // =======================
@@ -1530,6 +1521,8 @@ function cf_renderExportsSection() {
 		`<span class="f fc fals fjs p5 w100">` +
 		`<span class="p5 w100" style="margin-bottom:5px">Share String:</span>` +
 		`<textarea id="cf_exportShareString" rows="8" style="width:100%;resize:none"></textarea>` +
+		`<span class="p5 w100" style="margin-top:5px">Byteglow URL</span>` +
+		`<input id="cf_exportByteglowURL" type="text" style="width:100%;">` +
 		`</span>`;
 
 	// Delete row
@@ -1639,6 +1632,19 @@ function cf_renderExportShareString() {
 	share.value = comp;
 }
 
+function cf_renderExportByteglowURL() {
+	const url = document.getElementById(`cf_exportByteglowURL`);
+	if (!url) return;
+
+	const parts = [
+		cf_encodeByteglowCampaign(),
+		cf_encodeByteglowFormation(),
+		cf_encodeByteglowSpecs(),
+	];
+
+	url.value = `https://ic.byteglow.com/formation/${parts.join("_")}`;
+}
+
 function cf_showImportWarning(warnings) {
 	if (
 		warnings.champions.length === 0 &&
@@ -1708,6 +1714,7 @@ function cf_updateUI(flags = cf_UI.ALL, context) {
 
 	if (flags & cf_UI.EXPORT_STRING) {
 		cf_renderExportShareString();
+		cf_renderExportByteglowURL();
 
 		const delEle = document.getElementById(`cf_deleteLocalSelectContainer`);
 		if (delEle)
@@ -2190,9 +2197,18 @@ function cf_buildChampions(data, heroDefs, heroDetails, adventureDefs) {
 				if (adv?.type !== "base") continue;
 
 				const advId = Number(adv?.adventure_id ?? 0);
-				if (adventureCampaignMap.has(advId))
+				if (adventureCampaignMap.has(advId)) {
 					champion.eventFormCampaignId =
 						adventureCampaignMap.get(advId);
+					if (
+						data.camapaigns.byActualId.has(
+							champion.eventFormCampaignId,
+						)
+					)
+						data.campaigns.byActualId.get(
+							champion.eventFormCampaignId,
+						).heroId = champion.id;
+				}
 				break;
 			}
 		}
@@ -3353,7 +3369,7 @@ function cf_decodeByteglowCode(code) {
 	if (segments.length < 2 || segments.length > 3)
 		throw new Error("Invalid Byteglow code format.");
 
-	const campaignId = cf_resolveByteglowCampaign(segments[0]);
+	const campaignId = cf_decodeByteglowCampaign(segments[0]);
 	const formation = cf_decodeByteglowFormation(segments[1]);
 	const specs = cf_decodeByteglowSpecs(formation, segments[2] ?? "");
 	return {
@@ -3363,12 +3379,12 @@ function cf_decodeByteglowCode(code) {
 	};
 }
 
-function cf_resolveByteglowCampaign(encoded) {
+function cf_decodeByteglowCampaign(encoded) {
 	const byteglowId = parseInt(encoded, 36);
 	if (isNaN(byteglowId)) throw new Error("Invalid campaign ID.");
 
 	if (byteglowId <= 100) {
-		const id = c_byteglow.get(byteglowId);
+		const id = c_byteglowFrom.get(byteglowId);
 		if (id) return id;
 	} else {
 		const champId = byteglowId - 100;
@@ -3430,6 +3446,53 @@ function cf_deleteLocalFormation() {
 
 	cf_ls_deleteSavedFormation(index);
 	cf_updateUI(cf_UI.IMPORT | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
+}
+
+function cf_encodeByteglowCampaign() {
+	const campId = cf_builderState.campaignId ?? 0;
+	if (campId <= 0) return `-1`;
+
+	if (c_byteglowTo.has(campId)) return c_byteglowTo.get(campId).toString(36);
+
+	const heroId = cf_data.campaigns.byActualId.get(campId)?.heroId ?? 0;
+	if (heroId <= 0) return `-1`;
+
+	return (heroId + 100).toString(36);
+}
+
+function cf_encodeByteglowFormation() {
+	return cf_builderState.formation
+		.map((e) => padZeros((e <= 0 ? 0 : e).toString(16), 2))
+		.join(``);
+}
+
+function cf_encodeByteglowSpecs() {
+	let specs = ``;
+
+	for (const champId of cf_builderState.formation) {
+		const specDefs = cf_data.specialisations.byChampionId.get(champId);
+		const chosenSpecs = cf_builderState.specializations.get(champId);
+		if (!specDefs || !chosenSpecs) {
+			specs += `0`;
+			continue;
+		}
+
+		for (let i = 0; i < specDefs.length; i++) {
+			const specSet = specDefs[i]?.options ?? [];
+			const chosenSpec = specSet.find((e) =>
+				chosenSpecs.includes(e.upgradeId),
+			);
+			if (!chosenSpec) {
+				specs += `0`;
+				continue;
+			}
+
+			const index = specSet.indexOf(chosenSpec);
+			specs += index >= 0 ? index + 1 : `0`;
+		}
+	}
+
+	return specs;
 }
 
 // =====================
