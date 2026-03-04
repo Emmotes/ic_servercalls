@@ -1,5 +1,6 @@
-const vss = 2.014; // prettier-ignore
+const vss = 2.015; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
+const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
 const ss_SVG_down = `<svg width="22" height="22" viewBox="1 1 34 34" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".8"><path fill="var(--CarminePink)" d="M21.533 18.002 33.768 5.768a2.5 2.5 0 0 0-3.535-3.535L17.998 14.467 5.764 2.233a2.5 2.5 0 0 0-3.535 0 2.5 2.5 0 0 0 0 3.535l12.234 12.234L2.201 30.265a2.498 2.498 0 0 0 1.768 4.267c.64 0 1.28-.244 1.768-.732l12.262-12.263 12.234 12.234a2.5 2.5 0 0 0 1.768.732 2.5 2.5 0 0 0 1.768-4.267z"/></svg>`;
@@ -19,6 +20,11 @@ async function ss_pullServerStatusData() {
 	try {
 		wrapper.innerHTML = `Waiting for server status...`;
 		const statusData = await getServerStatus();
+		try {
+			ls_setGlobal_obj(ss_LSKEY_serverStatusData, statusData);
+		} catch {
+			// Do nothing.
+		}
 		await ss_displayServerStatusData(wrapper, statusData);
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);
@@ -26,7 +32,7 @@ async function ss_pullServerStatusData() {
 	}
 }
 
-async function ss_displayServerStatusData(wrapper, statusData) {
+async function ss_displayServerStatusData(wrapper, statusData, allowExtend = true) {
 	const results =
 		Array.isArray(statusData?.results) ? statusData.results : [];
 
@@ -132,7 +138,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 			:	`&nbsp;`;
 
 		const resTime =
-			translateServerError(r.error) ||
+			ss_translateServerError(r.error) ||
 			getDisplayTime(r.responseTimeMs, {showMs: true});
 		txt += ss_addServerStatusRow([
 			{text: r.server + `:`, classes: eFlex},
@@ -173,7 +179,7 @@ async function ss_displayServerStatusData(wrapper, statusData) {
 	wrapper.innerHTML = txt;
 	ss_toggleShowMoreDetails();
 	ss_startAgeTicker(wrapper);
-	ss_applyCooldownFromStatus(statusData);
+	ss_applyCooldownFromStatus(statusData, allowExtend);
 }
 
 function ss_decidePadding(padLeft, padRight) {
@@ -228,7 +234,7 @@ function ss_addSingleServerStatusRow(msg) {
 	return `<span class="f falc fjs" style="grid-column:1 / -1">${msg}</span>`;
 }
 
-function translateServerError(error) {
+function ss_translateServerError(error) {
 	if (!error) return null;
 
 	if (error === "timeout" || error === "AbortError") return "Timed Out";
@@ -310,6 +316,7 @@ function ss_setCooldownUntil(untilMs) {
 			btn.disabled = false;
 			try {
 				ls_remove(ss_LSKEY_serverStatusCooldown);
+				ls_remove(ss_LSKEY_serverStatusData);
 			} catch {
 				// Do nothing.
 			}
@@ -327,7 +334,7 @@ function ss_setCooldownUntil(untilMs) {
 	ss_recheckTimer = setInterval(update, 1000);
 }
 
-function ss_applyCooldownFromStatus(statusData) {
+function ss_applyCooldownFromStatus(statusData, allowExtend = true) {
 	const nowMs = Date.now();
 
 	const checkedAtMs =
@@ -342,17 +349,33 @@ function ss_applyCooldownFromStatus(statusData) {
 
 	const cacheLikelyNewAt =
 		checkedAtMs + ss_CACHE_INTERVAL_MS + ss_CACHE_GRACE_MS;
+	const storedUntil = Number(ls_getGlobal(ss_LSKEY_serverStatusCooldown, 0));
 	const blockUntil = Math.max(minBlockUntil, cacheLikelyNewAt);
 
-	ss_setCooldownUntil(blockUntil);
+	let finalUntil = blockUntil;
+
+	if (!allowExtend && storedUntil && storedUntil > nowMs)
+		finalUntil = storedUntil;
+
+	ss_setCooldownUntil(finalUntil);
 }
 
 function ss_tryResumeCooldownOnLoad() {
-	try {
-		const until = Number(ls_getGlobal(ss_LSKEY_serverStatusCooldown, 0));
-		if (until && until > Date.now()) ss_setCooldownUntil(until);
-	} catch {
-		// Do nothing.
+	const until = Number(ls_getGlobal(ss_LSKEY_serverStatusCooldown, 0));
+	if (!until || until <= Date.now()) return;
+
+	ss_setCooldownUntil(until);
+
+	let statusData = ls_getGlobal(ss_LSKEY_serverStatusData, null);
+	if (!statusData) return;
+
+	const checkedAt = Date.parse(statusData?.checkedAt);
+	if (!Number.isFinite(checkedAt)) return;
+
+	const age = Date.now() - checkedAt;
+	if (age <= ss_CACHE_INTERVAL_MS + ss_CACHE_GRACE_MS) {
+		const wrapper = document.getElementById(`serverStatusWrapper`);
+		if (wrapper) ss_displayServerStatusData(wrapper, statusData, false);
 	}
 }
 

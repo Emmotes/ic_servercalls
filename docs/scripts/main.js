@@ -1,4 +1,4 @@
-const v = 4.047; // prettier-ignore
+const v = 4.048; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -872,7 +872,11 @@ function ls_has(key) {
 }
 
 function ls_remove(key) {
-	localStorage.removeItem(key);
+	try {
+		localStorage.removeItem(key);
+	} catch {
+		// Do nothing.
+	}
 }
 
 function ls_getGlobal(key, defaultValue) {
@@ -894,8 +898,14 @@ function ls_getGlobal_set(key, defaultValue) {
 function ls_setGlobal(key, value, isEmptyFn) {
 	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
 
-	if (isEmpty) localStorage.removeItem(key);
-	else localStorage.setItem(key, JSON.stringify(value, stringifyReplacer));
+	if (isEmpty) ls_remove(key);
+	else {
+		try {
+			localStorage.setItem(key, JSON.stringify(value, stringifyReplacer));
+		} catch {
+			// Do nothing.
+		}
+	}
 }
 
 function ls_setGlobal_num(key, value, defaultValue) {
@@ -951,14 +961,20 @@ function ls_setPerAccount(key, value, isEmptyFn) {
 
 	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
 
-	if (isEmpty) {
-		delete parsed[currAccount.name];
-	} else {
-		parsed[currAccount.name] = value;
-	}
+	if (isEmpty) delete parsed[currAccount.name];
+	else parsed[currAccount.name] = value;
 
 	if (Object.keys(parsed).length === 0) ls_remove(key);
-	else localStorage.setItem(key, JSON.stringify(parsed, stringifyReplacer));
+	else {
+		try {
+			localStorage.setItem(
+				key,
+				JSON.stringify(parsed, stringifyReplacer),
+			);
+		} catch {
+			// Do nothing.
+		}
+	}
 }
 
 function ls_setPerAccount_num(key, value, defaultValue) {
