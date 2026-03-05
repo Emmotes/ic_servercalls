@@ -1,4 +1,4 @@
-const vss = 2.016; // prettier-ignore
+const vss = 2.017; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -53,15 +53,22 @@ async function ss_displayServerStatusData(
 	const sssmd = {sssmd: `1`};
 	const sCol = `1 / -1`;
 
-	txt += buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol);
+	txt += ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
-	txt += buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle);
+	txt += ss_buildServerGrid(
+		results,
+		sFlex,
+		eFlex,
+		cFlex,
+		sssmd,
+		paddingStyle,
+	);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
-	txt += buildRecentOutagesSection(statusData, sFlex, sCol);
+	txt += ss_buildOutagesSection(statusData, sFlex, sCol);
 
-	txt += buildKeys(results);
+	txt += ss_buildKeys(results);
 
 	setWrapperFormat(wrapper, 4);
 	wrapper.innerHTML = txt;
@@ -70,7 +77,7 @@ async function ss_displayServerStatusData(
 	ss_applyCooldownFromStatus(statusData, allowExtend);
 }
 
-function buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
+function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
 	const lastChecked =
 		`Servers were last checked ` +
 		ss_buildTimestampSpan(statusData?.checkedAt || "", paddingStyle) +
@@ -123,7 +130,7 @@ function buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
 	return ss_addServerStatusRow(blurbRows);
 }
 
-function buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
+function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 	let txt = ``;
 	txt += ss_addServerStatusRow([
 		{text: `Server`, classes: eFlex, header: true},
@@ -191,8 +198,8 @@ function buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 	return txt;
 }
 
-function buildRecentOutagesSection(statusData, sFlex, sCol) {
-	if (!Array.isArray(statusData.outages) || statusData.outages.length === 0)
+function ss_buildOutagesSection(statusData, sFlex, sCol) {
+	if (!Array.isArray(statusData?.outages) || statusData.outages.length === 0)
 		return ``;
 
 	let txt = ``;
@@ -228,7 +235,7 @@ function buildRecentOutagesSection(statusData, sFlex, sCol) {
 				gridCol: sCol,
 			},
 			{
-				text: `Lasted aprox ${duration}.`,
+				text: `Lasted approx ${duration}.`,
 				classes: sFlex,
 				styles: ind2,
 				dim: true,
@@ -257,7 +264,7 @@ function ss_roundToNearestCacheInterval(isoString) {
 	return Math.round(t / ss_CACHE_INTERVAL_MS) * ss_CACHE_INTERVAL_MS;
 }
 
-function buildKeys(results) {
+function ss_buildKeys(results) {
 	style = ss_decidePadding(false, true);
 	const slowTxt = nf(ss_SLOW_THRESHOLD_MS / 1000) + ` seconds`;
 	const verySlowTxt = nf(ss_VERYSLOW_THRESHOLD_MS / 1000) + ` seconds`;
