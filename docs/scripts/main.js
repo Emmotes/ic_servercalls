@@ -1,4 +1,4 @@
-const v = 4.048; // prettier-ignore
+const v = 4.049; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -658,7 +658,7 @@ function dateFormat(input, options = {}) {
 }
 
 function getDisplayTime(timeMs, options = {}) {
-	const {showMs = false, style = "medium"} = options;
+	const {showMs = false, showSecs = true, style = "medium"} = options;
 
 	let ms = Math.max(0, Number(timeMs) || 0);
 
@@ -695,7 +695,10 @@ function getDisplayTime(timeMs, options = {}) {
 			`${padZeros(minutes, 2)} ${minutes === 1 ? u.m[0] : u.m[1]}`,
 		);
 
-	if (!showMs || days > 0 || hours > 0 || minutes > 0 || seconds > 0)
+	if (
+		showSecs &&
+		(!showMs || days > 0 || hours > 0 || minutes > 0 || seconds > 0)
+	)
 		parts.push(
 			`${padZeros(seconds, 2)} ${seconds === 1 ? u.s[0] : u.s[1]}`,
 		);
