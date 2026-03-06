@@ -1,4 +1,4 @@
-const vtm = 1.018; // prettier-ignore
+const vtm = 1.019; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
@@ -49,18 +49,13 @@ async function tm_displayData(
 		campaigns == null || campaigns.length === 0 ? undefined : campaigns[0];
 
 	// Check if ToMT has been unlocked if highest difficulty is 1.
-	if (
-		trialsData != null &&
-		trialsData.highest_available_difficulty != null &&
-		trialsData.highest_available_difficulty === 1
-	) {
+	const highestDiff = Number(trialsData?.highest_available_difficulty ?? 1);
+	if (highestDiff === 1) {
 		wrapper.innerHTML = `Waiting for user data...`;
 		const userDetails = (await getUserDetails()).details;
 		wrapper.innerHTML = `&nbsp;`;
-		if (
-			userDetails.trials_system_unlocked == null ||
-			userDetails.trials_system_unlocked === 0
-		) {
+		const unlocked = Number(userDetails?.trials_system_unlocked ?? 0);
+		if (unlocked === 0) {
 			trialsInfo.innerHTML = `<span class="f w100 p5" style="padding-left:10%">You have not unlocked the Trials of Mount Tiamat system yet.</span>`;
 			return;
 		}
@@ -71,15 +66,16 @@ async function tm_displayData(
 
 		tm_displayClaimRewards(wrapper, trialsInfo, trialsData, campaign);
 	} else if (
-		(trialsData != null && trialsData.active_campaign_id === 0) ||
-		campaigns == null ||
+		(trialsData != null &&
+			Number(trialsData?.active_campaign_id ?? 0) === 0) ||
+		!Array.isArray(campaigns) ||
 		campaigns.length !== 1 ||
 		campaigns[0] == null
 	) {
 		// Trials aren't running and the reward has already been claimed.
 
 		const timeUntilNext = Number(
-			trialsData.seconds_until_can_join_campaign || 0,
+			trialsData?.seconds_until_can_join_campaign ?? 0,
 		);
 		tm_displayJoinCreateCampaign(
 			wrapper,
@@ -127,7 +123,7 @@ function tm_displayClaimRewards(wrapper, trialsInfo, trialsData, campaign) {
 	let chests = 0;
 	let dataset = ` data-campaignid="${campaignId}"`;
 	for (let reward of campaign.rewards) {
-		if (reward.reward === `chest` && reward.chest_type_id === 323) {
+		if (reward.reward === `chest` && Number(reward.chest_type_id) === 323) {
 			chests = Number(reward.count || 0);
 			dataset += ` data-chests="${chests}"`;
 		} else if (
@@ -163,9 +159,9 @@ async function tm_claimRewards(trialsClaimRewardsButton) {
 	disablePullButtons();
 	let txt = ``;
 
-	const campaignId = trialsClaimRewardsButton.dataset.campaignid || 0;
-	let scales = trialsClaimRewardsButton.dataset.scales || 0;
-	let chests = trialsClaimRewardsButton.dataset.chests || 0;
+	const campaignId = Number(trialsClaimRewardsButton.dataset.campaignid ?? 0);
+	let scales = Number(trialsClaimRewardsButton.dataset.scales ?? 0);
+	let chests = Number(trialsClaimRewardsButton.dataset.chests ?? 0);
 	if (campaignId === 0) {
 		txt += `<span class="f w100 p5" style="padding-left:10%">Unknown error. Campaign ID is invalid.</span>`;
 		trialsInfo.innerHTML = txt;
@@ -184,8 +180,7 @@ async function tm_claimRewards(trialsClaimRewardsButton) {
 				if (stat !== `multiplayer_points`) continue;
 				scales = +(Math.round(reward.amount + "e+2") + "e-2");
 			} else if (reward.reward === `chest`) {
-				const chestId = reward.chest_type_id;
-				if (Number(chestId) !== 323) continue;
+				if (Number(reward.chest_type_id ?? 0) !== 323) continue;
 				chests = reward.count;
 			} else if (reward.reward === `champion_skin`) {
 				skinCount++;
@@ -306,13 +301,13 @@ function tm_createCreateButton() {
 
 function tm_buildDifficultySelect(highestDifficulty) {
 	let txt = `<select id="trialsDifficultySelect" name="trialsDifficultySelect">`;
-	const diffIds = Object.keys(tm_diffs);
+	const diffIds = Object.keys(tm_diffs).map((d) => Number(d ?? 0));
 	numSort(diffIds, true);
+	const highestDiff = Number(highestDifficulty ?? 0);
 	for (let diffId of diffIds) {
-		if (Number(diffId) > Number(highestDifficulty)) continue;
-		const diffName = tm_diffs[diffId].name;
-		const selected =
-			Number(diffId) === Number(highestDifficulty) ? ` selected` : ``;
+		if (diffId > highestDiff) continue;
+		const diffName = tm_diffs[`${diffId}`].name;
+		const selected = diffId === highestDiff ? ` selected` : ``;
 		txt += `<option value="${diffId}"${selected}>${diffId} - ${diffName}</option>`;
 	}
 	txt += `</select>`;
@@ -425,8 +420,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 	const tiamatHP = diff.hp;
 	const vialCost = diff.cost;
 	const vialInv = [
-		Number(trialsData.difficulty_token_inventory.normal || 0),
-		Number(trialsData.difficulty_token_inventory.any || 0),
+		Number(trialsData.difficulty_token_inventory.normal ?? 0),
+		Number(trialsData.difficulty_token_inventory.any ?? 0),
 	];
 	const playerName = trialsData.player_name;
 	const hostIndex = Number(campaign.host_index);
@@ -434,8 +429,8 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 	const player = campaign.players[playerIndex];
 	const hasPlayerPicked =
 		player?.name === playerName &&
-		player?.hero_id !== 0 &&
-		player?.role_id !== 0;
+		Number(player?.hero_id ?? 0) !== 0 &&
+		Number(player?.role_id ?? 0) !== 0;
 
 	let txt = tm_addRowHeader(`Trials Data`);
 	txt += tm_addRow(`Tier:`, `${tier} (${tierName})`);
@@ -556,18 +551,20 @@ function tm_updateTrialsPick() {
 		`trialsPickChampionButtonHolder`,
 	);
 
+	const roleId = Number(trialsRoleSelect?.value ?? -1);
+	const heroId = Number(trialsChampionSelect?.value ?? -1);
+	const vialType = Number(trialsCostSelect?.value ?? -1);
+
 	let txt = ``;
-	if (trialsRoleSelect.value === -1 || trialsChampionSelect.value === -1) {
+	if (roleId === -1 || heroId === -1) {
 		// Haven't picked a role or champion.
 		txt = `You need to pick a role and champion.`;
-	} else if (trialsCostSelect.value === -1) {
+	} else if (vialType === -1) {
 		// Not enough vials.
 		txt = `You do not have enough of the chosen vial to start a Trial.`;
 	} else {
 		// Can pick.
-		const roleId = trialsRoleSelect.value;
-		const heroId = trialsChampionSelect.value;
-		const prismatic = trialsCostSelect.value === 1 ? true : false;
+		const prismatic = vialType === 1 ? true : false;
 		txt = tm_addGenericButton(
 			`green`,
 			`tm_trialsPickRoleHero(${roleId},${heroId},${prismatic})`,
@@ -578,7 +575,10 @@ function tm_updateTrialsPick() {
 	trialsPickChampionButtonHolder.innerHTML = txt;
 }
 
-async function tm_trialsPickRoleHero(roleId, heroId, prismatic) {
+async function tm_trialsPickRoleHero(roleIn, heroIn, prismatic) {
+	const roleId = Number(roleIn ?? 0);
+	const heroId = Number(heroIn ?? 0);
+
 	const trialsInfo = document.getElementById(`trialsInfo`);
 	const trialsRoleSelect = document.getElementById(`trialsRoleSelect`);
 	const trialsChampionSelect =
@@ -710,9 +710,9 @@ function tm_displayRunningTrial(wrapper, campaign) {
 		campaign.dps_bonuses_earned[day - 1] != null &&
 		day > 0
 	)
-		completed = campaign.dps_bonuses_earned[day - 1] === 1;
-	const dayEnds = campaign.day_ends_in * 1000;
-	const trialEnds = campaign.ends_in * 1000;
+		completed = Number(campaign?.dps_bonuses_earned?.[day - 1] ?? 0) === 1;
+	const dayEnds = Number(campaign.day_ends_in ?? 0) * 1000;
+	const trialEnds = Number(campaign.ends_in ?? 0) * 1000;
 	let dps = 0;
 	let totalDamage = 0;
 	for (let roleId of playersByRoleKeys) {
@@ -849,7 +849,7 @@ function tm_parsePlayers(campaign) {
 	for (let roleId in tm_roles)
 		players[roleId] = {name: ``, dps: 0, tot: 0, empty: true, hero: 0};
 	for (let player of campaign.players) {
-		if (player.role_id === 0) continue;
+		if (Number(player?.role_id ?? 0) === 0) continue;
 		players[player.role_id] = {
 			name: player.name,
 			dps: Number(player.dps),
