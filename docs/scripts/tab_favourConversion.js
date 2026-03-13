@@ -417,14 +417,6 @@ function fc_parseResetCurrencyDefs(defs) {
 	fc_favourDefs = parsedDefs;
 }
 
-function fc_addFavourRow(left, right, left2, right2) {
-	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right}</span>`;
-	if (left2 != null && right2 != null)
-		txt += `<span class="f falc fje mr2" style="min-width:90px;max-width:110px;">${left2}</span><span class="f falc fje mr2" style="min-width:120px;max-width:140px;">${right2}</span>`;
-	txt += `</span>`;
-	return txt;
-}
-
 function fc_createFavour(id, name, shortName, campaignName, canConvertTo, canReset, order) {
 	return {id, name, shortName, campaignName, canConvertTo, canReset, order};
 } // prettier-ignore
