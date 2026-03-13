@@ -1,4 +1,4 @@
-const vu = 1.003; // prettier-ignore
+const vu = 1.004; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -28,6 +28,16 @@ const u_FEATURE_UPDATES = new Map([
 				"Please do tell me if something doesn't work.",
 			],
 			tab: "createFormations",
+		},
+	],
+	[
+		3,
+		{
+			id: 3,
+			date: "2026-03-13",
+			title: "New Tab: Favour",
+			list: ["Let's you convert favours like Events or Time Gates into campaign favours.", "Simple as that really."],
+			tab: "favour",
 		},
 	],
 ]);
@@ -61,8 +71,8 @@ function u_displayUnseenUpdates() {
 
 	const updateBlurb = `Since your last visit there ha${plural ? `ve` : `s`} been ${plural ? `some` : `an`} update${plural ? `s` : ``}.`;
 	const sCol = `1 / -1`;
-	txt += u_addUpdateGridItems([
-		{text: `Updates`, header: true, gridCol: sCol},
+	txt += addHTMLElements([
+		{text: `Updates`, fs: 1.45, gridCol: sCol},
 		{text: updateBlurb, gridCol: sCol},
 	]);
 
@@ -79,13 +89,11 @@ function u_displayUnseenUpdates() {
 		}
 	}
 
-	txt += u_addUpdateGridItems([
-		{
-			text: u_buildMarkAsSeenButton(plural),
-			classes: "f fr falc fje",
-			gridCol: sCol,
-		},
-	]);
+	txt += addHTMLElement({
+		text: u_buildMarkAsSeenButton(plural),
+		classes: "f fr falc fje",
+		gridCol: sCol,
+	});
 	txt += `</span></div>`;
 
 	updatesHeader.innerHTML = txt;
@@ -101,46 +109,22 @@ function u_buildUpdateGridItem(update) {
 	if (!u_currentUnseenUpdateIds.has(id)) return null;
 
 	let txt = `<span class="f fc fals fjs p5 unseenUpdatesBlob">`;
-	const header = u_addUpdateGridItems([
-		{text: title, large: true},
+	const header = addHTMLElement(
+		{text: title, fs: 1.15},
 		{text: dateFormat(new Date(date), {showTime: false})},
-	]);
-	txt += u_addUpdateGridItems([
-		{
-			text: header,
-			classes: `f fr`,
-			styles: `padding-bottom:5px;justify-content:space-between;width:100%;`,
-		},
-	]);
+	);
+	txt += addHTMLElement({
+		text: header,
+		classes: `f fr`,
+		styles: `padding-bottom:5px;justify-content:space-between;width:100%;`,
+	});
 	if (list.length > 0) {
 		let inner = `<ul>`;
 		for (const lis of list) inner += `<li>${lis}</li>`;
 		inner += `</ul>`;
-		txt += u_addUpdateGridItems([{text: inner}]);
+		txt += addHTMLElement({text: inner});
 	}
 	txt += `</span>`;
-	return txt;
-}
-
-function u_addUpdateGridItems(columns) {
-	let txt = ``;
-	for (let column of columns) {
-		let style =
-			column.header ? `font-size:1.45em;`
-			: column.large ? `font-size:1.15em;`
-			: ``;
-		if (column.styles != null) style += column.styles;
-		if (column.hide) style += `display:none;`;
-		if (column.gridCol != null) style += `grid-column:${column.gridCol};`;
-		if (style !== ``) style = ` style="${style}"`;
-		let id = column.id != null ? ` id="${column.id}"` : ``;
-		let data = ``;
-		if (column.data != null && typeof column.data === "object")
-			for (let key in column.data)
-				data += ` data-${key}="${column.data[key]}"`;
-		const clazz = column.classes ? ` class="${column.classes}"` : ``;
-		txt += `<span${clazz}${id}${data}${style}>${column.text || `&nbsp;`}</span>`;
-	}
 	return txt;
 }
 

@@ -428,7 +428,47 @@
 				</span>
 			</div>
 			<!-- END: BSC Calculator Tab -->
-			<!-- START: Apothecary/Notary Tab -->
+			<!-- START: Favour Tab -->
+			<input onClick="setHash('favourTab')" type="radio" class="tabsRadio" name="serverTabs" id="favourTab">
+			<label for="favourTab" class="tabsLabel">Favour</label>
+			<div class="tabsContent">
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						<h1>Favour</h1>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					<span class="f falc fjs ml2" style="width:100%">
+						This page will let you convert favours that are able to be converted. You decide where they get converted to.
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5" style="height:34px;">
+					<span class="f falc fje mr2" style="width:50%;">
+						<input type="button" onClick="fc_pullFavourData()" name="favourPullButton" id="favourPullButton" value="Pull Favour Data" style="min-width:175px">
+						<span id="favourPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+					</span>
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="flex-direction:column" id="favourWrapper">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+				<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="favourConvert">
+					&nbsp;
+				</span>
+				<span class="f fr w100 p5">
+					&nbsp;
+				</span>
+			</div>
+			<!-- END: Favour Tab -->
+			<!-- START: Apothecary Tab -->
 			<input onClick="setHash('apothecaryTab')" type="radio" class="tabsRadio" name="serverTabs" id="apothecaryTab">
 			<label for="apothecaryTab" class="tabsLabel">Apothecary</label>
 			<div class="tabsContent">
@@ -490,7 +530,7 @@
 					&nbsp;
 				</span>
 			</div>
-			<!-- END: Apothecary/Notary Tab -->
+			<!-- END: Apothecary Tab -->
 			<!-- START: Trials Calculator Tab -->
 			<input onClick="setHash('trialsTab')" type="radio" class="tabsRadio" name="serverTabs" id="trialsTab">
 			<label for="trialsTab" class="tabsLabel">Trials</label>
@@ -923,18 +963,19 @@
 
 	<script type="text/javascript" src="scripts/util_buffs.js?vb=2.003"></script>
 	<script type="text/javascript" src="scripts/util_campaigns.js?vc=2.002"></script>
-	<script type="text/javascript" src="scripts/util_updates.js?vu=1.003"></script>
+	<script type="text/javascript" src="scripts/util_updates.js?vu=1.004"></script>
 
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.010"></script>
-	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=2.007"></script>
+	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=2.008"></script>
 	<script type="text/javascript" src="scripts/tab_blacksmiths.js?vbs=1.017"></script>
 	<script type="text/javascript" src="scripts/tab_buyChests.js?vbc=1.022"></script>
 	<script type="text/javascript" src="scripts/tab_buyFeats.js?vbf=1.015"></script>
 	<script type="text/javascript" src="scripts/tab_celebrationCodes.js?vcc=1.008"></script>
-	<script type="text/javascript" src="scripts/tab_createFormations.js?vcf=1.014"></script>
+	<script type="text/javascript" src="scripts/tab_createFormations.js?vcf=1.015"></script>
 	<script type="text/javascript" src="scripts/tab_deleteFormations.js?vdf=1.020"></script>
 	<script type="text/javascript" src="scripts/tab_dismantleChampions.js?vdc=1.010"></script>
 	<script type="text/javascript" src="scripts/tab_eventTiers.js?vet=1.023"></script>
+	<script type="text/javascript" src="scripts/tab_favourConversion.js?vfc=1.000"></script>
 	<script type="text/javascript" src="scripts/tab_ilvlReport.js?vir=1.006"></script>
 	<script type="text/javascript" src="scripts/tab_legendaryForger.js?vlf=1.002"></script>
 	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.035"></script>
@@ -944,8 +985,8 @@
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.019"></script>
 
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
-	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.023"></script>
+	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.024"></script>
 
-	<script type="text/javascript" src="scripts/main.js?v=4.049"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.050"></script>
 </body>
 </html>

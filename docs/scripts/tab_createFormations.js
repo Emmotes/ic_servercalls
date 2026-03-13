@@ -1,4 +1,4 @@
-vcf = 1.014; // prettier-ignore
+vcf = 1.015; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -90,12 +90,10 @@ async function cf_pullFormationSaves() {
 		);
 		cf_data = cf_buildMaps(details, forms, defs);
 		if (!cf_data) {
-			wrapper.innerHTML = cf_addElements([
-				{
-					text: `Pulled data is somehow invalid. Cannot continue without it.`,
-					classes: `f fr w100 p5`,
-				},
-			]);
+			wrapper.innerHTML = addHTMLElement({
+				text: `Pulled data is somehow invalid. Cannot continue without it.`,
+				classes: `f fr w100 p5`,
+			});
 			codeEnablePullButtons();
 			return;
 		}
@@ -199,7 +197,7 @@ function cf_renderImportsSection() {
 		`</select>`;
 
 	txt += `<span class="cf_importsImporter">`;
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{text: importModeLabel, classes: `f fr falc fje`},
 		{text: importModeSelect, classes: `f fr falc fjs`},
 	]);
@@ -480,7 +478,7 @@ function cf_renderImportWarningPopup(warnings) {
 function cf_renderChampionGridSection() {
 	let txt = `<span class="f fr falst fjc w100" id="cf_championsSection">`;
 
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{text: cf_renderChampionsGrid(), classes: `f fr fals fjc`},
 		{
 			text: cf_renderCampaignSection(),
@@ -542,7 +540,7 @@ function cf_renderCampaignSection() {
 	const fStart = `f fr falc fjs`;
 
 	txt += `<span class="cf_campaignGrid">`;
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{text: nameLabel, classes: fEnd},
 		{text: cf_renderNameInput(), classes: fStart},
 		{text: campaignLabel, classes: fEnd},
@@ -1064,7 +1062,7 @@ function cf_renderFamiliarsGridSection() {
 
 	let txt = `<span class="f fr falst fjc w100" style="margin-top:10px;" id="cf_familiarsSection">`;
 
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{
 			text: `&nbsp;`,
 			classes: `f fr fals fjs`,
@@ -1150,7 +1148,7 @@ function cf_renderFamiliarsControlSections() {
 	const fStart = `f fr falc fjs`;
 
 	txt += `<span class="cf_familiarControlGrid">`;
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{text: familiarModeLabel, classes: fEnd},
 		{text: cf_renderFamiliarModeSelector(), classes: fStart},
 		{text: familiarGridLabel, classes: fEnd},
@@ -1467,27 +1465,6 @@ function cf_renderFamiliarsMiscGrid() {
 	return txt;
 }
 
-function cf_addElements(eles) {
-	let txt = ``;
-	for (let ele of eles) {
-		let style =
-			ele.header ? `font-size:1.45em;`
-			: ele.large ? `font-size:1.15em;`
-			: ``;
-		if (ele.styles != null) style += ele.styles;
-		if (ele.hide) style += `display:none;`;
-		if (ele.gridCol != null) style += `grid-column:${ele.gridCol};`;
-		if (style !== ``) style = ` style="${style}"`;
-		let id = ele.id != null ? ` id="${ele.id}"` : ``;
-		let data = ``;
-		if (ele.data != null && typeof ele.data === "object")
-			for (let key in ele.data) data += ` data-${key}="${ele.data[key]}"`;
-		const clazz = ele.classes ? ` class="${ele.classes}"` : ``;
-		txt += `<span${clazz}${id}${data}${style}>${ele.text || `&nbsp;`}</span>`;
-	}
-	return txt;
-}
-
 function cf_renderExportsSection() {
 	if (cf_data.familiars.byId.size === 0) return ``;
 
@@ -1505,7 +1482,7 @@ function cf_renderExportsSection() {
 		`</select>`;
 
 	txt += `<span class="cf_exportsExporter">`;
-	txt += cf_addElements([
+	txt += addHTMLElements([
 		{text: exportModeLabel, classes: `f fr falc fje`},
 		{text: exportModeSelect, classes: `f fr falc fjs`},
 	]);

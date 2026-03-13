@@ -1,4 +1,4 @@
-const vs = 3.023; // prettier-ignore
+const vs = 3.024; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -539,6 +539,14 @@ async function claimSaleBonus(premiumId) {
 		["prioritize_item_category", "recommend"],
 	];
 	return await sendServerCall(SERVER, "claimsalebonus", params, true, true);
+}
+
+async function convertFavour(sourceId, targetId) {
+	const params = [
+		["converted_currency_id", sourceId],
+		["target_currency_id", targetId],
+	];
+	return await sendServerCall(SERVER, "convertresetcurrency", params, true, true);
 }
 
 async function convertContracts(

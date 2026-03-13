@@ -1219,3 +1219,9 @@ input[type="checkbox"]:checked::before {
 	text-wrap-style: pretty;
 	margin: 5px;
 }
+
+.favourWrapper {
+	display: grid;
+	grid-template-columns: minmax(250px, max-content) minmax(450px, max-content);
+	gap: 10px;
+}

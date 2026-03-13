@@ -1,4 +1,4 @@
-const vap = 2.007; // prettier-ignore
+const vap = 2.008; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
@@ -80,7 +80,7 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 	firstRow.push({text: `&nbsp;`, classes: flex});
 	for (let size of sizeTypes)
 		firstRow.push({text: capitalise(size), classes: flex});
-	txt += ap_addApothecaryRow(firstRow);
+	txt += addHTMLElements(firstRow);
 
 	for (let buff of buffTypes) {
 		const row = [];
@@ -106,7 +106,7 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 				data: {id: pot.id, value: amount},
 			});
 		}
-		txt += ap_addApothecaryRow(row);
+		txt += addHTMLElements(row);
 	}
 	txt += ap_addSingleApothecaryRow(`&nbsp;`, false, `ap_distill_includeGap`);
 
@@ -145,10 +145,10 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 				data: {hidecat: category},
 			});
 		}
-		txt += ap_addApothecaryRow(row);
+		txt += addHTMLElements(row);
 	}
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: "Potion Reagents", classes: flex, gridCol: `span 2`},
 		{
 			text: nf(ap_reagents ?? 0),
@@ -159,7 +159,7 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 		},
 		{text: `&nbsp;`, gridCol: `4 / -1`},
 	]);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: "Legendary Vessels", classes: flex, gridCol: `span 2`},
 		{
 			text: nf(ap_vessels ?? 0),
@@ -171,7 +171,7 @@ function ap_buildInventoryDisplay(incSpecs, incPoPs, inc7Days) {
 		{text: `&nbsp;`, gridCol: `4 / -1`},
 	]);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{
 			text: `<label for="${ap_METHOD_SELECTID}">Method:</label>`,
 			classes: flex,
@@ -236,7 +236,7 @@ function ap_buildDistillDisplay() {
 	const cFlex = `f fr falc fjc`;
 
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `Potion Type`, classes: eFlex, header: true},
 		{text: `Maintain Amount`, classes: cFlex, header: true},
 		{text: `&nbsp;`, classes: cFlex, header: true},
@@ -262,7 +262,7 @@ function ap_buildDistillDisplay() {
 		let maintain = Number(savedDistillMaintains[category]);
 		if (isNaN(maintain)) maintain = 1000;
 		const inp = `<input type="number" id="${id}" data-category="${category}" min="0" value="${maintain}" style="width:60%" oninput="ap_recalculateDistillValues(true)">`;
-		txt += ap_addApothecaryRow([
+		txt += addHTMLElements([
 			{
 				text: categories[category],
 				classes: eFlex,
@@ -287,7 +287,7 @@ function ap_buildDistillDisplay() {
 		]);
 	}
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{
 			text:
 				`<input type="button" id="ap_distillPotionsButton" value="Distill Potions" onclick="ap_distillPotions()">` +
@@ -462,7 +462,7 @@ function ap_buildBrewDisplay() {
 		`Here you can brew specific amounts of any Speed potion - provided you have the resources to do so.`,
 	);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `Potion Type`, classes: eFlex, header: true},
 		{text: `Brew Amount`, classes: cFlex, header: true},
 		{text: `Current`, classes: eFlex, header: true},
@@ -478,7 +478,7 @@ function ap_buildBrewDisplay() {
 			`<input type="number" id="ap_brew_${id}" data-potid="${id}" value="0" min="0" style="width:70%" oninput="ap_recalculateBrewValues()">` +
 			`<span style="width:5px">&nbsp;</span>` +
 			`<input type="button" id="ap_brew_max${id}" onclick="ap_maxBrewType(${id});" value="Max" style="width:20%">`;
-		txt += ap_addApothecaryRow([
+		txt += addHTMLElements([
 			{text: potion.name, classes: eFlex},
 			{text: inp, classes: cFlex},
 			{text: curr, classes: eFlex, id: `ap_brew_curr${id}`},
@@ -487,7 +487,7 @@ function ap_buildBrewDisplay() {
 		]);
 	}
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `Reagent Cost:`, classes: eFlex},
 		{text: `0`, classes: eFlex, id: `ap_brew_reagentCost`},
 		{text: `&nbsp;`, gridCol: `3 / -1`},
@@ -496,7 +496,7 @@ function ap_buildBrewDisplay() {
 		{text: `&nbsp;`, gridCol: `3 / -1`},
 	]);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{
 			text:
 				`<input type="button" id="ap_brewPotionsButton" value="Brew Potions" onclick="ap_brewPotions()" style="display:none">` +
@@ -743,7 +743,7 @@ function ap_buildEnhanceDisplay() {
 		`Here you can enhance specific amounts of Speed potions into larger potions - provided you have the resources to do so.`,
 	);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `&nbsp;`},
 		{text: `Potion Type`, classes: cFlex, header: true},
 		{text: `Current`, classes: eFlex, header: true},
@@ -765,7 +765,7 @@ function ap_buildEnhanceDisplay() {
 		`<input type="number" id="ap_enhance_amount" style="width:80%" value="0" min="0" oninput="ap_onEnhanceAmountChange(this.value)">` +
 		`<span style="width:2%">&nbsp;</span>` +
 		`<input type="button" id="ap_enhance_max" onclick="ap_setMaxEnhance()" value="Max" style="width:18%">`;
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `Source Potion:`, classes: eFlex},
 		{text: selSource, classes: cFlex, styles: eleMargin},
 		{text: `&nbsp;`, classes: eFlex, id: `ap_enhance_sourceCurr`},
@@ -781,7 +781,7 @@ function ap_buildEnhanceDisplay() {
 		{text: `&nbsp;`, classes: eFlex, gridCol: `3 / -1`},
 	]);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{text: `Reagent Cost:`, classes: eFlex},
 		{text: `0`, classes: eFlex, id: `ap_enhance_reagentCost`},
 		{text: `&nbsp;`, gridCol: `3 / -1`},
@@ -790,7 +790,7 @@ function ap_buildEnhanceDisplay() {
 		{text: `&nbsp;`, gridCol: `3 / -1`},
 	]);
 	txt += ap_addSingleApothecaryRow(`&nbsp;`);
-	txt += ap_addApothecaryRow([
+	txt += addHTMLElements([
 		{
 			text:
 				`<input type="button" id="ap_enhancePotionsButton" value="Enhance Potions" onclick="ap_enhancePotions()" style="display:none">` +
@@ -1167,28 +1167,6 @@ function ap_disableAllApothecaryInputs(disable) {
 			ele.style.backgroundColor = `hsl(calc(240*0.95),15%,calc(16%*0.8))`;
 		}
 	} else codeEnablePullButtons();
-}
-
-function ap_addApothecaryRow(columns) {
-	let txt = ``;
-	for (let column of columns) {
-		let style =
-			column.header ? `font-size:1.2em;`
-			: column.large ? `font-size:1.1em;`
-			: column.small ? `font-size:0.9em;`
-			: ``;
-		if (column.styles != null) style += column.styles;
-		if (column.hide) style += `display:none;`;
-		if (column.gridCol != null) style += `grid-column:${column.gridCol};`;
-		if (style !== ``) style = ` style="${style}"`;
-		let id = column.id != null ? ` id="${column.id}"` : ``;
-		let data = ``;
-		if (column.data != null && typeof column.data === "object")
-			for (let key in column.data)
-				data += ` data-${key}="${column.data[key]}"`;
-		txt += `<span class="${column.classes || `f fr falc fjs`}"${id}${data}${style}>${column.text || `&nbsp;`}</span>`;
-	}
-	return txt;
 }
 
 function ap_addSingleApothecaryRow(msg, header, id) {

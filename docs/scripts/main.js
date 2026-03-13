@@ -1,4 +1,4 @@
-const v = 4.049; // prettier-ignore
+const v = 4.050; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -23,6 +23,10 @@ const TIME_UNITS = {
 	medium: {d: ["day", "days"], h: ["hr", "hrs"], m: ["min", "mins"], s: ["sec", "secs"], ms: ["ms", "ms"]},
 	short: {d: ["d", "d"], h: ["h", "h"], m: ["m", "m"], s: ["s", "s"], ms: ["ms", "ms"]},
 }; // prettier-ignore
+const sciNoteForm = new Intl.NumberFormat(undefined, {
+	maximumFractionDigits: 2,
+	notation: "scientific",
+});
 const cleanupExtras = new Set([]);
 let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
 let updateInterval;
@@ -620,6 +624,9 @@ function setWrapperFormat(wrapper, type) {
 	} else if (type === 7) {
 		wrapper.className = `apothecaryEnhanceWrapper`;
 		wrapper.style = ``;
+	} else if (type === 8) {
+		wrapper.className = `favourWrapper`;
+		wrapper.style = ``;
 	}
 }
 
@@ -627,6 +634,31 @@ function handleError(wrapper, error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
 	if (error.toString().includes(`appears to be dead`)) SERVER = ``;
 	codeEnablePullButtons();
+}
+
+function addHTMLElements(eles) {
+	let txt = ``;
+	for (let ele of eles) txt += addHTMLElement(ele);
+	return txt;
+}
+
+function addHTMLElement(ele) {
+	let style =
+		ele.header ? `font-size:1.2em;`
+		: ele.large ? `font-size:1.1em;`
+		: ele.small ? `font-size:0.9em;`
+		: ``;
+	if (ele.fs != null && style === ``) style += `font-size:${ele.fs}em;`;
+	if (ele.styles != null) style += ele.styles;
+	if (ele.hide) style += `display:none;`;
+	if (ele.gridCol != null) style += `grid-column:${ele.gridCol};`;
+	if (style !== ``) style = ` style="${style}"`;
+	let id = ele.id != null ? ` id="${ele.id}"` : ``;
+	let data = ``;
+	if (ele.data != null && typeof ele.data === "object")
+		for (let key in ele.data) data += ` data-${key}="${ele.data[key]}"`;
+	const clazz = ele.classes ? ` class="${ele.classes}"` : ``;
+	return `<span${clazz}${id}${data}${style}>${ele.text || `&nbsp;`}</span>`;
 }
 
 function getDefsNames(defs) {
@@ -637,6 +669,10 @@ function getDefsNames(defs) {
 
 function nf(number) {
 	return numForm.format(number);
+}
+
+function sciNote(number) {
+	return sciNoteForm.format(number).toLowerCase();
 }
 
 function randInt(min, max) {
