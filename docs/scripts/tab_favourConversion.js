@@ -1,4 +1,4 @@
-const vfc = 1.000; // prettier-ignore
+const vfc = 1.001; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -70,13 +70,6 @@ async function fc_displayFavourData(wrapper, userData) {
 	fc_parseResetCurrencyDefs(defs);
 
 	fc_parseResetCurrencyDeets(deets);
-	if (fc_convertiblesSorted.length === 0) {
-		wrapper.innerHTML = `&nbsp;`;
-		favourConvert.innerHTML =
-			`<span class="f w100 p5" style="padding-left:10%">You ` +
-			`don't have any convertible favours at the moment.</span>`;
-		return;
-	}
 
 	const eFlex = `f fr falc fje`;
 	const cFlex = `f fr falc fjc`;
@@ -89,6 +82,44 @@ async function fc_displayFavourData(wrapper, userData) {
 	const hideStage3 = {fcstage3: 1};
 
 	let txt = ``;
+
+	const extraColWidth = 140;
+
+	const titleCol = `<span style="width:${extraColWidth}px">Current Favour</span><span>Campaign</span>`;
+	txt += addHTMLElements([
+		{text: `Favour Type`, classes: eFlex, header: true},
+		{text: titleCol, classes: sFlex, header: true},
+	]);
+	const ids = [...fc_currentFavours.keys()].filter(
+		(e) => fc_favourDefs.has(e) && fc_favourDefs.get(e).canConvertTo,
+	);
+	ids.sort(fc_favourSort);
+	for (const id of ids) {
+		const amount = fc_currentFavours.get(id);
+		const favour = fc_favourDefs?.get(id) ?? null;
+		if (!favour || !favour.canConvertTo || favour.campaignName === "")
+			continue;
+		const col = `<span style="width:${extraColWidth}px">${sciNote(amount)}</span><span>${favour.campaignName}</span>`;
+		txt += addHTMLElements([
+			{
+				text: favour.name.replace("Favor", "").trim() + `:`,
+				classes: eFlex,
+			},
+			{text: col, classes: sFlex},
+		]);
+	}
+
+	if (fc_convertiblesSorted.length === 0) {
+		setWrapperFormat(wrapper, 8);
+		wrapper.innerHTML = txt;
+		favourConvert.innerHTML =
+			`<span class="f w100 p5" style="padding-left:10%">You ` +
+			`don't have any convertible favours at the moment.</span>`;
+		return;
+	}
+
+	txt += addHTMLElement({text: `&nbsp;`, gridCol: `1 / -1`});
+
 	txt += addHTMLElements([
 		{text: sourceLabel, classes: eFlex},
 		{text: fc_buildConvertSourceSelect(), classes: sFlex},
@@ -317,12 +348,6 @@ function fc_numForm(number) {
 }
 
 function fc_parseResetCurrencyDeets(deets) {
-	const custSort = (a, b) => {
-		const fa = fc_favourDefs?.get(a.id);
-		const fb = fc_favourDefs?.get(b.id);
-		if (fa && fb && fa.order !== fb.order) return fa.order - fb.order;
-		return a.id - b.id;
-	};
 	const convertibles = new Map();
 	const convertiblesSorted = [];
 	const currentFavours = new Map();
@@ -347,7 +372,7 @@ function fc_parseResetCurrencyDeets(deets) {
 				if (convId < 1 || isNaN(convTo) || convTo < 1) continue;
 				convertTo.push({id: convId, amount: convTo});
 			}
-			convertTo.sort(custSort);
+			convertTo.sort(fc_favourSort);
 			const obj = {
 				id,
 				amount,
@@ -361,7 +386,7 @@ function fc_parseResetCurrencyDeets(deets) {
 			convertiblesSorted.push(obj);
 		}
 	}
-	convertiblesSorted.sort(custSort);
+	convertiblesSorted.sort(fc_favourSort);
 	fc_convertibles = convertibles;
 	fc_convertiblesSorted = convertiblesSorted;
 	fc_currentFavours = currentFavours;
@@ -403,3 +428,12 @@ function fc_addFavourRow(left, right, left2, right2) {
 function fc_createFavour(id, name, shortName, campaignName, canConvertTo, canReset, order) {
 	return {id, name, shortName, campaignName, canConvertTo, canReset, order};
 } // prettier-ignore
+
+const fc_favourSort = (a, b) => {
+	const aid = a instanceof Object ? a.id : a;
+	const bid = b instanceof Object ? b.id : b;
+	const fa = fc_favourDefs?.get(aid);
+	const fb = fc_favourDefs?.get(bid);
+	if (fa && fb && fa.order !== fb.order) return fa.order - fb.order;
+	return aid - bid;
+};

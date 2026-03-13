@@ -36,7 +36,10 @@ const u_FEATURE_UPDATES = new Map([
 			id: 3,
 			date: "2026-03-13",
 			title: "New Tab: Favour",
-			list: ["Let's you convert favours like Events or Time Gates into campaign favours.", "Simple as that really."],
+			list: [
+				"Let's you convert favours like Events or Time Gates into campaign favours.",
+				"Simple as that really.",
+			],
 			tab: "favour",
 		},
 	],

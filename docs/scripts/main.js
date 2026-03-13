@@ -1,4 +1,4 @@
-const v = 4.050; // prettier-ignore
+const v = 4.051; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -25,6 +25,7 @@ const TIME_UNITS = {
 }; // prettier-ignore
 const sciNoteForm = new Intl.NumberFormat(undefined, {
 	maximumFractionDigits: 2,
+	minimumFractionDigits: 2,
 	notation: "scientific",
 });
 const cleanupExtras = new Set([]);
