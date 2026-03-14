@@ -1,4 +1,4 @@
-const vfc = 1.001; // prettier-ignore
+const vfc = 1.002; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -102,7 +102,7 @@ async function fc_displayFavourData(wrapper, userData) {
 		const col = `<span style="width:${extraColWidth}px">${sciNote(amount)}</span><span>${favour.campaignName}</span>`;
 		txt += addHTMLElements([
 			{
-				text: favour.name.replace("Favor", "").trim() + `:`,
+				text: favour.displayName + `:`,
 				classes: eFlex,
 			},
 			{text: col, classes: sFlex},
@@ -298,8 +298,8 @@ async function fc_convertFavour() {
 
 	fc_toggleElements(true);
 
-	const source = fc_favourDefs.get(fc_convSource).name;
-	const target = fc_favourDefs.get(fc_convTarget).name;
+	const source = fc_favourDefs.get(fc_convSource).displayName;
+	const target = fc_favourDefs.get(fc_convTarget).displayName;
 
 	const response = await convertFavour(fc_convSource, fc_convTarget);
 	if (response.success && response.okay) {
@@ -407,6 +407,7 @@ function fc_parseResetCurrencyDefs(defs) {
 			id,
 			name: def?.name ?? base.name ?? "",
 			shortName: def?.short_name ?? base.shortName ?? name,
+			displayName: name.replace("Favor", "").trim(),
 			campaignName: props?.campaign_name ?? base.campaignName ?? "",
 			canConvertTo: props?.can_convert_to ?? base.canConvertTo ?? false,
 			canReset: props?.can_reset ?? base.canReset ?? false,
