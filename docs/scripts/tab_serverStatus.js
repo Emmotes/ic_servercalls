@@ -1,4 +1,4 @@
-const vss = 2.017; // prettier-ignore
+const vss = 2.018; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -9,7 +9,7 @@ const ss_SVG_verySlow = ss_SVG_slow.replace("TangerineYellow", "Carrot");
 const ss_SLOW_THRESHOLD_MS = 1.5 * 1000; // 1.5 seconds
 const ss_VERYSLOW_THRESHOLD_MS = 3 * 1000; // 3 seconds
 const ss_MIN_RECHECK_MS = 30 * 1000; // 30 seconds
-const ss_CACHE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+const ss_CACHE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
 let ss_ageTimer = null;
