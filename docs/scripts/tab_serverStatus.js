@@ -1,4 +1,4 @@
-const vss = 2.018; // prettier-ignore
+const vss = 2.019; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -347,6 +347,7 @@ function ss_translateServerError(error) {
 		if (code === "401") return "Unauthorized";
 		if (code === "403") return "Forbidden";
 		if (code === "404") return "Server Not Found";
+		if (code === "429") return "Rate Limited";
 		if (code === "500") return "Server Error";
 		if (code === "502" || code === "503" || code === "504")
 			return "Service Unavailable";
