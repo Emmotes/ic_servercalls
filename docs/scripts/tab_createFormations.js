@@ -1,4 +1,4 @@
-vcf = 1.015; // prettier-ignore
+vcf = 1.016; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -2321,7 +2321,8 @@ function cf_buildFormationSaves(data, allSaves) {
 		if (!Array.isArray(saves)) continue;
 
 		const campaign = campaigns.get(actualCampaignId);
-		const baseCampaignId = campaign?.baseId ?? 0;
+		const baseCampaignId = campaign?.baseId ?? -1;
+		if (campaign == null || baseCampaignId < 1) continue;
 
 		for (const raw of saves) {
 			const save = cf_normaliseFormationSave(raw, baseCampaignId);
