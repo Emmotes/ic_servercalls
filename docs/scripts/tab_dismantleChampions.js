@@ -1,5 +1,60 @@
-const vdc = 1.010; // prettier-ignore
+const vdc = 1.011; // prettier-ignore
 const dc_LSKEY_hideDismantleOpts = `scHideDismantleOptions`;
+
+function dc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Dismantle Champions</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+							<p>This page will let you dismantle champions if a dismantle period is running.</p>
+							<span class="f fc" style="position:absolute;top:-80px;right:0;z-index:1">
+								<span class="f fr falc">
+									<input type="checkbox" id="dismantleHideOption6Legs" data-type="6legs" onclick="dc_toggleDismantleHideOptions(this)"> Hide Has 6 Legendaries
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="dismantleHideOptionReforges" data-type="reforges" onclick="dc_toggleDismantleHideOptions(this)"> Hide Has Reforged
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="dismantleHideOption1sonly" data-type="1sonly" onclick="dc_toggleDismantleHideOptions(this)"> Hide Only Has Level 1s
+								</span>
+								<span class="f fc falc" style="text-align:center">
+									<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+										Note: These options only apply to Legendary dismantles.
+									</span>
+								</span>
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="dc_pullData()" name="dismantlePullButton" id="dismantlePullButton" value="Pull Dismantle Data" style="min-width:175px">
+							<span id="dismantlePullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="dismantleWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="dismantleDismantler">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function dc_pullData() {
 	clearTimers(`dc_`);

@@ -687,6 +687,19 @@ input[type="checkbox"]:checked::before {
 	background-color: var(--Marshland);
 }
 
+.yellowButton input[type="button"] {
+	color: var(--TangerineYellow);
+	background-color: var(--Onyx);
+}
+
+.yellowButton input[type="button"]:hover {
+	background-color: var(--EerieBlack);
+}
+
+.yellowButton input[type="button"]:focus {
+	background-color: var(--Marshland);
+}
+
 .greenCheckbox input[type="checkbox"]:checked {
 	background-color: var(--HunterGreen);
 }
@@ -1224,4 +1237,61 @@ input[type="checkbox"]:checked::before {
 	display: grid;
 	grid-template-columns: minmax(250px, max-content) minmax(450px, max-content);
 	gap: 10px;
+}
+
+.t_tabsLabel {
+	padding: 8px 10px;
+	cursor: pointer;
+	border-bottom: 2px ridge var(--Black);
+	border-radius: 5px;
+	background-color: var(--DarkGunmetal);
+	font-size: 1.4em;
+	margin: 1px 1px 2px 1px;
+}
+
+.t_tabsLabel:hover {
+	background-color: var(--Gunmetal);
+}
+
+.t_dragHandle {
+	cursor: grab;
+	user-select: none;
+	opacity: 0.7;
+}
+
+.t_editMode .t_dragHandle {
+	opacity: 1;
+}
+
+.t_dragHandle:active {
+	cursor: grabbing;
+}
+
+.t_hideButton {
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	border-radius: 3px;
+	background-color: var(--Boulder);
+}
+.t_hideButton:hover {
+	background-color: var(--Eagle);
+}
+
+.t_hiddenTab {
+	opacity: 0.8;
+	background-color: var(--Marshland);
+}
+
+.t_hiddenTab:hover {
+	background-color: var(--Onyx);
+}
+
+.t_hiddenTab .t_hideButton {
+	background-color: var(--Blackout);
+}
+
+.t_hiddenTab .t_hideButton:hover {
+	background-color: var(--Emperor);
 }

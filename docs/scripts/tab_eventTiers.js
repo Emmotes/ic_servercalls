@@ -1,8 +1,60 @@
-const vet = 1.024; // prettier-ignore
+const vet = 1.025; // prettier-ignore
 const et_LSKEY_hideTier4 = `scEventTiersHideTier4`;
 const et_LSKEY_eventSort = `scEventTiersSort`;
 const et_DEFAULT_eventSort = `event`;
 const et_idMult = 10000;
+
+function et_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Event Tiers</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%">
+							<p>This page will simply tell you what event tiers your champions have.</p>
+							<p><em>Note: This will only show champions you have unlocked.</em></p>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="et_pullEventTiersData()" name="eventTiersPullButton" id="eventTiersPullButton" value="Pull EventTiers Data" style="min-width:175px">
+							<span id="eventTiersPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5" style="position:relative">
+						&nbsp;
+						<span class="f fc" style="position:absolute;top:-30px;right:20px;width:fit-content">
+							<span class="f fr falc fjc">
+								<input type="checkbox" id="eventTiersHideTier4" onclick="et_toggleHideTier4()"> Hide Tier 4 Champions
+							</span>
+							<span class="f fr falc fjc" style="display:none;margin-top:2px" name="eventTiersSortHolder" id="eventTiersSortHolder">
+								Sort: <select name="eventTiersSort" id="eventTiersSort" oninput="et_changeOrder(this.value);" style="width:150px;margin-left:5px">
+									<option value="event" selected>Event</option>
+									<option value="name">Champion Name</option>
+									<option value="id">Champion ID</option>
+								</select>
+							</span>
+							<span class="f ft falc fjc" style="display:none;margin-top:5px" name="eventTiersHideTier4Amount" id="eventTiersHideTier4Amount">
+								&nbsp;
+							</span>
+						</span>
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="eventTiersWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function et_pullEventTiersData() {
 	if (isBadUserData()) return;

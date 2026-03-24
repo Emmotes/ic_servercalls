@@ -1,4 +1,40 @@
-const vpm = 1.013; // prettier-ignore
+const vpm = 1.014; // prettier-ignore
+
+function pm_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Party / Adventure Data</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							This page will tell you what all your adventuring parties are up to - as well as providing the option to end them.
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="pm_pullPartyData()" name="partyPullButton" id="partyPullButton" value="Pull Party Data" style="min-width:175px">
+							<span id="partyPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="partyWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function pm_pullPartyData() {
 	if (isBadUserData()) return;
@@ -71,7 +107,10 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		txt += pm_addPartyRow(`Adventure`, adv);
 		txt += pm_addPartyRow(`Campaign`, camp);
 		if (patronId > 0)
-			txt += pm_addPartyRow(`Patron`, c_patronById.get(patronId) ?? `??? (id: ${patronId})`);
+			txt += pm_addPartyRow(
+				`Patron`,
+				c_patronById.get(patronId) ?? `??? (id: ${patronId})`,
+			);
 		txt += pm_addPartyRow(`Current Area`, `z${gameInstance.current_area}`);
 		if (areaGoal != null)
 			txt += pm_addPartyRow(`Area Goal`, `z${areaGoal}`);

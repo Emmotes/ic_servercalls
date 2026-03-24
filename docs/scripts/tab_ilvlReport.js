@@ -1,4 +1,40 @@
-const vir = 1.006; // prettier-ignore
+const vir = 1.007; // prettier-ignore
+
+function ir_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>iLvl Report</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							This page is a replication of IdleCombos item level report feature.
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="ir_pulliLvlReportData()" name="ilvlreportPullButton" id="ilvlreportPullButton" value="Pull iLvl Report Data" style="min-width:175px">
+							<span id="ilvlreportPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="ilvlreportWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function ir_pulliLvlReportData() {
 	if (isBadUserData()) return;

@@ -1,4 +1,4 @@
-const vbc = 1.022; // prettier-ignore
+const vbc = 1.023; // prettier-ignore
 const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
@@ -7,6 +7,62 @@ const bc_silverChestOpt = `<option value="1">Silver Chest</option>`;
 const bc_goldChestOpt = `<option value="2">Gold Chest</option>`;
 const bc_notEnoughGems = `<option value="-1">Not enough gems.</option>`;
 const bc_notEnoughEventTokens = `<option value="-1">Not enough event tokens.</option>`;
+
+function bc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Buy Chests</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%;position:relative">
+							This page will let you buy Silver or Gold chests for gems as well as chest packs for event tokens for champions you have flexed.
+							<span class="f fc" style="position:absolute;top:-80px;right:0;align-items:center;text-align:center;z-index:1">
+								<span class="f fr falc">
+									<label class="p5" for="buyChestsSliderFidelity">Amount to Buy Slider Fidelity:</label>
+									<select name="buyChestsSliderFidelity" id="buyChestsSliderFidelity" oninput="bc_toggleBuyChestsSliderFidelity(this.value);" style="width:70px">
+										<option value="1" selected>1</option>
+										<option value="10">10</option>
+										<option value="25">25</option>
+										<option value="50">50</option>
+										<option value="100">100</option>
+										<option value="250">250</option>
+										<option value="1000">1000</option>
+									</select>
+								</span>
+								<span class="f fr falc" style="font-size:0.8em">
+									Note: If the fidelity is larger than the maximum<br>amount you can buy - it will use a fidelity of 1.
+								</span>
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="bc_pullBuyChestsData()" name="buyChestsPullButton" id="buyChestsPullButton" value="Pull Chest Data" style="min-width:175px">
+							<span id="buyChestsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="buyChestsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="buyChestsBuyer">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function bc_pullBuyChestsData() {
 	if (isBadUserData()) return;
@@ -369,12 +425,14 @@ function bc_makeBuyingRow(amount, name, initAmount) {
 }
 
 function bc_initBuyChestsSliderFidelity() {
+	const ele = document.getElementById(`buyChestsSliderFidelity`);
+	if (!ele) return;
 	let fidelity = bc_getBuyChestsSliderFidelity();
 	if (![1, 10, 25, 50, 100, 250, 1000].includes(fidelity)) {
 		bc_toggleBuyChestsSliderFidelity(1);
 		fidelity = 1;
 	}
-	document.getElementById(`buyChestsSliderFidelity`).value = fidelity;
+	ele.value = fidelity;
 }
 
 function bc_toggleBuyChestsSliderFidelity(fidelity) {

@@ -1,4 +1,4 @@
-const v = 4.051; // prettier-ignore
+const v = 4.052; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -6,6 +6,7 @@ const globalButtonDisableTime = 15000;
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
 const tabsContainer = document.getElementById(`tabsContainer`);
+const settingsContainer = document.getElementById(`settingsContainer`);
 const settingsIconName = document.getElementById(`settingsIconName`);
 const settingsMenu = document.getElementById(`settingsMenu`);
 const settingsUserName = document.getElementById(`userName`);
@@ -64,6 +65,8 @@ function init() {
 	window.addEventListener("hashchange", () => {
 		swapTab();
 	});
+
+	t_initTabs();
 
 	initSettingsNumberFormat();
 	initPullButtonStuff();
@@ -153,6 +156,8 @@ function oldLocalStorageMigrations() {
 }
 
 function settingsToggle() {
+	if (settingsContainer)
+		settingsContainer.classList.remove(`hasUnseenUpdate`);
 	if (currAccount == null) {
 		settingsMenu.style.display = `flex`;
 		return;
@@ -351,9 +356,11 @@ async function loadUserAccount() {
 	}
 	clearTimers(null, "mpb_");
 	cleanup();
+	t_onAccountSwitch();
 }
 
 async function deleteUserAccount() {
+	closeDeleteAccountConfirmationPopup();
 	removeUserAccount(settingsList.value);
 	refreshSettingsList();
 	if (settingsList.value !== `-`) loadUserAccount();
@@ -600,6 +607,80 @@ function handleDeleteAccountConfirmationOutsideClick(event) {
 	}
 }
 
+function renderRestoreDefaultTabsConfirmationPopup() {
+	const importButtonEle = document.getElementById(
+		`tabsRestoreDefaultsButton`,
+	);
+	const container = document.getElementById(
+		`tabsRestoreDefaultsConfirmationPopup`,
+	);
+	if (!importButtonEle || !container) return;
+
+	let txt = ``;
+	txt += `<span class="f fr falc fjs"><h3 style="padding-left:5px;">Are you sure?</h3></span>`;
+	txt += `<span class="f fr falc fjs p5">Do you really want to restore default tabs layout on this account?</span>`;
+	txt += `<span class="f fr falc fjs w100 p5" style="padding-top:10px;">`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="t_restoreDefaultLayout()"></span>`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="closeRestoreDefaultTabsConfirmationPopup()"></span>`;
+	txt += `</span>`;
+
+	container.innerHTML = txt;
+	container.style.display = ``;
+
+	const contRect = container.getBoundingClientRect();
+	const impoRect = importButtonEle.getBoundingClientRect();
+
+	let left = impoRect.left + impoRect.width / 2 - contRect.width / 2;
+	let top = impoRect.top + impoRect.height / 2 - contRect.height / 2;
+
+	const margin = 20;
+	const maxLeft = window.innerWidth - contRect.width - margin;
+	const maxTop = window.innerHeight - contRect.height - margin;
+
+	container.style.left = Math.max(margin, Math.min(left, maxLeft)) + `px`;
+	container.style.top = Math.max(margin, Math.min(top, maxTop)) + `px`;
+
+	setTimeout(() => {
+		document.removeEventListener(
+			"mousedown",
+			handleRestoreDefaultsConfirmationOutsideClick,
+		);
+		document.addEventListener(
+			"mousedown",
+			handleRestoreDefaultsConfirmationOutsideClick,
+		);
+	}, 0);
+}
+
+function closeRestoreDefaultTabsConfirmationPopup() {
+	const popup = document.getElementById(
+		`tabsRestoreDefaultsConfirmationPopup`,
+	);
+	if (!popup) return;
+
+	popup.style.display = `none`;
+	popup.innerHTML = `&nbsp;`;
+	document.removeEventListener(
+		"mousedown",
+		handleRestoreDefaultsConfirmationOutsideClick,
+	);
+}
+
+function handleRestoreDefaultsConfirmationOutsideClick(event) {
+	const popup = document.getElementById(
+		`tabsRestoreDefaultsConfirmationPopup`,
+	);
+	if (!popup) return;
+
+	if (!popup.contains(event.target)) {
+		closeRestoreDefaultTabsConfirmationPopup();
+		document.removeEventListener(
+			"mousedown",
+			handleRestoreDefaultsConfirmationOutsideClick,
+		);
+	}
+}
+
 function setWrapperFormat(wrapper, type) {
 	if (type === 0) {
 		wrapper.className = `f falc fje mr2`;
@@ -635,6 +716,15 @@ function handleError(wrapper, error) {
 	wrapper.innerHTML = `${error}. Server call failed.`;
 	if (error.toString().includes(`appears to be dead`)) SERVER = ``;
 	codeEnablePullButtons();
+}
+
+function handleInvalidData(wrapper) {
+	wrapper.innerHTML = addHTMLElement({
+		text: `Pulled data is somehow invalid. Cannot continue without it.`,
+		classes: `f fr w100 p5`,
+	});
+	codeEnablePullButtons();
+	return;
 }
 
 function addHTMLElements(eles) {

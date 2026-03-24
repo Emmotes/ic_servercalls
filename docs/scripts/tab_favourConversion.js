@@ -1,4 +1,4 @@
-const vfc = 1.002; // prettier-ignore
+const vfc = 1.003; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -39,6 +39,45 @@ let fc_convTarget = -1;
 let fc_stage1 = null;
 let fc_stage2 = null;
 let fc_stage3 = null;
+
+function fc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Favour</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							This page will let you convert favours that are able to be converted. You decide where they get converted to.
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="fc_pullFavourData()" name="favourPullButton" id="favourPullButton" value="Pull Favour Data" style="min-width:175px">
+							<span id="favourPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="favourWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="favourConvert">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function fc_pullFavourData() {
 	if (isBadUserData()) return;

@@ -1,8 +1,81 @@
-const voc = 1.035; // prettier-ignore
+const voc = 1.036; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
 const oc_amountUndefined = `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
+
+function oc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Open Chests</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%;position:relative">
+							This page will let you open any of the chests that you currently own.
+							<span class="f fc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
+								<span class="f fr falc">
+									<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="oc_toggleHideOpenChests()"> Hide All Briv Gear Chests
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="openChestsHideModron" data-ids="[230]" onclick="oc_toggleHideOpenChests()"> Hide Modron Component Chests
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="openChestsHideElectrum" data-ids="[282]" onclick="oc_toggleHideOpenChests()"> Hide Electrum Chests
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="openChestsHideBahamut" data-ids="[323]" onclick="oc_toggleHideOpenChests()"> Hide Glory of Bahamut Chests
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="openChestsHidePlatinumPacks" data-ids="[&quot;PP&quot;]" onclick="oc_toggleHideOpenChests()"> Hide Platinum Packs
+								</span>
+								<span class="f fc falc" style="text-align:center">
+									<span class="f fr falc">
+										<label class="p5" for="openChestsSliderFidelity">Open Amount Slider Fidelity:</label>
+										<select name="openChestsSliderFidelity" id="openChestsSliderFidelity" oninput="oc_toggleOpenChestsSliderFidelity(this.value);" style="width:70px">
+											<option value="1" selected>1</option>
+											<option value="10">10</option>
+											<option value="25">25</option>
+											<option value="50">50</option>
+											<option value="100">100</option>
+											<option value="250">250</option>
+											<option value="1000">1000</option>
+										</select>
+									</span>
+									<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+										Note: If the fidelity is larger than the maximum<br>amount you can open - it will use a fidelity of 1.
+									</span>
+								</span>
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="oc_pullOpenChestsData()" name="openChestsPullButton" id="openChestsPullButton" value="Pull Chest Data" style="min-width:175px">
+							<span id="openChestsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;<br>&nbsp;<br>&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="openChestsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="openChestsOpener">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function oc_pullOpenChestsData() {
 	if (isBadUserData()) return;
@@ -381,7 +454,7 @@ function oc_makeOpeningRow(amount, name, initAmount) {
 function oc_initOpenChestsHideChests() {
 	if (!ls_has(oc_LSKEY_hideChests)) return;
 	const hideChests = oc_getHiddenChestIds();
-	for (let ele of document.querySelectorAll('[id^="openChestsHide"]')) {
+	for (const ele of document.querySelectorAll('[id^="openChestsHide"]')) {
 		const eleIds = JSON.parse(ele.dataset.ids);
 		if (eleIds.some((v) => hideChests.includes(v))) ele.checked = true;
 		else ele.checked = false;
@@ -390,7 +463,7 @@ function oc_initOpenChestsHideChests() {
 
 function oc_toggleHideOpenChests() {
 	const chestIds = [];
-	for (let ele of document.querySelectorAll(
+	for (const ele of document.querySelectorAll(
 		"input[type='checkbox'][id^='openChestsHide'",
 	))
 		if (ele.checked) chestIds.push(...JSON.parse(ele.dataset.ids));
@@ -406,12 +479,14 @@ function oc_saveHiddenChestIds(chestIds) {
 }
 
 function oc_initOpenChestsSliderFidelity() {
+	const ele = document.getElementById(`openChestsSliderFidelity`);
+	if (!ele) return;
 	let fidelity = oc_getOpenChestsSliderFidelity();
 	if (![1, 10, 25, 50, 100, 250, 1000].includes(fidelity)) {
 		oc_toggleOpenChestsSliderFidelity(1);
 		fidelity = 1;
 	}
-	document.getElementById(`openChestsSliderFidelity`).value = fidelity;
+	ele.value = fidelity;
 }
 
 function oc_toggleOpenChestsSliderFidelity(fidelity) {

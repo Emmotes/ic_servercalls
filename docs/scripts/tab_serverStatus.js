@@ -1,4 +1,4 @@
-const vss = 2.019; // prettier-ignore
+const vss = 2.020; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -14,6 +14,53 @@ const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
+
+function ss_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Server Status</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+							<p>Press the button to load the latest cached server status.</p>
+							<p><em>Note: The cache is only updated approximately once every 5 minutes.</em></p>
+							<span class="f fc falc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
+								<span class="f fr falc">
+									<input type="checkbox" id="serverStatusShowMoreDetails" onclick="ss_toggleShowMoreDetails(this.checked)"> Show More Details
+								</span>
+								<span class="f fc falc" style="text-align:center">
+									<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+										<span><em>Note: Response times are measured from my<br>server running the status checks so won't be<br>representative of your connection.</em></span>
+									</span>
+								</span>
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="ss_pullServerStatusData()" name="checkServerStatusButton" id="checkServerStatusButton" value="Check Server Status" style="min-width:175px">
+							<span id="checkServerStatusButtonDisabled" class="f fjc" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="serverStatusWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function ss_pullServerStatusData() {
 	ss_setCooldownUntil(Date.now() + ss_MIN_RECHECK_MS);

@@ -1,4 +1,44 @@
-const vcc = 1.008; // prettier-ignore
+const vcc = 1.009; // prettier-ignore
+
+function cc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Claim Celebration Codes</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%">
+							<p>This page will let you claim celebration codes for the current day.</p>
+							<p><em>Note: This will not tell you what's in any of the rewards - so if you care about that - redeem the combinations via some other tool that will.</em></p>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="cc_pullCelebrationsData()" name="celebrationsPullButton" id="celebrationsPullButton" value="Pull Celebrations Data" style="min-width:175px">
+							<span id="celebrationsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="celebrationsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="celebrationsClaimer">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function cc_pullCelebrationsData() {
 	if (isBadUserData()) return;

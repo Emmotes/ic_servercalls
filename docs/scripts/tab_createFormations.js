@@ -1,4 +1,4 @@
-vcf = 1.016; // prettier-ignore
+vcf = 1.017; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -70,6 +70,50 @@ let cf_builderState;
 let cf_activeFeatHeroId = -1;
 let cf_selectedHeroId = null;
 let cf_familiarGridPages = {curr: 1, max: -1};
+
+function cf_tab() {
+	return `
+					<span class="p5" style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px;">
+						<span class="f fc w100 p5">
+							<span class="f fr w100 p5">
+								<span class="f falc fjs ml2" style="width:100%">
+									<h1>Create Formation Saves</h1>
+								</span>
+							</span>
+							<span class="f fr w100 p5">
+								<span class="f fc fals fjs ml2" style="width:100%">
+									<p>This page lets you build formations and save them to the game or to your browser or even a share string to give to others.</p>
+								</span>
+							</span>
+							<span class="f fr w100 p5">
+								&nbsp;
+							</span>
+							<span class="f fr w100 p5" style="height:34px;">
+								<span class="f falc fje mr2" style="width:100%;">
+									<input type="button" onClick="cf_pullFormationSaves()" name="createFormationsPullButton" id="createFormationsPullButton" value="Pull Formation Save Data" style="min-width:175px;margin-right:30px">
+									<span id="createFormationsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+								</span>
+							</span>
+						</span>
+						<span id="cf_importsSection" class="f fc fals fjs">&nbsp;</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="createFormsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="createFormsCreator">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function cf_pullFormationSaves() {
 	if (isBadUserData()) return;

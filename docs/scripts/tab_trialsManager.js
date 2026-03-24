@@ -1,8 +1,47 @@
-const vtm = 1.019; // prettier-ignore
+const vtm = 1.020; // prettier-ignore
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
 let tm_diffs;
+
+function tm_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Trials Manager</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							This page will provide information about your current trials as well as let you join or create a lobby as well as choose a champion and claim rewards.
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="tm_pullData()" name="trialsPullButton" id="trialsPullButton" value="Pull Trials Data" style="min-width:175px">
+							<span id="trialsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="trialsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="trialsInfo">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function tm_pullData(forceCalled) {
 	clearTimers(`tm_`);

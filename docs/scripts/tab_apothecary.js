@@ -1,4 +1,4 @@
-const vap = 2.008; // prettier-ignore
+const vap = 2.009; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
@@ -11,6 +11,68 @@ let ap_vessels = null;
 let ap_brewCosts = null;
 let ap_enhanceGraph = null;
 let ap_enhanceChains = null;
+
+function ap_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Apothecary</h1>
+						</span>
+					</span>
+					
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+							<p>This page will allow you to quickly use the Apothecary for various specific purposes.</p>
+							<span class="f fc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
+								<span class="f fc fals" style="font-size:1.1em">
+									<b>Distilling:</b>
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="apothecaryDistExcludeFireBreath" data-buff="Fire Breath" onclick="ap_toggleExcludePotions(this)"> Exclude Fire Breath Potions
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="apothecaryDistIncludeSpec" onclick="ap_toggleIncludePotions(this)"> Include Specialisation Potions
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="apothecaryDistIncludePoP" onclick="ap_toggleIncludePotions(this)"> Include Potions of Polish
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="apothecaryDistInclude7Days" onclick="ap_toggleIncludePotions(this)"> Include 7 Day Potions
+								</span>
+								<span class="f fc falc" style="text-align:center">
+									<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
+										Note: Gem Hunter, Golden Epic and<br>Legendary Potions will <em>never</em> be distilled.
+									</span>
+								</span>
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="ap_pullApothecaryData()" name="apothecaryPullButton" id="apothecaryPullButton" value="Pull Apothecary Data" style="min-width:175px">
+							<span id="apothecaryPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="apothecaryInventoryWrapper" id="apothecaryInventory">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="apothecaryWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function ap_pullApothecaryData() {
 	if (isBadUserData()) return;

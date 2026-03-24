@@ -1,9 +1,62 @@
-const vbs = 1.017; // prettier-ignore
+const vbs = 1.018; // prettier-ignore
 let bs_ownedChamps = {};
 let bs_ownedChampsByName = {};
 let bs_champLoot = {};
 let bs_blacksmiths = {};
 let bs_lootDefs = {};
+
+function bs_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Blacksmith Contracts</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjc ml2" style="width:100%">
+							This page will let you apply blacksmith contracts to champions you own. There are three methods.
+							<span class="bscMethodGrid">
+								<span style="font-size:1.2em"><strong>General</strong></span>
+								<span>This will apply a chosen amount of a chosen type of blacksmiths to a chosen champion. This is how it works in-game.</span>
+								<span style="font-size:1.2em"><strong>Average</strong></span>
+								<span>This will only apply enough blacksmiths to reach the chosen average iLvl value to the chosen champion.</span>
+								<span style="font-size:1.2em"><strong>Specific</strong></span>
+								<span>This will only apply enough blacksmiths to reach a specific iLvl on a specific item slot of the chosen champion. This method is slow.</span>
+							</span>
+							<span style="color:var(--TangerineYellow)">
+								Please be <strong>very</strong> careful with this tab. I don't want to read any complaints about you spending ilvls where you didn't want to because you chose the wrong settings. You'll only have yourself to blame.
+							</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="bs_pullBSCData()" name="bscPullButton" id="bscPullButton" value="Pull BSC Data" style="min-width:175px">
+							<span id="bscPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="bscWrapper">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column;visibility:hidden" id="bscWrapperType">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="bscSpender">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function bs_pullBSCData() {
 	if (isBadUserData()) return;

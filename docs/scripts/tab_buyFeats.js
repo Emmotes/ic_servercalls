@@ -1,4 +1,44 @@
-const vbf = 1.015; // prettier-ignore
+const vbf = 1.016; // prettier-ignore
+
+function bf_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Buy Unowned Gem Feats</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%">
+							<p>This page will let you buy any gem feat that is available that you don't already own. Mainly it's for people who want to buy every gem feat in the game regardless of what they do - which is why so little information is given.</p>
+							<p><em>Note: Any feats bought this way will not count to the three achievements that require purchasing feats with gems: <code>Gems For Power</code> (1 feat), <code>Gem Sink</code> (20 feats) and <code>Purchasing Power</code> (80 feats). They must be completed by buying the feats in-game.</em></p>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="bf_pullFeatsData()" name="featsPullButton" id="featsPullButton" value="Pull Feat Data" style="min-width:175px">
+							<span id="featsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="featsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc falc w100 fje mr2" id="featsBuyer">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function bf_pullFeatsData() {
 	if (isBadUserData()) return;

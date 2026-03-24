@@ -1,10 +1,52 @@
-const vlf = 1.002; // prettier-ignore
+const vlf = 1.003; // prettier-ignore
 const lf_LSKEY_maintainScales = `scLegendariesMaintain`;
 const lf_forgeState = {atMost: -1, maintainScales: -1};
 const lf_forgeOpts = [1, 2, 3, 4, 5, 6];
 const lf_DEFAULT_maintainScales = 1111;
 let lf_itemsByChampId = null;
 let lf_scales = null;
+
+function lf_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Legendary Forger</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
+							<p style="color:var(--TangerineYellow);font-size:1.2em;">Warning: If you don't have full level 20 legendaries on your
+								main team - you should absolutely NOT be using this tab.</p>
+							<p>This page will let you forge legendaries on lots of champions up to a maximum of 1-6 (chooseable) per champion.
+								Primarily this is for forging all slot 1s in preparation for a Legendary Dismantle - so you can always forge at a cost of 500 scales
+								 - and then use the resulting potions later to Full Legendary.</p>
+							<p>This works by always forging the cheapest and lowest slot legendary it can on the lowest champion-id champion that it can.</p>
+							<p><em>Note: With the legendary rework apparently soon upon us - I have put little effort into the UI. It will likely have to be scrapped when the rework goes live.</em></p>
+						</span>
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="lf_pullData()" name="legendariesPullButton" id="legendariesPullButton" value="Pull Legendaries Data" style="min-width:175px">
+							<span id="legendariesPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="legendariesWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fc fals w100 fjc mr2" id="legendariesInfo">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function lf_pullData() {
 	clearTimers(`lf_`);

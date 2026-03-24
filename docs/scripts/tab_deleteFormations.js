@@ -1,4 +1,43 @@
-const vdf = 1.020; // prettier-ignore
+const vdf = 1.021; // prettier-ignore
+
+function df_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Delete Formation Saves</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f fc fals fjs ml2" style="width:100%">
+							<p>This page will let you pick and choose any formation saves you have and delete them. The aim of this is to lower the amount of data you need to download every time the game restarts or the modron resets - since the server pulls ALL of your formation saves every time.</p>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="df_pullFormationSaves()" name="deleteFormationsPullButton" id="deleteFormationsPullButton" value="Pull Formation Save Data" style="min-width:175px">
+							<span id="deleteFormationsPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="deleteFormsWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="deleteFormsDeleter">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function df_pullFormationSaves() {
 	if (isBadUserData()) return;

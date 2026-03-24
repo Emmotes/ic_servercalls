@@ -1,4 +1,40 @@
-const vsc = 1.008; // prettier-ignore
+const vsc = 1.009; // prettier-ignore
+
+function sc_tab() {
+	return `
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							<h1>Shinies Calculator</h1>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						<span class="f falc fjs ml2" style="width:100%">
+							This page will tell you how many shinies you can get on-average from your current amount of event tokens - as well as what you could get if you used every single one of your bounty contracts.
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5" style="height:34px;">
+						<span class="f falc fje mr2" style="width:50%;">
+							<input type="button" onClick="sc_pullShiniesData()" name="shiniesPullButton" id="shiniesPullButton" value="Pull Shinies Data" style="min-width:175px">
+							<span id="shiniesPullButtonDisabled" style="font-size:0.9em" hidden>&nbsp;</span>
+						</span>
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f falc fje mr2" style="flex-direction:column" id="shiniesWrapper">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
+				`;
+}
 
 async function sc_pullShiniesData() {
 	if (isBadUserData()) return;

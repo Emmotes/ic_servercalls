@@ -1,4 +1,4 @@
-const vu = 1.004; // prettier-ignore
+const vu = 1.005; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -43,10 +43,29 @@ const u_FEATURE_UPDATES = new Map([
 			tab: "favour",
 		},
 	],
+	[
+		4,
+		{
+			id: 4,
+			date: "2026-03-24",
+			title: "New Option: Tab Edit Mode",
+			list: [
+				'Located in the settings menu - under "Tab Layout Controls".',
+				'Just click "Enable Tab Edit Mode" in the settings. When you\'re done - click it again.',
+				"While enabled - it lets you change the order of tabs by dragging the ⋮⋮ symbol.",
+				"It also lets you show or hide tabs by clicking the ✔️ or ❌ symbols.",
+				"The layouts are stored per-account.",
+			],
+			setting: true,
+		},
+	],
 ]);
 let u_currentUnseenUpdateIds = new Set([]);
 
 function u_displayUnseenUpdates() {
+	const cont = document.getElementById(u_updatesContainer);
+	if (cont) cont.outerHTML = ``;
+
 	const allIds = [...u_FEATURE_UPDATES.keys()];
 	const seenIds = u_getSeenUpdates();
 	const unseenIds = allIds
@@ -89,6 +108,8 @@ function u_displayUnseenUpdates() {
 				);
 				if (tab) tab.classList.add(`hasUnseenUpdate`);
 			}
+			if (update?.setting && settingsContainer)
+				settingsContainer.classList.add(`hasUnseenUpdate`);
 		}
 	}
 
