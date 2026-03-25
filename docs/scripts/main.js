@@ -1,4 +1,4 @@
-const v = 4.053; // prettier-ignore
+const v = 4.054; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -59,14 +59,14 @@ function init() {
 	accountLoading();
 	oldLocalStorageMigrations();
 
+	t_initTabs();
+
 	u_displayUnseenUpdates();
 
 	refreshSettingsList();
 	window.addEventListener("hashchange", () => {
 		swapTab();
 	});
-
-	t_initTabs();
 
 	initSettingsNumberFormat();
 	initPullButtonStuff();
