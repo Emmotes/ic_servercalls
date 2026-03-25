@@ -1,4 +1,4 @@
-const v = 4.052; // prettier-ignore
+const v = 4.053; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -785,26 +785,34 @@ function dateFormat(input, options = {}) {
 }
 
 function getDisplayTime(timeMs, options = {}) {
-	const {showMs = false, showSecs = true, style = "medium"} = options;
+	const {
+		showMs = false,
+		showSecs = true,
+		style = "medium",
+		pad = true,
+	} = options;
 
-	let ms = Math.max(0, Number(timeMs) || 0);
+	// Note: Always pad milliseconds.
+	const getPad = (t, p) => (pad ? padZeros(t, p) : t);
+
+	const ms = Math.max(0, Number(timeMs) || 0);
 
 	const totalSeconds = Math.floor(ms / 1000);
 	const milliseconds = ms % 1000;
 
-	let seconds = totalSeconds % 60;
-	let minutes = Math.floor(totalSeconds / 60) % 60;
-	let hours = Math.floor(totalSeconds / 3600) % 24;
-	let days = Math.floor(totalSeconds / 86400);
+	const seconds = totalSeconds % 60;
+	const minutes = Math.floor(totalSeconds / 60) % 60;
+	const hours = Math.floor(totalSeconds / 3600) % 24;
+	const days = Math.floor(totalSeconds / 86400);
 
 	if (style === "clock") {
 		const totalHours = Math.floor(totalSeconds / 3600);
 		const base =
-			padZeros(totalHours, 2) +
+			getPad(totalHours, 2) +
 			":" +
-			padZeros(minutes, 2) +
+			getPad(minutes, 2) +
 			":" +
-			padZeros(seconds, 2);
+			getPad(seconds, 2);
 
 		return showMs ? base + "." + padZeros(milliseconds, 3) : base;
 	}
@@ -818,17 +826,13 @@ function getDisplayTime(timeMs, options = {}) {
 		parts.push(`${hours} ${hours === 1 ? u.h[0] : u.h[1]}`);
 
 	if (days > 0 || hours > 0 || minutes > 0)
-		parts.push(
-			`${padZeros(minutes, 2)} ${minutes === 1 ? u.m[0] : u.m[1]}`,
-		);
+		parts.push(`${getPad(minutes, 2)} ${minutes === 1 ? u.m[0] : u.m[1]}`);
 
 	if (
 		showSecs &&
 		(!showMs || days > 0 || hours > 0 || minutes > 0 || seconds > 0)
 	)
-		parts.push(
-			`${padZeros(seconds, 2)} ${seconds === 1 ? u.s[0] : u.s[1]}`,
-		);
+		parts.push(`${getPad(seconds, 2)} ${seconds === 1 ? u.s[0] : u.s[1]}`);
 
 	if (showMs) parts.push(`${padZeros(milliseconds, 3)} ${u.ms[0]}`);
 

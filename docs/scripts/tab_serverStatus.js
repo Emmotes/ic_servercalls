@@ -1,4 +1,4 @@
-const vss = 2.020; // prettier-ignore
+const vss = 2.021; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -9,13 +9,18 @@ const ss_SVG_verySlow = ss_SVG_slow.replace("TangerineYellow", "Carrot");
 const ss_SLOW_THRESHOLD_MS = 1.5 * 1000; // 1.5 seconds
 const ss_VERYSLOW_THRESHOLD_MS = 3 * 1000; // 3 seconds
 const ss_MIN_RECHECK_MS = 30 * 1000; // 30 seconds
-const ss_CACHE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const ss_CACHE_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
 
 function ss_tab() {
+	const retry = getDisplayTime(ss_CACHE_INTERVAL_MS, {
+		showSecs: false,
+		style: "long",
+		pad: false,
+	});
 	return `
 					<span class="f fr w100 p5">
 						<span class="f falc fjs ml2" style="width:100%">
@@ -25,7 +30,7 @@ function ss_tab() {
 					<span class="f fr w100 p5">
 						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
 							<p>Press the button to load the latest cached server status.</p>
-							<p><em>Note: The cache is only updated approximately once every 5 minutes.</em></p>
+							<p><em>Note: The cache is only updated approximately once every ${retry}.</em></p>
 							<span class="f fc falc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
 								<span class="f fr falc">
 									<input type="checkbox" id="serverStatusShowMoreDetails" onclick="ss_toggleShowMoreDetails(this.checked)"> Show More Details
@@ -133,7 +138,10 @@ function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
 	if (statusData?.checkedDurationMs > 0) {
 		const lastCheckedDur =
 			`It took ` +
-			getDisplayTime(statusData?.checkedDurationMs, {showMs: true}) +
+			getDisplayTime(statusData?.checkedDurationMs, {
+				showMs: true,
+				pad: false,
+			}) +
 			` to complete the process.`;
 		blurbRows.push({
 			text: lastCheckedDur,
@@ -221,7 +229,7 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 
 		const resTime =
 			ss_translateServerError(r.error) ||
-			getDisplayTime(r.responseTimeMs, {showMs: true});
+			getDisplayTime(r.responseTimeMs, {showMs: true, pad: false});
 		txt += ss_addServerStatusRow([
 			{text: r.server + `:`, classes: eFlex},
 			{text: alive, classes: cFlex},
@@ -273,7 +281,10 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 
 		const serverList = arrayToListReadable(servers, {symbolAnd: true});
 		const started = dateFormat(startedAt);
-		const duration = getDisplayTime(endedAt - startedAt, {showSecs: false});
+		const duration = getDisplayTime(endedAt - startedAt, {
+			showSecs: false,
+			pad: false,
+		});
 		txt += ss_addServerStatusRow([
 			{
 				text: started,
@@ -425,7 +436,8 @@ function ss_startAgeTicker(wrapper) {
 		for (const n of nodes) {
 			const iso = n.getAttribute(`data-ss-age-iso`);
 			const ageMs = ss_getAgeMs(iso, nowMs);
-			n.textContent = ageMs === null ? `-` : getDisplayTime(ageMs);
+			n.textContent =
+				ageMs === null ? `-` : getDisplayTime(ageMs, {pad: false});
 		}
 	};
 
@@ -477,7 +489,7 @@ function ss_setCooldownUntil(untilMs) {
 
 		const fakePastIso = new Date(nowMs - remainingMs).toISOString();
 		const ageMs = ss_getAgeMs(fakePastIso, nowMs);
-		const countdown = getDisplayTime(ageMs);
+		const countdown = getDisplayTime(ageMs, {pad: false});
 
 		disabled.textContent = `Next update in ${countdown}.`;
 	};
