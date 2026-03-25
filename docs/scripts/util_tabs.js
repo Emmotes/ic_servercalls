@@ -1,4 +1,4 @@
-const vt = 1.000; // prettier-ignore
+const vt = 1.001; // prettier-ignore
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -39,26 +39,25 @@ function t_loadTabSettings() {
 
 	t_editMode = false;
 
-	let tabs = t_DEFAULT_TABS.map((tab) => ({...tab}));
+	let tabs = [];
 
-	if (
-		order &&
-		Array.isArray(order) &&
-		order.length === t_DEFAULT_TABS.length
-	) {
+	if (order && Array.isArray(order) && order.length > 0) {
 		tabs = order
 			.map((tabId) => {
 				const defaultTab = t_DEFAULT_TABS.find((t) => t.id === tabId);
 				return defaultTab ? {...defaultTab} : null;
 			})
 			.filter(Boolean);
-	}
+
+		const tabIds = tabs.map((t) => t.id);
+		const newTabs = t_DEFAULT_TABS.filter((t) => !tabIds.includes(t.id));
+		tabs = tabs.concat(newTabs);
+	} else tabs = t_DEFAULT_TABS.map((tab) => ({...tab}));
 
 	if (visibility && typeof visibility === "object") {
 		tabs.forEach((tab) => {
-			if (visibility[tab.id] !== undefined) {
+			if (visibility[tab.id] !== undefined)
 				tab.visible = visibility[tab.id];
-			}
 		});
 	}
 
