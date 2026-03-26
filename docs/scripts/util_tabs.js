@@ -1,4 +1,4 @@
-const vt = 1.001; // prettier-ignore
+const vt = 1.002; // prettier-ignore
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -98,10 +98,15 @@ function t_generateTabHTML() {
 		});
 	}
 
-	t_currentTabs.forEach((tab, index) => {
+	let firstVisibleChecked = false;
+	t_currentTabs.forEach((tab) => {
 		if (!t_editMode && !tab.visible) return;
 
-		const isChecked = index === 0 && !t_editMode;
+		let isChecked = false;
+		if (!t_editMode && !firstVisibleChecked) {
+			isChecked = true;
+			firstVisibleChecked = true;
+		}
 		const tabClass =
 			t_editMode ?
 				`t_tabsLabel ${!tab.visible ? " t_hiddenTab" : ""}`
