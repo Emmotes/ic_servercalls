@@ -1,4 +1,4 @@
-const vss = 2.024; // prettier-ignore
+const vss = 2.025; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -120,7 +120,7 @@ async function ss_displayServerStatusData(
 
 	txt += ss_buildOutagesSection(statusData, sFlex, sCol);
 
-	txt += ss_buildGraphSection(statusData, sFlex, sCol);
+	txt += ss_buildGraphSection(sFlex, sCol);
 
 	txt += ss_buildKeys(results);
 
@@ -327,11 +327,21 @@ function ss_buildGraphSection(sFlex, sCol) {
 			header: true,
 			gridCol: sCol,
 		},
+		{
+			text:
+				`The server status checker will occasionally be moved geographically. ` +
+				`This will show up as step-like variations in the response times.`,
+			classes: sFlex,
+			styles: `padding-left:20px;`,
+			dim: true,
+			small: true,
+			gridCol: sCol,
+		},
 	]);
 
 	txt += ss_addSingleServerStatusRow(
 		`<canvas id="ss_history" width="1000" height="650" ` +
-		`style="border-radius:5px;box-shadow:5px 5px 15px var(--CodGrey);" ` +
+			`style="border-radius:5px;box-shadow:5px 5px 15px var(--CodGrey);" ` +
 			`area-label="Server Status History Graph" role="img"></canvas>`,
 	);
 
