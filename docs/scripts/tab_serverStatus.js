@@ -1,4 +1,4 @@
-const vss = 2.025; // prettier-ignore
+const vss = 2.026; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -595,8 +595,9 @@ async function ss_populateGraph(statusData) {
 	const servers = Array.from(allServers).sort(ss_compare);
 
 	// Resize canvas to account for max response time.
-	const maxY = Math.ceil(maxResponse / 1000) * 1000;
-	ele.height = Math.round((maxY / ss_TIMEOUT_MS) * 530) + 120;
+	const thousands = Math.ceil(maxResponse / 1000);
+	const maxY = thousands * 1000;
+	ele.height = 104 + thousands * 40;
 
 	// Prepare data for Chart.js
 	const labels = history.map((entry) => {
@@ -636,7 +637,7 @@ async function ss_populateGraph(statusData) {
 	const colourBorder = "rgba(255,255,255,1)";
 	const colourGrid = "rgba(118,118,118,1)";
 
-	const plugin = {
+	const customBgPlugin = {
 		id: "customCanvasBackgroundColor",
 		beforeDraw: (chart, args, options) => {
 			const {ctx} = chart;
@@ -712,17 +713,17 @@ async function ss_populateGraph(statusData) {
 				},
 			},
 		},
-		plugins: [plugin],
+		plugins: [customBgPlugin],
 	});
 
-	// Enforce 30min/60min tick labels on the x axis (category labels from timestamps).
+	// Enforce correct tick labels on the x axis.
 	if (
 		chart &&
 		chart.options &&
 		chart.options.scales &&
 		chart.options.scales.x
 	) {
-		// Pre-compute which indices have 30-min labels.
+		// Pre-compute which indices are allowed labels.
 		const tickIndices = [];
 		for (let i = 0; i < labels.length; i++) {
 			if (shouldShowTimeTick(labels[i])) {
@@ -740,14 +741,14 @@ async function ss_populateGraph(statusData) {
 			},
 		};
 
-		// Disable default grid lines; we'll draw custom ones.
+		// Disable default grid lines; draw custom ones later.
 		chart.options.scales.x.grid = {
 			...chart.options.scales.x.grid,
 			display: false,
 		};
 
-		// Plugin to draw vertical grid lines only at 30-minute positions.
-		const customGridPlugin = {
+		// Plugin to draw vertical grid lines only at allowed positions.
+		const xAxisGridPlugin = {
 			id: "customGridLines",
 			afterDraw(chartInstance) {
 				const {ctx, chartArea, scales} = chartInstance;
@@ -773,17 +774,10 @@ async function ss_populateGraph(statusData) {
 		};
 
 		// Add the custom grid plugin.
-		chart.config.plugins.push(customGridPlugin);
+		chart.config.plugins.push(xAxisGridPlugin);
 
 		chart.update();
 	}
-}
-
-function ss_initServerStatusSettings() {
-	const responseTimesEle = document.getElementById(
-		`serverStatusShowMoreDetails`,
-	);
-	if (responseTimesEle) responseTimesEle.checked = ss_getShowMoreDetails();
 }
 
 function ss_getColorForServer(index, alpha = 1) {
@@ -808,6 +802,13 @@ function ss_getColorForServer(index, alpha = 1) {
 		[181, 229, 232], // Pastel Cyan
 	]; // prettier-ignore
 	return `rgba(${colours[index % colours.length].join(",")},${alpha})`;
+}
+
+function ss_initServerStatusSettings() {
+	const responseTimesEle = document.getElementById(
+		`serverStatusShowMoreDetails`,
+	);
+	if (responseTimesEle) responseTimesEle.checked = ss_getShowMoreDetails();
 }
 
 function ss_getShowMoreDetails() {
