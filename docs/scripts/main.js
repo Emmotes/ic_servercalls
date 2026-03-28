@@ -1,4 +1,4 @@
-const v = 4.054; // prettier-ignore
+const v = 4.055; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -740,6 +740,7 @@ function addHTMLElement(ele) {
 		: ele.small ? `font-size:0.9em;`
 		: ``;
 	if (ele.fs != null && style === ``) style += `font-size:${ele.fs}em;`;
+	if (ele.dim) style += `opacity:0.85;`;
 	if (ele.styles != null) style += ele.styles;
 	if (ele.hide) style += `display:none;`;
 	if (ele.gridCol != null) style += `grid-column:${ele.gridCol};`;

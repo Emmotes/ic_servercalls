@@ -1,4 +1,4 @@
-const vss = 2.021; // prettier-ignore
+const vss = 2.023; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -120,6 +120,8 @@ async function ss_displayServerStatusData(
 
 	txt += ss_buildOutagesSection(statusData, sFlex, sCol);
 
+	txt += ss_buildGraphSection(statusData, sFlex, sCol);
+
 	txt += ss_buildKeys(results);
 
 	setWrapperFormat(wrapper, 4);
@@ -127,6 +129,7 @@ async function ss_displayServerStatusData(
 	ss_toggleShowMoreDetails();
 	ss_startAgeTicker(wrapper);
 	ss_applyCooldownFromStatus(statusData, allowExtend);
+	ss_populateGraph(statusData);
 }
 
 function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
@@ -182,12 +185,12 @@ function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
 		}
 	}
 
-	return ss_addServerStatusRow(blurbRows);
+	return addHTMLElements(blurbRows);
 }
 
 function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 	let txt = ``;
-	txt += ss_addServerStatusRow([
+	txt += addHTMLElements([
 		{text: `Server`, classes: eFlex, header: true},
 		{text: `Status`, classes: cFlex, header: true},
 		{
@@ -230,7 +233,7 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 		const resTime =
 			ss_translateServerError(r.error) ||
 			getDisplayTime(r.responseTimeMs, {showMs: true, pad: false});
-		txt += ss_addServerStatusRow([
+		txt += addHTMLElements([
 			{text: r.server + `:`, classes: eFlex},
 			{text: alive, classes: cFlex},
 			{
@@ -262,14 +265,12 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 	const ind1 = `padding-left:20px;`;
 	const ind2 = `padding-left:40px;`;
 
-	txt += ss_addServerStatusRow([
-		{
-			text: `Recent Server Outages`,
-			classes: sFlex,
-			header: true,
-			gridCol: sCol,
-		},
-	]);
+	txt += addHTMLElement({
+		text: `Recent Server Outages`,
+		classes: sFlex,
+		header: true,
+		gridCol: sCol,
+	});
 
 	for (const outage of statusData.outages) {
 		const startedAt = ss_roundToNearestCacheInterval(outage.startedAt);
@@ -285,7 +286,7 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 			showSecs: false,
 			pad: false,
 		});
-		txt += ss_addServerStatusRow([
+		txt += addHTMLElements([
 			{
 				text: started,
 				classes: sFlex,
@@ -310,6 +311,29 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 			},
 		]);
 	}
+
+	txt += ss_addSingleServerStatusRow("&nbsp;");
+
+	return txt;
+}
+
+function ss_buildGraphSection(sFlex, sCol) {
+	let txt = ``;
+
+	txt += addHTMLElements([
+		{
+			text: `Past 24 Hours`,
+			classes: sFlex,
+			header: true,
+			gridCol: sCol,
+		},
+	]);
+
+	txt += ss_addSingleServerStatusRow(
+		`<canvas id="ss_history" width="1000" height="650" ` +
+		`style="border-radius:5px;box-shadow:5px 5px 15px var(--CodGrey);" ` +
+			`area-label="Server Status History Graph" role="img"></canvas>`,
+	);
 
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
@@ -367,31 +391,12 @@ function ss_compare(a, b) {
 	return an - bn;
 }
 
-function ss_addServerStatusRow(columns) {
-	let txt = ``;
-	for (let column of columns) {
-		let style =
-			column.header ? `font-size:1.2em;`
-			: column.large ? `font-size:1.1em;`
-			: column.small ? `font-size:0.9em;`
-			: ``;
-		if (column.dim != null) style += `opacity:0.85;`;
-		if (column.styles != null) style += column.styles;
-		if (column.hide) style += `display:none;`;
-		if (column.gridCol != null) style += `grid-column:${column.gridCol};`;
-		if (style !== ``) style = ` style="${style}"`;
-		let id = column.id != null ? ` id="${column.id}"` : ``;
-		let data = ``;
-		if (column.data != null && typeof column.data === "object")
-			for (let key in column.data)
-				data += ` data-${key}="${column.data[key]}"`;
-		txt += `<span class="${column.classes || `f fr falc fjc`}"${id}${data}${style}>${column.text || `&nbsp;`}</span>`;
-	}
-	return txt;
-}
-
 function ss_addSingleServerStatusRow(msg) {
-	return `<span class="f falc fjs" style="grid-column:1 / -1">${msg}</span>`;
+	return addHTMLElement({
+		text: msg,
+		classes: `f falc fjs`,
+		gridCol: `1 / -1`,
+	});
 }
 
 function ss_translateServerError(error) {
@@ -558,11 +563,243 @@ function ss_toggleShowMoreDetails(checked) {
 	for (let ele of eles) ele.style.display = checked ? `` : `none`;
 }
 
+async function ss_populateGraph(statusData) {
+	const history = statusData?.history ?? [];
+	if (!Array.isArray(history) || history.length === 0) return;
+
+	const ele = document.getElementById(`ss_history`);
+	if (!ele) return;
+
+	// Collect all unique servers and max response time
+	let maxResponse = 0;
+	const allServers = new Set();
+	for (const entry of history) {
+		if (entry.results && typeof entry.results === "object") {
+			for (const server in entry.results) {
+				allServers.add(server);
+				if (entry.results[server] > maxResponse)
+					maxResponse = entry.results[server];
+			}
+		}
+	}
+	const servers = Array.from(allServers).sort(ss_compare);
+
+	// Resize canvas to account for max response time.
+	console.log("Max response time:", maxResponse);
+	const maxY = Math.ceil(maxResponse / 1000) * 1000;
+	ele.height = Math.round((maxY / ss_TIMEOUT_MS) * 530) + 120;
+
+	// Prepare data for Chart.js
+	const labels = history.map((entry) => {
+		const date = new Date(entry.checkedAt);
+		return Intl.DateTimeFormat("en-GB", {
+			timeStyle: "short",
+			hour12: false,
+		}).format(date);
+	});
+	console.log("labels", labels);
+
+	const timeTickRegex = /(\d{1,2}):(\d{2})/;
+	const shouldShowTimeTick = (label) => {
+		const parts = timeTickRegex.exec(label);
+		if (!parts || parts.length < 3) return false;
+		const minutes = Number(parts[1]) * 60 + Number(parts[2]);
+		return minutes % 60 === 0;
+	};
+
+	const datasets = [];
+	let i = 0;
+	for (const server of servers) {
+		const colour = ss_getColorForServer(i++);
+		datasets.push({
+			label: server,
+			data: history.map((entry) => entry.results?.[server] ?? null),
+			borderColor: colour,
+			borderWidth: 1,
+			backgroundColor: colour,
+			fill: false,
+			tension: 0,
+			pointStyle: false,
+		});
+	}
+
+	const colourBg = "rgba(49,49,49,1)";
+	const colourText = "rgba(215,205,217,1)";
+	const colourBorder = "rgba(255,255,255,1)";
+	const colourGrid = "rgba(118,118,118,1)";
+
+	const plugin = {
+		id: "customCanvasBackgroundColor",
+		beforeDraw: (chart, args, options) => {
+			const {ctx} = chart;
+			ctx.save();
+			ctx.globalCompositeOperation = "destination-over";
+			ctx.fillStyle = options.color || "rgba(0,0,0,0)";
+			ctx.fillRect(0, 0, chart.width, chart.height);
+			ctx.restore();
+		},
+	};
+
+	// Create the chart
+	const chart = new Chart(ele, {
+		type: "line",
+		data: {
+			labels: labels,
+			datasets: datasets,
+		},
+		options: {
+			responsive: false,
+			maintainAspectRatio: false,
+			layout: {
+				padding: {
+					top: 10,
+					left: 10,
+					bottom: 10,
+					right: 20,
+				},
+			},
+			scales: {
+				x: {
+					display: true,
+					title: {
+						display: true,
+						text: "Time",
+						color: colourText,
+					},
+					border: {color: colourBorder},
+					ticks: {color: colourText},
+					grid: {color: colourGrid},
+				},
+				y: {
+					display: true,
+					title: {
+						display: true,
+						text: "Response Time (ms)",
+						color: colourText,
+					},
+					border: {color: colourBorder},
+					ticks: {color: colourText},
+					grid: {color: colourGrid},
+					min: 0,
+					max: maxY,
+				},
+			},
+			plugins: {
+				legend: {
+					display: true,
+					position: "top",
+					labels: {
+						color: colourText,
+						boxWidth: 20,
+						boxHeight: 3,
+						padding: 12,
+					},
+				},
+				tooltip: {
+					mode: "index",
+					intersect: false,
+				},
+				customCanvasBackgroundColor: {
+					color: colourBg,
+				},
+			},
+		},
+		plugins: [plugin],
+	});
+
+	// Enforce 30min/60min tick labels on the x axis (category labels from timestamps).
+	if (
+		chart &&
+		chart.options &&
+		chart.options.scales &&
+		chart.options.scales.x
+	) {
+		// Pre-compute which indices have 30-min labels.
+		const tickIndices = [];
+		for (let i = 0; i < labels.length; i++) {
+			if (shouldShowTimeTick(labels[i])) {
+				tickIndices.push(i);
+			}
+		}
+
+		chart.options.scales.x.ticks = {
+			...chart.options.scales.x.ticks,
+			autoSkip: false,
+			maxRotation: 0,
+			callback: function (value) {
+				const label = labels[value];
+				return shouldShowTimeTick(label) ? label : "";
+			},
+		};
+
+		// Disable default grid lines; we'll draw custom ones.
+		chart.options.scales.x.grid = {
+			...chart.options.scales.x.grid,
+			display: false,
+		};
+
+		// Plugin to draw vertical grid lines only at 30-minute positions.
+		const customGridPlugin = {
+			id: "customGridLines",
+			afterDraw(chartInstance) {
+				const {ctx, chartArea, scales} = chartInstance;
+				const xScale = scales.x;
+				if (!xScale) return;
+
+				ctx.save();
+				ctx.strokeStyle = colourGrid;
+				ctx.lineWidth = 1;
+
+				for (const idx of tickIndices) {
+					const pixel = xScale.getPixelForValue(idx);
+					if (pixel >= chartArea.left && pixel <= chartArea.right) {
+						ctx.beginPath();
+						ctx.moveTo(pixel, chartArea.top);
+						ctx.lineTo(pixel, chartArea.bottom);
+						ctx.stroke();
+					}
+				}
+
+				ctx.restore();
+			},
+		};
+
+		// Add the custom grid plugin.
+		chart.config.plugins.push(customGridPlugin);
+
+		chart.update();
+	}
+}
+
 function ss_initServerStatusSettings() {
 	const responseTimesEle = document.getElementById(
 		`serverStatusShowMoreDetails`,
 	);
 	if (responseTimesEle) responseTimesEle.checked = ss_getShowMoreDetails();
+}
+
+function ss_getColorForServer(index, alpha = 1) {
+	const colours = [
+		[ 66, 133, 244], // Blue
+		[234,  67,  53], // Red
+		[251, 188,   4], // Yellow
+		[ 52, 168,  83], // Green
+		[255, 109,   1], // Orange
+		[ 70, 189, 198], // Cyan
+		[123, 170, 247], // Light Blue
+		[240, 123, 114], // Light Red
+		[252, 208,  79], // Light Yellow
+		[113, 194, 135], // Light Green
+		[255, 153,  77], // Light Orange
+		[126, 209, 215], // Light Cyan
+		[179, 206, 251], // Pastel Blue
+		[247, 180, 174], // Pastel Red
+		[253, 228, 155], // Pastel Yellow
+		[174, 220, 186], // Pastel Green
+		[255, 197, 153], // Pastel Orange
+		[181, 229, 232], // Pastel Cyan
+	]; // prettier-ignore
+	return `rgba(${colours[index % colours.length].join(",")},${alpha})`;
 }
 
 function ss_getShowMoreDetails() {
