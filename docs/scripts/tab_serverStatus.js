@@ -1,4 +1,4 @@
-const vss = 2.023; // prettier-ignore
+const vss = 2.024; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -585,7 +585,6 @@ async function ss_populateGraph(statusData) {
 	const servers = Array.from(allServers).sort(ss_compare);
 
 	// Resize canvas to account for max response time.
-	console.log("Max response time:", maxResponse);
 	const maxY = Math.ceil(maxResponse / 1000) * 1000;
 	ele.height = Math.round((maxY / ss_TIMEOUT_MS) * 530) + 120;
 
@@ -597,7 +596,6 @@ async function ss_populateGraph(statusData) {
 			hour12: false,
 		}).format(date);
 	});
-	console.log("labels", labels);
 
 	const timeTickRegex = /(\d{1,2}):(\d{2})/;
 	const shouldShowTimeTick = (label) => {
