@@ -1,4 +1,4 @@
-const vss = 2.026; // prettier-ignore
+const vss = 2.027; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -687,7 +687,10 @@ async function ss_populateGraph(statusData) {
 						color: colourText,
 					},
 					border: {color: colourBorder},
-					ticks: {color: colourText},
+					ticks: {
+						color: colourText,
+						stepSize: 1000,
+					},
 					grid: {color: colourGrid},
 					min: 0,
 					max: maxY,
