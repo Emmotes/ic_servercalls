@@ -1,4 +1,4 @@
-const vss = 2.027; // prettier-ignore
+const vss = 2.028; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -635,7 +635,7 @@ async function ss_populateGraph(statusData) {
 	const colourBg = "rgba(49,49,49,1)";
 	const colourText = "rgba(215,205,217,1)";
 	const colourBorder = "rgba(255,255,255,1)";
-	const colourGrid = "rgba(118,118,118,1)";
+	const colourGrid = "rgba(90,90,90,1)";
 
 	const customBgPlugin = {
 		id: "customCanvasBackgroundColor",
