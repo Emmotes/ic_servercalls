@@ -1,8 +1,19 @@
-const vtm = 1.020; // prettier-ignore
+const vtm = 1.100; // prettier-ignore
+const tm_serverCalls = new Set(["trialsRefreshData", "getDefinitions"]);
+const tm_definitionsFilters = new Set([
+	"hero_defines",
+	"trials_difficulty_defines",
+	"trials_role_defines",
+]);
 let tm_roles = {};
 let tm_champsById;
 let tm_champsByName;
 let tm_diffs;
+
+function tm_registerData() {
+	tm_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	tm_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function tm_tab() {
 	return `
@@ -43,22 +54,29 @@ function tm_tab() {
 				`;
 }
 
-async function tm_pullData(forceCalled) {
+async function tm_pullData(forceCalled, trialsRefreshDetails, definitions) {
 	clearTimers(`tm_`);
 	if (forceCalled) codeEnablePullButtons(true);
-	if (isBadUserData()) return;
-	disablePullButtons();
+	if (!trialsRefreshDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`trialsWrapper`);
 	try {
-		wrapper.innerHTML = `Waiting for trials data...`;
-		const trialsData = (await trialsRefreshData()).trials_data;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions(
-			"hero_defines,trials_role_defines,trials_difficulty_defines",
-		);
-		const trialsRoles = defs.trials_role_defines;
-		const trialsDiffs = defs.trials_difficulty_defines;
-		const champDefs = defs.hero_defines;
+		if (!trialsRefreshDetails) {
+			wrapper.innerHTML = `Waiting for trials data...`;
+			trialsRefreshDetails = await trialsRefreshData();
+		}
+		const trialsData = trialsRefreshDetails.trials_data;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(tm_definitionsFilters),
+			);
+		}
+		const trialsRoles = definitions.trials_role_defines;
+		const trialsDiffs = definitions.trials_difficulty_defines;
+		const champDefs = definitions.hero_defines;
 		await tm_displayData(
 			wrapper,
 			trialsData,

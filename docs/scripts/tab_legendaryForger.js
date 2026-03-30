@@ -1,10 +1,17 @@
-const vlf = 1.003; // prettier-ignore
+const vlf = 1.100; // prettier-ignore
 const lf_LSKEY_maintainScales = `scLegendariesMaintain`;
 const lf_forgeState = {atMost: -1, maintainScales: -1};
 const lf_forgeOpts = [1, 2, 3, 4, 5, 6];
 const lf_DEFAULT_maintainScales = 1111;
+const lf_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const lf_definitionsFilters = new Set(["hero_defines"]);
 let lf_itemsByChampId = null;
 let lf_scales = null;
+
+function lf_registerData() {
+	lf_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	lf_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function lf_tab() {
 	return `
@@ -48,17 +55,26 @@ function lf_tab() {
 				`;
 }
 
-async function lf_pullData() {
+async function lf_pullData(userDetails, definitions) {
 	clearTimers(`lf_`);
-	if (isBadUserData()) return;
-	disablePullButtons();
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`legendariesWrapper`);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions("hero_defines");
-		const champDefs = defs.hero_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(lf_definitionsFilters),
+			);
+		}
+		const champDefs = definitions.hero_defines;
 		await lf_displayData(wrapper, details, champDefs);
 		codeEnablePullButtons();
 	} catch (error) {

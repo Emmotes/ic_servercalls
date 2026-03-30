@@ -1,4 +1,11 @@
-const vir = 1.007; // prettier-ignore
+const vir = 1.100; // prettier-ignore
+const ir_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const ir_definitionsFilters = new Set(["hero_defines"]);
+
+function ir_registerData() {
+	ir_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	ir_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function ir_tab() {
 	return `
@@ -36,15 +43,25 @@ function ir_tab() {
 				`;
 }
 
-async function ir_pulliLvlReportData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function ir_pulliLvlReportData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`ilvlreportWrapper`);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const heroDefs = (await getDefinitions("hero_defines")).hero_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(ir_definitionsFilters),
+			);
+		}
+		const heroDefs = definitions.hero_defines;
 		await ir_displayiLvlReportData(wrapper, details, heroDefs);
 		codeEnablePullButtons();
 	} catch (error) {

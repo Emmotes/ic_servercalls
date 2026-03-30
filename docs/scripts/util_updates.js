@@ -1,4 +1,4 @@
-const vu = 1.005; // prettier-ignore
+const vu = 1.100; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -59,6 +59,22 @@ const u_FEATURE_UPDATES = new Map([
 			setting: true,
 		},
 	],
+	[
+		5,
+		{
+			id: 5,
+			date: "2026-03-30",
+			title: "Pull All Tabs Data Button",
+			list: [
+				"Simply a button that will pull the necessary data for every single tab (except Server Status).",
+				"Located directly above all the tabs.",
+				"Designed to be used when you know you want to use multiple tabs.",
+				"It will ignore hidden tabs.",
+				"It does have a much longer cooldown of 2 minutes compared with the normal 15 seconds.",
+				"It will only be visible if you have at least 2 visible tabs (excluding Server Status).",
+			],
+		},
+	],
 ]);
 let u_currentUnseenUpdateIds = new Set([]);
 
@@ -80,8 +96,10 @@ function u_displayUnseenUpdates() {
 		return;
 	}
 
-	const tabsContainer = document.getElementById(`tabsContainer`);
-	if (!tabsContainer) return;
+	const pullAllContainer = document.getElementById(
+		`pullAllTabsDataContainer`,
+	);
+	if (!pullAllContainer) return;
 
 	const updatesHeader = document.createElement(`div`);
 	updatesHeader.classList.add(u_updatesContainer);
@@ -121,7 +139,7 @@ function u_displayUnseenUpdates() {
 	txt += `</span></div>`;
 
 	updatesHeader.innerHTML = txt;
-	document.body.insertBefore(updatesHeader, tabsContainer);
+	document.body.insertBefore(updatesHeader, pullAllContainer);
 
 	// display the unseen updates.
 	// have an "ok" button call `u_userConfirmSeenChanges()`

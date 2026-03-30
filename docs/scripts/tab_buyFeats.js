@@ -1,4 +1,11 @@
-const vbf = 1.016; // prettier-ignore
+const vbf = 1.100; // prettier-ignore
+const bf_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const bf_definitionsFilters = new Set(["hero_defines", "hero_feat_defines"]);
+
+function bf_registerData() {
+	bf_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	bf_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function bf_tab() {
 	return `
@@ -40,17 +47,26 @@ function bf_tab() {
 				`;
 }
 
-async function bf_pullFeatsData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function bf_pullFeatsData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`featsWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = await getUserDetails();
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions("hero_defines,hero_feat_defines");
-		await bf_displayFeatsData(wrapper, details, defs);
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(bf_definitionsFilters),
+			);
+		}
+		await bf_displayFeatsData(wrapper, details, definitions);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);

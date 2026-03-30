@@ -1,4 +1,9 @@
-const vcc = 1.009; // prettier-ignore
+const vcc = 1.100; // prettier-ignore
+const cc_serverCalls = new Set(["getUserDetails"]);
+
+function cc_registerData() {
+	cc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+}
 
 function cc_tab() {
 	return `
@@ -40,15 +45,19 @@ function cc_tab() {
 				`;
 }
 
-async function cc_pullCelebrationsData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function cc_pullCelebrationsData(userDetails) {
+	if (!userDetails) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`celebrationsWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const customNotes = (await getUserDetails()).details
-			.custom_notifications;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const customNotes = userDetails.details.custom_notifications;
 		await cc_displayCelebrationsData(wrapper, customNotes);
 		codeEnablePullButtons();
 	} catch (error) {

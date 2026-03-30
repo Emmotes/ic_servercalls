@@ -1,8 +1,19 @@
-const vet = 1.025; // prettier-ignore
+const vet = 1.100; // prettier-ignore
 const et_LSKEY_hideTier4 = `scEventTiersHideTier4`;
 const et_LSKEY_eventSort = `scEventTiersSort`;
 const et_DEFAULT_eventSort = `event`;
 const et_idMult = 10000;
+const et_serverCalls = new Set([
+	"getUserDetails",
+	"getCompletionData",
+	"getDefinitions",
+]);
+const et_definitionsFilters = new Set(["hero_defines"]);
+
+function et_registerData() {
+	et_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	et_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function et_tab() {
 	return `
@@ -56,19 +67,32 @@ function et_tab() {
 				`;
 }
 
-async function et_pullEventTiersData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function et_pullEventTiersData(userDetails, completionData, definitions) {
+	if (!userDetails || !completionData || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`eventTiersWrapper`);
 	et_hideEventSort(true);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for collections data...`;
-		const collections = (await getCompletionData()).data.event;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const heroDefs = (await getDefinitions("hero_defines")).hero_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!completionData) {
+			wrapper.innerHTML = `Waiting for collections data...`;
+			completionData = await getCompletionData();
+		}
+		const collections = completionData.data.event;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(et_definitionsFilters),
+			);
+		}
+		const heroDefs = definitions.hero_defines;
 		await et_displayEventTiersData(wrapper, heroDefs, collections, details);
 		codeEnablePullButtons();
 	} catch (error) {

@@ -1,4 +1,9 @@
-const vad = 1.011; // prettier-ignore
+const vad = 1.100; // prettier-ignore
+const ad_serverCalls = new Set(["getPatronDetails"]);
+
+function ad_registerData() {
+	ad_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+}
 
 function ad_tab() {
 	return `
@@ -36,22 +41,26 @@ function ad_tab() {
 				`;
 }
 
-async function ad_pullAeonData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function ad_pullAeonData(patronDetails) {
+	if (!patronDetails) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`aeonWrapper`);
 	try {
-		wrapper.innerHTML = `Waiting for patron data...`;
-		const details = await getPatronDetails();
-		await ad_displayAeonData(wrapper, details);
+		if (!patronDetails) {
+			wrapper.innerHTML = `Waiting for patron data...`;
+			patronDetails = await getPatronDetails();
+		}
+		await ad_displayAeonData(wrapper, patronDetails);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper, error);
 	}
 }
 
-async function ad_displayAeonData(wrapper, details) {
-	const aeonData = details.aeon_data;
+async function ad_displayAeonData(wrapper, patronDetails) {
+	const aeonData = patronDetails.aeon_data;
 	const millisecondsTilRollover =
 		Number(aeonData.seconds_until_patron_rollover) * 1000;
 	const currPatronId = Number(aeonData.current_patron_id);
@@ -62,7 +71,7 @@ async function ad_displayAeonData(wrapper, details) {
 		c_patronById.get(nextPatronId) ?? `??? (id: ${nextPatronId})`;
 	let count = 0;
 	let goal = 0;
-	outerLoop: for (let patron of details.patrons) {
+	outerLoop: for (let patron of patronDetails.patrons) {
 		if (
 			patron.patron_id !== currPatronId ||
 			patron.unlocked === false ||

@@ -1,9 +1,20 @@
-const vbs = 1.018; // prettier-ignore
+const vbs = 1.100; // prettier-ignore
+const bs_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const bs_definitionsFilters = new Set([
+	"hero_defines",
+	"buff_defines",
+	"loot_defines",
+]);
 let bs_ownedChamps = {};
 let bs_ownedChampsByName = {};
 let bs_champLoot = {};
 let bs_blacksmiths = {};
 let bs_lootDefs = {};
+
+function bs_registerData() {
+	bs_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	bs_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function bs_tab() {
 	return `
@@ -58,9 +69,11 @@ function bs_tab() {
 				`;
 }
 
-async function bs_pullBSCData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function bs_pullBSCData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`bscWrapper`);
 	const bscSpender = document.getElementById(`bscSpender`);
 	bscSpender.innerHTML = `&nbsp;`;
@@ -68,13 +81,18 @@ async function bs_pullBSCData() {
 	wrapperType.style.visibility = `hidden`;
 	wrapperType.innerHTML = `&nbsp;`;
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions(
-			"hero_defines,buff_defines,loot_defines",
-		);
-		await bs_displayBSCData(wrapper, details, defs);
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(bs_definitionsFilters),
+			);
+		}
+		await bs_displayBSCData(wrapper, details, definitions);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper, error);

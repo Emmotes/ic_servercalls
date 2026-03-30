@@ -1,4 +1,9 @@
-const vsc = 1.009; // prettier-ignore
+const vsc = 1.100; // prettier-ignore
+const sc_serverCalls = new Set(["getUserDetails"]);
+
+function sc_registerData() {
+	sc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+}
 
 function sc_tab() {
 	return `
@@ -36,14 +41,19 @@ function sc_tab() {
 				`;
 }
 
-async function sc_pullShiniesData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function sc_pullShiniesData(userDetails) {
+	if (!userDetails) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`shiniesWrapper`);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const userData = await getUserDetails();
-		await sc_displayShiniesData(wrapper, userData.details);
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		await sc_displayShiniesData(wrapper, details);
 		codeEnablePullButtons();
 	} catch (error) {
 		handleError(wrapper, error);

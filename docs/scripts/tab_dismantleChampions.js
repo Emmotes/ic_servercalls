@@ -1,5 +1,16 @@
-const vdc = 1.011; // prettier-ignore
+const vdc = 1.100; // prettier-ignore
 const dc_LSKEY_hideDismantleOpts = `scHideDismantleOptions`;
+const dc_serverCalls = new Set([
+	"getDismantleData",
+	"getUserDetails",
+	"getDefinitions",
+]);
+const dc_definitionsFilters = new Set(["buff_defines", "hero_defines"]);
+
+function dc_registerData() {
+	dc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	dc_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function dc_tab() {
 	return `
@@ -56,15 +67,19 @@ function dc_tab() {
 				`;
 }
 
-async function dc_pullData() {
+async function dc_pullData(dismantleData, userDetails, definitions) {
 	clearTimers(`dc_`);
-	if (isBadUserData()) return;
-	disablePullButtons();
+	if (!dismantleData || !userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`dismantleWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for dismantle data...`;
-		let dismantleData = await getDismantleData();
+		if (!dismantleData) {
+			wrapper.innerHTML = `Waiting for dismantle data...`;
+			dismantleData = await getDismantleData();
+		}
 		if (
 			dismantleData == null ||
 			dismantleData.redistribute_hero == null ||
@@ -77,20 +92,21 @@ async function dc_pullData() {
 			codeEnablePullButtons();
 			return;
 		}
-		dismantleData = dismantleData.redistribute_hero;
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions("hero_defines,buff_defines");
-		const heroDefs = defs.hero_defines;
-		const buffDefs = defs.buff_defines;
-		await dc_displayData(
-			wrapper,
-			dismantleData,
-			details,
-			heroDefs,
-			buffDefs,
-		);
+		const redistData = dismantleData.redistribute_hero;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(dc_definitionsFilters),
+			);
+		}
+		const heroDefs = definitions.hero_defines;
+		const buffDefs = definitions.buff_defines;
+		await dc_displayData(wrapper, redistData, details, heroDefs, buffDefs);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);

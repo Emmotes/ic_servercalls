@@ -1,4 +1,9 @@
-const vdf = 1.021; // prettier-ignore
+const vdf = 1.100; // prettier-ignore
+const df_serverCalls = new Set(["getFormationSaves"]);
+
+function df_registerData() {
+	df_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+}
 
 function df_tab() {
 	return `
@@ -39,15 +44,19 @@ function df_tab() {
 				`;
 }
 
-async function df_pullFormationSaves() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function df_pullFormationSaves(formationSaves) {
+	if (!formationSaves) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`deleteFormsWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for formation saves data...`;
-		const forms = await getFormationSaves();
-		await df_displayFormationSaves(wrapper, forms);
+		if (!formationSaves) {
+			wrapper.innerHTML = `Waiting for formation saves data...`;
+			formationSaves = await getFormationSaves();
+		}
+		await df_displayFormationSaves(wrapper, formationSaves);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);

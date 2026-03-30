@@ -1,4 +1,11 @@
-const vpm = 1.014; // prettier-ignore
+const vpm = 1.100; // prettier-ignore
+const pm_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const pm_definitionsFilters = new Set(["adventure_defines"]);
+
+function pm_registerData() {
+	pm_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	pm_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function pm_tab() {
 	return `
@@ -36,17 +43,26 @@ function pm_tab() {
 				`;
 }
 
-async function pm_pullPartyData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function pm_pullPartyData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`partyWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const gameInstances = (await getUserDetails()).details.game_instances;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const adventures = (await getDefinitions("adventure_defines"))
-			.adventure_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const gameInstances = userDetails.details.game_instances;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(pm_definitionsFilters),
+			);
+		}
+		const adventures = definitions.adventure_defines;
 		await pm_displayPartyData(wrapper, gameInstances, adventures);
 		codeEnablePullButtons();
 	} catch (error) {

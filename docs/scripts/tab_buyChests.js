@@ -1,4 +1,4 @@
-const vbc = 1.023; // prettier-ignore
+const vbc = 1.100; // prettier-ignore
 const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
@@ -7,6 +7,18 @@ const bc_silverChestOpt = `<option value="1">Silver Chest</option>`;
 const bc_goldChestOpt = `<option value="2">Gold Chest</option>`;
 const bc_notEnoughGems = `<option value="-1">Not enough gems.</option>`;
 const bc_notEnoughEventTokens = `<option value="-1">Not enough event tokens.</option>`;
+const bc_serverCalls = new Set([
+	"getUserDetails",
+	"getShop",
+	"getDismantleData",
+	"getDefinitions",
+]);
+const bc_definitionsFilters = new Set(["chest_type_defines"]);
+
+function bc_registerData() {
+	bc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	bc_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function bc_tab() {
 	return `
@@ -64,16 +76,26 @@ function bc_tab() {
 				`;
 }
 
-async function bc_pullBuyChestsData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function bc_pullBuyChestsData(
+	userDetails,
+	shopData,
+	dismantleData,
+	definitions,
+) {
+	if (!userDetails || !shopData || !dismantleData || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`buyChestsWrapper`);
 	const buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	if (buyChestsBuyer.innerHTML.includes("buyChestsButton"))
 		buyChestsBuyer.innerHTML = `&nbsp;`;
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
 		const gems = details.red_rubies;
 		const tokens = details.events_details.tokens;
 		if (gems < 50 && tokens < bc_chestPackCost) {
@@ -83,13 +105,22 @@ async function bc_pullBuyChestsData() {
 		}
 		const eventActive =
 			details.events_details.active_events.length > 0 ? true : false;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const chests = (await getDefinitions("chest_type_defines"))
-			.chest_type_defines;
-		wrapper.innerHTML = `Waiting for shop data...`;
-		const shop = (await getShop()).shop_data.items.chest;
-		wrapper.innerHTML = `Waiting for dismantle data...`;
-		const dismantleData = await getDismantleData();
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(bc_definitionsFilters),
+			);
+		}
+		const chests = definitions.chest_type_defines;
+		if (!shopData) {
+			wrapper.innerHTML = `Waiting for shop data...`;
+			shopData = await getShop();
+		}
+		const shop = shopData.shop_data.items.chest;
+		if (!dismantleData) {
+			wrapper.innerHTML = `Waiting for dismantle data...`;
+			dismantleData = await getDismantleData();
+		}
 		await bc_displayBuyChestsData(
 			wrapper,
 			gems,

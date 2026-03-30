@@ -1,8 +1,15 @@
-const voc = 1.036; // prettier-ignore
+const voc = 1.100; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
 const oc_amountUndefined = `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
+const oc_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const oc_definitionsFilters = new Set(["chest_type_defines"]);
+
+function oc_registerData() {
+	oc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	oc_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function oc_tab() {
 	return `
@@ -77,19 +84,27 @@ function oc_tab() {
 				`;
 }
 
-async function oc_pullOpenChestsData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function oc_pullOpenChestsData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`openChestsWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		const chestsHave = details.chests;
-		const chestPacks = details.chest_packs;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const chestsDefs = (await getDefinitions("chest_type_defines"))
-			.chest_type_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const chestsHave = userDetails.details.chests;
+		const chestPacks = userDetails.details.chest_packs;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(oc_definitionsFilters),
+			);
+		}
+		const chestsDefs = definitions.chest_type_defines;
 		await oc_displayOpenChestsData(
 			wrapper,
 			chestsHave,

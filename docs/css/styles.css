@@ -526,7 +526,7 @@ input[type="checkbox"]:checked::before {
 	padding: 0px;
 	margin: 0px;
 	height: 100vh;
-	padding-top: 70px;
+	padding-top: 25px;
 }
 
 .tabs {

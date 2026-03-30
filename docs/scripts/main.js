@@ -1,8 +1,9 @@
-const v = 4.055; // prettier-ignore
+const v = 4.100; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
-const globalButtonDisableTime = 15000;
+const globalButtonDisableTime = 15 * 1000; // 15 seconds
+const globalButtonDisableTimeAllTabs = 2 * 60 * 1000; // 2 minutes
 const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
 const tabsContainer = document.getElementById(`tabsContainer`);
@@ -17,6 +18,7 @@ const settingsClose = document.getElementById(`settingsMenuButtonClose`);
 const settingsList = document.getElementById(`settingsMenuAccountsList`);
 const settingsLoad = document.getElementById(`settingsMenuButtonLoadAccount`);
 const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
+const allTabsDataPullButton = document.getElementById(`allTabsDataPullButton`);
 const supportUrl = document.getElementById(`supportUrl`);
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
 const TIME_UNITS = {
@@ -55,11 +57,19 @@ function isBadUserData() {
 function init() {
 	disabledUntilInit.hidden = true;
 	tabsContainer.hidden = false;
+	allTabsDataPullButton.hidden = true;
 
 	accountLoading();
 	oldLocalStorageMigrations();
 
 	t_initTabs();
+	const visibleTabs = t_currentTabs.filter((e) => e.visible);
+	if (
+		visibleTabs.length > 2 ||
+		(visibleTabs.length === 2 &&
+			!visibleTabs.find((t) => t.id === "serverStatusTab"))
+	)
+		allTabsDataPullButton.hidden = false;
 
 	u_displayUnseenUpdates();
 
@@ -473,13 +483,14 @@ function togglePullButtons(disable, customTimer) {
 	toggleLoadAccountButton(disable);
 }
 
-function disablePullButtons() {
+function disablePullButtons(customTimer) {
 	pbCodeRunning = true;
 
-	const cooldownEnd = Date.now() + globalButtonDisableTime;
+	if (!customTimer || customTimer <= 0) customTimer = globalButtonDisableTime;
+	const cooldownEnd = Date.now() + customTimer;
 	ls_setGlobal_num(LSKEY_pullButtonCooldown, cooldownEnd, 0);
 
-	startPullButtonCooldown(globalButtonDisableTime);
+	startPullButtonCooldown(customTimer);
 }
 
 function codeEnablePullButtons(skipCooldown) {
@@ -854,6 +865,10 @@ function ciEquals(a, b) {
 	return typeof a === "string" && typeof b === "string" ?
 			a.localeCompare(b, undefined, {sensitivity: "accent"}) === 0
 		:	a === b;
+}
+
+function filtersFromSet(inSet) {
+	return [...inSet].join(",");
 }
 
 function numSort(arr, reverse) {

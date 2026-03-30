@@ -1,4 +1,4 @@
-const vfc = 1.003; // prettier-ignore
+const vfc = 1.100; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -30,6 +30,7 @@ const fc_FAVOURS = new Map([
 	[35, fc_createFavour(35, "The Wizards Three Favor", "The Wizards Three", "Vecna: Eve of Ruin", true, true, Infinity)],
 	[36, fc_createFavour(36, "The Red Knight Favor", "The Red Knight", "Tales of the Champions", true, true, 3)],
 ]); // prettier-ignore
+const fc_serverCalls = new Set(["getUserDetails"]);
 let fc_favourDefs = null;
 let fc_convertibles = null;
 let fc_convertiblesSorted = null;
@@ -39,6 +40,10 @@ let fc_convTarget = -1;
 let fc_stage1 = null;
 let fc_stage2 = null;
 let fc_stage3 = null;
+
+function fc_registerData() {
+	fc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+}
 
 function fc_tab() {
 	return `
@@ -79,15 +84,19 @@ function fc_tab() {
 				`;
 }
 
-async function fc_pullFavourData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function fc_pullFavourData(userDetails) {
+	if (!userDetails) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`favourWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const userData = await getUserDetails();
-		await fc_displayFavourData(wrapper, userData);
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		await fc_displayFavourData(wrapper, userDetails);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);

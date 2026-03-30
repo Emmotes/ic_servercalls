@@ -1,4 +1,4 @@
-const vss = 2.028; // prettier-ignore
+const vss = 2.100; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -67,13 +67,15 @@ function ss_tab() {
 				`;
 }
 
-async function ss_pullServerStatusData() {
+async function ss_pullServerStatusData(statusData) {
 	ss_setCooldownUntil(Date.now() + ss_MIN_RECHECK_MS);
 	const wrapper = document.getElementById(`serverStatusWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for server status...`;
-		const statusData = await getServerStatus();
+		if (!statusData) {
+			wrapper.innerHTML = `Waiting for server status...`;
+			statusData = await getServerStatus();
+		}
 		try {
 			ls_setGlobal_obj(ss_LSKEY_serverStatusData, statusData);
 		} catch {

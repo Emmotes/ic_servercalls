@@ -1,16 +1,23 @@
-const vap = 2.009; // prettier-ignore
+const vap = 2.100; // prettier-ignore
 const ap_LSKEY_includeDistills = `scIncludeDistills`;
 const ap_LSKEY_excludeDistills = `scExcludeDistills`;
 const ap_LSKEY_distillMaintains = `scDistillMaintains`;
 const ap_METHOD_SELECTID = "ap_method";
 const ap_MODES = [`-`, `Distill`, `Brew`, `Enhance`];
 const ap_enhanceState = {sourceId: null, resultId: null, amount: 0};
+const ap_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
+const ap_definitionsFilters = new Set(["game_rule_defines"]);
 let ap_ownedById = null;
 let ap_reagents = null;
 let ap_vessels = null;
 let ap_brewCosts = null;
 let ap_enhanceGraph = null;
 let ap_enhanceChains = null;
+
+function ap_registerData() {
+	ap_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	ap_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
 
 function ap_tab() {
 	return `
@@ -40,8 +47,9 @@ function ap_tab() {
 									<input type="checkbox" id="apothecaryDistInclude7Days" onclick="ap_toggleIncludePotions(this)"> Include 7 Day Potions
 								</span>
 								<span class="f fc falc" style="text-align:center">
-									<span class="f fr falc" style="font-size:0.8em;align-items:center;text-align:center">
-										Note: Gem Hunter, Golden Epic and<br>Legendary Potions will <em>never</em> be distilled.
+									<span class="f fc falc" style="font-size:0.8em;align-items:center;text-align:center">
+										<span>Note: Gem Hunter, Golden Epic and</span>
+										<span>Legendary Potions will <em>never</em> be distilled.</span>
 									</span>
 								</span>
 							</span>
@@ -74,19 +82,28 @@ function ap_tab() {
 				`;
 }
 
-async function ap_pullApothecaryData() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function ap_pullApothecaryData(userDetails, definitions) {
+	if (!userDetails || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`apothecaryWrapper`);
 	const inventory = document.getElementById(`apothecaryInventory`);
 	inventory.innerHTML = `&nbsp;`;
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails()).details;
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const gameRules = (await getDefinitions("game_rule_defines"))
-			.game_rule_defines;
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(ap_definitionsFilters),
+			);
+		}
+		const gameRules = definitions.game_rule_defines;
 		await ap_displayApothecaryData(wrapper, details, gameRules);
 		codeEnablePullButtons();
 	} catch (error) {

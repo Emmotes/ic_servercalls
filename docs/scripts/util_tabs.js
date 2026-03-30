@@ -1,4 +1,4 @@
-const vt = 1.002; // prettier-ignore
+const vt = 1.100; // prettier-ignore
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -26,6 +26,9 @@ const t_LSKEY_tabVisibility = "scTabVisibility";
 
 let t_editMode = false;
 let t_currentTabs = [];
+
+const t_tabsServerCalls = new Set();
+const t_tabsDefinitionsFilters = new Set();
 
 function t_initTabs() {
 	t_loadTabSettings();
@@ -98,6 +101,8 @@ function t_generateTabHTML() {
 		});
 	}
 
+	t_tabsServerCalls.clear();
+	t_tabsDefinitionsFilters.clear();
 	let firstVisibleChecked = false;
 	t_currentTabs.forEach((tab) => {
 		if (!t_editMode && !tab.visible) return;
@@ -116,54 +121,71 @@ function t_generateTabHTML() {
 
 		switch (tab.id) {
 			case "deleteFormationsTab":
+				df_registerData();
 				contentHtml = df_tab();
 				break;
 			case "createFormationsTab":
+				cf_registerData();
 				contentHtml = cf_tab();
 				break;
 			case "featsTab":
+				bf_registerData();
 				contentHtml = bf_tab();
 				break;
 			case "buyChestsTab":
+				bc_registerData();
 				contentHtml = bc_tab();
 				break;
 			case "openChestsTab":
+				oc_registerData();
 				contentHtml = oc_tab();
 				break;
 			case "bscTab":
+				bs_registerData();
 				contentHtml = bs_tab();
 				break;
 			case "favourTab":
+				fc_registerData();
 				contentHtml = fc_tab();
 				break;
 			case "apothecaryTab":
+				ap_registerData();
 				contentHtml = ap_tab();
 				break;
 			case "trialsTab":
+				tm_registerData();
 				contentHtml = tm_tab();
 				break;
 			case "legendariesTab":
+				lf_registerData();
 				contentHtml = lf_tab();
 				break;
 			case "eventTiersTab":
+				et_registerData();
 				contentHtml = et_tab();
 				break;
 			case "ilvlreportTab":
+				ir_registerData();
 				contentHtml = ir_tab();
 				break;
 			case "shiniesTab":
+				sc_registerData();
 				contentHtml = sc_tab();
 				break;
 			case "partyTab":
+				pm_registerData();
 				contentHtml = pm_tab();
 				break;
 			case "dismantleTab":
+				dc_registerData();
 				contentHtml = dc_tab();
 				break;
 			case "celebrationsTab":
+				cc_registerData();
 				contentHtml = cc_tab();
 				break;
 			case "aeonTab":
+				ad_registerData();
 				contentHtml = ad_tab();
 				break;
 			case "serverStatusTab":
@@ -259,4 +281,126 @@ function t_restoreDefaultLayout() {
 	ls_setPerAccount_arr(t_LSKEY_tabVisibility, []);
 	closeRestoreDefaultTabsConfirmationPopup();
 	init();
+}
+
+// Map of tab IDs to their pull function calls (factory pattern)
+function getTabPullFunctions(data) {
+	return {
+		aeonTab: () => ad_pullAeonData(data.patronDetails),
+		apothecaryTab: () => ap_pullApothecaryData(data.userDetails, data.definitions),
+		bscTab: () => bs_pullBSCData(data.userDetails, data.definitions),
+		buyChestsTab: () => bc_pullBuyChestsData(data.userDetails, data.shopData, data.dismantleData, data.definitions),
+		featsTab: () => bf_pullFeatsData(data.userDetails, data.definitions),
+		celebrationsTab: () => cc_pullCelebrationsData(data.userDetails),
+		createFormationsTab: () => cf_pullFormationSaves(data.userDetails, data.formationSaves, data.definitions),
+		deleteFormationsTab: () => df_pullFormationSaves(data.formationSaves),
+		dismantleTab: () => dc_pullData(data.dismantleData, data.userDetails, data.definitions),
+		eventTiersTab: () => et_pullEventTiersData(data.userDetails, data.completionData, data.definitions),
+		favourTab: () => fc_pullFavourData(data.userDetails),
+		ilvlreportTab: () => ir_pulliLvlReportData(data.userDetails, data.definitions),
+		legendariesTab: () => lf_pullData(data.userDetails, data.definitions),
+		openChestsTab: () => oc_pullOpenChestsData(data.userDetails, data.definitions),
+		partyTab: () => pm_pullPartyData(data.userDetails, data.definitions),
+		shiniesTab: () => sc_pullShiniesData(data.userDetails),
+		trialsTab: () => tm_pullData(false, data.trialsRefresh, data.definitions),
+	}; // prettier-ignore
+}
+
+async function pullAllTabsData() {
+	if (isBadUserData()) return;
+	disablePullButtons(globalButtonDisableTimeAllTabs);
+
+	const statusText = document.getElementById("allTabsDataPullButtonStatus");
+
+	try {
+		// Initialize data variables
+		let userDetails;
+		let definitions;
+		let patronDetails;
+		let formationSaves;
+		let dismantleData;
+		let shopData;
+		let completionData;
+		let trialsRefresh;
+
+		// Fetch server data sequentially only if tabs need it
+		if (t_tabsServerCalls.has("getUserDetails")) {
+			statusText.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getDefinitions")) {
+			statusText.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(t_tabsDefinitionsFilters),
+			);
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getPatronDetails")) {
+			statusText.innerHTML = `Waiting for patron data...`;
+			patronDetails = await getPatronDetails();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getFormationSaves")) {
+			statusText.innerHTML = `Waiting for formation saves data...`;
+			formationSaves = await getFormationSaves();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getDismantleData")) {
+			statusText.innerHTML = `Waiting for dismantle data...`;
+			dismantleData = await getDismantleData();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getShop")) {
+			statusText.innerHTML = `Waiting for shop data...`;
+			shopData = await getShop();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("getCompletionData")) {
+			statusText.innerHTML = `Waiting for collections data...`;
+			completionData = await getCompletionData();
+			await sleep(200);
+		}
+
+		if (t_tabsServerCalls.has("trialsRefreshData")) {
+			statusText.innerHTML = `Waiting for trials data...`;
+			trialsRefresh = await trialsRefreshData();
+			await sleep(200);
+		}
+
+		statusText.innerHTML = `Processing data...`;
+		const dataPackage = {
+			userDetails,
+			definitions,
+			patronDetails,
+			formationSaves,
+			dismantleData,
+			shopData,
+			completionData,
+			trialsRefresh,
+		};
+		const pullFunctions = getTabPullFunctions(dataPackage);
+		const pullPromises = t_currentTabs
+			.filter((tab) => tab.visible)
+			.map((tab) => pullFunctions[tab.id]?.())
+			.filter((promise) => promise != null);
+
+		await Promise.all(pullPromises);
+
+		statusText.innerHTML = `Done.`;
+		setTimeout(() => {
+			if (statusText) statusText.innerHTML = `&nbsp;`;
+		}, 5000);
+
+		codeEnablePullButtons();
+	} catch (error) {
+		statusText.innerHTML = "Error pulling all tabs data: " + error.message;
+		codeEnablePullButtons();
+	}
 }

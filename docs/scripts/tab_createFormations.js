@@ -1,4 +1,16 @@
-vcf = 1.017; // prettier-ignore
+const vcf = 1.100; // prettier-ignore
+const cf_serverCalls = new Set([
+	"getUserDetails",
+	"getFormationSaves",
+	"getDefinitions",
+]);
+const cf_definitionsFilters = new Set([
+	"adventure_defines",
+	"familiar_defines",
+	"hero_defines",
+	"hero_feat_defines",
+	"upgrade_defines",
+]);
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
@@ -71,6 +83,11 @@ let cf_activeFeatHeroId = -1;
 let cf_selectedHeroId = null;
 let cf_familiarGridPages = {curr: 1, max: -1};
 
+function cf_registerData() {
+	cf_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
+	cf_definitionsFilters.forEach((f) => t_tabsDefinitionsFilters.add(f));
+}
+
 function cf_tab() {
 	return `
 					<span class="p5" style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px;">
@@ -115,24 +132,33 @@ function cf_tab() {
 				`;
 }
 
-async function cf_pullFormationSaves() {
-	if (isBadUserData()) return;
-	disablePullButtons();
+async function cf_pullFormationSaves(userDetails, formationSaves, definitions) {
+	if (!userDetails || !formationSaves || !definitions) {
+		if (isBadUserData()) return;
+		disablePullButtons();
+	}
 	const wrapper = document.getElementById(`createFormsWrapper`);
 	cleanupExtras.add(`cf_importsSection`);
 	const imports = document.getElementById(`cf_importsSection`);
 	if (imports) imports.innerHTML = ``;
 	setWrapperFormat(wrapper, 0);
 	try {
-		wrapper.innerHTML = `Waiting for user data...`;
-		const details = (await getUserDetails())?.details;
-		wrapper.innerHTML = `Waiting for formation saves data...`;
-		const forms = await getFormationSaves();
-		wrapper.innerHTML = `Waiting for definitions...`;
-		const defs = await getDefinitions(
-			`adventure_defines,hero_defines,familiar_defines,hero_feat_defines,upgrade_defines`,
-		);
-		cf_data = cf_buildMaps(details, forms, defs);
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		const details = userDetails.details;
+		if (!formationSaves) {
+			wrapper.innerHTML = `Waiting for formation saves data...`;
+			formationSaves = await getFormationSaves();
+		}
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(cf_definitionsFilters),
+			);
+		}
+		cf_data = cf_buildMaps(details, formationSaves, definitions);
 		if (!cf_data) {
 			wrapper.innerHTML = addHTMLElement({
 				text: `Pulled data is somehow invalid. Cannot continue without it.`,
