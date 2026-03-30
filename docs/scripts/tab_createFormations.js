@@ -1,4 +1,4 @@
-const vcf = 1.100; // prettier-ignore
+const vcf = 1.200; // prettier-ignore
 const cf_serverCalls = new Set([
 	"getUserDetails",
 	"getFormationSaves",
@@ -356,21 +356,17 @@ function cf_renderImportGameSelector() {
 		return (ca.patronId ?? 0) - (cb.patronId ?? 0);
 	});
 
-	let txt = `<select id="cf_importGameSelect" style="width:100%">`;
-	txt += `<option value="-">-</option>`;
-
-	let currentGroup = null;
+	let txt = `<div id="cf_importGameSelectWrapper" style="position:relative;width:100%;">`;
+	txt += `<input type="text" id="cf_importGameSearchInput" placeholder="Search formations..." style="width:100%;padding:4px" autocomplete="off">`;
+	txt += `<input type="hidden" id="cf_importGameSelect" value="-">`;
+	txt += `<div id="cf_importGameDropdown" style="position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;background:var(--ChineseBlack);border:1px solid currentColor;border-top:none;display:none;z-index:1000">`;
 
 	for (const campaignId of campaignIds) {
 		const campaign = campaigns.get(campaignId);
 		const forms = byCampaign.get(campaignId);
 
 		const groupLabel = campaign.name;
-		if (groupLabel !== currentGroup) {
-			if (currentGroup !== null) txt += `</optgroup>`;
-			txt += `<optgroup label="${cf_escapeHtml(groupLabel)}">`;
-			currentGroup = groupLabel;
-		}
+		txt += `<div class="cf_optgroup-label" data-search="${groupLabel.toLowerCase()}" style="font-weight:bold;padding:4px 8px;cursor:default">${cf_escapeHtml(groupLabel)}</div>`;
 
 		for (const form of forms) {
 			const formCamp = campaigns.get(form.campaignId);
@@ -380,18 +376,134 @@ function cf_renderImportGameSelector() {
 				if (patronName)
 					patronSuffix = ` (${cf_escapeHtml(patronName)})`;
 			}
+			const displayText = `${cf_escapeHtml(form.name)}${patronSuffix}`;
 			txt +=
-				`<option value="${form.id}">` +
-				`${cf_escapeHtml(form.name)}${patronSuffix}` +
-				`</option>`;
+				`<div class="cf_option" data-value="${form.id}" data-search="${(form.name + patronSuffix).toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
+				displayText +
+				`</div>`;
 		}
 	}
 
-	if (currentGroup !== null) txt += `</optgroup>`;
+	txt += `</div>`;
+	txt += `</div>`;
 
-	txt += `</select>`;
+	// Initialize dropdown after DOM is ready
+	setTimeout(() => {
+		cf_initializeSearchableDropdown(
+			"cf_importGameSelectWrapper",
+			"cf_importGameSelect",
+			"cf_importGameSearchInput",
+			"cf_importGameDropdown",
+		);
+	}, 0);
 
 	return txt;
+}
+
+function cf_initializeSearchableDropdown(
+	wrapperId,
+	selectId,
+	searchInputId,
+	dropdownId,
+) {
+	const searchInput = document.getElementById(searchInputId);
+	const dropdown = document.getElementById(dropdownId);
+	const hiddenSelect = document.getElementById(selectId);
+	const wrapper = document.getElementById(wrapperId);
+
+	if (!searchInput || !dropdown || !hiddenSelect || !wrapper) return;
+
+	const allOptions = Array.from(dropdown.querySelectorAll(".cf_option"));
+	const groupLabels = Array.from(
+		dropdown.querySelectorAll(".cf_optgroup-label"),
+	);
+
+	// Show/hide dropdown on focus
+	searchInput.addEventListener("focus", () => {
+		dropdown.style.display = "block";
+	});
+
+	// Filter options and groups as user types
+	searchInput.addEventListener("input", (e) => {
+		const query = e.target.value.toLowerCase();
+
+		// Hide all groups initially
+		groupLabels.forEach((label) => {
+			label.style.display = "none";
+		});
+
+		// Hide all options initially
+		allOptions.forEach((option) => {
+			option.style.display = "none";
+		});
+
+		// If empty query, show everything
+		if (query === "") {
+			groupLabels.forEach((label) => {
+				label.style.display = "block";
+			});
+			allOptions.forEach((option) => {
+				option.style.display = "block";
+			});
+			return;
+		}
+
+		// Check each group and its options
+		groupLabels.forEach((groupLabel) => {
+			const groupMatches = groupLabel.dataset.search.includes(query);
+
+			if (groupMatches) {
+				// Show group label
+				groupLabel.style.display = "block";
+
+				// Show all following options until next group label
+				let nextElem = groupLabel.nextElementSibling;
+				while (
+					nextElem &&
+					!nextElem.classList.contains("cf_optgroup-label")
+				) {
+					if (nextElem.classList.contains("cf_option")) {
+						nextElem.style.display = "block";
+					}
+					nextElem = nextElem.nextElementSibling;
+				}
+			} else {
+				// Group doesn't match, check individual options
+				let nextElem = groupLabel.nextElementSibling;
+				while (
+					nextElem &&
+					!nextElem.classList.contains("cf_optgroup-label")
+				) {
+					if (nextElem.classList.contains("cf_option")) {
+						if (nextElem.dataset.search.includes(query)) {
+							// Option matches, show group and option
+							if (groupLabel.style.display === "none") {
+								groupLabel.style.display = "block";
+							}
+							nextElem.style.display = "block";
+						}
+					}
+					nextElem = nextElem.nextElementSibling;
+				}
+			}
+		});
+	});
+
+	// Handle option selection
+	allOptions.forEach((option) => {
+		option.addEventListener("click", () => {
+			hiddenSelect.value = option.dataset.value;
+			searchInput.value = option.textContent;
+			dropdown.style.display = "none";
+		});
+	});
+
+	// Close dropdown when clicking outside
+	document.addEventListener("click", (e) => {
+		if (!wrapper.contains(e.target) && dropdown.style.display !== "none") {
+			dropdown.style.display = "none";
+		}
+	});
 }
 
 function cf_renderImportLocalSelector(id) {
@@ -411,8 +523,15 @@ function cf_renderImportLocalSelector(id) {
 			return ca.patronId - cb.patronId;
 		});
 
-	let txt = `<select id="${id ?? `cf_importLocalSelect`}" style="width:100%">`;
-	txt += `<option value="-">-</option>`;
+	const selectId = id ?? `cf_importLocalSelect`;
+	const wrapperId = `${selectId}Wrapper`;
+	const searchInputId = `${selectId}SearchInput`;
+	const dropdownId = `${selectId}Dropdown`;
+
+	let txt = `<div id="${wrapperId}" style="position:relative;width:100%;">`;
+	txt += `<input type="text" id="${searchInputId}" placeholder="Search formations..." style="width:100%;padding:4px" autocomplete="off">`;
+	txt += `<input type="hidden" id="${selectId}" value="-">`;
+	txt += `<div id="${dropdownId}" style="position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;background:var(--ChineseBlack);border:1px solid currentColor;border-top:none;display:none;z-index:1000">`;
 
 	let currentGroup = null;
 
@@ -422,25 +541,33 @@ function cf_renderImportLocalSelector(id) {
 
 		const groupLabel = campaign.name;
 		if (groupLabel !== currentGroup) {
-			if (currentGroup !== null) txt += `</optgroup>`;
-
-			txt += `<optgroup label="${cf_escapeHtml(groupLabel)}">`;
 			currentGroup = groupLabel;
+			txt += `<div class="cf_optgroup-label" data-search="${groupLabel.toLowerCase()}" style="font-weight:bold;padding:4px 8px;cursor:default">${cf_escapeHtml(groupLabel)}</div>`;
 		}
 		let patronSuffix = ``;
 		if (campaign.patronId ?? 0 > 0) {
 			const patronName = c_patronById.get(campaign.patronId);
 			if (patronName) patronSuffix = ` (${cf_escapeHtml(patronName)})`;
 		}
+		const displayText = `${cf_escapeHtml(save.name)}${patronSuffix}`;
 		txt +=
-			`<option value="${index}">` +
-			`${cf_escapeHtml(save.name)}${patronSuffix}` +
-			`</option>`;
+			`<div class="cf_option" data-value="${index}" data-search="${(save.name + patronSuffix).toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
+			displayText +
+			`</div>`;
 	}
 
-	if (currentGroup !== null) txt += `</optgroup>`;
+	txt += `</div>`;
+	txt += `</div>`;
 
-	txt += `</select>`;
+	// Initialize dropdown after DOM is ready
+	setTimeout(() => {
+		cf_initializeSearchableDropdown(
+			wrapperId,
+			selectId,
+			searchInputId,
+			dropdownId,
+		);
+	}, 0);
 
 	return txt;
 }
@@ -3448,11 +3575,17 @@ function cf_decodeByteglowFormation(segment) {
 
 	const formation = [];
 	for (let i = 0; i < segment.length; i += 2) {
-		const champId = parseInt(segment.substring(i, i + 2), 16);
+		let str = segment.substring(i, i + 2);
+		if (str === "ff") str = "00"; // treat custom blocked slots as empty
+		let champId = parseInt(str, 16);
 		if (isNaN(champId)) throw new Error("Invalid champion ID.");
 		formation.push(champId);
 	}
-	if (new Set(formation).size !== formation.length)
+	// Filter out empty slots (0x00) and blocked slots (0xff), then check for duplicates
+	const validChampionIds = formation.filter(
+		(id) => id !== 0x00 && id !== 0xff,
+	);
+	if (new Set(validChampionIds).size !== validChampionIds.length)
 		throw new Error("Duplicate champions detected.");
 
 	return formation;
@@ -3463,6 +3596,12 @@ function cf_decodeByteglowSpecs(formation, specSegment) {
 
 	let index = 0;
 	for (const champId of formation) {
+		// Skip empty slots
+		if (champId === 0) {
+			index++;
+			continue;
+		}
+
 		const specDefs = cf_data.specialisations.byChampionId.get(champId);
 		if (!specDefs) continue;
 		const name = cf_data.champions.byId.get(champId).name;
@@ -3625,7 +3764,7 @@ function cf_globalStyleChampions() {
 	// Clean up seat headers
 	for (const heroId of cf_builderState.usedHeroIds) {
 		const champion = cf_data.champions.byId.get(heroId);
-		cf_setElementsSelected([`cf_champBox_seat${champion.seat}`], true);
+		cf_setElementsSelected([`cf_champBox_seat${champion?.seat}`], true);
 	}
 }
 

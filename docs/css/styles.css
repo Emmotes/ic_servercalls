@@ -1214,6 +1214,16 @@ input[type="checkbox"]:checked::before {
 	margin: 5px;
 }
 
+.cf_option,.cf_optgroup-label {
+	background: var(--ChineseBlack);
+	color: currentColor;
+}
+
+.cf_option:hover {
+	background: var(--Denim);
+	color: currentColor;
+}
+
 .deleteAcccountPopup {
 	position: fixed;
 	z-index: 1;
