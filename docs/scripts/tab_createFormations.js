@@ -1,4 +1,5 @@
-const vcf = 1.200; // prettier-ignore
+const vcf = 1.201; // prettier-ignore
+const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_serverCalls = new Set([
 	"getUserDetails",
 	"getFormationSaves",
@@ -11,7 +12,6 @@ const cf_definitionsFilters = new Set([
 	"hero_feat_defines",
 	"upgrade_defines",
 ]);
-const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_MAX_LS_SAVES = 100;
 const cf_builderStateTemplate = Object.freeze({
 	formationId: -1,
@@ -1382,6 +1382,7 @@ function cf_renderFamiliarPlacementGridsSelector() {
 
 function cf_renderFamiliarsPlacementGrids() {
 	const container = document.getElementById("cf_familiarGridContainer");
+	if (!container) return;
 
 	const type = cf_builderState.familiarPlacementGrid ?? `field`;
 
@@ -1606,6 +1607,7 @@ function cf_renderFamiliarsPotionsGrid() {
 			`ondragend="cf_onDragEnd(event)" ` +
 			`style="grid-column:${pot.c};grid-row:${pot.r};${img.style}">${img.img}</span>`;
 	}
+	txt += `</span>`;
 
 	return txt;
 }
@@ -1658,6 +1660,7 @@ function cf_renderFamiliarsMiscGrid() {
 			`ondragend="cf_onDragEnd(event)" ` +
 			`style="grid-column:4;grid-row:${row};${img.style}">${img.img}</span>`;
 	}
+	txt += `</span>`;
 
 	return txt;
 }
