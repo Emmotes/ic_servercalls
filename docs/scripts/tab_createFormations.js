@@ -1,5 +1,6 @@
-const vcf = 1.202; // prettier-ignore
+const vcf = 1.203; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
+const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
 	"getUserDetails",
 	"getFormationSaves",
@@ -1259,11 +1260,12 @@ function cf_renderFamiliarsGridSection() {
 
 	let txt = `<span class="f fr falst fjc w100" style="margin-top:10px;" id="cf_familiarsSection">`;
 
+	const width = cf_familiarGridPages.max === 1 ? `550` : `495`;
 	txt += addHTMLElements([
 		{
 			text: `&nbsp;`,
 			classes: `f fr fals fjs`,
-			styles: `align-content:flex-start;width:${cf_familiarGridPages.max === 1 ? `550` : `495`}px;height:640px;flex-wrap:wrap;`,
+			styles: `align-content:flex-start;min-width:${width}px;max-width:${width}px;height:640px;flex-wrap:wrap;`,
 			id: `cf_familiarsGridContainer`,
 		},
 		{
@@ -1360,11 +1362,238 @@ function cf_renderFamiliarsControlSections() {
 	txt += `</span>`;
 
 	txt += `<span class="f falc fjc fgr posRel" id="cf_familiarGridContainer">&nbsp;</span>`;
-	txt += `<span class="f falc fjs fgr" style="flex-direction:column-reverse;">&nbsp;</span>`;
+
+	const loadSavedFamsButton =
+		`<input id="cf_loadSavedFamsButton" type="button" style="width:100%;" ` +
+		`value="Load Saved Familiars" onclick="cf_renderLoadSavedFamsPopup()">`;
+	const saveSavedFamsSelect =
+		`<select id="cf_saveSavedFamsSelect" style="width:100%;" ` +
+		`oninput="cf_promptSaveSavedFamiliars(this.value)">` +
+		`<option value="-" selected>Save Current Familiars</option>` +
+		`<optgroup label="Save Mode">` +
+		`<option value="exact">Save Exactly (same familiars on load)</option>` +
+		`<option value="placement">Save Positions Only (placement-mode on load)</option>` +
+		`</optgroup>` +
+		`</select>`;
+	txt += `<span class="f fjs fgr" style="flex-direction:column-reverse;">`;
+	txt += addHTMLElement({
+		text: addHTMLElements([
+			{text: loadSavedFamsButton},
+			{text: `&nbsp;`, styles: `width:40px;`},
+			{text: saveSavedFamsSelect},
+		]),
+		classes: `f fr falc fjsb`,
+		styles: `font-size:0.9em;`,
+	});
+	txt += `</span>`;
 
 	txt += `</span>`;
 
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_loadSavedFamsPopup" style="display:none;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_saveSavedFamsPopup" style="display:none;">&nbsp;</span>`;
+
 	return txt;
+}
+
+function cf_promptSaveSavedFamiliars(value) {
+	if (!value || value === `-`) return;
+	cf_renderSaveSavedFamsPopup(value);
+}
+
+function cf_renderLoadSavedFamsPopup() {
+	const button = document.getElementById(`cf_loadSavedFamsButton`);
+	const container = document.getElementById(`cf_loadSavedFamsPopup`);
+	if (!button || !container) return;
+
+	const click = `cf_closeLoadSavedFamsPopup()`;
+	let txt = ``;
+	txt += `<span class="f fr falc fjs"><h3>Load Saved Familiars?</h3></span>`;
+	txt += `<span class="f fr falc fjs p5">This will replace the current familiars with the saved ones.</span>`;
+	txt += `<span style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;">`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="cf_placeSavedFamiliars();${click}"></span>`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="${click}"></span>`;
+	txt += `</span>`;
+
+	container.innerHTML = txt;
+	container.style.display = ``;
+
+	const contRect = container.getBoundingClientRect();
+	const btnRect = button.getBoundingClientRect();
+	let left = btnRect.left + btnRect.width / 2 - contRect.width / 2;
+	let top = btnRect.top + btnRect.height / 2 - contRect.height / 2;
+	const margin = 20;
+	const maxLeft = window.innerWidth - contRect.width - margin;
+	const maxTop = window.innerHeight - contRect.height - margin;
+	container.style.left = Math.max(margin, Math.min(left, maxLeft)) + `px`;
+	container.style.top = Math.max(margin, Math.min(top, maxTop)) + `px`;
+
+	setTimeout(() => {
+		document.removeEventListener(
+			"mousedown",
+			cf_handleLoadSavedFamsPopupOutsideClick,
+		);
+		document.addEventListener(
+			"mousedown",
+			cf_handleLoadSavedFamsPopupOutsideClick,
+		);
+	}, 0);
+}
+
+function cf_closeLoadSavedFamsPopup() {
+	const popup = document.getElementById(`cf_loadSavedFamsPopup`);
+	if (!popup) return;
+	popup.style.display = `none`;
+	popup.innerHTML = `&nbsp;`;
+	document.removeEventListener(
+		"mousedown",
+		cf_handleLoadSavedFamsPopupOutsideClick,
+	);
+}
+
+function cf_handleLoadSavedFamsPopupOutsideClick(event) {
+	const popup = document.getElementById(`cf_loadSavedFamsPopup`);
+	if (!popup) return;
+	if (!popup.contains(event.target)) {
+		cf_closeLoadSavedFamsPopup();
+		document.removeEventListener(
+			"mousedown",
+			cf_handleLoadSavedFamsPopupOutsideClick,
+		);
+	}
+}
+
+function cf_renderSaveSavedFamsPopup(mode) {
+	const button = document.getElementById(`cf_saveSavedFamsSelect`);
+	const container = document.getElementById(`cf_saveSavedFamsPopup`);
+	if (!button || !container) return;
+
+	const modeText =
+		mode === `placement` ?
+			`positionally only.<br><br>When you load them again - they will be placed based on your choice in Familiar Placement Mode` :
+			`exactly.<br><br>When you load them again - they will be placed exactly as they are now`;
+	const click = `cf_closeSaveSavedFamsPopup()`;
+	let txt = ``;
+	txt += `<span class="f fr falc fjs"><h3>Save Current Familiars?</h3></span>`;
+	txt += `<span class="f fr falc fjs p5">This will save your current familiar setup ${modeText}.</span>`;
+	txt += `<span style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;">`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="cf_ls_saveSavedFamiliars('${mode}');${click};cf_renderFamiliarsControlSections();"></span>`;
+	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="${click}"></span>`;
+	txt += `</span>`;
+
+	container.innerHTML = txt;
+	container.style.display = ``;
+
+	const contRect = container.getBoundingClientRect();
+	const btnRect = button.getBoundingClientRect();
+	let left = btnRect.left + btnRect.width / 2 - contRect.width / 2;
+	let top = btnRect.top + btnRect.height / 2 - contRect.height / 2;
+	const margin = 20;
+	const maxLeft = window.innerWidth - contRect.width - margin;
+	const maxTop = window.innerHeight - contRect.height - margin;
+	container.style.left = Math.max(margin, Math.min(left, maxLeft)) + `px`;
+	container.style.top = Math.max(margin, Math.min(top, maxTop)) + `px`;
+
+	setTimeout(() => {
+		document.removeEventListener(
+			"mousedown",
+			cf_handleSaveSavedFamsPopupOutsideClick,
+		);
+		document.addEventListener(
+			"mousedown",
+			cf_handleSaveSavedFamsPopupOutsideClick,
+		);
+	}, 0);
+}
+
+function cf_closeSaveSavedFamsPopup() {
+	const popup = document.getElementById(`cf_saveSavedFamsPopup`);
+	if (!popup) return;
+	popup.style.display = `none`;
+	popup.innerHTML = `&nbsp;`;
+	const select = document.getElementById(`cf_saveSavedFamsSelect`);
+	if (select) select.value = `-`;
+	document.removeEventListener(
+		"mousedown",
+		cf_handleSaveSavedFamsPopupOutsideClick,
+	);
+}
+
+function cf_handleSaveSavedFamsPopupOutsideClick(event) {
+	const popup = document.getElementById(`cf_saveSavedFamsPopup`);
+	if (!popup) return;
+	if (!popup.contains(event.target)) {
+		cf_closeSaveSavedFamsPopup();
+		document.removeEventListener(
+			"mousedown",
+			cf_handleSaveSavedFamsPopupOutsideClick,
+		);
+	}
+}
+
+function cf_clearAllFamiliars() {
+	cf_builderState.familiars = {
+		Ultimates: [],
+		Clicks: [],
+		Seat: [],
+		UltimateSpecific: [],
+		BuffType: [],
+		BuffSpecific: new Map(),
+		AutoProgress: [],
+		UmbertoInvestigation: [],
+	};
+	cf_builderState.usedFamiliarIds = new Set();
+	cf_globalStyleFamiliars();
+	cf_updateUI(cf_UI.FAMILIARS | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
+}
+
+function cf_placeSavedFamiliars() {
+	const saved = cf_ls_getSavedFamiliars();
+	if (!saved || !saved.fams) {
+		cf_clearAllFamiliars();
+		return;
+	}
+
+	const mode = saved.mode ?? ``;
+
+	if (!mode || mode === `exact`) {
+		cf_builderState.familiars = structuredClone(saved.fams);
+		cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(cf_builderState.familiars);
+		cf_globalStyleFamiliars();
+		cf_updateUI(cf_UI.FAMILIARS | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
+		return;
+	}
+
+	cf_clearAllFamiliars();
+
+	// Load as if manually set by user (use familiar mode order for fam selection)
+	const savedPositions = [];
+	for (const [type, container] of Object.entries(saved.fams)) {
+		if (Array.isArray(container)) {
+			container.forEach((famId, slot) => {
+				if (famId > 0) savedPositions.push({type, slot});
+			});
+		} else if (container instanceof Map) {
+			for (const [slot, famId] of container.entries()) {
+				if (famId > 0) savedPositions.push({type, slot});
+			}
+		}
+	}
+
+	savedPositions.sort((a, b) => {
+		if (a.type < b.type) return -1;
+		if (a.type > b.type) return 1;
+		return a.slot - b.slot;
+	});
+
+	for (const pos of savedPositions) {
+		const famId = cf_getNextFamiliarId();
+		if (famId <= 0) break;
+		cf_placeFamiliarValidated(pos.type, pos.slot, famId);
+	}
+
+	cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(cf_builderState.familiars);
+	cf_globalStyleFamiliars();
+	cf_updateUI(cf_UI.FAMILIARS | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
 }
 
 function cf_renderFamiliarPlacementGridsSelector() {
@@ -4190,4 +4419,33 @@ function cf_ls_deleteSavedFormation(index) {
 	saved.splice(index, 1);
 
 	ls_setGlobal_arr(cf_LSKEY_savedFormations, saved);
+}
+
+function cf_ls_saveSavedFamiliars(mode) {
+	const fams = structuredClone(cf_builderState.familiars);
+	const isEmptyFn = (v) => {
+		if (!v || typeof v !== "object") return true;
+		if (!v.fams || typeof v.fams !== "object") return true;
+		const keys = Object.keys(v.fams);
+		if (keys.length === 0) return true;
+
+		for (const key of keys) {
+			const container = v.fams[key];
+			if (container instanceof Map) {
+				if (container.size > 0) return false;
+				continue;
+			}
+			if (Array.isArray(container)) {
+				if (container.some((id) => Number(id) > 0)) return false;
+				continue;
+			}
+		}
+
+		return true;
+	};
+	ls_setPerAccount(cf_LSKEY_savedFamiliars, {mode, fams}, isEmptyFn);
+}
+
+function cf_ls_getSavedFamiliars() {
+	return ls_getPerAccount(cf_LSKEY_savedFamiliars, null);
 }

@@ -239,6 +239,9 @@ pre {
 .fjc {
 	justify-content: center;
 }
+.fjsb {
+	justify-content: space-between;
+}
 .fgr {
 	flex-grow: 1;
 }
