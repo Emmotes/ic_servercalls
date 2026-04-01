@@ -1,4 +1,4 @@
-const vcf = 1.201; // prettier-ignore
+const vcf = 1.202; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_serverCalls = new Set([
 	"getUserDetails",
@@ -3662,7 +3662,10 @@ function cf_encodeByteglowSpecs() {
 	for (const champId of cf_builderState.formation) {
 		const specDefs = cf_data.specialisations.byChampionId.get(champId);
 		const chosenSpecs = cf_builderState.specializations.get(champId);
-		if (!specDefs) continue;
+		if (champId <= 0 || !specDefs) {
+			specs += `0`;
+			continue;
+		}
 		if (!chosenSpecs) {
 			for (let i = 0; i < specDefs.length; i++) specs += `0`;
 			continue;
