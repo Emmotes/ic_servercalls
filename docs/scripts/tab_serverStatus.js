@@ -1,4 +1,4 @@
-const vss = 2.101; // prettier-ignore
+const vss = 2.102; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -582,34 +582,63 @@ async function ss_populateGraph(statusData) {
 	const ele = document.getElementById(`ss_history`);
 	if (!ele) return;
 
-	// Collect all unique servers and max response time
+	// Collect unique servers, max response, labels, and tick/line candidates in one pass.
 	let maxResponse = 0;
-	const allServers = new Set();
-	for (const entry of history) {
+	const serverValues = new Map();
+	const timestamps = [];
+	const labels = [];
+	const tickIndices = [];
+	const hourLabelByIndex = new Map();
+	const seenHourKeys = new Set();
+	const formatter = new Intl.DateTimeFormat("en-GB", {
+		timeStyle: "short",
+		hour12: false,
+	});
+
+	for (let i = 0; i < history.length; i++) {
+		const entry = history[i];
+		const checkedAtMs = Date.parse(entry.checkedAt);
+		timestamps.push(checkedAtMs);
+
+		const date = new Date(checkedAtMs);
+		labels.push(formatter.format(date));
+
+		if (ss_isNearHourMark(checkedAtMs)) {
+			const nearestHourMs = ss_getNearestHourMs(checkedAtMs);
+			const nearestDate = new Date(nearestHourMs);
+			const hourKey = `${nearestDate.getFullYear()}-${nearestDate.getMonth()}-${nearestDate.getDate()}-${nearestDate.getHours()}`;
+			if (!seenHourKeys.has(hourKey)) {
+				seenHourKeys.add(hourKey);
+				tickIndices.push(i);
+				hourLabelByIndex.set(i, ss_formatHourLabel(nearestHourMs));
+			}
+		}
+
+		// Add placeholder for every server series for this row.
+		for (const arr of serverValues.values())
+			arr.push(null);
+
 		if (entry.results && typeof entry.results === "object") {
 			for (const server in entry.results) {
-				allServers.add(server);
-				if (entry.results[server] > maxResponse)
-					maxResponse = entry.results[server];
+				const responseTime = entry.results[server];
+				maxResponse = Math.max(maxResponse, responseTime);
+
+				if (!serverValues.has(server)) {
+					const arr = new Array(i).fill(null);
+					arr.push(responseTime);
+					serverValues.set(server, arr);
+				} else
+					serverValues.get(server)[i] = responseTime;
 			}
 		}
 	}
-	const servers = Array.from(allServers).sort(ss_compare);
+
+	const servers = Array.from(serverValues.keys()).sort(ss_compare);
 
 	// Resize canvas to account for max response time.
 	const thousands = Math.ceil(maxResponse / 1000);
 	const maxY = thousands * 1000;
 	ele.height = 104 + thousands * 40;
-
-	// Prepare data for Chart.js
-	const timestamps = history.map((entry) => Date.parse(entry.checkedAt));
-	const labels = history.map((entry) => {
-		const date = new Date(entry.checkedAt);
-		return Intl.DateTimeFormat("en-GB", {
-			timeStyle: "short",
-			hour12: false,
-		}).format(date);
-	});
 
 	const datasets = [];
 	let i = 0;
@@ -617,7 +646,7 @@ async function ss_populateGraph(statusData) {
 		const colour = ss_getColorForServer(i++);
 		datasets.push({
 			label: server,
-			data: history.map((entry) => entry.results?.[server] ?? null),
+			data: serverValues.get(server),
 			borderColor: colour,
 			borderWidth: 1,
 			backgroundColor: colour,
@@ -721,23 +750,6 @@ async function ss_populateGraph(statusData) {
 		chart.options.scales &&
 		chart.options.scales.x
 	) {
-		// Precompute hour tick positions and labels: choose nearest-hour tick point (within tolerance) and display exact `HH:00`.
-		const tickIndices = [];
-		const hourLabelByIndex = new Map();
-		const seenHourKeys = new Set();
-		for (let i = 0; i < timestamps.length; i++) {
-			if (!ss_isNearHourMark(timestamps[i])) continue;
-
-			const nearestMs = ss_getNearestHourMs(timestamps[i]);
-			const date = new Date(nearestMs);
-			const hourKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
-
-			if (seenHourKeys.has(hourKey)) continue;
-
-			seenHourKeys.add(hourKey);
-			tickIndices.push(i);
-			hourLabelByIndex.set(i, ss_formatHourLabel(nearestMs));
-		}
 		const tickIndexSet = new Set(tickIndices);
 
 		chart.options.scales.x.ticks = {
@@ -745,7 +757,9 @@ async function ss_populateGraph(statusData) {
 			autoSkip: false,
 			maxRotation: 0,
 			callback: function (value) {
-				return tickIndexSet.has(value) ? hourLabelByIndex.get(value) : "";
+				return tickIndexSet.has(value) ?
+						hourLabelByIndex.get(value)
+					:	"";
 			},
 		};
 
