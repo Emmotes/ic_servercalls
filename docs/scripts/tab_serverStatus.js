@@ -1,4 +1,4 @@
-const vss = 2.100; // prettier-ignore
+const vss = 2.101; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -602,6 +602,7 @@ async function ss_populateGraph(statusData) {
 	ele.height = 104 + thousands * 40;
 
 	// Prepare data for Chart.js
+	const timestamps = history.map((entry) => Date.parse(entry.checkedAt));
 	const labels = history.map((entry) => {
 		const date = new Date(entry.checkedAt);
 		return Intl.DateTimeFormat("en-GB", {
@@ -609,14 +610,6 @@ async function ss_populateGraph(statusData) {
 			hour12: false,
 		}).format(date);
 	});
-
-	const timeTickRegex = /(\d{1,2}):(\d{2})/;
-	const shouldShowTimeTick = (label) => {
-		const parts = timeTickRegex.exec(label);
-		if (!parts || parts.length < 3) return false;
-		const minutes = Number(parts[1]) * 60 + Number(parts[2]);
-		return minutes % 60 === 0;
-	};
 
 	const datasets = [];
 	let i = 0;
@@ -728,21 +721,31 @@ async function ss_populateGraph(statusData) {
 		chart.options.scales &&
 		chart.options.scales.x
 	) {
-		// Pre-compute which indices are allowed labels.
+		// Precompute hour tick positions and labels: choose nearest-hour tick point (within tolerance) and display exact `HH:00`.
 		const tickIndices = [];
-		for (let i = 0; i < labels.length; i++) {
-			if (shouldShowTimeTick(labels[i])) {
-				tickIndices.push(i);
-			}
+		const hourLabelByIndex = new Map();
+		const seenHourKeys = new Set();
+		for (let i = 0; i < timestamps.length; i++) {
+			if (!ss_isNearHourMark(timestamps[i])) continue;
+
+			const nearestMs = ss_getNearestHourMs(timestamps[i]);
+			const date = new Date(nearestMs);
+			const hourKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+
+			if (seenHourKeys.has(hourKey)) continue;
+
+			seenHourKeys.add(hourKey);
+			tickIndices.push(i);
+			hourLabelByIndex.set(i, ss_formatHourLabel(nearestMs));
 		}
+		const tickIndexSet = new Set(tickIndices);
 
 		chart.options.scales.x.ticks = {
 			...chart.options.scales.x.ticks,
 			autoSkip: false,
 			maxRotation: 0,
 			callback: function (value) {
-				const label = labels[value];
-				return shouldShowTimeTick(label) ? label : "";
+				return tickIndexSet.has(value) ? hourLabelByIndex.get(value) : "";
 			},
 		};
 
@@ -783,6 +786,26 @@ async function ss_populateGraph(statusData) {
 
 		chart.update();
 	}
+}
+
+function ss_getNearestHourMs(timestampMs) {
+	if (!Number.isFinite(timestampMs)) return null;
+	const msPerHour = 60 * 60 * 1000;
+	return Math.round(timestampMs / msPerHour) * msPerHour;
+}
+
+function ss_isNearHourMark(timestampMs) {
+	if (!Number.isFinite(timestampMs)) return false;
+	const nearest = ss_getNearestHourMs(timestampMs);
+	if (!Number.isFinite(nearest)) return false;
+	return Math.abs(timestampMs - nearest) <= ss_CACHE_INTERVAL_MS;
+}
+
+function ss_formatHourLabel(timestampMs) {
+	if (!Number.isFinite(timestampMs)) return "";
+	const date = new Date(timestampMs);
+	const h = String(date.getHours()).padStart(2, "0");
+	return `${h}:00`;
 }
 
 function ss_getColorForServer(index, alpha = 1) {
