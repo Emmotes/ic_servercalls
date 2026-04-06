@@ -1,4 +1,4 @@
-const vbc = 1.100; // prettier-ignore
+const vbc = 1.101; // prettier-ignore
 const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
@@ -14,6 +14,7 @@ const bc_serverCalls = new Set([
 	"getDefinitions",
 ]);
 const bc_definitionsFilters = new Set(["chest_type_defines"]);
+let bc_chestNames = null;
 
 function bc_registerData() {
 	bc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
@@ -148,20 +149,28 @@ async function bc_displayBuyChestsData(
 	const buyChestsBuyer = document.getElementById(`buyChestsBuyer`);
 	const fullDismantleChampions =
 		bc_getFullDismantleChampionIds(dismantleData);
+	bc_chestNames = bc_buildChestNames(chests);
 	let eventChestIds = [];
 	const eventChests = {};
 	let gotBadChest = false;
 	if (eventActive) {
-		for (let chest of shop)
+		for (const chest of shop)
 			if (chest.tags.includes("event") || chest.tags.includes("event_v2"))
 				eventChests[chest.type_id] = {};
 		eventChestIds = Object.keys(eventChests);
 		numSort(eventChestIds);
-		outerLoop: for (let chestId of eventChestIds) {
-			for (let chest of chests) {
-				if (chest.id === Number(chestId)) {
-					const name = chest.name.replace("Gold ", "") + " Pack";
-					const heroIds = chest.hero_ids;
+		outerLoop: for (const eventChestId of eventChestIds) {
+			const eChestId = Number(eventChestId ?? -1);
+			if (eChestId <= 0) continue;
+			for (const chest of chests) {
+				const chestId = Number(chest.id ?? -1);
+				if (chestId <= 0) continue;
+				if (chestId === eChestId) {
+					const name =
+						bc_chestNames.has(chestId) ?
+							bc_chestNames.get(chestId).name
+						:	null;
+					const heroIds = chest?.hero_ids;
 					if (name == null || heroIds == null) {
 						gotBadChest = true;
 						break outerLoop;
@@ -169,7 +178,7 @@ async function bc_displayBuyChestsData(
 					const dismantle = chest.hero_ids.some((r) =>
 						fullDismantleChampions.includes(r),
 					);
-					eventChests[chestId] = {name: name, dismantle: dismantle};
+					eventChests[eventChestId] = {name, dismantle};
 					break;
 				}
 			}
@@ -237,6 +246,18 @@ async function bc_displayBuyChestsData(
 	bc_modifyBuyChestsBuyAmountSlider();
 }
 
+function bc_buildChestNames(chests) {
+	const chestNames = new Map();
+	for (const chest of chests) {
+		const id = Number(chest?.id ?? 0);
+		const name = chest?.name ?? null;
+		const namePlural = chest?.name_plural ?? null;
+		if (id <= 0 || name == null || namePlural == null) continue;
+		chestNames.set(id, {name, namePlural});
+	}
+	return chestNames;
+}
+
 function bc_modifyBuyChestsBuyAmountSlider(val) {
 	const buyChestsSilver = document.getElementById(`buyChestsSilver`);
 	const buyChestsGold = document.getElementById(`buyChestsGold`);
@@ -294,6 +315,7 @@ async function bc_buyChests() {
 	buyChestsBuyList.disabled = true;
 	buyChestsBuyAmount.disabled = true;
 	disablePullButtons();
+	let have = ``;
 	let buying = ``;
 	let txt = ``;
 	if (buyChestsBuyList == null || buyChestsBuyAmount == null) {
@@ -315,11 +337,11 @@ async function bc_buyChests() {
 	buying = bc_makeBuyingRow(amount, chestName, initAmount);
 	if (amount === 0) {
 		txt += bc_addChestResultRow(`- None`);
-		buyChestsBuyer.innerHTML = buying + txt;
+		buyChestsBuyer.innerHTML = have + buying + txt;
 		return;
 	}
 	let numFails = 0;
-	buyChestsBuyer.innerHTML = buying + txt;
+	buyChestsBuyer.innerHTML = have + buying + txt;
 	while (amount > 0 && numFails < RETRIES) {
 		const toBuy = Math.min(250, amount);
 		const result = await buySoftCurrencyChest(chestId, toBuy);
@@ -332,10 +354,10 @@ async function bc_buyChests() {
 				`Not enough ${failureType}.`,
 			);
 			buying = bc_makeBuyingRow(0, chestName, initAmount);
-			buyChestsBuyer.innerHTML = buying + txt;
+			buyChestsBuyer.innerHTML = have + buying + txt;
 			return;
 		}
-		if (result["success"] && result["okay"]) {
+		if (result.success && result.okay) {
 			successType = `Successfully bought`;
 			const currencyType = chestId > 2 ? `Tokens` : `Gems`;
 			const currencyRemaining = Math.floor(result.currency_remaining);
@@ -367,6 +389,7 @@ async function bc_buyChests() {
 				);
 			}
 			buyChestsBuyAmount.value -= toBuy;
+			have = bc_parseActions(result.actions);
 			bc_updateBuyChestsSliderValue(buyChestsBuyAmount.value);
 		} else numFails++;
 		buying = bc_makeBuyingRow(amount, chestName, initAmount);
@@ -374,15 +397,15 @@ async function bc_buyChests() {
 			`- ${successType}:`,
 			`${toBuy} ${genChest}${cost}`,
 		);
-		buyChestsBuyer.innerHTML = buying + txt;
+		buyChestsBuyer.innerHTML = have + buying + txt;
 	}
 	buying = bc_makeBuyingRow(amount, chestName, initAmount);
 	txt += bc_addChestResultRow(`Finished.`);
-	buyChestsBuyer.innerHTML = buying + txt;
+	buyChestsBuyer.innerHTML = have + buying + txt;
 	if (numFails >= RETRIES) {
 		txt += bc_addChestResultRow(`- Stopping:`, `Got too many failures.`);
 		buying = bc_makeBuyingRow(0, chestName, initAmount);
-		buyChestsBuyer.innerHTML = buying + txt;
+		buyChestsBuyer.innerHTML = have + buying + txt;
 		return;
 	}
 	let gemsValue = document.getElementById(`buyChestsGems`).value;
@@ -402,6 +425,38 @@ async function bc_buyChests() {
 	buyChestsBuyList.disabled = false;
 	buyChestsBuyAmount.disabled = false;
 	codeEnablePullButtons();
+}
+
+function bc_parseActions(actions) {
+	const chests = [];
+	for (const action of actions) {
+		if (action?.action !== "update_chest_count") continue;
+		const id = Number(action?.chest_type_id ?? -1);
+		if (id <= 0) continue;
+		const count = Number(action?.count ?? -1);
+		if (count <= 0) continue;
+		const name =
+			bc_chestNames != null && bc_chestNames.has(id) ?
+				bc_chestNames.get(id)[count === 1 ? "name" : "namePlural"]
+			:	`??? (id:${id})`;
+		chests.push({id, count, name});
+	}
+	console.log("Chests: ", chests);
+	if (chests.length === 0) return ``;
+
+	chests.sort((a, b) => a.id - b.id);
+
+	let have = addHTMLElement({
+		text: `You now have:`,
+		classes: `f fr w100 p5`,
+	});
+	for (const chest of chests)
+		have += bc_addChestResultRow(`${chest.name}:`, `${nf(chest.count)}`);
+	have += addHTMLElement({
+		text: `&nbsp;`,
+		classes: `f fr w100 p5`,
+	});
+	return have;
 }
 
 function bc_getFullDismantleChampionIds(dismantleData) {
@@ -433,26 +488,61 @@ function bc_applyValueToElementAndDisplay(eleName, value) {
 }
 
 function bc_addChestsRow(left, right, hiddenInput, hiddenValue) {
-	let hiddenField = ``;
-	let hiddenId = ``;
+	let hiddenField = null;
+	let hiddenId = null;
 	if (hiddenInput != null && hiddenValue != null) {
 		hiddenField = `<input type="hidden" id="${hiddenInput}" name="${hiddenInput}" value="${hiddenValue}">`;
-		hiddenId = ` id="${hiddenInput}Display" name="${hiddenInput}Display"`;
+		hiddenId = `${hiddenInput}Display`;
 	}
-	return `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs ml2" style="padding-left:10px;width:28%;min-width:200px;"${hiddenId}>${right}</span>${hiddenField}</span>`;
+	const eles = [
+		{
+			text: left,
+			classes: `f falc fje mr2`,
+			styles: `width:25%;min-width:200px;`,
+		},
+		{
+			text: right,
+			classes: `f falc fjs ml2`,
+			styles: `padding-left:10px;width:28%;min-width:200px;`,
+			id: hiddenId,
+			name: hiddenId,
+		},
+	];
+	let txt = addHTMLElements(eles);
+	if (hiddenField) txt += hiddenField;
+	return addHTMLElement({
+		text: txt,
+		classes: `f fr w100 p5`,
+	});
 }
 
 function bc_addChestResultRow(left, right) {
-	let rightAdd = ``;
+	const eles = [
+		{
+			text: left,
+			classes: `f falc fje mr2`,
+			styles: `width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0;`,
+		},
+	];
 	if (right != null)
-		rightAdd = `<span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${right}</span>`;
-	return `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">${left}</span>${rightAdd}</span>`;
+		eles.push({
+			text: right,
+			classes: `f falc fjs ml2`,
+			styles: `flex-grow:1;margin-left:5px;flex-wrap:wrap;`,
+		});
+	return addHTMLElement({
+		text: addHTMLElements(eles),
+		classes: `f fr w100 p5`,
+	});
 }
 
 function bc_makeBuyingRow(amount, name, initAmount) {
-	return `<span class="f fr w100 p5">${
-		amount === 0 ? `Finished ` : ``
-	}Buying ${nf(amount === 0 ? initAmount : amount)} ${name}s:</span>`;
+	const prefix = (amount === 0 ? `Finished ` : ``) + `Buying`;
+	const displayAmount = amount > 0 ? nf(amount) : nf(initAmount);
+	return addHTMLElement({
+		text: `${prefix} ${displayAmount} ${name}s:`,
+		classes: `f fr w100 p5`,
+	});
 }
 
 function bc_initBuyChestsSliderFidelity() {

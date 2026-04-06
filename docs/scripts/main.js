@@ -1,4 +1,4 @@
-const v = 4.100; // prettier-ignore
+const v = 4.101; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -756,12 +756,13 @@ function addHTMLElement(ele) {
 	if (ele.hide) style += `display:none;`;
 	if (ele.gridCol != null) style += `grid-column:${ele.gridCol};`;
 	if (style !== ``) style = ` style="${style}"`;
-	let id = ele.id != null ? ` id="${ele.id}"` : ``;
+	const id = ele.id != null ? ` id="${ele.id}"` : ``;
+	const name = ele.name != null ? ` name="${ele.name}"` : ``;
 	let data = ``;
 	if (ele.data != null && typeof ele.data === "object")
 		for (let key in ele.data) data += ` data-${key}="${ele.data[key]}"`;
 	const clazz = ele.classes ? ` class="${ele.classes}"` : ``;
-	return `<span${clazz}${id}${data}${style}>${ele.text || `&nbsp;`}</span>`;
+	return `<span${clazz}${id}${name}${data}${style}>${ele.text || `&nbsp;`}</span>`;
 }
 
 function getDefsNames(defs) {
