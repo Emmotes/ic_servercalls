@@ -1,4 +1,4 @@
-const vbc = 1.101; // prettier-ignore
+const vbc = 1.102; // prettier-ignore
 const bc_LSKEY_sliderFidelity = `scBuyChestsSliderFidelity`;
 const bc_chestPackCost = 7500;
 const bc_silverChestCost = 50;
@@ -441,7 +441,6 @@ function bc_parseActions(actions) {
 			:	`??? (id:${id})`;
 		chests.push({id, count, name});
 	}
-	console.log("Chests: ", chests);
 	if (chests.length === 0) return ``;
 
 	chests.sort((a, b) => a.id - b.id);
