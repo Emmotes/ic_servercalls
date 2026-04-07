@@ -1,4 +1,4 @@
-const vcf = 1.203; // prettier-ignore
+const vcf = 1.204; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -2688,6 +2688,8 @@ function cf_buildSpecialisations(data, upgradeDefs) {
 			continue;
 
 		const requiredUpgradeId = Number(upg?.required_upgrade_id ?? 0);
+		if (requiredLevel === 9999 && requiredUpgradeId === 9999)
+			continue; // These values are placeholder for deactivated / unused specialisations and should be ignored.
 
 		if (!specRoot.has(heroId)) specRoot.set(heroId, new Map());
 
