@@ -1,4 +1,4 @@
-const vcf = 1.204; // prettier-ignore
+const vcf = 1.205; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -276,11 +276,11 @@ function cf_renderImportsSection() {
 
 	txt += `<span id="cf_importContainer" class="f fr falc fje w100">&nbsp;</span>`;
 
-	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_importConfPopup" style="display:none;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_importConfPopup" style="display:none;z-index:3;">&nbsp;</span>`;
 	txt +=
 		`<span class="f fc fals fjc posAbs cf_importPopup" id="cf_importWarnPopup"` +
 		` style="background-color:var(--ChineseBlack);border:1px solid ` +
-		`var(--Carrot);z-index:2;display:none;">&nbsp;</span>`;
+		`var(--Carrot);z-index:3;display:none;">&nbsp;</span>`;
 
 	container.innerHTML = txt;
 }
@@ -882,8 +882,8 @@ function cf_renderFormationGrid() {
 					`</span>`;
 		}
 	}
-	txt += `<span class="f fc fals fjc cf_specChoicePopup" id="cf_specChoicePopup" style="display:none;">&nbsp;</span>`;
-	txt += `<span class="f fc fals fjc cf_featChoicePopup" id="cf_featChoicePopup" style="display:none;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc cf_specChoicePopup" id="cf_specChoicePopup" style="display:none;z-index:2;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc cf_featChoicePopup" id="cf_featChoicePopup" style="display:none;z-index:2;">&nbsp;</span>`;
 	txt += `</span>`;
 
 	container.innerHTML = txt;
@@ -1389,8 +1389,8 @@ function cf_renderFamiliarsControlSections() {
 
 	txt += `</span>`;
 
-	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_loadSavedFamsPopup" style="display:none;">&nbsp;</span>`;
-	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_saveSavedFamsPopup" style="display:none;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_loadSavedFamsPopup" style="display:none;z-index:3;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_saveSavedFamsPopup" style="display:none;z-index:3;">&nbsp;</span>`;
 
 	return txt;
 }
@@ -1944,7 +1944,7 @@ function cf_renderExportsSection() {
 
 	txt += `</span>`;
 
-	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_deleteLocalPopup" style="display:none;">&nbsp;</span>`;
+	txt += `<span class="f fc fals fjc posAbs cf_importPopup" id="cf_deleteLocalPopup" style="display:none;z-index:3;">&nbsp;</span>`;
 
 	return txt;
 }
