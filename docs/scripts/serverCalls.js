@@ -1,4 +1,4 @@
-const vs = 3.025; // prettier-ignore
+const vs = 3.026; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -782,7 +782,10 @@ function appendBoilerplate() {
 
 function buildParams(paramList) {
 	let params = ``;
-	for (let param of paramList) params += `&${param[0]}=${param[1]}`;
+	for (let param of paramList)
+		params += `&${encodeURIComponent(param[0])}=${encodeURIComponent(
+			param[1] == null ? `` : String(param[1]),
+		)}`;
 	return params;
 }
 
