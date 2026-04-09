@@ -1,4 +1,4 @@
-const vss = 2.102; // prettier-ignore
+const vss = 2.103; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -12,6 +12,7 @@ const ss_MIN_RECHECK_MS = 30 * 1000; // 30 seconds
 const ss_CACHE_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
+const ss_MAX_OUTAGE_LIMIT = 5;
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
 
@@ -274,6 +275,7 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 		gridCol: sCol,
 	});
 
+	let added = 0;
 	for (const outage of statusData.outages) {
 		const startedAt = ss_roundToNearestCacheInterval(outage.startedAt);
 		const endedAt = ss_roundToNearestCacheInterval(outage.endedAt);
@@ -312,6 +314,8 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 				gridCol: sCol,
 			},
 		]);
+		added++;
+		if (added >= ss_MAX_OUTAGE_LIMIT) break;
 	}
 
 	txt += ss_addSingleServerStatusRow("&nbsp;");
@@ -615,8 +619,7 @@ async function ss_populateGraph(statusData) {
 		}
 
 		// Add placeholder for every server series for this row.
-		for (const arr of serverValues.values())
-			arr.push(null);
+		for (const arr of serverValues.values()) arr.push(null);
 
 		if (entry.results && typeof entry.results === "object") {
 			for (const server in entry.results) {
@@ -627,8 +630,7 @@ async function ss_populateGraph(statusData) {
 					const arr = new Array(i).fill(null);
 					arr.push(responseTime);
 					serverValues.set(server, arr);
-				} else
-					serverValues.get(server)[i] = responseTime;
+				} else serverValues.get(server)[i] = responseTime;
 			}
 		}
 	}
