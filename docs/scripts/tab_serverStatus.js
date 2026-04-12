@@ -1,4 +1,4 @@
-const vss = 2.103; // prettier-ignore
+const vss = 2.104; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -432,6 +432,7 @@ function ss_translateServerError(error) {
 			return "Service Unavailable";
 		if (code === "521") return "Server Unreachable";
 		if (code === "522") return "Timed Out";
+		if (code === "526") return "Invalid SSL Certificate";
 
 		return `HTTP ${code}`;
 	}
