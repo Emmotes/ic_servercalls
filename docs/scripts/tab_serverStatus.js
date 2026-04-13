@@ -1,4 +1,4 @@
-const vss = 2.104; // prettier-ignore
+const vss = 2.200; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -132,7 +132,10 @@ async function ss_displayServerStatusData(
 	ss_toggleShowMoreDetails();
 	ss_startAgeTicker(wrapper);
 	ss_applyCooldownFromStatus(statusData, allowExtend);
-	ss_populateGraph(statusData);
+
+	const gapExists = ss_populateGraph(statusData);
+	if (gapExists)
+		document.getElementById(`ss_graphGapsNote`).style.display = ``;
 }
 
 function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
@@ -342,6 +345,15 @@ function ss_buildGraphSection(sFlex, sCol) {
 			dim: true,
 			small: true,
 			gridCol: sCol,
+		},
+		{
+			text: `Gaps in the graph suggest the server status checker was offline and not recording data - so those response times are unknown.`,
+			classes: sFlex,
+			styles: `padding-left:20px;display:none;`,
+			dim: true,
+			small: true,
+			gridCol: sCol,
+			id: `ss_graphGapsNote`,
 		},
 	]);
 
@@ -587,59 +599,64 @@ async function ss_populateGraph(statusData) {
 	const ele = document.getElementById(`ss_history`);
 	if (!ele) return;
 
-	// Collect unique servers, max response, labels, and tick/line candidates in one pass.
-	let maxResponse = 0;
+	const gapThresholdMs = Math.max(5 * 60 * 1000, ss_CACHE_INTERVAL_MS * 3);
+	const entries = history
+		.map((entry) => ({
+			checkedAtMs: Date.parse(entry.checkedAt),
+			results: entry.results,
+		}))
+		.filter(
+			(entry) =>
+				Number.isFinite(entry.checkedAtMs) &&
+				entry.results &&
+				typeof entry.results === "object",
+		)
+		.sort((a, b) => a.checkedAtMs - b.checkedAtMs);
+
+	if (entries.length === 0) return;
+
+	const minTime = entries[0].checkedAtMs;
+	const maxTime = entries[entries.length - 1].checkedAtMs;
+	const msPerHour = 60 * 60 * 1000;
+	const earliest24h = maxTime - 24 * msPerHour + ss_CACHE_INTERVAL_MS;
+	const axisMin = Math.min(minTime, earliest24h);
+	const axisMax = maxTime;
+
+	const hourTicks = [];
+	const firstHour = Math.ceil(axisMin / msPerHour) * msPerHour;
+	for (let tickTime = firstHour; tickTime <= axisMax; tickTime += msPerHour)
+		hourTicks.push(tickTime);
+
 	const serverValues = new Map();
-	const timestamps = [];
-	const labels = [];
-	const tickIndices = [];
-	const hourLabelByIndex = new Map();
-	const seenHourKeys = new Set();
-	const formatter = new Intl.DateTimeFormat("en-GB", {
-		timeStyle: "short",
-		hour12: false,
-	});
-
-	for (let i = 0; i < history.length; i++) {
-		const entry = history[i];
-		const checkedAtMs = Date.parse(entry.checkedAt);
-		timestamps.push(checkedAtMs);
-
-		const date = new Date(checkedAtMs);
-		labels.push(formatter.format(date));
-
-		if (ss_isNearHourMark(checkedAtMs)) {
-			const nearestHourMs = ss_getNearestHourMs(checkedAtMs);
-			const nearestDate = new Date(nearestHourMs);
-			const hourKey = `${nearestDate.getFullYear()}-${nearestDate.getMonth()}-${nearestDate.getDate()}-${nearestDate.getHours()}`;
-			if (!seenHourKeys.has(hourKey)) {
-				seenHourKeys.add(hourKey);
-				tickIndices.push(i);
-				hourLabelByIndex.set(i, ss_formatHourLabel(nearestHourMs));
-			}
+	let lastCheckedAtMs = null;
+	let maxResponse = 0;
+	let gapExists = false;
+	for (const entry of entries) {
+		if (entry.checkedAtMs - lastCheckedAtMs > gapThresholdMs) {
+			if (lastCheckedAtMs !== null)
+				for (const values of serverValues.values())
+					values.push({x: entry.checkedAtMs, y: null});
+			gapExists = true;
 		}
 
-		// Add placeholder for every server series for this row.
-		for (const arr of serverValues.values()) arr.push(null);
+		for (const server in entry.results) {
+			const responseTime = entry.results[server];
+			if (typeof responseTime !== "number") continue;
 
-		if (entry.results && typeof entry.results === "object") {
-			for (const server in entry.results) {
-				const responseTime = entry.results[server];
-				maxResponse = Math.max(maxResponse, responseTime);
-
-				if (!serverValues.has(server)) {
-					const arr = new Array(i).fill(null);
-					arr.push(responseTime);
-					serverValues.set(server, arr);
-				} else serverValues.get(server)[i] = responseTime;
-			}
+			if (!serverValues.has(server)) serverValues.set(server, []);
+			serverValues
+				.get(server)
+				.push({x: entry.checkedAtMs, y: responseTime});
+			maxResponse = Math.max(maxResponse, responseTime);
 		}
+
+		lastCheckedAtMs = entry.checkedAtMs;
 	}
 
 	const servers = Array.from(serverValues.keys()).sort(ss_compare);
 
 	// Resize canvas to account for max response time.
-	const thousands = Math.ceil(maxResponse / 1000);
+	const thousands = Math.max(1, Math.ceil(maxResponse / 1000));
 	const maxY = thousands * 1000;
 	ele.height = 104 + thousands * 40;
 
@@ -654,6 +671,7 @@ async function ss_populateGraph(statusData) {
 			borderWidth: 1,
 			backgroundColor: colour,
 			fill: false,
+			spanGaps: false,
 			tension: 0,
 			pointStyle: false,
 		});
@@ -676,11 +694,41 @@ async function ss_populateGraph(statusData) {
 		},
 	};
 
+	const xAxisHourLabelsPlugin = {
+		id: "xAxisHourLabels",
+		afterDraw: (chart) => {
+			const {ctx, chartArea, scales} = chart;
+			const xScale = scales.x;
+			if (!xScale) return;
+
+			ctx.save();
+			ctx.strokeStyle = colourGrid;
+			ctx.fillStyle = colourText;
+			ctx.textAlign = "center";
+			ctx.textBaseline = "top";
+
+			for (const tickValue of hourTicks) {
+				const pixel = xScale.getPixelForValue(tickValue);
+				if (pixel < chartArea.left || pixel > chartArea.right) continue;
+				ctx.beginPath();
+				ctx.moveTo(pixel, chartArea.top);
+				ctx.lineTo(pixel, chartArea.bottom);
+				ctx.stroke();
+				ctx.fillText(
+					ss_formatHourLabel(tickValue),
+					pixel,
+					chartArea.bottom + 4,
+				);
+			}
+
+			ctx.restore();
+		},
+	};
+
 	// Create the chart
 	const chart = new Chart(ele, {
 		type: "line",
 		data: {
-			labels: labels,
 			datasets: datasets,
 		},
 		options: {
@@ -696,15 +744,21 @@ async function ss_populateGraph(statusData) {
 			},
 			scales: {
 				x: {
+					type: "linear",
+					position: "bottom",
 					display: true,
-					title: {
-						display: true,
-						text: "Time",
-						color: colourText,
-					},
+					min: axisMin,
+					max: axisMax,
 					border: {color: colourBorder},
-					ticks: {color: colourText},
-					grid: {color: colourGrid},
+					ticks: {
+						color: colourText,
+						autoSkip: false,
+						maxRotation: 0,
+						callback: function () {
+							return "";
+						},
+					},
+					grid: {display: false},
 				},
 				y: {
 					display: true,
@@ -737,72 +791,34 @@ async function ss_populateGraph(statusData) {
 				tooltip: {
 					mode: "index",
 					intersect: false,
+					callbacks: {
+						title: function (tooltipItems) {
+							if (!tooltipItems || tooltipItems.length === 0)
+								return "";
+							const value =
+								tooltipItems[0].parsed?.x ??
+								tooltipItems[0].label;
+							return ss_formatTimeLabel(Number(value));
+						},
+						label: function (tooltipItem) {
+							const value = tooltipItem.parsed?.y;
+							return value == null ?
+									`${tooltipItem.dataset.label}: no data`
+								:	`${tooltipItem.dataset.label}: ${value}`;
+						},
+					},
 				},
 				customCanvasBackgroundColor: {
 					color: colourBg,
 				},
 			},
 		},
-		plugins: [customBgPlugin],
+		plugins: [customBgPlugin, xAxisHourLabelsPlugin],
 	});
 
-	// Enforce correct tick labels on the x axis.
-	if (
-		chart &&
-		chart.options &&
-		chart.options.scales &&
-		chart.options.scales.x
-	) {
-		const tickIndexSet = new Set(tickIndices);
+	chart.update();
 
-		chart.options.scales.x.ticks = {
-			...chart.options.scales.x.ticks,
-			autoSkip: false,
-			maxRotation: 0,
-			callback: function (value) {
-				return tickIndexSet.has(value) ?
-						hourLabelByIndex.get(value)
-					:	"";
-			},
-		};
-
-		// Disable default grid lines; draw custom ones later.
-		chart.options.scales.x.grid = {
-			...chart.options.scales.x.grid,
-			display: false,
-		};
-
-		// Plugin to draw vertical grid lines only at allowed positions.
-		const xAxisGridPlugin = {
-			id: "customGridLines",
-			afterDraw(chartInstance) {
-				const {ctx, chartArea, scales} = chartInstance;
-				const xScale = scales.x;
-				if (!xScale) return;
-
-				ctx.save();
-				ctx.strokeStyle = colourGrid;
-				ctx.lineWidth = 1;
-
-				for (const idx of tickIndices) {
-					const pixel = xScale.getPixelForValue(idx);
-					if (pixel >= chartArea.left && pixel <= chartArea.right) {
-						ctx.beginPath();
-						ctx.moveTo(pixel, chartArea.top);
-						ctx.lineTo(pixel, chartArea.bottom);
-						ctx.stroke();
-					}
-				}
-
-				ctx.restore();
-			},
-		};
-
-		// Add the custom grid plugin.
-		chart.config.plugins.push(xAxisGridPlugin);
-
-		chart.update();
-	}
+	return gapExists;
 }
 
 function ss_getNearestHourMs(timestampMs) {
@@ -823,6 +839,14 @@ function ss_formatHourLabel(timestampMs) {
 	const date = new Date(timestampMs);
 	const h = String(date.getHours()).padStart(2, "0");
 	return `${h}:00`;
+}
+
+function ss_formatTimeLabel(timestampMs) {
+	if (!Number.isFinite(timestampMs)) return "";
+	const date = new Date(timestampMs);
+	const h = String(date.getHours()).padStart(2, "0");
+	const m = String(date.getMinutes()).padStart(2, "0");
+	return `${h}:${m}`;
 }
 
 function ss_getColorForServer(index, alpha = 1) {
