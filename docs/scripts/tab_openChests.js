@@ -1,10 +1,13 @@
-const voc = 1.101; // prettier-ignore
+const voc = 1.102; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
 const oc_amountUndefined = `<span class="f w100 p5" style="padding-left:10%">Unknown error. Amount to open is undefined.</span>`;
 const oc_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
 const oc_definitionsFilters = new Set(["chest_type_defines"]);
+let oc_chestsHave = null;
+let oc_chestPacks = null;
+let oc_chestsDefs = null;
 
 function oc_registerData() {
 	oc_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
@@ -101,21 +104,16 @@ async function oc_pullOpenChestsData(userDetails, definitions) {
 			wrapper.innerHTML = `Waiting for user data...`;
 			userDetails = await getUserDetails();
 		}
-		const chestsHave = userDetails.details.chests;
-		const chestPacks = userDetails.details.chest_packs;
+		oc_chestsHave = userDetails?.details?.chests ?? null;
+		oc_chestPacks = userDetails?.details?.chest_packs ?? null;
 		if (!definitions) {
 			wrapper.innerHTML = `Waiting for definitions...`;
 			definitions = await getDefinitions(
 				filtersFromSet(oc_definitionsFilters),
 			);
 		}
-		const chestsDefs = definitions.chest_type_defines;
-		await oc_displayOpenChestsData(
-			wrapper,
-			chestsHave,
-			chestPacks,
-			chestsDefs,
-		);
+		oc_chestsDefs = definitions?.chest_type_defines ?? null;
+		await oc_displayOpenChestsData(wrapper);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);
@@ -123,21 +121,24 @@ async function oc_pullOpenChestsData(userDetails, definitions) {
 	}
 }
 
-async function oc_displayOpenChestsData(
-	wrapper,
-	chestsHave,
-	chestPacks,
-	chestsDefs,
-) {
+async function oc_displayOpenChestsData(wrapper) {
+	if (
+		!oc_chestsHave ||
+		!Array.isArray(oc_chestPacks) ||
+		!Array.isArray(oc_chestsDefs)
+	) {
+		handleInvalidData(wrapper);
+		return;
+	}
 	const openChestsOpener = document.getElementById(`openChestsOpener`);
-	let chestIds = !chestsHave ? [] : Object.keys(chestsHave);
+	let chestIds = Object.keys(oc_chestsHave);
 	const chestPacksById = {};
-	for (let chestPack of chestPacks) {
+	for (let chestPack of oc_chestPacks) {
 		const id = chestPack.chest_type_id;
 		if (chestPacksById[id] == null) {
 			chestPacksById[id] = {have: 0, packs: []};
-			if (chestsHave[id] != null)
-				chestPacksById[id]["have"] = chestsHave[id];
+			if (oc_chestsHave[id] != null)
+				chestPacksById[id]["have"] = oc_chestsHave[id];
 		}
 		chestPacksById[id].packs.push({
 			total: chestPack.total_chests,
@@ -162,7 +163,7 @@ async function oc_displayOpenChestsData(
 		return;
 	}
 	const chestNames = {};
-	for (let chest of chestsDefs)
+	for (let chest of oc_chestsDefs)
 		if (chestIds.includes(`${chest.id}`))
 			chestNames[chest.id] = [
 				chest.name,
@@ -193,7 +194,7 @@ async function oc_displayOpenChestsData(
 		if (hiddenChestIds.includes(Number(id))) continue;
 		const name = chestNames[id][0];
 		const plural = chestNames[id][1];
-		let amount = chestsHave[id];
+		let amount = oc_chestsHave[id];
 		if (amount != null && chestPacksById[id] != null)
 			for (let currPack of chestPacksById[id].packs)
 				amount -= currPack.total - currPack.opened;
@@ -343,6 +344,7 @@ async function oc_openChests(id) {
 				openChestsButton.value = `Open ${nf(openChestsSlider.value)} ${
 					openChestsSlider.value === 1 ? name : plural
 				}`;
+				oc_chestsHave[id] = remaining;
 			} else {
 				txt += bc_addChestResultRow(
 					`- ${successType}:`,
@@ -438,6 +440,8 @@ async function oc_openChestPack(id, packId, amount) {
 			currAmount -= open;
 			txt += bc_addChestResultRow(`- ${successType}:`, `${initMsg}`);
 			openChestsOpener.innerHTML = opening + txt;
+			const pack = oc_chestPacks.find((p) => p.pack_id === packId);
+			if (pack) pack.opened_chests = pack.total_chests;
 		} else {
 			txt += bc_addChestResultRow(`- ${successType}:`, `${initMsg}`);
 			opening = oc_makeOpeningRow(0, plural, amount);
@@ -514,6 +518,14 @@ function oc_toggleHideOpenChests() {
 
 	oc_saveHiddenChestIds(chestIds);
 	oc_updateElectrumUI(isForced);
+	if (
+		oc_chestsHave &&
+		Array.isArray(oc_chestPacks) &&
+		Array.isArray(oc_chestsDefs)
+	) {
+		const wrapper = document.getElementById(`openChestsWrapper`);
+		oc_displayOpenChestsData(wrapper);
+	}
 }
 
 function oc_getHiddenChestIds() {
