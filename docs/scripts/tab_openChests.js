@@ -1,4 +1,4 @@
-const voc = 1.100; // prettier-ignore
+const voc = 1.101; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
@@ -23,24 +23,29 @@ function oc_tab() {
 							This page will let you open any of the chests that you currently own.
 							<span class="f fc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
 								<span class="f fr falc">
-									<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="oc_toggleHideOpenChests()"> Hide All Briv Gear Chests
+									<input type="checkbox" id="openChestsHideBriv" data-ids="[174,175]" onclick="oc_toggleHideOpenChests()">
+									<label for="openChestsHideBriv">Hide All Briv Gear Chests</label>
 								</span>
 								<span class="f fr falc">
-									<input type="checkbox" id="openChestsHideModron" data-ids="[230]" onclick="oc_toggleHideOpenChests()"> Hide Modron Component Chests
+									<input type="checkbox" id="openChestsHideModron" data-ids="[230]" onclick="oc_toggleHideOpenChests()">
+									<label for="openChestsHideModron">Hide Modron Component Chests</label>
 								</span>
 								<span class="f fr falc">
-									<input type="checkbox" id="openChestsHideElectrum" data-ids="[282]" onclick="oc_toggleHideOpenChests()"> Hide Electrum Chests
+									<input type="checkbox" id="openChestsHideElectrum" data-ids="[282]" onclick="oc_toggleHideOpenChests()">
+									<label for="openChestsHideElectrum" id="hideElectrumsLabel">Hide Electrum Chests</label>
 								</span>
 								<span class="f fr falc">
-									<input type="checkbox" id="openChestsHideBahamut" data-ids="[323]" onclick="oc_toggleHideOpenChests()"> Hide Glory of Bahamut Chests
+									<input type="checkbox" id="openChestsHideBahamut" data-ids="[323]" onclick="oc_toggleHideOpenChests()">
+									<label for="openChestsHideBahamut">Hide Glory of Bahamut Chests</label>
 								</span>
 								<span class="f fr falc">
-									<input type="checkbox" id="openChestsHidePlatinumPacks" data-ids="[&quot;PP&quot;]" onclick="oc_toggleHideOpenChests()"> Hide Platinum Packs
+									<input type="checkbox" id="openChestsHidePlatinumPacks" data-ids="[&quot;PP&quot;]" onclick="oc_toggleHideOpenChests()">
+									<label for="openChestsHidePlatinumPacks">Hide Platinum Packs</label>
 								</span>
 								<span class="f fc falc" style="text-align:center">
 									<span class="f fr falc">
 										<label class="p5" for="openChestsSliderFidelity">Open Amount Slider Fidelity:</label>
-										<select name="openChestsSliderFidelity" id="openChestsSliderFidelity" oninput="oc_toggleOpenChestsSliderFidelity(this.value);" style="width:70px">
+										<select name="openChestsSliderFidelity" id="openChestsSliderFidelity" oninput="oc_toggleOpenChestsSliderFidelity(this.value);" style="width:80px">
 											<option value="1" selected>1</option>
 											<option value="10">10</option>
 											<option value="25">25</option>
@@ -474,6 +479,19 @@ function oc_initOpenChestsHideChests() {
 		if (eleIds.some((v) => hideChests.includes(v))) ele.checked = true;
 		else ele.checked = false;
 	}
+	const isForced = hideChests.includes(174) || hideChests.includes(175);
+	oc_updateElectrumUI(isForced);
+}
+
+function oc_updateElectrumUI(isForced) {
+	const elecEle = document.getElementById("openChestsHideElectrum");
+	const elecLabel = document.getElementById("hideElectrumsLabel");
+	if (elecEle) {
+		elecEle.disabled = isForced;
+		elecEle.style.backgroundColor = isForced ? "var(--Arsenic)" : "";
+	}
+	elecLabel.textContent =
+		"Hide Electrum Chests" + (isForced ? " (Forced by Briv)" : "");
 }
 
 function oc_toggleHideOpenChests() {
@@ -482,7 +500,20 @@ function oc_toggleHideOpenChests() {
 		"input[type='checkbox'][id^='openChestsHide'",
 	))
 		if (ele.checked) chestIds.push(...JSON.parse(ele.dataset.ids));
+
+	const brivIds = [174, 175];
+	const electrumId = 282;
+	const isForced = brivIds.some((id) => chestIds.includes(id));
+	if (isForced) {
+		if (!chestIds.includes(electrumId)) {
+			chestIds.push(electrumId);
+			const elecEle = document.getElementById("openChestsHideElectrum");
+			if (elecEle) elecEle.checked = true;
+		}
+	}
+
 	oc_saveHiddenChestIds(chestIds);
+	oc_updateElectrumUI(isForced);
 }
 
 function oc_getHiddenChestIds() {
