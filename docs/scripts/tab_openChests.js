@@ -1,4 +1,4 @@
-const voc = 1.102; // prettier-ignore
+const voc = 1.103; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
@@ -201,7 +201,7 @@ async function oc_displayOpenChestsData(wrapper) {
 		if (amount <= 0) continue;
 		let fidelity = oc_getOpenChestsSliderFidelity();
 		if (fidelity > amount) fidelity = 1;
-		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(
+		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${plural} (ID:${id})</span><span class="formsCampaign" id="oc_chests_${id}"><span class="featsChampionList" style="margin-bottom:5px">Owned:<span style="margin-left:5px" id="openChests${id}LabelMax">${nf(
 			amount,
 		)}</span></span><span class="featsChampionList"><input type="range" min="0" max="${amount}" step="${fidelity}" value="0" name="openChests${id}Slider" id="openChests${id}Slider" oninput="oc_updateOpenChestsSliderValue(${id},this.value);" data-chestid="${id}"><label class="cblabel" for="openChests${id}Slider" id="openChests${id}Label" style="width:20%;text-align:center">0</label></span><span class="formsCampaignSelect greenButton" id="openChests${id}ButtonHolder"><input type="button" id="openChests${id}Button" onClick="oc_openChests('${id}')" value="Open 0 ${plural}" data-name="${name}" data-plural="${plural}" style="visibility:hidden;width:80%"></span></span></span>`;
 	}
@@ -218,7 +218,7 @@ async function oc_displayOpenChestsData(wrapper) {
 				const canOpen = min >= max;
 				const packId = chestPack.id;
 				if (canOpen) have -= max;
-				txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="${packId}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
+				txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${name} Pack (ID:${id})</span><span class="formsCampaign" id="oc_chests_${packId}Pack"><span class="featsChampionList" style="margin-bottom:5px">Contains ${max} Chests</span>`;
 				if (canOpen)
 					txt += `<span class="featsChampionList"><input type="range" min="0" max="${max}" step="${max}" value="0" name="openChestPacks${packId}Slider" id="openChestPacks${packId}Slider" oninput="oc_updateOpenChestsSliderValue(${packId},this.value,true);" data-chestid="${id}"><label class="cblabel" for="openChestPacks${packId}Slider" id="openChestPacks${packId}Label" style="width:20%;text-align:center">0</label></span>`;
 				txt += `<span class="formsCampaignSelect greenButton" id="openChestPacks${packId}ButtonHolder">`;
@@ -455,7 +455,7 @@ async function oc_openChestPack(id, packId, amount) {
 		amount,
 	);
 	txt += bc_addChestResultRow(`Finished.`);
-	document.getElementById(`${packId}Pack`).innerHTML = `&nbsp;`;
+	document.getElementById(`oc_chests_${packId}Pack`).innerHTML = `&nbsp;`;
 	openChestsOpener.innerHTML = opening + txt;
 	oc_disableSlidersButtonsAndHolders(false);
 	if (numFails >= RETRIES) {
