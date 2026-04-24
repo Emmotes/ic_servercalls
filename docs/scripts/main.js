@@ -1,4 +1,4 @@
-const v = 4.101; // prettier-ignore
+const v = 4.102; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -61,15 +61,15 @@ function init() {
 
 	accountLoading();
 	oldLocalStorageMigrations();
+	
+	f_eventListeners();
+	f_updateSiteFlags();
 
 	t_initTabs();
-	const visibleTabs = t_currentTabs.filter((e) => e.visible);
-	if (
-		visibleTabs.length > 2 ||
-		(visibleTabs.length === 2 &&
-			!visibleTabs.find((t) => t.id === "serverStatusTab"))
-	)
-		allTabsDataPullButton.hidden = false;
+	const visiblePullTabs = t_currentTabs.filter(
+		(e) => e.visible && e.nonpull !== true,
+	).length;
+	if (visiblePullTabs >= 2) allTabsDataPullButton.hidden = false;
 
 	u_displayUnseenUpdates();
 

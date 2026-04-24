@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link rel="stylesheet" href="css/colours.css?v=1.101">
-	<link rel="stylesheet" href="css/styles.css?v=1.604">
+	<link rel="stylesheet" href="css/styles.css?v=1.605">
 	<link rel="apple-touch-icon" sizes="60x60" href="/ic_servercalls/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/ic_servercalls/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/ic_servercalls/favicon-16x16.png">
@@ -23,7 +23,7 @@
 	<div class="menuPopupContainer">
 		<div class="menuPopup" id="settingsMenu">
 			<div class="f fr w100 p5">
-				<div class="f falc fje mr2" style="width:40%"><label for="userId">Account Name:</label></div>
+				<div class="f falc fje mr2" style="width:40%"><label for="userName">Account Name:</label></div>
 				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userName" id="userName" placeholder="Required"></div>
 			</div>
 			<div class="f fr w100 p5">
@@ -97,6 +97,19 @@
 					</select>
 				</div>
 			</div>
+			<div class="f fr w100 p5">
+				&nbsp;
+			</div>
+			<div class="f fr w100 p5">	
+				<div class="f falc fjs ml2" style="width:100%">Site Flags:</div>
+			</div>
+			<div class="f fr w100 p5">
+				<div class="f falc fje mr2" style="width:40%"><label for="siteFlags">Add Site Flag:</label></div>
+				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="siteFlags" id="siteFlags"></div>
+			</div>
+			<div class="f fr fals fjc ml2 w100 p5" id="siteFlagsContainer" style="gap:5px;flex-wrap:wrap;max-width:300px;">
+				&nbsp;
+			</div>
 		</div>
 	</div>
 
@@ -147,7 +160,8 @@
 
 	<script type="text/javascript" src="scripts/util_buffs.js?vb=2.003"></script>
 	<script type="text/javascript" src="scripts/util_campaigns.js?vc=2.002"></script>
-	<script type="text/javascript" src="scripts/util_tabs.js?vt=1.100"></script>
+	<script type="text/javascript" src="scripts/util_siteflags.js?vf=1.000"></script>
+	<script type="text/javascript" src="scripts/util_tabs.js?vt=1.101"></script>
 	<script type="text/javascript" src="scripts/util_updates.js?vu=1.100"></script>
 
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.100"></script>
@@ -163,7 +177,7 @@
 	<script type="text/javascript" src="scripts/tab_favourConversion.js?vfc=1.100"></script>
 	<script type="text/javascript" src="scripts/tab_ilvlReport.js?vir=1.100"></script>
 	<script type="text/javascript" src="scripts/tab_legendaryForger.js?vlf=1.100"></script>
-	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.103"></script>
+	<script type="text/javascript" src="scripts/tab_openChests.js?voc=1.104"></script>
 	<script type="text/javascript" src="scripts/tab_partyManager.js?vpm=1.100"></script>
 	<script type="text/javascript" src="scripts/tab_serverStatus.js?vss=2.200"></script>
 	<script type="text/javascript" src="scripts/tab_shiniesCalculator.js?vsc=1.100"></script>
@@ -172,6 +186,6 @@
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.026"></script>
 
-	<script type="text/javascript" src="scripts/main.js?v=4.101"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.102"></script>
 </body>
 </html>

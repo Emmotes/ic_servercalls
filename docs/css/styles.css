@@ -1306,3 +1306,19 @@ input[type="checkbox"]:checked::before {
 .t_hiddenTab .t_hideButton:hover {
 	background-color: var(--Emperor);
 }
+
+.s_removeSiteFlag {
+	background-color: var(--Charade);
+	padding: 4px 8px;
+	border-radius: 13px;
+}
+
+.s_removeSiteFlagSVG {
+	cursor: pointer;
+	background-color: var(--Boulder);
+	border-radius: 50%;
+	margin-left: 5px;
+}
+.s_removeSiteFlagSVG:hover {
+	background-color: var(--Eagle);
+}

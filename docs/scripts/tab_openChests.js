@@ -1,4 +1,4 @@
-const voc = 1.103; // prettier-ignore
+const voc = 1.104; // prettier-ignore
 const oc_LSKEY_hideChests = `scHideOpenChests`;
 const oc_LSKEY_fidelity = `scOpenChestsSliderFidelity`;
 const oc_brivPatronChests = ["152", "153", "311"];
@@ -494,8 +494,9 @@ function oc_updateElectrumUI(isForced) {
 		elecEle.disabled = isForced;
 		elecEle.style.backgroundColor = isForced ? "var(--Arsenic)" : "";
 	}
-	elecLabel.textContent =
-		"Hide Electrum Chests" + (isForced ? " (Forced by Briv)" : "");
+	if (elecLabel)
+		elecLabel.textContent =
+			"Hide Electrum Chests" + (isForced ? " (Forced by Briv)" : "");
 }
 
 function oc_toggleHideOpenChests() {
