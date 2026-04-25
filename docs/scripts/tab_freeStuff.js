@@ -1,4 +1,4 @@
-﻿const vfs = 1.002; // prettier-ignore
+﻿const vfs = 1.003; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -394,7 +394,7 @@ function fs_displayState() {
 		nextInterval,
 		`fs_loopNextTick`,
 		`fs_loopNextTickEle`,
-		`waiting`,
+		`Waiting until other operations have finished.`,
 		intervalPrefix,
 		``,
 		false,
