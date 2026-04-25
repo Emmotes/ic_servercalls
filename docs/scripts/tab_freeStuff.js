@@ -1,4 +1,4 @@
-﻿const vfs = 1.000; // prettier-ignore
+﻿const vfs = 1.001; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -46,7 +46,6 @@ const fs_TRIALS_STATUS = [
 	[`Unknown`, `Tiamat is Dead`, `Inactive`, `Sitting in Lobby`, ``],
 ];
 const fs_TIAMAT_HP = [40, 75, 130, 200, 290, 430, 610, 860, 1200, 1600];
-
 const fs_state = {
 	settings: {...fs_DEFAULT_SETTINGS},
 	status: {},
@@ -56,7 +55,9 @@ const fs_state = {
 	loopBusy: false,
 	loopNextTick: 0,
 };
-
+const fs_LOCK_KEY = `scFreeStuffActiveLock`;
+const fs_LOCK_TTL = 2 * 60 * 1000;
+const fs_tabId = `fs-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const fs_CHECK_FUNCTIONS = {
 	Platinum: fs_checkPlatinum,
 	Trials: fs_checkTrials,
@@ -65,7 +66,6 @@ const fs_CHECK_FUNCTIONS = {
 	BonusChests: fs_checkFreePremiumBonusChests,
 	Celebrations: fs_checkCelebrationRewards,
 };
-
 const fs_CLAIM_FUNCTIONS = {
 	Platinum: fs_claimPlatinum,
 	Trials: fs_claimTrials,
@@ -75,15 +75,9 @@ const fs_CLAIM_FUNCTIONS = {
 	Celebrations: fs_claimCelebrationRewards,
 };
 
+let fs_RUNNING = null;
+
 function fs_tab() {
-	const beta =
-		(
-			t_currentTabs.filter(
-				(e) => e.id === "freeStuffTab" && e.flag === "beta",
-			).length > 0
-		) ?
-			`<p><em style="color:var(--TangerineYellow)">Note: This tab is currently in beta.</em></p>`
-		:	``;
 	return `
 					<span class="f fr w100 p5">
 						<span class="f falc fjs ml2" style="width:100%">
@@ -93,7 +87,6 @@ function fs_tab() {
 					<span class="f fr w100 p5">
 						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
 							<p style="width:75%">Once initiated - this page will continuously and automatically check various in-game systems to find available free items.</p>
-							${beta}
 							<span class="f fc fals" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
 								<span class="f fr falc">
 									<input type="checkbox" id="freeStuffClaimDailyPlatinum" onclick="fs_updateSettings(this)" data-type="Platinum">
@@ -101,7 +94,7 @@ function fs_tab() {
 								</span>
 								<span class="f fr falc">
 									<input type="checkbox" id="freeStuffClaimTrialsRewards" onclick="fs_updateSettings(this)" data-type="Trials">
-									<label for="freeStuffClaimTrialsRewards">Claim Trial Rewards</label>
+									<label for="freeStuffClaimTrialsRewards">Claim Trials Rewards</label>
 								</span>
 								<span class="f fr falc">
 									<input type="checkbox" id="freeStuffClaimFreeWeeklyShopOffers" onclick="fs_updateSettings(this)" data-type="FreeOffer">
@@ -119,7 +112,7 @@ function fs_tab() {
 									<input type="checkbox" id="freeStuffClaimCelebrationRewards" onclick="fs_updateSettings(this)" data-type="Celebrations">
 									<label for="freeStuffClaimCelebrationRewards">Claim Celebration Rewards</label>
 								</span>
-								<span class="f fr falc">
+								<span class="f fr falc" style="margin-top:10px">
 									<input type="checkbox" id="freeStuffClaimOnLoad" onclick="fs_toggleClaimOnLoad(this.checked)">
 									<label for="freeStuffClaimOnLoad">Start Automatically on Load</label>
 								</span>
@@ -138,7 +131,7 @@ function fs_tab() {
 					<span class="f fr w100 p5">
 						&nbsp;
 					</span>
-					<span class="formsWrapper" style="grid-template-columns:repeat(auto-fill,400px);" id="freeStuffWrapper">
+					<span class="formsWrapper" style="grid-template-columns:repeat(auto-fill,340px);" id="freeStuffWrapper">
 						&nbsp;
 					</span>
 					<span class="f fr w100 p5">
@@ -152,17 +145,28 @@ function fs_tab() {
 
 async function fs_toggleFreeStuffChecker() {
 	const tabs = t_currentTabs.filter((e) => e.id === `freeStuffTab`);
-	if (tabs.length !== 1)
-		return;
+	if (tabs.length !== 1) return;
 	const tab = tabs[0];
 	if (!tab.visible || (tab.flag != null && !f_getSiteFlags().has(tab.flag)))
 		return;
 
 	let running = fs_state.loopIntervalId != null;
-	if (!running) fs_startTimersLoop();
-	else {
+	if (!running) {
+		if (fs_isAnotherTabRunning()) {
+			const wrapper = document.getElementById(`freeStuffWrapper`);
+			if (wrapper)
+				wrapper.innerHTML = fs_RUNNING;
+			return;
+		}
+		fs_startTimersLoop();
+	} else {
 		clearInterval(fs_state.loopIntervalId);
 		fs_state.loopIntervalId = null;
+		window.removeEventListener(
+			`beforeunload`,
+			fs_handleFreeStuffBeforeUnload,
+		);
+		fs_releaseLock();
 		fs_displayState();
 	}
 	running = fs_state.loopIntervalId != null;
@@ -179,6 +183,13 @@ async function fs_toggleFreeStuffChecker() {
 
 function fs_startTimersLoop() {
 	if (isBadUserData()) return;
+	if (!fs_claimLock()) {
+		const wrapper = document.getElementById(`freeStuffWrapper`);
+		if (wrapper)
+			wrapper.innerHTML = fs_RUNNING;
+		return;
+	}
+	window.addEventListener(`beforeunload`, fs_handleFreeStuffBeforeUnload);
 	fs_resetFreeStuffStatus();
 	fs_initializeTimers();
 	if (fs_state.loopIntervalId != null) return;
@@ -193,6 +204,7 @@ async function fs_processNextTimer() {
 	if (fs_state.loopBusy) return;
 	const nextType = fs_getNextDueType();
 	if (!nextType) {
+		fs_refreshLock();
 		fs_state.loopNextTick = Date.now() + fs_TIMERS.main;
 		fs_displayState();
 		return;
@@ -205,6 +217,7 @@ async function fs_processNextTimer() {
 	} finally {
 		fs_state.loopBusy = false;
 		fs_state.loopNextTick = Date.now() + fs_TIMERS.main;
+		fs_refreshLock();
 		fs_displayState();
 	}
 }
@@ -384,13 +397,6 @@ function fs_displayState() {
 		``,
 		false,
 	);
-}
-
-function fs_ceilMSToNearestMainMS(timer) {
-	const date = new Date();
-	if (timer <= date) return `Queued`;
-	const val = Math.ceil((timer - date) / fs_TIMERS.main) * fs_TIMERS.main;
-	return getDisplayTime(val, {showMs: false, showSecs: false, pad: false});
 }
 
 // ==================
@@ -881,7 +887,20 @@ function fs_calcNoTimerDelay() {
 	return fs_TIMERS.no_timer + rng;
 }
 
+function fs_ceilMSToNearestMainMS(timer) {
+	const date = new Date();
+	if (timer <= date) return `Queued`;
+	const val = Math.ceil((timer - date) / fs_TIMERS.main) * fs_TIMERS.main;
+	return getDisplayTime(val, {showMs: false, showSecs: false, pad: false});
+}
+
 function fs_init() {
+	if (fs_RUNNING == null)
+		fs_RUNNING = addHTMLElement({
+		text: `Another tab is already claiming for this account.`,
+		classes: `f fr falc fjs w100 p5`,
+		gridCol: `1 / -1`,
+	});
 	fs_loadSettings();
 	fs_restoreCheckboxes();
 	if (fs_state.settings.OnLoad) fs_toggleFreeStuffChecker();
@@ -944,5 +963,52 @@ function fs_getNextScheduledType() {
 			.sort(([, a], [, b]) => Number(a) - Number(b))
 			.map(([type]) => type)[0] || null
 	);
+}
+
+// ======================
+// ===== LOCK STUFF =====
+// ======================
+
+function fs_getLock() {
+	return ls_getPerAccount(fs_LOCK_KEY, null);
+}
+
+function fs_isLockStale(lock) {
+	return !lock || Number(lock.expires) <= Date.now();
+}
+
+function fs_isAnotherTabRunning() {
+	const lock = fs_getLock();
+	return lock?.tabId !== fs_tabId && !fs_isLockStale(lock);
+}
+
+function fs_claimLock() {
+	const now = Date.now();
+	const lock = fs_getLock();
+	if (lock && lock.tabId !== fs_tabId && !fs_isLockStale(lock)) return false;
+
+	ls_setPerAccount_obj(fs_LOCK_KEY, {
+		tabId: fs_tabId,
+		expires: now + fs_LOCK_TTL,
+	});
+	return true;
+}
+
+function fs_releaseLock() {
+	const lock = fs_getLock();
+	if (lock?.tabId === fs_tabId) ls_setPerAccount_obj(fs_LOCK_KEY, {});
+}
+
+function fs_refreshLock() {
+	const lock = fs_getLock();
+	if (lock?.tabId === fs_tabId)
+		ls_setPerAccount_obj(fs_LOCK_KEY, {
+			tabId: fs_tabId,
+			expires: Date.now() + fs_LOCK_TTL,
+		});
+}
+
+function fs_handleFreeStuffBeforeUnload() {
+	fs_releaseLock();
 }
 

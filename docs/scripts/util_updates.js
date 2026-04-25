@@ -1,4 +1,4 @@
-const vu = 1.100; // prettier-ignore
+const vu = 1.101; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -75,6 +75,20 @@ const u_FEATURE_UPDATES = new Map([
 			],
 		},
 	],
+	[
+		6,
+		{
+			id: 6,
+			date: "2026-04-25",
+			title: "New Tab: Claim Free Stuff",
+			list: [
+				"This is basically my Claim Daily Platinum Script Hub addon now in Server Calls form.",
+				"Automatically detects free things to claim and claims them. Simple as that.",
+				"Generally either checks every 8 hours (±30 minutes) or when the server says so."
+			],
+			tab: "freeStuff",
+		}
+	]
 ]);
 let u_currentUnseenUpdateIds = new Set([]);
 
