@@ -1,4 +1,4 @@
-﻿const vfs = 1.001; // prettier-ignore
+﻿const vfs = 1.002; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -202,6 +202,8 @@ function fs_startTimersLoop() {
 
 async function fs_processNextTimer() {
 	if (fs_state.loopBusy) return;
+	if (pbCodeRunning || pbTimerRunning) return;
+
 	const nextType = fs_getNextDueType();
 	if (!nextType) {
 		fs_refreshLock();
