@@ -1,4 +1,4 @@
-const vt = 1.101; // prettier-ignore
+const vt = 1.102; // prettier-ignore
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -18,6 +18,7 @@ const t_DEFAULT_TABS = [
 	{id: "dismantleTab", name: "Dismantle", visible: true},
 	{id: "celebrationsTab", name: "Celebrations", visible: true},
 	{id: "aeonTab", name: "Aeon", visible: true},
+	{id: "freeStuffTab", name: "Claim Free Stuff", visible: true, nonpull: true, flag: "beta"},
 	{id: "serverStatusTab", name: "Server Status", visible: true, nonpull: true},
 ]; // prettier-ignore
 
@@ -106,6 +107,7 @@ function t_generateTabHTML() {
 	let firstVisibleChecked = false;
 	t_currentTabs.forEach((tab) => {
 		if (!t_editMode && !tab.visible) return;
+		if (tab.flag != null && !f_getSiteFlags().has(tab.flag)) return;
 
 		let isChecked = false;
 		if (!t_editMode && !firstVisibleChecked) {
@@ -190,6 +192,9 @@ function t_generateTabHTML() {
 				break;
 			case "serverStatusTab":
 				contentHtml = ss_tab();
+				break;
+			case "freeStuffTab":
+				contentHtml = fs_tab();
 				break;
 			default:
 				contentHtml = `<div>Tab content not implemented</div>`;

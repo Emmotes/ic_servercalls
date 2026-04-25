@@ -1,4 +1,4 @@
-const v = 4.102; // prettier-ignore
+const v = 4.103; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -87,6 +87,7 @@ function init() {
 	ap_initApothecaryHideOptions();
 	et_initEventTiersSettings();
 	ss_initServerStatusSettings();
+	fs_init();
 
 	resumePullButtonCooldown();
 	ss_tryResumeCooldownOnLoad();
