@@ -1,4 +1,4 @@
-﻿const vfs = 1.004; // prettier-ignore
+﻿const vfs = 1.005; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -450,7 +450,7 @@ async function fs_checkTrials() {
 	if (pendingReward > 0) {
 		status.claimable = true;
 		status.extra.campaignId = pendingReward;
-		status.extra.trialsStatus = [1, 2];
+		status.extra.trialsStatus = [0, 1];
 		status.nextCheck = 0;
 		fs_state.status.Trials = status;
 		return;
@@ -479,7 +479,7 @@ async function fs_checkTrials() {
 			fs_calcNoTimerDelay(),
 		);
 		status.extra.tiamatDiesIn = timeTilTiamatDies;
-		status.extra.trialsStatus = [2, fs_calcTimer(timeTilTiamatDies)];
+		status.extra.trialsStatus = [1, fs_calcTimer(timeTilTiamatDies)];
 		status.claimable = false;
 		status.nextCheck = fs_calcTimer(nextCheck);
 		fs_state.status.Trials = status;
@@ -487,7 +487,7 @@ async function fs_checkTrials() {
 	}
 
 	if (campaigns.length > 0 && !started) {
-		status.extra.trialsStatus = [1, 4];
+		status.extra.trialsStatus = [0, 3];
 		status.claimable = false;
 		status.nextCheck = fs_calcTimer(fs_calcNoTimerDelay());
 		fs_state.status.Trials = status;
@@ -497,14 +497,14 @@ async function fs_checkTrials() {
 	const joinMS =
 		Number(trialsData?.seconds_until_can_join_campaign ?? 0) * 1000;
 	if (joinMS > 0) {
-		status.extra.trialsStatus = [3, fs_calcTimer(joinMS)];
+		status.extra.trialsStatus = [2, fs_calcTimer(joinMS)];
 		status.claimable = false;
 		status.nextCheck = fs_calcTimer(fs_calcNoTimerDelay());
 		fs_state.status.Trials = status;
 		return;
 	}
 
-	status.extra.trialsStatus = [1, 3];
+	status.extra.trialsStatus = [0, 2];
 	status.claimable = false;
 	status.nextCheck = fs_calcTimer(fs_calcNoTimerDelay());
 
@@ -699,8 +699,8 @@ async function fs_claimTrials() {
 		response.rewards.length > 0
 	) {
 		status.claimed += 1;
-		status.extra.trialsStatus = [1, 3];
-	} else status.extra.trialsStatus = [1, 1];
+		status.extra.trialsStatus = [0, 2];
+	} else status.extra.trialsStatus = [0, 0];
 	status.nextCheck = fs_calcTimer(0, true);
 
 	fs_state.status.Trials = status;
