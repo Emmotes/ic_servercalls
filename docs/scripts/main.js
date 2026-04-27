@@ -1,4 +1,4 @@
-const v = 4.104; // prettier-ignore
+const v = 4.105; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -366,6 +366,8 @@ async function loadUserAccount() {
 		oc_initOpenChestsHideChests();
 	}
 	clearTimers(null, "mpb_");
+	if (fs_state?.loopIntervalId != null)
+		fs_toggleFreeStuffChecker();
 	cleanup();
 	t_onAccountSwitch();
 	fs_init();

@@ -1,4 +1,4 @@
-﻿const vfs = 1.003; // prettier-ignore
+﻿const vfs = 1.004; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -154,8 +154,7 @@ async function fs_toggleFreeStuffChecker() {
 	if (!running) {
 		if (fs_isAnotherTabRunning()) {
 			const wrapper = document.getElementById(`freeStuffWrapper`);
-			if (wrapper)
-				wrapper.innerHTML = fs_RUNNING;
+			if (wrapper) wrapper.innerHTML = fs_RUNNING;
 			return;
 		}
 		fs_startTimersLoop();
@@ -185,8 +184,7 @@ function fs_startTimersLoop() {
 	if (isBadUserData()) return;
 	if (!fs_claimLock()) {
 		const wrapper = document.getElementById(`freeStuffWrapper`);
-		if (wrapper)
-			wrapper.innerHTML = fs_RUNNING;
+		if (wrapper) wrapper.innerHTML = fs_RUNNING;
 		return;
 	}
 	window.addEventListener(`beforeunload`, fs_handleFreeStuffBeforeUnload);
@@ -535,7 +533,7 @@ async function fs_checkFreeWeeklyShopOffers() {
 		if (purchased) continue;
 
 		const offerId = Number(offer?.offer_id ?? -1);
-		if (offerId > 0) status.extra.offerIds.push(offerId);
+		if (offerId >= 0) status.extra.offerIds.push(offerId);
 	}
 	const timeRemaining = Number(response?.offers?.time_remaining ?? 0) * 1000;
 	const rerollCost = Number(response?.offers?.reroll_cost ?? -1);
@@ -715,17 +713,12 @@ async function fs_claimFreeWeeklyShopOffers() {
 	let successCount = 0;
 	for (const id of ids) {
 		const response = await purchaseWeeklyOffer(id);
-		if (
-			response &&
-			response?.success &&
-			Array.isArray(response?.loot) &&
-			response.loot.length > 0
-		)
-			successCount += 1;
+		if (fs_isFreeOfferPurchaseSuccess(response)) successCount += 1;
 	}
 	status.claimed += successCount;
 	status.claimable = false;
 	status.nextCheck = fs_calcTimer(0, true);
+	status.extra.offerIds = [];
 
 	fs_state.status.FreeOffer = status;
 }
@@ -899,10 +892,10 @@ function fs_ceilMSToNearestMainMS(timer) {
 function fs_init() {
 	if (fs_RUNNING == null)
 		fs_RUNNING = addHTMLElement({
-		text: `Another tab is already claiming for this account.`,
-		classes: `f fr falc fjs w100 p5`,
-		gridCol: `1 / -1`,
-	});
+			text: `Another tab is already claiming for this account.`,
+			classes: `f fr falc fjs w100 p5`,
+			gridCol: `1 / -1`,
+		});
 	fs_loadSettings();
 	fs_restoreCheckboxes();
 	if (fs_state.settings.OnLoad) fs_toggleFreeStuffChecker();
@@ -965,6 +958,24 @@ function fs_getNextScheduledType() {
 			.sort(([, a], [, b]) => Number(a) - Number(b))
 			.map(([type]) => type)[0] || null
 	);
+}
+
+function fs_isFreeOfferPurchaseSuccess(response) {
+	if (!response || !response.success) return false;
+	if (Array.isArray(response.loot) && response.loot.length > 0) return true;
+	if (
+		Array.isArray(response.pack_details) &&
+		response.pack_details.length > 0
+	)
+		return true;
+	if (
+		Array.isArray(response.chest_type_ids) &&
+		response.chest_type_ids.length > 0
+	)
+		return true;
+	if (Array.isArray(response.actions) && response.actions.length > 0)
+		return true;
+	return false;
 }
 
 // ======================
