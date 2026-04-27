@@ -1,4 +1,4 @@
-﻿const vfs = 1.005; // prettier-ignore
+﻿const vfs = 1.006; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -559,8 +559,8 @@ async function fs_checkGuideQuests() {
 
 	status.extra.unclaimedGuideQuests = 0;
 	for (const quest of response?.data?.guidequest ?? []) {
-		const complete = quest?.complete ?? -1;
-		const claimed = quest?.rewards_claimed ?? -1;
+		const complete = Number(quest?.complete ?? -1);
+		const claimed = Number(quest?.rewards_claimed ?? -1);
 		if (complete === 1 && claimed === 0)
 			status.extra.unclaimedGuideQuests += 1;
 	}
