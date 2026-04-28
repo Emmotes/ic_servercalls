@@ -1,4 +1,4 @@
-const vfc = 1.100; // prettier-ignore
+const vfc = 1.101; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -96,7 +96,8 @@ async function fc_pullFavourData(userDetails) {
 			wrapper.innerHTML = `Waiting for user data...`;
 			userDetails = await getUserDetails();
 		}
-		await fc_displayFavourData(wrapper, userDetails);
+		await fc_buildData(wrapper, userDetails);
+		await fc_displayFavourData(wrapper);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);
@@ -104,21 +105,20 @@ async function fc_pullFavourData(userDetails) {
 	}
 }
 
-async function fc_displayFavourData(wrapper, userData) {
+async function fc_buildData(wrapper, userData) {
 	const deets = userData?.details?.reset_currencies ?? null;
 	const defs = userData?.defines?.reset_currency_defines ?? null;
 	const favourConvert = document.getElementById(`favourConvert`);
 	if (!Array.isArray(deets) || !Array.isArray(defs)) {
-		wrapper.innerHTML = `&nbsp;`;
-		favourConvert.innerHTML =
-			`<span class="f w100 p5" style="padding-left:10%">The data ` +
-			`from the server was somehow invalid. Cannot proceed.</span>`;
+		setWrapperFormat(wrapper, 0);
+		handleInvalidData(wrapper);
 		return;
 	}
 	fc_parseResetCurrencyDefs(defs);
-
 	fc_parseResetCurrencyDeets(deets);
+}
 
+async function fc_displayFavourData(wrapper) {
 	const eFlex = `f fr falc fje`;
 	const cFlex = `f fr falc fjc`;
 	const sFlex = `f fr falc fjs`;
@@ -133,7 +133,10 @@ async function fc_displayFavourData(wrapper, userData) {
 
 	const extraColWidth = 140;
 
-	const titleCol = `<span style="width:${extraColWidth}px">Current Favour</span><span>Campaign</span>`;
+	const titleCol = addHTMLElements([
+		{text: `Current Favour`, styles: `width:${extraColWidth}px;`},
+		{text: `Campaign`},
+	]);
 	txt += addHTMLElements([
 		{text: `Favour Type`, classes: eFlex, header: true},
 		{text: titleCol, classes: sFlex, header: true},
@@ -147,22 +150,35 @@ async function fc_displayFavourData(wrapper, userData) {
 		const favour = fc_favourDefs?.get(id) ?? null;
 		if (!favour || !favour.canConvertTo || favour.campaignName === "")
 			continue;
-		const col = `<span style="width:${extraColWidth}px">${sciNote(amount)}</span><span>${favour.campaignName}</span>`;
 		txt += addHTMLElements([
 			{
 				text: favour.displayName + `:`,
 				classes: eFlex,
 			},
-			{text: col, classes: sFlex},
+			{
+				text: addHTMLElements([
+					{
+						text: sciNote(amount),
+						styles: `width:${extraColWidth}px`,
+						id: `fc_amount_${id}`,
+					},
+					{text: favour.campaignName},
+				]),
+				classes: sFlex,
+			},
 		]);
 	}
 
 	if (fc_convertiblesSorted.length === 0) {
 		setWrapperFormat(wrapper, 8);
 		wrapper.innerHTML = txt;
-		favourConvert.innerHTML =
-			`<span class="f w100 p5" style="padding-left:10%">You ` +
-			`don't have any convertible favours at the moment.</span>`;
+		const favourConvert = document.getElementById(`favourConvert`);
+		if (favourConvert)
+			favourConvert.innerHTML = addHTMLElement({
+				text: `You don't have any convertible favours at the moment.`,
+				classes: `f w100 p5`,
+				styles: `padding-left:10%;`,
+			});
 		return;
 	}
 
@@ -351,23 +367,35 @@ async function fc_convertFavour() {
 
 	const response = await convertFavour(fc_convSource, fc_convTarget);
 	if (response.success && response.okay) {
-		favourConvert.innerHTML =
-			`<span class="f w100 p5" style="padding-left:10%">` +
-			`Successfully converted ${source} favour to ${target} favour.</span>`;
+		favourConvert.innerHTML = addHTMLElement({
+			text: `Successfully converted ${source} favour to ${target} favour.`,
+			classes: `f w100 p5`,
+			styles: `padding-left:10%;`,
+		});
+
+		const amount = Number(response?.reset_currency ?? -1);
+		if (amount > 0) fc_currentFavours.set(fc_convTarget, amount);
 
 		fc_convertibles.delete(fc_convSource);
-		if (fc_convertibles.size === 0) {
-			const wrapper = document.getElementById("favourWrapper");
-			wrapper.innerHTML = "&nbsp;";
-			favourConvert.innerHTML +=
-				`<span class="f w100 p5" style="padding-left:10%">` +
-				`You don't have any more convertible favours at the moment.` +
-				`</span>`;
-			return;
-		}
 		fc_convertiblesSorted = fc_convertiblesSorted.filter(
 			(e) => e.id !== fc_convSource,
 		);
+
+		if (fc_convertibles.size > 0) {
+			const ele = document.getElementById(`fc_amount_${fc_convTarget}`);
+			console.log("ele", ele);
+			if (ele)
+				ele.innerHTML = sciNote(fc_currentFavours.get(fc_convTarget));
+		} else if (fc_convertibles.size === 0) {
+			const wrapper = document.getElementById(`favourWrapper`);
+			if (wrapper) fc_displayFavourData(wrapper);
+			favourConvert.innerHTML += addHTMLElement({
+				text: `You don't have any more convertible favours at the moment.`,
+				classes: `f w100 p5`,
+				styles: `padding-left:10%;`,
+			});
+			return;
+		}
 
 		const sourceSel = document.getElementById(`fc_convertSourceSelect`);
 		if (sourceSel) sourceSel.outerHTML = fc_buildConvertSourceSelect();
@@ -376,9 +404,11 @@ async function fc_convertFavour() {
 		fc_toggleElements(false);
 	} else
 		// On a fail - leave everything locked. It forces a user to re-pull data.
-		favourConvert.innerHTML =
-			`<span class="f w100 p5" style="padding-left:10%">- ` +
-			`Failed to convert ${source} favour to ${target} favour.</span>`;
+		favourConvert.innerHTML = addHTMLElement({
+			text: `Failed to convert ${source} favour to ${target} favour.`,
+			classes: `f w100 p5`,
+			styles: `padding-left:10%;`,
+		});
 }
 
 function fc_toggleElements(disable) {
@@ -444,22 +474,23 @@ function fc_parseResetCurrencyDefs(defs) {
 	const parsedDefs = new Map(fc_FAVOURS);
 	for (const def of defs) {
 		const id = Number(def?.id ?? -1);
-		const name = def?.name ?? "";
-		if (id < 1 || name === "") continue;
+		const defName = def?.name ?? "";
+		if (id < 1 || defName === "") continue;
 		const props = def?.properties;
 		const season = props?.season_favor ?? false;
 		if (season) continue; // Completely ignore seasonal favours.
 
 		const base = parsedDefs.get(id) ?? {};
+		const name = def?.name ?? base?.name ?? "";
 		const obj = {
 			id,
-			name: def?.name ?? base.name ?? "",
-			shortName: def?.short_name ?? base.shortName ?? name,
-			displayName: name.replace("Favor", "").trim(),
-			campaignName: props?.campaign_name ?? base.campaignName ?? "",
-			canConvertTo: props?.can_convert_to ?? base.canConvertTo ?? false,
-			canReset: props?.can_reset ?? base.canReset ?? false,
-			order: Number(props?.sort_order ?? base.order ?? Infinity),
+			name,
+			shortName: def?.short_name ?? base?.shortName ?? name,
+			displayName: fc_getDisplayName(name),
+			campaignName: props?.campaign_name ?? base?.campaignName ?? "",
+			canConvertTo: props?.can_convert_to ?? base?.canConvertTo ?? false,
+			canReset: props?.can_reset ?? base?.canReset ?? false,
+			order: Number(props?.sort_order ?? base?.order ?? Infinity),
 		};
 		parsedDefs.set(id, obj);
 	}
@@ -467,8 +498,13 @@ function fc_parseResetCurrencyDefs(defs) {
 }
 
 function fc_createFavour(id, name, shortName, campaignName, canConvertTo, canReset, order) {
-	return {id, name, shortName, campaignName, canConvertTo, canReset, order};
+	const displayName = fc_getDisplayName(name);
+	return {id, name, shortName, displayName, campaignName, canConvertTo, canReset, order};
 } // prettier-ignore
+
+function fc_getDisplayName(name) {
+	return name.replace("Favor", "").trim();
+}
 
 const fc_favourSort = (a, b) => {
 	const aid = a instanceof Object ? a.id : a;
