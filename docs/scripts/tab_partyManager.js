@@ -1,4 +1,4 @@
-const vpm = 1.100; // prettier-ignore
+const vpm = 1.101; // prettier-ignore
 const pm_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
 const pm_definitionsFilters = new Set(["adventure_defines"]);
 
@@ -73,6 +73,7 @@ async function pm_pullPartyData(userDetails, definitions) {
 
 async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 	let txt = "";
+	const timers = {};
 	for (let gameInstance of gameInstances) {
 		const id = gameInstance.game_instance_id;
 		const adventureId = gameInstance.current_adventure_id;
@@ -130,11 +131,36 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		txt += pm_addPartyRow(`Current Area`, `z${gameInstance.current_area}`);
 		if (areaGoal != null)
 			txt += pm_addPartyRow(`Area Goal`, `z${areaGoal}`);
+
+		let pots = ``;
+		for (const buff of gameInstance?.buffs ?? []) {
+			const buffId = Number(buff?.buff_id ?? -1);
+			if (buffId <= 0 || !b_potionsById.has(buffId)) continue;
+			const pot = b_potionsById.get(buffId);
+			const isLeg = pot?.legendary ?? false;
+			const remaining = Number(buff?.remaining_time ?? -1) * 1000;
+			if (!isLeg || remaining <= 0) continue;
+			const eleId = `pm_${id}_${pot.buff}`;
+			const duration = getDisplayTime(remaining, {showMs: false});
+			pots += pm_addPartyRow(pot.buff, duration, eleId);
+			timers[eleId] = {remaining, buff: pot.buff};
+		}
+		if (pots.length > 0) {
+			txt += `<span class="formsCampaignFormation" style="padding-top:5px"><strong>Legendary Potion Durations</strong>:</span>`;
+			txt += pots;
+		}
+
 		txt += `<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="pm_partyEndAdventure(${id})" value="End Party ${id}"></span>`;
 		txt += `</span></span>`;
 	}
 	setWrapperFormat(wrapper, 2);
 	wrapper.innerHTML = txt;
+
+	const eleIds = Object.keys(timers);
+	for (const eleId of eleIds) {
+		timerObj = timers[eleId];
+		createTimer(timerObj.remaining, `pm_${eleId}`, eleId, `Expired`);
+	}
 }
 
 function pm_getAdventure(adventureId, adventures) {
@@ -158,11 +184,13 @@ async function pm_partyEndAdventure(partyId) {
 	}
 }
 
-function pm_addPartyRow(left, right) {
+function pm_addPartyRow(left, right, id) {
 	let txt = `<span class="formsCampaignFormation"><span class="f fr falc fjs p5 w100">`;
 	if (right == null) txt += `<span class="f falc fjs w100">${left}</span>`;
 	else
-		txt += `<span class="f falc fje partiesLeft"><strong>${left}</strong>:</span><span class="f falc fjs partiesRight">${right}</span>`;
+		txt +=
+			`<span class="f falc fje partiesLeft"><strong>${left}</strong>:</span>` +
+			`<span class="f falc fjs partiesRight"${id != null ? ` id="${id}"` : ``}>${right}</span>`;
 	txt += `</span></span>`;
 	return txt;
 }
