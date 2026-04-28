@@ -1,4 +1,4 @@
-const vpm = 1.101; // prettier-ignore
+const vpm = 1.102; // prettier-ignore
 const pm_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
 const pm_definitionsFilters = new Set(["adventure_defines"]);
 
@@ -159,7 +159,7 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 	const eleIds = Object.keys(timers);
 	for (const eleId of eleIds) {
 		timerObj = timers[eleId];
-		createTimer(timerObj.remaining, `pm_${eleId}`, eleId, `Expired`);
+		createTimer(timerObj.remaining, eleId, eleId, `Expired`);
 	}
 }
 
