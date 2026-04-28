@@ -383,7 +383,6 @@ async function fc_convertFavour() {
 
 		if (fc_convertibles.size > 0) {
 			const ele = document.getElementById(`fc_amount_${fc_convTarget}`);
-			console.log("ele", ele);
 			if (ele)
 				ele.innerHTML = sciNote(fc_currentFavours.get(fc_convTarget));
 		} else if (fc_convertibles.size === 0) {
