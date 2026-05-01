@@ -1,4 +1,4 @@
-const vpm = 1.102; // prettier-ignore
+const vpm = 1.103; // prettier-ignore
 const pm_serverCalls = new Set(["getUserDetails", "getDefinitions"]);
 const pm_definitionsFilters = new Set(["adventure_defines"]);
 
@@ -86,8 +86,12 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		if (customName !== `` && customName != null)
 			customName = `: ${customName}`;
 		txt += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">Party ${id}${customName}</span><span class="formsCampaign">`;
+
+		let pots = pm_buildPotsList(gameInstance, id, timers);
+
 		if (adventureId === -1 || adventure == null) {
 			txt += pm_addPartyRow(`Chilling on the map screen.`);
+			txt += pots;
 			txt += `</span></span>`;
 			continue;
 		}
@@ -132,23 +136,7 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		if (areaGoal != null)
 			txt += pm_addPartyRow(`Area Goal`, `z${areaGoal}`);
 
-		let pots = ``;
-		for (const buff of gameInstance?.buffs ?? []) {
-			const buffId = Number(buff?.buff_id ?? -1);
-			if (buffId <= 0 || !b_potionsById.has(buffId)) continue;
-			const pot = b_potionsById.get(buffId);
-			const isLeg = pot?.legendary ?? false;
-			const remaining = Number(buff?.remaining_time ?? -1) * 1000;
-			if (!isLeg || remaining <= 0) continue;
-			const eleId = `pm_${id}_${pot.buff}`;
-			const duration = getDisplayTime(remaining, {showMs: false});
-			pots += pm_addPartyRow(pot.buff, duration, eleId);
-			timers[eleId] = {remaining, buff: pot.buff};
-		}
-		if (pots.length > 0) {
-			txt += `<span class="formsCampaignFormation" style="padding-top:5px"><strong>Legendary Potion Durations</strong>:</span>`;
-			txt += pots;
-		}
+		txt += pots;
 
 		txt += `<span class="formsCampaignSelect redButton" id="partyEndAdventureSpan${id}"><input type="button" onClick="pm_partyEndAdventure(${id})" value="End Party ${id}"></span>`;
 		txt += `</span></span>`;
@@ -161,6 +149,33 @@ async function pm_displayPartyData(wrapper, gameInstances, adventures) {
 		timerObj = timers[eleId];
 		createTimer(timerObj.remaining, eleId, eleId, `Expired`);
 	}
+}
+
+function pm_buildPotsList(gameInstance, id, timers) {
+	let pots = ``;
+	let added = false;
+	for (const buff of gameInstance?.buffs ?? []) {
+		const buffId = Number(buff?.buff_id ?? -1);
+		if (buffId <= 0 || !b_potionsById.has(buffId)) continue;
+		const pot = b_potionsById.get(buffId);
+		const isLeg = pot?.legendary ?? false;
+		const remaining = Number(buff?.remaining_time ?? -1) * 1000;
+		if (!isLeg || remaining <= 0) continue;
+		const eleId = `pm_${id}_${pot.buff}`;
+		const duration = getDisplayTime(remaining, {showMs: false});
+		pots += pm_addPartyRow(pot.buff, duration, eleId);
+		timers[eleId] = {remaining, buff: pot.buff};
+		added = true;
+	}
+	if (added) {
+		const potsHeader = addHTMLElement({
+			text: `<strong>Legendary Potion Durations</strong>:`,
+			classes: `formsCampaignFormation`,
+			styles: `padding-top:5px;`,
+		});
+		return potsHeader + pots;
+	}
+	return ``;
 }
 
 function pm_getAdventure(adventureId, adventures) {
