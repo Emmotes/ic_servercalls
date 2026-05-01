@@ -1,4 +1,4 @@
-const vs = 3.026; // prettier-ignore
+const vs = 3.027; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -626,7 +626,7 @@ async function getPlayHistory(page, includeGems) {
 	}
 	const params = [
 		["page", page],
-		["types", types],
+		["types", JSON.stringify(types)],
 	];
 	return await sendServerCall(SERVER, "getPlayHistory", params, true, true);
 }
