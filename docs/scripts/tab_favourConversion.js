@@ -1,4 +1,4 @@
-const vfc = 1.101; // prettier-ignore
+const vfc = 1.102; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -388,11 +388,6 @@ async function fc_convertFavour() {
 		} else if (fc_convertibles.size === 0) {
 			const wrapper = document.getElementById(`favourWrapper`);
 			if (wrapper) fc_displayFavourData(wrapper);
-			favourConvert.innerHTML += addHTMLElement({
-				text: `You don't have any more convertible favours at the moment.`,
-				classes: `f w100 p5`,
-				styles: `padding-left:10%;`,
-			});
 			return;
 		}
 
