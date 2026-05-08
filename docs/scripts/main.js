@@ -1,4 +1,4 @@
-const v = 4.105; // prettier-ignore
+const v = 4.200; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -13,6 +13,7 @@ const settingsMenu = document.getElementById(`settingsMenu`);
 const settingsUserName = document.getElementById(`userName`);
 const settingsUserId = document.getElementById(`userId`);
 const settingsUserHash = document.getElementById(`userHash`);
+const settingsUserPlatform = document.getElementById(`userPlatform`);
 const settingsSave = document.getElementById(`settingsMenuButtonSave`);
 const settingsClose = document.getElementById(`settingsMenuButtonClose`);
 const settingsList = document.getElementById(`settingsMenuAccountsList`);
@@ -61,7 +62,7 @@ function init() {
 
 	accountLoading();
 	oldLocalStorageMigrations();
-	
+
 	f_eventListeners();
 	f_updateSiteFlags();
 
@@ -131,6 +132,7 @@ function accountLoading() {
 		} else {
 			settingsClose.hidden = false;
 			currAccount = accountData.current;
+			if (currAccount.networkId == null) currAccount.networkId = "-1";
 			settingsIconName.innerHTML = currAccount.name;
 		}
 	}
@@ -195,6 +197,7 @@ function settingsToggle() {
 			userName.value = currAccount.name;
 			userId.value = currAccount.id;
 			userHash.value = currAccount.hash;
+			settingsUserPlatform.value = currAccount.networkId || "-1";
 			settingsIconName.innerHTML = currAccount.name;
 		}
 		settingsMenu.style.display = `flex`;
@@ -293,8 +296,14 @@ async function saveUserData() {
 	const userName = settingsUserName.value.trim() ?? ``;
 	const userId = settingsUserId.value.trim() ?? ``;
 	const userHash = settingsUserHash.value.trim() ?? ``;
+	const userPlatform = settingsUserPlatform.value ?? `-1`;
 	if (userName !== `` && userId !== `` && userHash !== ``) {
-		const newAccount = {name: userName, id: userId, hash: userHash};
+		const newAccount = {
+			name: userName,
+			id: userId,
+			hash: userHash,
+			networkId: userPlatform,
+		};
 		addUserAccount(newAccount);
 		currAccount = newAccount;
 		settingsIconName.innerHTML = currAccount.name;
@@ -334,6 +343,7 @@ async function supportUrlSaveData() {
 		settingsUserName.value = ``;
 		settingsUserId.value = userId;
 		settingsUserHash.value = userHash;
+		settingsUserPlatform.value = -1;
 		supportUrl.value = ``;
 		settingsUserName.focus();
 	} catch {
@@ -354,11 +364,13 @@ async function loadUserAccount() {
 				settingsList.remove(i);
 	} else {
 		currAccount = accounts.accounts[accountChoice];
+		if (currAccount.networkId == null) currAccount.networkId = "-1";
 		accounts.current = currAccount;
 		saveUserAccounts(accounts);
-		userName.value = currAccount.name;
-		userId.value = currAccount.id;
-		userHash.value = currAccount.hash;
+		settingsUserName.value = currAccount.name;
+		settingsUserId.value = currAccount.id;
+		settingsUserHash.value = currAccount.hash;
+		settingsUserPlatform.value = currAccount.networkId;
 		settingsIconName.innerHTML = currAccount.name;
 		SERVER = ``;
 		instanceId = ``;
@@ -366,8 +378,7 @@ async function loadUserAccount() {
 		oc_initOpenChestsHideChests();
 	}
 	clearTimers(null, "mpb_");
-	if (fs_state?.loopIntervalId != null)
-		fs_toggleFreeStuffChecker();
+	if (fs_state?.loopIntervalId != null) fs_toggleFreeStuffChecker();
 	cleanup();
 	t_onAccountSwitch();
 	fs_init();
@@ -381,9 +392,10 @@ async function deleteUserAccount() {
 	refreshSettingsList();
 	if (settingsList.value !== `-`) loadUserAccount();
 	else {
-		userName.value = ``;
-		userId.value = ``;
-		userHash.value = ``;
+		settingsUserName.value = ``;
+		settingsUserId.value = ``;
+		settingsUserHash.value = ``;
+		settingsUserPlatform.value = `-1`;
 		disabledUntilData.hidden = false;
 		tabsContainer.hidden = true;
 		settingsClose.hidden = true;

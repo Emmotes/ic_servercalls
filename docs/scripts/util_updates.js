@@ -1,4 +1,4 @@
-const vu = 1.101; // prettier-ignore
+const vu = 1.102; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -84,11 +84,27 @@ const u_FEATURE_UPDATES = new Map([
 			list: [
 				"This is basically my Claim Daily Platinum Script Hub addon now in Server Calls form.",
 				"Automatically detects free things to claim and claims them. Simple as that.",
-				"Generally either checks every 8 hours (±30 minutes) or when the server says so."
+				"Generally either checks every 8 hours (±30 minutes) or when the server says so.",
 			],
 			tab: "freeStuff",
-		}
-	]
+		},
+	],
+	[
+		7,
+		{
+			id: 7,
+			date: "2026-05-08",
+			title: "New Account Setting: Platform",
+			list: [
+				"This is what platform the account is running on like Steam or Epic Games Store - etc..",
+				"It is required for the Free Premium Bonus Chests claim in the Claim Free Stuff tab to work properly.",
+				"Otherwise - you can ignore it.",
+				"After changing the platform you will need to re-save your user account.",
+				'<span style="color:var(--TangerineYellow)">Bad things may happen if you choose the wrong platform for your account. Be careful.</span>',
+			],
+			setting: true,
+		},
+	],
 ]);
 let u_currentUnseenUpdateIds = new Set([]);
 

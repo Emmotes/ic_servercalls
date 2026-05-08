@@ -1,4 +1,4 @@
-const vs = 3.027; // prettier-ignore
+const vs = 3.028; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -8,6 +8,7 @@ const PARAM_CALL = `call`;
 const PARAM_INSTANCEID = `instance_id`;
 const PARAM_USERID = `user_id`;
 const PARAM_USERHASH = `hash`;
+const PARAM_NETWORKID = `network_id`;
 const RETRIES = 4;
 let currAccount = undefined;
 let SERVER = ``;
@@ -801,6 +802,8 @@ async function sendServerCall(
 	if (params != null) call += buildParams(params);
 	if (addUserData) call += appendUserData();
 	if (addInstanceId) call += await appendInstanceId();
+	if (Number(currAccount.networkId ?? -1) > 0)
+		call += buildParams([[PARAM_NETWORKID, currAccount.networkId]]);
 	call += appendBoilerplate();
 	if (server === ``) {
 		if (SERVER === ``) await getPlayServerForDefinitions();

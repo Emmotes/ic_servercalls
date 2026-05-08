@@ -34,6 +34,21 @@
 				<div class="f falc fje mr2" style="width:40%"><label for="userHash">User Hash:</label></div>
 				<div class="f falc fjs ml2" style="width:60%"><input type="input" name="userHash" id="userHash" placeholder="Required"></div>
 			</div>
+			<div class="f fr w100 p5">
+				<div class="f falc fje mr2" style="width:40%"><label for="userPlatform">Platform:</label></div>
+				<div class="f falc fjs ml2" style="width:60%">
+					<select name="userPlatform" id="userPlatform" style="background-color:var(--DarkGunmetal)">
+						<option value="-1" selected>-</option>
+						<option value="11">Steam</option>
+						<option value="21">EGS</option>
+						<option value="19">CNE</option>
+						<option value="17">XBox</option>
+						<option value="16">Playstation</option>
+						<option value="13">iOS</option>
+						<option value="14">Android</option>
+					</select>
+				</div>
+			</div>
 			<div class="f fr w100 p5">	
 				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
 				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
@@ -162,7 +177,7 @@
 	<script type="text/javascript" src="scripts/util_campaigns.js?vc=2.002"></script>
 	<script type="text/javascript" src="scripts/util_siteflags.js?vf=1.000"></script>
 	<script type="text/javascript" src="scripts/util_tabs.js?vt=1.103"></script>
-	<script type="text/javascript" src="scripts/util_updates.js?vu=1.101"></script>
+	<script type="text/javascript" src="scripts/util_updates.js?vu=1.102"></script>
 
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.100"></script>
 	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=2.100"></script>
@@ -185,8 +200,8 @@
 	<script type="text/javascript" src="scripts/tab_trialsManager.js?vtm=1.100"></script>
 
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
-	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.027"></script>
+	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.028"></script>
 
-	<script type="text/javascript" src="scripts/main.js?v=4.105"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.200"></script>
 </body>
 </html>
