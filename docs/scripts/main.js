@@ -1,4 +1,4 @@
-const v = 4.200; // prettier-ignore
+const v = 4.201; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -382,6 +382,7 @@ async function loadUserAccount() {
 	cleanup();
 	t_onAccountSwitch();
 	fs_init();
+	resumePullButtonCooldown();
 
 	swapTab();
 }

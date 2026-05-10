@@ -1,4 +1,4 @@
-const vfc = 1.102; // prettier-ignore
+const vfc = 1.103; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -476,16 +476,15 @@ function fc_parseResetCurrencyDefs(defs) {
 
 		const base = parsedDefs.get(id) ?? {};
 		const name = def?.name ?? base?.name ?? "";
-		const obj = {
+		const obj = fc_createFavour(
 			id,
 			name,
-			shortName: def?.short_name ?? base?.shortName ?? name,
-			displayName: fc_getDisplayName(name),
-			campaignName: props?.campaign_name ?? base?.campaignName ?? "",
-			canConvertTo: props?.can_convert_to ?? base?.canConvertTo ?? false,
-			canReset: props?.can_reset ?? base?.canReset ?? false,
-			order: Number(props?.sort_order ?? base?.order ?? Infinity),
-		};
+			def?.short_name ?? base?.shortName ?? name,
+			props?.campaign_name ?? base?.campaignName ?? "",
+			props?.can_convert_to ?? base?.canConvertTo ?? false,
+			props?.can_reset ?? base?.canReset ?? false,
+			Number(props?.sort_order ?? base?.order ?? Infinity),
+		);
 		parsedDefs.set(id, obj);
 	}
 	fc_favourDefs = parsedDefs;
