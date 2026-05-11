@@ -1,4 +1,4 @@
-const v = 4.201; // prettier-ignore
+const v = 4.202; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -8,6 +8,7 @@ const disabledUntilInit = document.getElementById(`disabledUntilInit`);
 const disabledUntilData = document.getElementById(`disabledUntilData`);
 const tabsContainer = document.getElementById(`tabsContainer`);
 const settingsContainer = document.getElementById(`settingsContainer`);
+const settingsIcon = document.getElementById(`settingsIcon`);
 const settingsIconName = document.getElementById(`settingsIconName`);
 const settingsMenu = document.getElementById(`settingsMenu`);
 const settingsUserName = document.getElementById(`userName`);

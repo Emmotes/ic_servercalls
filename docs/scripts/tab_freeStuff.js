@@ -1,4 +1,4 @@
-﻿const vfs = 1.006; // prettier-ignore
+﻿const vfs = 1.007; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -87,6 +87,7 @@ function fs_tab() {
 					<span class="f fr w100 p5">
 						<span class="f fc fals fjs ml2" style="width:100%;position:relative">
 							<p style="width:75%">Once initiated - this page will continuously and automatically check various in-game systems to find available free items.</p>
+							<p style="width:75%;color:var(--TangerineYellow)"><em>Note: You must set your Platform in the settings or the Free Premium Bonus Chests claim won't work.</em></p>
 							<span class="f fc fals" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
 								<span class="f fr falc">
 									<input type="checkbox" id="freeStuffClaimDailyPlatinum" onclick="fs_updateSettings(this)" data-type="Platinum">
