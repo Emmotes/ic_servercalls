@@ -1,4 +1,4 @@
-﻿const vfs = 1.008; // prettier-ignore
+﻿const vfs = 1.009; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_TIMERS = {
 	main: 60 * 1000,
@@ -584,11 +584,11 @@ async function fs_checkFreePremiumBonusChests() {
 
 	status.extra.bonusChestIds = [];
 	for (const deal of response?.package_deals ?? []) {
-		const status = Number(deal?.bonus_status ?? -1);
+		const bonusStatus = Number(deal?.bonus_status ?? -1);
 		const bonusItems = deal?.bonus_item ?? [];
 		const itemId = Number(deal?.item_id ?? -1);
 		if (
-			status !== 0 ||
+			bonusStatus !== 0 ||
 			!Array.isArray(bonusItems) ||
 			bonusItems.length === 0 ||
 			itemId <= 0
