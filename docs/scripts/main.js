@@ -1,4 +1,4 @@
-const v = 4.203; // prettier-ignore
+const v = 4.204; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -148,8 +148,14 @@ function oldLocalStorageMigrations() {
 	if (ls_has(oldSettingsKey)) {
 		if (!ls_has(LSKEY_numFormat)) {
 			const oldFormat = ls_getGlobal(oldSettingsKey, {});
-			ls_setGlobal_obj(LSKEY_numFormat, oldFormat);
-		} else ls_remove(oldSettingsKey);
+			const nf = oldFormat[`nf`] ?? "-";
+			ls_setGlobal(
+				LSKEY_numFormat,
+				nf,
+				(v) => !v || v.length === 0 || v === "-",
+			);
+		}
+		ls_remove(oldSettingsKey);
 	}
 	// Migrate dismantle hide options to account-specific.
 	const distOpts = ls_getGlobal(dc_LSKEY_hideDismantleOpts, null);
@@ -211,11 +217,11 @@ function settingsToggle() {
 }
 
 function initSettingsNumberFormat() {
-	const settings = ls_getGlobal(LSKEY_numFormat, {});
-	const settingNumFormat =
-		Object.prototype.hasOwnProperty.call(Object, settings, "nf") ?
-			settings.nf
-		:	undefined;
+	let setting = ls_getGlobal(LSKEY_numFormat, undefined);
+	if (typeof setting === `object`) {
+		setting = setting.nf ?? undefined;
+		ls_setGlobal_string(LSKEY_numFormat, setting, undefined);
+	}
 	const num = 12345.67;
 
 	let opts = ``;
@@ -233,20 +239,19 @@ function initSettingsNumberFormat() {
 				name = "&nbsp;Period";
 		}
 		opts += `<option value="${types[k] == null ? "-" : types[k]}"${
-			types[k] === settingNumFormat ? " selected" : ""
+			types[k] === setting ? " selected" : ""
 		}>${name}: ${new Intl.NumberFormat(types[k], NF_GROUPS).format(
 			num,
 		)}</option>`;
 	}
 	settingsNumberFormat.innerHTML = opts;
-	numForm = new Intl.NumberFormat(settingNumFormat, NF_GROUPS);
+	numForm = new Intl.NumberFormat(setting, NF_GROUPS);
 }
 
 function changeCurrentNumberFormat(code) {
 	if (code === "-") code = undefined;
 	numForm = new Intl.NumberFormat(code, NF_GROUPS);
-	if (code != null) ls_setGlobal_obj(LSKEY_numFormat, {nf: code});
-	else ls_remove(LSKEY_numFormat);
+	ls_setGlobal_string(LSKEY_numFormat, code);
 }
 
 function initPullButtonStuff() {
@@ -1087,6 +1092,15 @@ function ls_setGlobal_num(key, value, defaultValue) {
 	ls_setGlobal(key, num, (v) => !Number.isFinite(v) || v === defaultValue);
 }
 
+function ls_setGlobal_string(key, value, defaultValue) {
+	ls_setGlobal(
+		key,
+		value,
+		(v) =>
+			!v || typeof v !== `string` || v.length === 0 || v === defaultValue,
+	);
+}
+
 function ls_setGlobal_bool(key, value, defaultValue) {
 	const num = value ? 1 : 0;
 	const def = defaultValue ? 1 : 0;
@@ -1113,6 +1127,8 @@ function ls_getPerAccount(key, defaultValue) {
 
 		const parsed = JSON.parse(raw, parseReviver);
 		if (!parsed || typeof parsed !== "object") return defaultValue;
+
+		ls_prunePerAccountData(key, parsed);
 
 		const value = parsed[currAccount.name];
 		return value ?? defaultValue;
@@ -1177,4 +1193,21 @@ function ls_setPerAccount_obj(key, obj) {
 		obj,
 		(v) => !v || typeof v !== "object" || Object.keys(v).length === 0,
 	);
+}
+
+function ls_prunePerAccountData(key, parsed) {
+	if (!parsed || typeof parsed !== "object") return;
+
+	const userAccounts = getUserAccounts();
+	const accountNames = new Set(Object.keys(userAccounts?.accounts || {}));
+
+	let changed = false;
+	for (const accountName in parsed) {
+		if (!accountNames.has(accountName)) {
+			delete parsed[accountName];
+			changed = true;
+		}
+	}
+
+	if (changed) ls_setPerAccount_obj(key, parsed);
 }
