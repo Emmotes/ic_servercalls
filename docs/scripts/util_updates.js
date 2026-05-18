@@ -1,4 +1,4 @@
-const vu = 1.102; // prettier-ignore
+const vu = 1.103; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -104,6 +104,21 @@ const u_FEATURE_UPDATES = new Map([
 			],
 			setting: true,
 		},
+	],
+	[
+		8,
+		{
+			id: 8,
+			date: "2026-05-18",
+			title: "Browser Data Backup & Restore",
+			list: [
+				"A new set of buttons added to the Settings menu.",
+				"They let you download your saved browser data to back it up.",
+				"And then later restore it from that backup.",
+				"For people whose browsers seem to forget easily.",
+			],
+			setting: true,
+		}
 	],
 ]);
 let u_currentUnseenUpdateIds = new Set([]);

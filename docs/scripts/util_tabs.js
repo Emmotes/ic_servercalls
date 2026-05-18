@@ -1,4 +1,4 @@
-const vt = 1.103; // prettier-ignore
+const vt = 1.104; // prettier-ignore
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -401,7 +401,7 @@ async function pullAllTabsData() {
 		statusText.innerHTML = `Done.`;
 		setTimeout(() => {
 			if (statusText) statusText.innerHTML = `&nbsp;`;
-		}, 5000);
+		}, buttonTextChangeMS);
 
 		codeEnablePullButtons();
 	} catch (error) {

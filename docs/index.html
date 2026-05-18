@@ -49,24 +49,24 @@
 					</select>
 				</div>
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="saveUserData()" id="settingsMenuButtonSave" value="Save"></div>
 				<div class="f falc fjs ml2" style="width:50%"><input type="button" onClick="settingsToggle()" id="settingsMenuButtonClose" value="Close" hidden></div>
 			</div>
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjs ml2" style="width:100%">Accounts:</div>
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjc ml2" style="width:100%">
 					<select id="settingsMenuAccountsList">
 						<option value="" selected>-</option>
 					</select>
 				</div>
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fje mr2" style="width:50%"><input type="button" onClick="loadUserAccount()" id="settingsMenuButtonLoadAccount" value="Load"></div>
 				<div class="f falc fjs ml2 redButton" style="width:50%"><input type="button" onClick="renderDeleteAccountConfirmationPopup()" id="settingsMenuButtonDeleteAccount" value="Delete"></div>
 				<div class="f fc fals fjs p5 posAbs deleteAcccountPopup" id="settingsMenuDeleteAccountConfirmationPopup" style="display:none;">&nbsp;</div>
@@ -74,19 +74,36 @@
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjs ml2" style="width:100%">Support URL:</div>
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjc mb2" style="width:100%"><input type="input" name="supportUrl" id="supportUrl" style="width:100%"></div>
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjc mb2" style="width:100%"><input type="button" onClick="supportUrlSaveData()" id="supportUrlMenuButton" value=" Get User Data From Support Url " style="width:100%"></div>
 			</div>
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
+				<div class="f falc fjs ml2" style="width:100%">Browser Data Backup & Restore:</div>
+			</div>
+			<div class="f fr w100 p5">
+				<div class="f falc fje mr2" style="width:50%">
+					<input type="button" onclick="a_exportBackup()" id="a_backupDownload" value="Download Backup">
+				</div>
+				<div class="f falc fjs ml2" style="width:50%">
+					<input type="button" onclick="document.getElementById('a_BackupFileInput').click()" id="a_backupRestore" value="Restore Backup">
+				</div>
+				<div class="f fc fals fjs" style="display:none;">
+					<input type="file" id="a_BackupFileInput" accept=".json,application/json" onchange="a_handleBackupFile(this.files)">
+				</div>
+			</div>
+			<div class="f fr w100 p5">
+				&nbsp;
+			</div>
+			<div class="f fr w100 p5">
 				<div class="f falc fjs ml2" style="width:100%">Tab Layout Controls:</div>
 			</div>
 			<div class="f fr w100 p5">
@@ -101,7 +118,7 @@
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjs ml2" style="width:100%">Options:</div>
 			</div>
 			<div class="f fr w100 p5">
@@ -115,7 +132,7 @@
 			<div class="f fr w100 p5">
 				&nbsp;
 			</div>
-			<div class="f fr w100 p5">	
+			<div class="f fr w100 p5">
 				<div class="f falc fjs ml2" style="width:100%">Site Flags:</div>
 			</div>
 			<div class="f fr w100 p5">
@@ -173,11 +190,12 @@
 		</div>
 	</div>
 
+	<script type="text/javascript" src="scripts/util_backups.js?va=1.000"></script>
 	<script type="text/javascript" src="scripts/util_buffs.js?vb=2.003"></script>
 	<script type="text/javascript" src="scripts/util_campaigns.js?vc=2.002"></script>
 	<script type="text/javascript" src="scripts/util_siteflags.js?vf=1.000"></script>
-	<script type="text/javascript" src="scripts/util_tabs.js?vt=1.103"></script>
-	<script type="text/javascript" src="scripts/util_updates.js?vu=1.102"></script>
+	<script type="text/javascript" src="scripts/util_tabs.js?vt=1.104"></script>
+	<script type="text/javascript" src="scripts/util_updates.js?vu=1.103"></script>
 
 	<script type="text/javascript" src="scripts/tab_aeonData.js?vad=1.100"></script>
 	<script type="text/javascript" src="scripts/tab_apothecary.js?vap=2.100"></script>
@@ -202,6 +220,6 @@
 	<script type="text/javascript" src="scripts/asyncIntervals.js?vai=1.002"></script>
 	<script type="text/javascript" src="scripts/serverCalls.js?vs=3.028"></script>
 
-	<script type="text/javascript" src="scripts/main.js?v=4.202"></script>
+	<script type="text/javascript" src="scripts/main.js?v=4.203"></script>
 </body>
 </html>

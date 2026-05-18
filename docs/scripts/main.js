@@ -1,4 +1,4 @@
-const v = 4.202; // prettier-ignore
+const v = 4.203; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -20,6 +20,8 @@ const settingsClose = document.getElementById(`settingsMenuButtonClose`);
 const settingsList = document.getElementById(`settingsMenuAccountsList`);
 const settingsLoad = document.getElementById(`settingsMenuButtonLoadAccount`);
 const settingsNumberFormat = document.getElementById(`settingsNumberFormat`);
+const settingsBackupDownload = document.getElementById(`a_backupDownload`);
+const settingsBackupRestore = document.getElementById(`a_backupRestore`);
 const allTabsDataPullButton = document.getElementById(`allTabsDataPullButton`);
 const supportUrl = document.getElementById(`supportUrl`);
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
@@ -34,6 +36,7 @@ const sciNoteForm = new Intl.NumberFormat(undefined, {
 	notation: "scientific",
 });
 const cleanupExtras = new Set([]);
+const buttonTextChangeMS = 2000;
 let numForm = new Intl.NumberFormat(undefined, NF_GROUPS);
 let updateInterval;
 const timerList = {};
@@ -314,7 +317,7 @@ async function saveUserData() {
 		if (!disabledUntilData.hidden) disabledUntilData.hidden = true;
 		setTimeout(function () {
 			settingsSave.value = `Save`;
-		}, 2000);
+		}, buttonTextChangeMS);
 	} else {
 		settingsSave.value = `ERROR`;
 		settingsSave.disabled = true;
@@ -325,7 +328,7 @@ async function saveUserData() {
 			settingsSave.disabled = false;
 			settingsSave.style.color = ``;
 			settingsSave.style.backgroundColor = ``;
-		}, 2000);
+		}, buttonTextChangeMS);
 	}
 	refreshSettingsList();
 	cleanup();
@@ -359,7 +362,7 @@ async function loadUserAccount() {
 		settingsLoad.value = `ERROR`;
 		setTimeout(function () {
 			settingsLoad.value = `Load`;
-		}, 2000);
+		}, buttonTextChangeMS);
 		for (var i = settingsList.length - 1; i >= 0; i--)
 			if (settingsList.options[i].value === accountChoice)
 				settingsList.remove(i);
