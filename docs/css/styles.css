@@ -197,7 +197,7 @@ pre {
 
 .menuPopup {
 	margin: auto;
-	width: fit-content;
+	width: 380px;
 	height: fit-content;
 	background-color: var(--ShipGrey);
 	border: 1px solid var(--Black);
