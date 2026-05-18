@@ -1,4 +1,6 @@
-const vt = 1.104; // prettier-ignore
+const vt = 1.105; // prettier-ignore
+const t_LSKEY_tabOrder = "scTabOrder";
+const t_LSKEY_tabVisibility = "scTabVisibility";
 
 const t_DEFAULT_TABS = [
 	{id: "deleteFormationsTab", name: "Delete Formations", visible: true},
@@ -21,9 +23,6 @@ const t_DEFAULT_TABS = [
 	{id: "freeStuffTab", name: "Claim Free Stuff", visible: true, nonpull: true},
 	{id: "serverStatusTab", name: "Server Status", visible: true, nonpull: true},
 ]; // prettier-ignore
-
-const t_LSKEY_tabOrder = "scTabOrder";
-const t_LSKEY_tabVisibility = "scTabVisibility";
 
 let t_editMode = false;
 let t_currentTabs = [];

@@ -1,11 +1,13 @@
-const va = 1.000; // prettier-ignore
+const va = 1.001; // prettier-ignore
+let a_ignoreLSKEYs = null;
 
 function a_collectLSKEYs() {
 	const keys = [];
+	const ignore = a_getIgnoreSet();
 	for (let i = 0; i < localStorage.length; i++) {
 		const k = localStorage.key(i);
 		if (!k) continue;
-		if (k.startsWith("sc")) keys.push(k);
+		if (k.startsWith("sc") && !ignore.has(k)) keys.push(k);
 	}
 	return keys;
 }
@@ -47,31 +49,20 @@ function a_importBackup(obj) {
 
 	const backupKeys = Object.keys(obj.data);
 	const backupSet = new Set(backupKeys);
+	const ignore = a_getIgnoreSet();
 
-	// Remove any saved app keys that are not present in the backup.
+	// Remove any saved app keys that are not present in the backup, except ignored keys.
 	a_collectLSKEYs().forEach((k) => {
-		if (!backupSet.has(k)) localStorage.removeItem(k);
+		if (!backupSet.has(k) && !ignore.has(k)) localStorage.removeItem(k);
 	});
 
+	// Restore values from backup, but do not touch ignored keys.
 	backupKeys.forEach((k) => {
-		localStorage.setItem(k, obj.data[k]);
+		if (!ignore.has(k)) localStorage.setItem(k, obj.data[k]);
 	});
 
 	a_tempChangeButton(`RESTORED`, settingsBackupRestore);
 	init();
-}
-
-function a_tempChangeButton(newTxt, ele) {
-	if (!ele) return;
-
-	const oldTxt = ele.value;
-
-	ele.value = newTxt;
-	ele.disabled = true;
-	setTimeout(() => {
-		ele.value = oldTxt;
-		ele.disabled = false;
-	}, buttonTextChangeMS);
 }
 
 function a_handleBackupFile(files) {
@@ -87,4 +78,39 @@ function a_handleBackupFile(files) {
 		}
 	};
 	reader.readAsText(f);
+}
+
+function a_getIgnoreSet() {
+	const s = new Set();
+	if (a_ignoreLSKEYs == null)
+		a_ignoreLSKEYs = [
+			LSKEY_pullButtonCooldown,
+			u_LSKEY_updates,
+			ss_LSKEY_serverStatusCooldown,
+			ss_LSKEY_serverStatusData,
+			ss_LSKEY_showMoreDetails,
+		];
+	if (!Array.isArray(a_ignoreLSKEYs)) return s;
+	a_ignoreLSKEYs.forEach((entry) => {
+		try {
+			if (typeof entry === "string" && entry) s.add(entry);
+			else if (entry != null) s.add(String(entry));
+		} catch (e) {
+			// ignore invalid entries
+		}
+	});
+	return s;
+}
+
+function a_tempChangeButton(newTxt, ele) {
+	if (!ele) return;
+
+	const oldTxt = ele.value;
+
+	ele.value = newTxt;
+	ele.disabled = true;
+	setTimeout(() => {
+		ele.value = oldTxt;
+		ele.disabled = false;
+	}, buttonTextChangeMS);
 }
