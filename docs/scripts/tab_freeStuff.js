@@ -1,5 +1,6 @@
-﻿const vfs = 1.009; // prettier-ignore
+﻿const vfs = 1.010; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
+const fs_LSKEY_activeLock = `scFreeStuffActiveLock`;
 const fs_TIMERS = {
 	main: 60 * 1000,
 	starting: 60 * 1000,
@@ -55,7 +56,6 @@ const fs_state = {
 	loopBusy: false,
 	loopNextTick: 0,
 };
-const fs_LOCK_KEY = `scFreeStuffActiveLock`;
 const fs_LOCK_TTL = 2 * 60 * 1000;
 const fs_tabId = `fs-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const fs_CHECK_FUNCTIONS = {
@@ -903,21 +903,38 @@ function fs_init() {
 }
 
 function fs_loadSettings() {
-	const saved = ls_getPerAccount(fs_LSKEY_settings, null);
+	let saved = ls_getPerAccount(fs_LSKEY_settings, null);
+	let wasCorrupted = false;
+	if (
+		saved &&
+		typeof saved === `object` &&
+		currAccount?.name &&
+		saved[currAccount.name] != null
+	) {
+		saved = saved[currAccount.name];
+		wasCorrupted = true;
+	}
 	fs_state.settings = {
 		...fs_DEFAULT_SETTINGS,
 		...(saved || {}),
 	};
+	if (wasCorrupted)
+		fs_saveSettings();
 	return fs_state.settings;
 }
 
 function fs_saveSettings() {
+	const settingsToSave = {
+		...fs_state.settings,
+	};
+	if (currAccount?.name) delete settingsToSave[currAccount.name];
+
 	const isDefault = Object.keys(fs_DEFAULT_SETTINGS).every(
-		(key) => fs_state.settings[key] === fs_DEFAULT_SETTINGS[key],
+		(key) => settingsToSave[key] === fs_DEFAULT_SETTINGS[key],
 	);
 	ls_setPerAccount(
 		fs_LSKEY_settings,
-		fs_state.settings,
+		settingsToSave,
 		(v) =>
 			!v ||
 			typeof v !== `object` ||
@@ -984,7 +1001,7 @@ function fs_isFreeOfferPurchaseSuccess(response) {
 // ======================
 
 function fs_getLock() {
-	return ls_getPerAccount(fs_LOCK_KEY, null);
+	return ls_getPerAccount(fs_LSKEY_activeLock, null);
 }
 
 function fs_isLockStale(lock) {
@@ -1001,7 +1018,7 @@ function fs_claimLock() {
 	const lock = fs_getLock();
 	if (lock && lock.tabId !== fs_tabId && !fs_isLockStale(lock)) return false;
 
-	ls_setPerAccount_obj(fs_LOCK_KEY, {
+	ls_setPerAccount_obj(fs_LSKEY_activeLock, {
 		tabId: fs_tabId,
 		expires: now + fs_LOCK_TTL,
 	});
@@ -1010,13 +1027,13 @@ function fs_claimLock() {
 
 function fs_releaseLock() {
 	const lock = fs_getLock();
-	if (lock?.tabId === fs_tabId) ls_setPerAccount_obj(fs_LOCK_KEY, {});
+	if (lock?.tabId === fs_tabId) ls_setPerAccount_obj(fs_LSKEY_activeLock, {});
 }
 
 function fs_refreshLock() {
 	const lock = fs_getLock();
 	if (lock?.tabId === fs_tabId)
-		ls_setPerAccount_obj(fs_LOCK_KEY, {
+		ls_setPerAccount_obj(fs_LSKEY_activeLock, {
 			tabId: fs_tabId,
 			expires: Date.now() + fs_LOCK_TTL,
 		});
@@ -1025,4 +1042,3 @@ function fs_refreshLock() {
 function fs_handleFreeStuffBeforeUnload() {
 	fs_releaseLock();
 }
-

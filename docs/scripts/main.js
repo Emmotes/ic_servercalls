@@ -1,4 +1,4 @@
-const v = 4.204; // prettier-ignore
+const v = 4.205; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -1209,5 +1209,5 @@ function ls_prunePerAccountData(key, parsed) {
 		}
 	}
 
-	if (changed) ls_setPerAccount_obj(key, parsed);
+	if (changed) ls_setGlobal_obj(key, parsed);
 }
