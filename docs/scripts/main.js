@@ -1,4 +1,4 @@
-const v = 4.205; // prettier-ignore
+const v = 4.206; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -45,8 +45,8 @@ let pbCodeRunning;
 let pbTimerRunning;
 let pbTimerTimeout = null;
 
-function isBadUserData() {
-	if (pbCodeRunning || pbTimerRunning) return true;
+function isBadUserData(ignorePullButtons = false) {
+	if (!ignorePullButtons && (pbCodeRunning || pbTimerRunning)) return true;
 	if (
 		currAccount == null ||
 		currAccount.name == null ||

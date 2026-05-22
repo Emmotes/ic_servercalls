@@ -1,4 +1,4 @@
-﻿const vfs = 1.010; // prettier-ignore
+﻿const vfs = 1.011; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_LSKEY_activeLock = `scFreeStuffActiveLock`;
 const fs_TIMERS = {
@@ -182,7 +182,7 @@ async function fs_toggleFreeStuffChecker() {
 }
 
 function fs_startTimersLoop() {
-	if (isBadUserData()) return;
+	if (isBadUserData(true)) return;
 	if (!fs_claimLock()) {
 		const wrapper = document.getElementById(`freeStuffWrapper`);
 		if (wrapper) wrapper.innerHTML = fs_RUNNING;
@@ -201,7 +201,10 @@ function fs_startTimersLoop() {
 
 async function fs_processNextTimer() {
 	if (fs_state.loopBusy) return;
-	if (pbCodeRunning || pbTimerRunning) return;
+	if (pbCodeRunning || pbTimerRunning) {
+		fs_displayState();
+		return;
+	}
 
 	const nextType = fs_getNextDueType();
 	if (!nextType) {
