@@ -1,4 +1,4 @@
-﻿const vfs = 1.011; // prettier-ignore
+﻿const vfs = 1.012; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_LSKEY_activeLock = `scFreeStuffActiveLock`;
 const fs_TIMERS = {
@@ -631,7 +631,7 @@ async function fs_checkCelebrationRewards(userDetails = null) {
 		if (!dialog || !dialog.success || !dialog.dialog_data) continue;
 		const eles = dialog?.dialog_data?.elements ?? [];
 		for (const ele of eles) {
-			const timer = Number(ele?.timer ?? -1);
+			const timer = Number(ele?.timer ?? Infinity);
 			if (timer < nextTimer) nextTimer = timer;
 
 			const type = ele?.type ?? ``;
