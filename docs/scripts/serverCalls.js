@@ -1,4 +1,4 @@
-const vs = 3.028; // prettier-ignore
+const vs = 3.029; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -802,7 +802,7 @@ async function sendServerCall(
 	if (params != null) call += buildParams(params);
 	if (addUserData) call += appendUserData();
 	if (addInstanceId) call += await appendInstanceId();
-	if (Number(currAccount.networkId ?? -1) > 0)
+	if (callType === "getshop" && Number(currAccount.networkId ?? -1) > 0)
 		call += buildParams([[PARAM_NETWORKID, currAccount.networkId]]);
 	call += appendBoilerplate();
 	if (server === ``) {
