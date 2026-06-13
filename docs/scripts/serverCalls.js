@@ -1,4 +1,4 @@
-const vs = 3.029; // prettier-ignore
+const vs = 3.030; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -10,6 +10,7 @@ const PARAM_USERID = `user_id`;
 const PARAM_USERHASH = `hash`;
 const PARAM_NETWORKID = `network_id`;
 const RETRIES = 4;
+const CALLS_USING_PLATFORM = new Set(["getshop", "claimsalebonus"]);
 let currAccount = undefined;
 let SERVER = ``;
 let instanceId = ``;
@@ -802,7 +803,10 @@ async function sendServerCall(
 	if (params != null) call += buildParams(params);
 	if (addUserData) call += appendUserData();
 	if (addInstanceId) call += await appendInstanceId();
-	if (callType === "getshop" && Number(currAccount.networkId ?? -1) > 0)
+	if (
+		Number(currAccount.networkId ?? -1) > 0 &&
+		CALLS_USING_PLATFORM.has(callType)
+	)
 		call += buildParams([[PARAM_NETWORKID, currAccount.networkId]]);
 	call += appendBoilerplate();
 	if (server === ``) {
