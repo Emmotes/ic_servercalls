@@ -1,4 +1,4 @@
-const vss = 2.200; // prettier-ignore
+const vss = 2.201; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -414,9 +414,33 @@ function ss_buildSVGSpan(svg, style) {
 function ss_compare(a, b) {
 	if (a === "master") return -1;
 	if (b === "master") return 1;
-	const an = Number(a.replace(/\D/g, "") || 0);
-	const bn = Number(b.replace(/\D/g, "") || 0);
-	return an - bn;
+
+	const exactPs = /^ps(\d+)$/i;
+	const extraPs = /^ps([a-z]+)(\d+)$/i;
+
+	const aExact = exactPs.exec(a);
+	const bExact = exactPs.exec(b);
+	if (aExact && bExact) return Number(aExact[1]) - Number(bExact[1]);
+	if (aExact) return -1;
+	if (bExact) return 1;
+
+	const aExtra = extraPs.exec(a);
+	const bExtra = extraPs.exec(b);
+	if (aExtra && bExtra) {
+		const prefixCompare = aExtra[1].localeCompare(bExtra[1], undefined, {
+			sensitivity: "base",
+		});
+		if (prefixCompare !== 0) return prefixCompare;
+		return Number(aExtra[2]) - Number(bExtra[2]);
+	}
+
+	if (aExtra && !bExtra) return -1;
+	if (!aExtra && bExtra) return 1;
+
+	return a.localeCompare(b, undefined, {
+		numeric: true,
+		sensitivity: "base",
+	});
 }
 
 function ss_addSingleServerStatusRow(msg) {
