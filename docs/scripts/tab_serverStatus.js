@@ -468,7 +468,7 @@ function ss_translateServerError(error) {
 			return "Service Unavailable";
 		if (code === "521") return "Server Unreachable";
 		if (code === "522") return "Timed Out";
-		if (code === "526") return "Invalid SSL Certificate";
+		if (code === "525" || code === "526") return "Invalid SSL Certificate";
 
 		return `HTTP ${code}`;
 	}
