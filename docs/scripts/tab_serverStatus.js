@@ -1,4 +1,4 @@
-const vss = 2.202; // prettier-ignore
+const vss = 2.203; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -618,13 +618,13 @@ function ss_toggleShowMoreDetails(checked) {
 
 async function ss_populateGraph(statusData) {
 	const history = statusData?.history ?? [];
-	if (!Array.isArray(history) || history.length === 0) return;
+	if (!Array.isArray(history) || history.length === 0) return false;
 
 	const ele = document.getElementById(`ss_history`);
-	if (!ele) return;
+	if (!ele) return false;
 
 	const gapThresholdMs = Math.max(5 * 60 * 1000, ss_CACHE_INTERVAL_MS * 3);
-	const entries = history
+	const rawEntries = history
 		.map((entry) => ({
 			checkedAtMs: Date.parse(entry.checkedAt),
 			results: entry.results,
@@ -637,60 +637,58 @@ async function ss_populateGraph(statusData) {
 		)
 		.sort((a, b) => a.checkedAtMs - b.checkedAtMs);
 
-	if (entries.length === 0) return;
+	if (rawEntries.length === 0) return false;
 
-	const minTime = entries[0].checkedAtMs;
-	const maxTime = entries[entries.length - 1].checkedAtMs;
-	const msPerHour = 60 * 60 * 1000;
-	const earliest24h = maxTime - 24 * msPerHour + ss_CACHE_INTERVAL_MS;
-	const axisMin = Math.min(minTime, earliest24h);
-	const axisMax = maxTime;
-
-	const hourTicks = [];
-	const firstHour = Math.ceil(axisMin / msPerHour) * msPerHour;
-	for (let tickTime = firstHour; tickTime <= axisMax; tickTime += msPerHour)
-		hourTicks.push(tickTime);
-
-	const serverValues = new Map();
+	const displayTimes = [];
 	let lastCheckedAtMs = null;
-	let maxResponse = 0;
 	let gapExists = false;
-	for (const entry of entries) {
-		if (entry.checkedAtMs - lastCheckedAtMs > gapThresholdMs) {
-			if (lastCheckedAtMs !== null)
-				for (const values of serverValues.values())
-					values.push({x: entry.checkedAtMs, y: null});
+	for (const entry of rawEntries) {
+		if (
+			lastCheckedAtMs !== null &&
+			entry.checkedAtMs - lastCheckedAtMs > gapThresholdMs
+		) {
+			const gapTime = Math.round(
+				(lastCheckedAtMs + entry.checkedAtMs) / 2,
+			);
+			displayTimes.push(gapTime);
 			gapExists = true;
 		}
+		displayTimes.push(entry.checkedAtMs);
+		lastCheckedAtMs = entry.checkedAtMs;
+	}
 
+	const times = Array.from(new Set(displayTimes)).sort((a, b) => a - b);
+	const serverTimeMap = new Map();
+	let maxResponse = 0;
+	for (const entry of rawEntries) {
 		for (const server in entry.results) {
 			const responseTime = entry.results[server];
 			if (typeof responseTime !== "number") continue;
 
-			if (!serverValues.has(server)) serverValues.set(server, []);
-			serverValues
-				.get(server)
-				.push({x: entry.checkedAtMs, y: responseTime});
+			if (!serverTimeMap.has(server))
+				serverTimeMap.set(server, new Map());
+			serverTimeMap.get(server).set(entry.checkedAtMs, responseTime);
 			maxResponse = Math.max(maxResponse, responseTime);
 		}
-
-		lastCheckedAtMs = entry.checkedAtMs;
 	}
 
-	const servers = Array.from(serverValues.keys()).sort(ss_compare);
-
-	// Resize canvas to account for max response time.
-	const thousands = Math.max(1, Math.ceil(maxResponse / 1000));
-	const maxY = thousands * 1000;
-	ele.height = 104 + thousands * 40;
-
+	const servers = Array.from(serverTimeMap.keys()).sort(ss_compare);
 	const datasets = [];
 	let i = 0;
 	for (const server of servers) {
+		const values = [];
+		const valuesByTime = serverTimeMap.get(server);
+		for (const time of times) {
+			values.push({
+				x: time,
+				y: valuesByTime.has(time) ? valuesByTime.get(time) : null,
+			});
+		}
+
 		const colour = ss_getColorForServer(i++);
 		datasets.push({
 			label: server,
-			data: serverValues.get(server),
+			data: values,
 			borderColor: colour,
 			borderWidth: 1,
 			backgroundColor: colour,
@@ -702,6 +700,21 @@ async function ss_populateGraph(statusData) {
 	}
 
 	const colourBg = "rgba(49,49,49,1)";
+	const minTime = rawEntries[0].checkedAtMs;
+	const maxTime = rawEntries[rawEntries.length - 1].checkedAtMs;
+	const msPerHour = 60 * 60 * 1000;
+	const earliest24h = maxTime - 24 * msPerHour + ss_CACHE_INTERVAL_MS;
+	const axisMin = Math.min(minTime, earliest24h);
+	const axisMax = maxTime;
+
+	const hourTicks = [];
+	const firstHour = Math.ceil(axisMin / msPerHour) * msPerHour;
+	for (let tickTime = firstHour; tickTime <= axisMax; tickTime += msPerHour)
+		hourTicks.push(tickTime);
+
+	const thousands = Math.max(1, Math.ceil(maxResponse / 1000));
+	const maxY = thousands * 1000;
+	ele.height = 104 + thousands * 40;
 	const colourText = "rgba(215,205,217,1)";
 	const colourBorder = "rgba(255,255,255,1)";
 	const colourGrid = "rgba(90,90,90,1)";
@@ -758,6 +771,11 @@ async function ss_populateGraph(statusData) {
 		options: {
 			responsive: false,
 			maintainAspectRatio: false,
+			interaction: {
+				mode: "index",
+				intersect: false,
+				axis: "x",
+			},
 			layout: {
 				padding: {
 					top: 10,
