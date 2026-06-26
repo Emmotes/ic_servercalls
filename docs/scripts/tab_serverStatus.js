@@ -1,4 +1,4 @@
-const vss = 2.203; // prettier-ignore
+const vss = 2.204; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -219,8 +219,12 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 	]);
 
 	for (const r of results) {
-		const verySlowResponse = r.responseTimeMs >= ss_VERYSLOW_THRESHOLD_MS;
-		const slowResponse = r.responseTimeMs >= ss_SLOW_THRESHOLD_MS;
+		const responseTimeMs =
+			r.responseTimePingMs == null ? r.responseTimeMs
+			: r.responseTimeMs == null ? r.responseTimePingMs
+			: Math.min(r.responseTimePingMs, r.responseTimeMs);
+		const verySlowResponse = responseTimeMs >= ss_VERYSLOW_THRESHOLD_MS;
+		const slowResponse = responseTimeMs >= ss_SLOW_THRESHOLD_MS;
 		const alive =
 			r.up ?
 				verySlowResponse ? ss_SVG_verySlow
@@ -238,7 +242,7 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 
 		const resTime =
 			ss_translateServerError(r.error) ||
-			getDisplayTime(r.responseTimeMs, {showMs: true, pad: false});
+			getDisplayTime(responseTimeMs, {showMs: true, pad: false});
 		txt += addHTMLElements([
 			{text: r.server + `:`, classes: eFlex},
 			{text: alive, classes: cFlex},
@@ -662,7 +666,14 @@ async function ss_populateGraph(statusData) {
 	let maxResponse = 0;
 	for (const entry of rawEntries) {
 		for (const server in entry.results) {
-			const responseTime = entry.results[server];
+			let responseTime = entry.results[server];
+			if (responseTime === null) continue;
+			if (typeof responseTime === "object")
+				responseTime =
+					responseTime.ping == null ? responseTime.defs
+					: responseTime.defs == null ? responseTime.ping
+					: Math.min(responseTime.ping, responseTime.defs);
+
 			if (typeof responseTime !== "number") continue;
 
 			if (!serverTimeMap.has(server))
