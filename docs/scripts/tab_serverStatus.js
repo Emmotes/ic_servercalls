@@ -1,4 +1,4 @@
-const vss = 2.205; // prettier-ignore
+const vss = 2.206; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -89,8 +89,8 @@ function ss_buildResponseNumbersSelect(id) {
 		`style="${style}">` +
 		`<option value="min"${type === `min` ? " selected" : ""}>Quickest</option>` +
 		`<option value="avg"${type === `avg` ? " selected" : ""}>Average</option>` +
-		`<option value="max"${type === `max` ? " selected" : ""}>Slowest</option>` +
-		`<option value="defs"${type == null || type === `defs` ? " selected" : ""}>Definitions Call Only</option>` +
+		`<option value="max"${type == null || type === `max` ? " selected" : ""}>Slowest</option>` +
+		`<option value="defs"${type === `defs` ? " selected" : ""}>Definitions Call Only</option>` +
 		`<option value="ping"${type === `ping` ? " selected" : ""}>Ping Call Only</option>` +
 		`</select>`
 	);
@@ -1081,9 +1081,9 @@ function ss_setShowMoreDetails(show) {
 }
 
 function ss_getResponseNumbers() {
-	return ls_getGlobal(ss_LSKEY_responseNumbers, `avg`);
+	return ls_getGlobal(ss_LSKEY_responseNumbers, `max`);
 }
 
 function ss_setResponseNumbers(value) {
-	return ls_setGlobal_string(ss_LSKEY_responseNumbers, value, `avg`);
+	return ls_setGlobal_string(ss_LSKEY_responseNumbers, value, `max`);
 }
