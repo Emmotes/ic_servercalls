@@ -1,7 +1,8 @@
-const vss = 2.204; // prettier-ignore
+const vss = 2.205; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
+const ss_LSKEY_responseNumbers = `scServerStatusResponseNumbers`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
 const ss_SVG_down = `<svg width="22" height="22" viewBox="1 1 34 34" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".8"><path fill="var(--CarminePink)" d="M21.533 18.002 33.768 5.768a2.5 2.5 0 0 0-3.535-3.535L17.998 14.467 5.764 2.233a2.5 2.5 0 0 0-3.535 0 2.5 2.5 0 0 0 0 3.535l12.234 12.234L2.201 30.265a2.498 2.498 0 0 0 1.768 4.267c.64 0 1.28-.244 1.768-.732l12.262-12.263 12.234 12.234a2.5 2.5 0 0 0 1.768.732 2.5 2.5 0 0 0 1.768-4.267z"/></svg>`;
 const ss_SVG_slow = `<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".6" fill="var(--TangerineYellow)"><rect height="4" rx="1.5" ry="1.5" width="21" x=".5" y="9"></rect></svg>`;
@@ -15,6 +16,10 @@ const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
 const ss_MAX_OUTAGE_LIMIT = 5;
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
+let ss_showMoreDetails = null;
+let ss_statusData = null;
+let ss_numbersType = null;
+let ss_historyChart = null;
 
 function ss_tab() {
 	const retry = getDisplayTime(ss_CACHE_INTERVAL_MS, {
@@ -41,6 +46,11 @@ function ss_tab() {
 										<span><em>Note: Response times are measured from my<br>server running the status checks so won't be<br>representative of your connection.</em></span>
 									</span>
 								</span>
+								<span class="f fr falc" style="display:none;" data-sssmd="1">&nbsp;</span>
+								<span class="f fc falc" style="text-align:center;display:none;" data-sssmd="1">
+									Show Which Response Times:
+								</span>
+								<span class="f fr falc p5" style="display:none;" data-sssmd="1">${ss_buildResponseNumbersSelect(1)}</span>
 							</span>
 						</span>
 					</span>
@@ -66,6 +76,24 @@ function ss_tab() {
 						&nbsp;
 					</span>
 				`;
+}
+
+function ss_buildResponseNumbersSelect(id) {
+	const type = ss_numbersType;
+	let style = ``;
+	if (id === 1) style += `width:100%;`;
+	else if (id === 2)
+		style += `width:fit-content;margin-left:10px;transform:translateY(-2px);`;
+	return (
+		`<select id="serverStatusResponseNumbers${id}" onchange="ss_changeResponseNumbers(this.value)" ` +
+		`style="${style}">` +
+		`<option value="min"${type === `min` ? " selected" : ""}>Quickest</option>` +
+		`<option value="avg"${type === `avg` ? " selected" : ""}>Average</option>` +
+		`<option value="max"${type === `max` ? " selected" : ""}>Slowest</option>` +
+		`<option value="defs"${type == null || type === `defs` ? " selected" : ""}>Definitions Call Only</option>` +
+		`<option value="ping"${type === `ping` ? " selected" : ""}>Ping Call Only</option>` +
+		`</select>`
+	);
 }
 
 async function ss_pullServerStatusData(statusData) {
@@ -99,6 +127,8 @@ async function ss_displayServerStatusData(
 
 	results.sort((a, b) => ss_compare(a.server, b.server));
 
+	ss_statusData = statusData;
+
 	let txt = ``;
 	let paddingStyle = ss_decidePadding(true, true);
 
@@ -108,7 +138,7 @@ async function ss_displayServerStatusData(
 	const sssmd = {sssmd: `1`};
 	const sCol = `1 / -1`;
 
-	txt += ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol);
+	txt += ss_buildBlurbRows(paddingStyle, sFlex, sssmd, sCol);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
 	txt += ss_buildServerGrid(
@@ -121,7 +151,7 @@ async function ss_displayServerStatusData(
 	);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
-	txt += ss_buildOutagesSection(statusData, sFlex, sCol);
+	txt += ss_buildOutagesSection(sFlex, sCol);
 
 	txt += ss_buildGraphSection(sFlex, sCol);
 
@@ -131,23 +161,23 @@ async function ss_displayServerStatusData(
 	wrapper.innerHTML = txt;
 	ss_toggleShowMoreDetails();
 	ss_startAgeTicker(wrapper);
-	ss_applyCooldownFromStatus(statusData, allowExtend);
+	ss_applyCooldownFromStatus(allowExtend);
 
-	const gapExists = ss_populateGraph(statusData);
+	const gapExists = ss_populateGraph();
 	if (gapExists)
 		document.getElementById(`ss_graphGapsNote`).style.display = ``;
 }
 
-function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
+function ss_buildBlurbRows(paddingStyle, sFlex, sssmd, sCol) {
 	const lastChecked =
 		`Servers were last checked ` +
-		ss_buildTimestampSpan(statusData?.checkedAt || "", paddingStyle) +
+		ss_buildTimestampSpan(ss_statusData?.checkedAt || "", paddingStyle) +
 		` ago.`;
 	const blurbRows = [{text: lastChecked, classes: sFlex, gridCol: sCol}];
-	if (statusData?.checkedDurationMs > 0) {
+	if (ss_statusData?.checkedDurationMs > 0) {
 		const lastCheckedDur =
 			`It took ` +
-			getDisplayTime(statusData?.checkedDurationMs, {
+			getDisplayTime(ss_statusData?.checkedDurationMs, {
 				showMs: true,
 				pad: false,
 			}) +
@@ -162,7 +192,7 @@ function ss_buildBlurbRows(statusData, paddingStyle, sFlex, sssmd, sCol) {
 			data: sssmd,
 		});
 	}
-	const pruned = statusData?.pruned || [];
+	const pruned = ss_statusData?.pruned || [];
 	if (Array.isArray(pruned) && pruned.length > 0) {
 		let msg = arrayToListReadable(pruned, {symbolAnd: false});
 		if (msg !== ``) {
@@ -219,37 +249,18 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 	]);
 
 	for (const r of results) {
-		const responseTimeMs =
-			r.responseTimePingMs == null ? r.responseTimeMs
-			: r.responseTimeMs == null ? r.responseTimePingMs
-			: Math.min(r.responseTimePingMs, r.responseTimeMs);
-		const verySlowResponse = responseTimeMs >= ss_VERYSLOW_THRESHOLD_MS;
-		const slowResponse = responseTimeMs >= ss_SLOW_THRESHOLD_MS;
-		const alive =
-			r.up ?
-				verySlowResponse ? ss_SVG_verySlow
-				: slowResponse ? ss_SVG_slow
-				: ss_SVG_up
-			:	ss_SVG_down;
-
-		const isServerDown = !r.up && r.lastSeenUp;
-		const lastUp =
-			!isServerDown && verySlowResponse ? `Degraded`
-			: !isServerDown && slowResponse ? `Slow`
-			: isServerDown ?
-				`Down (last seen up ${ss_buildTimestampSpan(r.lastSeenUp, paddingStyle)} ago)`
-			:	`&nbsp;`;
-
-		const resTime =
-			ss_translateServerError(r.error) ||
-			getDisplayTime(responseTimeMs, {showMs: true, pad: false});
+		const {alive, resTime, lastUp} = ss_determineResultState(
+			r,
+			paddingStyle,
+		);
 		txt += addHTMLElements([
 			{text: r.server + `:`, classes: eFlex},
-			{text: alive, classes: cFlex},
+			{text: alive, classes: cFlex, id: `ss_status_${r.server}`},
 			{
 				text: resTime,
 				classes: eFlex,
 				dim: true,
+				id: `ss_responseTime_${r.server}`,
 				data: sssmd,
 			},
 			{text: `&nbsp;`, data: sssmd},
@@ -260,14 +271,50 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, sssmd, paddingStyle) {
 				dim: true,
 				data: sssmd,
 			},
-			{text: lastUp, classes: sFlex, dim: lastUp !== `&nbsp;`},
+			{
+				text: lastUp,
+				classes: sFlex,
+				dim: lastUp !== `&nbsp;`,
+				id: `ss_lastUp_${r.server}`,
+			},
 		]);
 	}
 	return txt;
 }
 
-function ss_buildOutagesSection(statusData, sFlex, sCol) {
-	if (!Array.isArray(statusData?.outages) || statusData.outages.length === 0)
+function ss_determineResultState(r, paddingStyle) {
+	const responseTimeMs = ss_getResponseTimeMs(
+		r.responseTimeMs,
+		r.responseTimePingMs,
+	);
+	const verySlowResponse = responseTimeMs >= ss_VERYSLOW_THRESHOLD_MS;
+	const slowResponse = responseTimeMs >= ss_SLOW_THRESHOLD_MS;
+	const alive =
+		r.up ?
+			verySlowResponse ? ss_SVG_verySlow
+			: slowResponse ? ss_SVG_slow
+			: ss_SVG_up
+		:	ss_SVG_down;
+
+	const isServerDown = !r.up && r.lastSeenUp;
+	const lastUp =
+		!isServerDown && verySlowResponse ? `Degraded`
+		: !isServerDown && slowResponse ? `Slow`
+		: isServerDown ?
+			`Down (last seen up ${ss_buildTimestampSpan(r.lastSeenUp, paddingStyle)} ago)`
+		:	`&nbsp;`;
+
+	let resTime =
+		ss_translateServerError(r.error) ||
+		getDisplayTime(responseTimeMs, {showMs: true, pad: false});
+	return {alive, resTime, lastUp};
+}
+
+function ss_buildOutagesSection(sFlex, sCol) {
+	if (
+		!Array.isArray(ss_statusData?.outages) ||
+		ss_statusData.outages.length === 0
+	)
 		return ``;
 
 	let txt = ``;
@@ -283,7 +330,7 @@ function ss_buildOutagesSection(statusData, sFlex, sCol) {
 	});
 
 	let added = 0;
-	for (const outage of statusData.outages) {
+	for (const outage of ss_statusData.outages) {
 		const startedAt = ss_roundToNearestCacheInterval(outage.startedAt);
 		const endedAt = ss_roundToNearestCacheInterval(outage.endedAt);
 		if (!startedAt || !endedAt) continue;
@@ -358,6 +405,12 @@ function ss_buildGraphSection(sFlex, sCol) {
 			small: true,
 			gridCol: sCol,
 			id: `ss_graphGapsNote`,
+		},
+		{
+			text: `Show Which Response Times: ${ss_buildResponseNumbersSelect(2)}`,
+			classes: sFlex,
+			styles: `padding:10px 0 0 20px;`,
+			gridCol: sCol,
 		},
 	]);
 
@@ -560,11 +613,11 @@ function ss_setCooldownUntil(untilMs) {
 	ss_recheckTimer = setInterval(update, 1000);
 }
 
-function ss_applyCooldownFromStatus(statusData, allowExtend = true) {
+function ss_applyCooldownFromStatus(allowExtend = true) {
 	const nowMs = Date.now();
 
 	const checkedAtMs =
-		statusData?.checkedAt ? Date.parse(statusData.checkedAt) : NaN;
+		ss_statusData?.checkedAt ? Date.parse(ss_statusData.checkedAt) : NaN;
 
 	const minBlockUntil = nowMs + ss_MIN_RECHECK_MS;
 
@@ -592,22 +645,48 @@ function ss_tryResumeCooldownOnLoad() {
 
 	ss_setCooldownUntil(until);
 
-	let statusData = ls_getGlobal(ss_LSKEY_serverStatusData, null);
-	if (!statusData) return;
+	ss_statusData = ls_getGlobal(ss_LSKEY_serverStatusData, null);
+	if (ss_statusData == null) return;
 
-	const checkedAt = Date.parse(statusData?.checkedAt);
+	const checkedAt = Date.parse(ss_statusData?.checkedAt);
 	if (!Number.isFinite(checkedAt)) return;
 
 	const age = Date.now() - checkedAt;
 	if (age <= ss_CACHE_INTERVAL_MS + ss_CACHE_GRACE_MS) {
 		const wrapper = document.getElementById(`serverStatusWrapper`);
-		if (wrapper) ss_displayServerStatusData(wrapper, statusData, false);
+		if (wrapper) ss_displayServerStatusData(wrapper, ss_statusData, false);
 	}
+}
+
+function ss_getResponseTimeMs(defsTime, pingTime) {
+	if (ss_numbersType == null) ss_numbersType = ss_getResponseNumbers();
+
+	if (ss_numbersType !== `defs` && ss_numbersType !== `ping`) {
+		if (pingTime == null) return defsTime;
+		if (defsTime == null) return pingTime;
+	}
+
+	switch (ss_numbersType) {
+		case `min`:
+			return Math.min(pingTime, defsTime);
+		case `avg`:
+			return Math.round((pingTime + defsTime) / 2);
+		case `max`:
+			return Math.max(pingTime, defsTime);
+		case `defs`:
+			return defsTime;
+		case `ping`:
+			return pingTime;
+	}
+
+	return null;
 }
 
 function ss_toggleShowMoreDetails(checked) {
 	if (checked == null) checked = ss_getShowMoreDetails();
 	else ss_setShowMoreDetails(checked);
+
+	ss_showMoreDetails = checked;
 
 	const wrapper = document.getElementById(`serverStatusWrapper`);
 	if (wrapper == null) return;
@@ -616,12 +695,54 @@ function ss_toggleShowMoreDetails(checked) {
 		wrapper.classList.add(`serverStatusDetailsColumns`)
 	:	wrapper.classList.remove(`serverStatusDetailsColumns`);
 
-	const eles = document.querySelectorAll(`#serverStatusWrapper [data-sssmd]`);
+	const eles = document.querySelectorAll(`[data-sssmd="1"]`);
 	for (let ele of eles) ele.style.display = checked ? `` : `none`;
 }
 
-async function ss_populateGraph(statusData) {
-	const history = statusData?.history ?? [];
+function ss_changeResponseNumbers(value) {
+	if (!value) value = ss_getResponseNumbers();
+	else ss_setResponseNumbers(value);
+
+	const previous = ss_numbersType;
+	ss_numbersType = value;
+
+	const responseNumbersEles = document.querySelectorAll(
+		`[id^="serverStatusResponseNumber"]`,
+	);
+	for (const ele of responseNumbersEles) if (ele) ele.value = ss_numbersType;
+
+	// If the type didn't change.
+	if (previous === ss_numbersType) return;
+	// Or results can't be used.
+	if (ss_statusData == null || ss_statusData.results == null) return;
+
+	// Change the values in the servers table.
+	const paddingStyle = ss_decidePadding(true, true);
+	for (const r of ss_statusData.results) {
+		const server = r.server;
+		if (!server) continue;
+		const {alive, resTime, lastUp} = ss_determineResultState(
+			r,
+			paddingStyle,
+		);
+		const statusEle = document.getElementById(`ss_status_${server}`);
+		if (statusEle) statusEle.innerHTML = alive;
+
+		const resTimeEle = document.getElementById(`ss_responseTime_${server}`);
+		if (resTimeEle) resTimeEle.innerHTML = resTime;
+
+		const lastUpEle = document.getElementById(`ss_lastUp_${server}`);
+		if (lastUpEle) lastUpEle.innerHTML = lastUp;
+	}
+
+	// Rebuild the graph.
+	const gapExists = ss_populateGraph();
+	if (gapExists)
+		document.getElementById(`ss_graphGapsNote`).style.display = ``;
+}
+
+async function ss_populateGraph() {
+	const history = ss_statusData?.history ?? [];
 	if (!Array.isArray(history) || history.length === 0) return false;
 
 	const ele = document.getElementById(`ss_history`);
@@ -669,10 +790,10 @@ async function ss_populateGraph(statusData) {
 			let responseTime = entry.results[server];
 			if (responseTime === null) continue;
 			if (typeof responseTime === "object")
-				responseTime =
-					responseTime.ping == null ? responseTime.defs
-					: responseTime.defs == null ? responseTime.ping
-					: Math.min(responseTime.ping, responseTime.defs);
+				responseTime = ss_getResponseTimeMs(
+					responseTime.defs,
+					responseTime.ping,
+				);
 
 			if (typeof responseTime !== "number") continue;
 
@@ -773,8 +894,13 @@ async function ss_populateGraph(statusData) {
 		},
 	};
 
+	if (ss_historyChart) {
+		ss_historyChart.destroy();
+		ss_historyChart = null;
+	}
+
 	// Create the chart
-	const chart = new Chart(ele, {
+	ss_historyChart = new Chart(ele, {
 		type: "line",
 		data: {
 			datasets: datasets,
@@ -869,7 +995,7 @@ async function ss_populateGraph(statusData) {
 		plugins: [customBgPlugin, xAxisHourLabelsPlugin],
 	});
 
-	chart.update();
+	ss_historyChart.update();
 
 	return gapExists;
 }
@@ -927,10 +1053,23 @@ function ss_getColorForServer(index, alpha = 1) {
 }
 
 function ss_initServerStatusSettings() {
+	if (ss_showMoreDetails == null)
+		ss_showMoreDetails = ss_getShowMoreDetails();
+	if (ss_numbersType == null) ss_numbersType = ss_getResponseNumbers();
+
+	const showMoreDetailsEles = document.querySelectorAll(`[data-sssmd="1"]`);
+	for (const ele of showMoreDetailsEles)
+		if (ele) ele.style.display = ss_showMoreDetails ? `` : `none`;
+
 	const responseTimesEle = document.getElementById(
 		`serverStatusShowMoreDetails`,
 	);
-	if (responseTimesEle) responseTimesEle.checked = ss_getShowMoreDetails();
+	if (responseTimesEle) responseTimesEle.checked = ss_showMoreDetails;
+
+	const responseNumbersEles = document.querySelectorAll(
+		`[id^="serverStatusResponseNumbers"]`,
+	);
+	for (const ele of responseNumbersEles) if (ele) ele.value = ss_numbersType;
 }
 
 function ss_getShowMoreDetails() {
@@ -939,4 +1078,12 @@ function ss_getShowMoreDetails() {
 
 function ss_setShowMoreDetails(show) {
 	return ls_setGlobal_bool(ss_LSKEY_showMoreDetails, show, false);
+}
+
+function ss_getResponseNumbers() {
+	return ls_getGlobal(ss_LSKEY_responseNumbers, `avg`);
+}
+
+function ss_setResponseNumbers(value) {
+	return ls_setGlobal_string(ss_LSKEY_responseNumbers, value, `avg`);
 }
