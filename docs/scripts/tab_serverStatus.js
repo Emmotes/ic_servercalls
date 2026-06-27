@@ -1,4 +1,4 @@
-const vss = 2.206; // prettier-ignore
+const vss = 2.207; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -90,7 +90,7 @@ function ss_buildResponseNumbersSelect(id) {
 		`<option value="min"${type === `min` ? " selected" : ""}>Quickest</option>` +
 		`<option value="avg"${type === `avg` ? " selected" : ""}>Average</option>` +
 		`<option value="max"${type == null || type === `max` ? " selected" : ""}>Slowest</option>` +
-		`<option value="defs"${type === `defs` ? " selected" : ""}>Definitions Call Only</option>` +
+		`<option value="getPs"${type === `getPs` ? " selected" : ""}>Get Playserver Call Only</option>` +
 		`<option value="ping"${type === `ping` ? " selected" : ""}>Ping Call Only</option>` +
 		`</select>`
 	);
@@ -658,23 +658,23 @@ function ss_tryResumeCooldownOnLoad() {
 	}
 }
 
-function ss_getResponseTimeMs(defsTime, pingTime) {
+function ss_getResponseTimeMs(getPsTime, pingTime) {
 	if (ss_numbersType == null) ss_numbersType = ss_getResponseNumbers();
 
-	if (ss_numbersType !== `defs` && ss_numbersType !== `ping`) {
-		if (pingTime == null) return defsTime;
-		if (defsTime == null) return pingTime;
+	if (ss_numbersType !== `getPs` && ss_numbersType !== `ping`) {
+		if (pingTime == null) return getPsTime;
+		if (getPsTime == null) return pingTime;
 	}
 
 	switch (ss_numbersType) {
 		case `min`:
-			return Math.min(pingTime, defsTime);
+			return Math.min(pingTime, getPsTime);
 		case `avg`:
-			return Math.round((pingTime + defsTime) / 2);
+			return Math.round((pingTime + getPsTime) / 2);
 		case `max`:
-			return Math.max(pingTime, defsTime);
-		case `defs`:
-			return defsTime;
+			return Math.max(pingTime, getPsTime);
+		case `getPs`:
+			return getPsTime;
 		case `ping`:
 			return pingTime;
 	}
@@ -791,7 +791,7 @@ async function ss_populateGraph() {
 			if (responseTime === null) continue;
 			if (typeof responseTime === "object")
 				responseTime = ss_getResponseTimeMs(
-					responseTime.defs,
+					responseTime?.getPs ?? responseTime.defs,
 					responseTime.ping,
 				);
 
@@ -1081,7 +1081,12 @@ function ss_setShowMoreDetails(show) {
 }
 
 function ss_getResponseNumbers() {
-	return ls_getGlobal(ss_LSKEY_responseNumbers, `max`);
+	const numbersType = ls_getGlobal(ss_LSKEY_responseNumbers, `max`);
+	if (numbersType === `defs`) {
+		ss_setResponseNumbers(`getPs`);
+		return `getPs`;
+	}
+	return numbersType;
 }
 
 function ss_setResponseNumbers(value) {
