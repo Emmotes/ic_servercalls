@@ -1,4 +1,4 @@
-const vss = 2.300; // prettier-ignore
+const vss = 2.301; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -849,7 +849,7 @@ async function ss_populateGraph() {
 	for (let tickTime = firstHour; tickTime <= axisMax; tickTime += msPerHour)
 		hourTicks.push(tickTime);
 
-	const thousands = Math.max(1, Math.ceil(maxResponse / 1000));
+	const thousands = Math.max(2, Math.ceil(maxResponse / 1000));
 	const maxY = thousands * 1000;
 	ele.height = 104 + thousands * 40;
 	const colourText = "rgba(215,205,217,1)";
