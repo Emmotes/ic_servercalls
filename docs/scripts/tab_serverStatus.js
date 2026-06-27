@@ -1,4 +1,4 @@
-const vss = 2.207; // prettier-ignore
+const vss = 2.300; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -764,6 +764,11 @@ async function ss_populateGraph() {
 
 	if (rawEntries.length === 0) return false;
 
+	if (ss_historyChart) {
+		ss_historyChart.destroy();
+		ss_historyChart = null;
+	}
+
 	const displayTimes = [];
 	let lastCheckedAtMs = null;
 	let gapExists = false;
@@ -893,11 +898,6 @@ async function ss_populateGraph() {
 			ctx.restore();
 		},
 	};
-
-	if (ss_historyChart) {
-		ss_historyChart.destroy();
-		ss_historyChart = null;
-	}
 
 	// Create the chart
 	ss_historyChart = new Chart(ele, {
