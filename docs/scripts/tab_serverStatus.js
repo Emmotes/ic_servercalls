@@ -1,4 +1,4 @@
-const vss = 2.303; // prettier-ignore
+const vss = 2.304; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -794,15 +794,15 @@ async function ss_populateGraph() {
 		for (const server in entry.results) {
 			let responseTime = entry.results[server];
 			if (responseTime === null) continue;
-			if (typeof responseTime === "object")
-				responseTime = ss_getResponseTimeMs(
-					responseTime?.getPs ?? responseTime.defs,
-					responseTime.ping,
-				);
-			else if (Arrays.isArray(responseTime) && responseTime.length === 2)
+			if (Array.isArray(responseTime) && responseTime.length === 2)
 				responseTime = ss_getResponseTimeMs(
 					responseTime[0],
 					responseTime[1],
+				);
+			else if (typeof responseTime === "object")
+				responseTime = ss_getResponseTimeMs(
+					responseTime?.getPs ?? responseTime.defs,
+					responseTime.ping,
 				);
 
 			if (typeof responseTime !== "number") continue;
