@@ -1,7 +1,6 @@
-const vss = 2.401; // prettier-ignore
+const vss = 2.500; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
-const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
 const ss_SVG_down = `<svg width="22" height="22" viewBox="1 1 34 34" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".8"><path fill="var(--CarminePink)" d="M21.533 18.002 33.768 5.768a2.5 2.5 0 0 0-3.535-3.535L17.998 14.467 5.764 2.233a2.5 2.5 0 0 0-3.535 0 2.5 2.5 0 0 0 0 3.535l12.234 12.234L2.201 30.265a2.498 2.498 0 0 0 1.768 4.267c.64 0 1.28-.244 1.768-.732l12.262-12.263 12.234 12.234a2.5 2.5 0 0 0 1.768.732 2.5 2.5 0 0 0 1.768-4.267z"/></svg>`;
 const ss_SVG_slow = `<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" stroke="var(--Black)" stroke-width=".6" fill="var(--TangerineYellow)"><rect height="4" rx="1.5" ry="1.5" width="21" x=".5" y="9"></rect></svg>`;
@@ -104,13 +103,8 @@ async function ss_displayServerStatusData(
 	txt += ss_buildBlurbRows(paddingStyle, sFlex, sCol);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
-	txt += ss_buildServerGrid(
-		results,
-		sFlex,
-		eFlex,
-		cFlex,
-		paddingStyle,
-	);
+	txt += ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle);
+
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
 	txt += ss_buildOutagesSection(sFlex, sCol);
@@ -185,22 +179,28 @@ function ss_buildBlurbRows(paddingStyle, sFlex, sCol) {
 function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 	let txt = ``;
 	txt += addHTMLElements([
+		{text: "&nbsp;", gridCol: "span 2"},
+		{
+			text: `Call Response Times`,
+			classes: eFlex,
+			styles: `padding-right:20px;`,
+			header: true,
+			gridCol: `span 3`,
+		},
+		{text: "&nbsp;", gridCol: `span 2`},
 		{text: `Server`, classes: eFlex, header: true},
 		{text: `Status`, classes: cFlex, header: true},
-		{
-			text: `Response Times`,
-			classes: cFlex,
-			header: true,
-			dim: true,
-			gridCol: `span 2`,
-		},
-		{text: `&nbsp;`, classes: sFlex, header: true, dim: true},
+		{text: `Ping`, classes: eFlex, header: true},
+		{text: `Get Server`, classes: eFlex, header: true},
+		{text: `&nbsp;`},
+		{text: `Server Got`, classes: cFlex, header: true},
+		{text: `&nbsp;`},
 	]);
 
 	for (const r of results) {
 		//const coldPing = r?.coldResponseTimeMs || null;
-		const warmPing = ss_getResponseTimeMs(r?.warmResponseTimeMs || r.responseTimeMs, r.responseTimePingMs);
-		//const getPs = r?.getPsResponseTimeMs || null;
+		const warmPing = r?.warmResponseTimeMs || null;
+		const getPs = r?.getPsResponseTimeMs || null;
 
 		const verySlowResponse = warmPing >= ss_VERYSLOW_THRESHOLD_MS;
 		const slowResponse = warmPing >= ss_SLOW_THRESHOLD_MS;
@@ -212,10 +212,6 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 			:	ss_SVG_down;
 
 		const plainError = ss_translateServerError(r.error);
-		const resTime =
-			plainError == null ?
-				getDisplayTime(warmPing, {showMs: true, pad: false})
-			:	null;
 
 		const isServerDown = !r.up && r.lastSeenUp;
 		const lastUp =
@@ -234,16 +230,27 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 				text: plainError,
 				classes: eFlex,
 				dim: true,
-				gridCol: `span 2`,
+				gridCol: `span 3`,
 			});
 		} else {
 			eles.push({
-				text: resTime,
+				text: getDisplayTime(warmPing, {showMs: true, pad: false}),
+				classes: eFlex,
+				dim: true,
+			});
+			eles.push({
+				text: getDisplayTime(getPs, {showMs: true, pad: false}),
 				classes: eFlex,
 				dim: true,
 			});
 			eles.push({text: `&nbsp;`});
 		}
+		eles.push({
+			text: r?.pointedTo || `-`,
+			classes: sFlex,
+			styles: `padding-left:15px;`,
+			dim: true,
+		});
 		eles.push({
 			text: lastUp,
 			classes: sFlex,
@@ -351,6 +358,14 @@ function ss_buildGraphSection(sFlex, sCol) {
 			gridCol: sCol,
 			id: `ss_graphGapsNote`,
 		},
+		{
+			text: `<em>Note: The graph only shows the Ping call response times.</em>`,
+			classes: sFlex,
+			styles: `padding-left:20px;`,
+			dim: true,
+			small: true,
+			gridCol: sCol,
+		},
 	]);
 
 	txt += ss_addSingleServerStatusRow(
@@ -377,17 +392,19 @@ function ss_buildKeys(results) {
 	const downTxt =
 		nf((results.timeoutMs || ss_TIMEOUT_MS) / 1000) + ` seconds`;
 
-	const keys = [
-		`<b>Key:</b>`,
-		`${ss_buildSVGSpan(ss_SVG_up, style)} Healthy servers took less than ${slowTxt} to respond.`,
-		`${ss_buildSVGSpan(ss_SVG_slow, style)} Slow servers took between ${slowTxt} and ${verySlowTxt} to respond.`,
-		`${ss_buildSVGSpan(ss_SVG_verySlow, style)} Degraded servers took ${verySlowTxt} or longer to respond.`,
-		`${ss_buildSVGSpan(ss_SVG_down, style)} Down servers did not respond within ${downTxt}.`,
-	];
+	const healthy = `${ss_buildSVGSpan(ss_SVG_up, style)} Healthy servers took less than ${slowTxt} to respond.`;
+	const slow = `${ss_buildSVGSpan(ss_SVG_slow, style)} Slow servers took between ${slowTxt} and ${verySlowTxt} to respond.`;
+	const verySlow = `${ss_buildSVGSpan(ss_SVG_verySlow, style)} Degraded servers took ${verySlowTxt} or longer to respond.`;
+	const down = `${ss_buildSVGSpan(ss_SVG_down, style)} Down servers did not respond within ${downTxt}.`;
+	const gridCol = `1 / -1`;
 
-	let txt = ``;
-	for (const k of keys) txt += ss_addSingleServerStatusRow(k);
-	return txt;
+	return addHTMLElements([
+		{text: `Key:`, gridCol, header: true},
+		{text: healthy, gridCol},
+		{text: slow, gridCol},
+		{text: verySlow, gridCol},
+		{text: down, gridCol},
+	]);
 }
 
 function ss_decidePadding(padLeft, padRight) {
