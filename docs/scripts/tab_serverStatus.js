@@ -1,4 +1,4 @@
-const vss = 2.400; // prettier-ignore
+const vss = 2.401; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_LSKEY_showMoreDetails = `scServerStatusShowMoreDetails`;
@@ -198,12 +198,12 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 	]);
 
 	for (const r of results) {
-		const responseTimeMs = ss_getResponseTimeMs(
-			r.responseTimeMs,
-			r.responseTimePingMs,
-		);
-		const verySlowResponse = responseTimeMs >= ss_VERYSLOW_THRESHOLD_MS;
-		const slowResponse = responseTimeMs >= ss_SLOW_THRESHOLD_MS;
+		//const coldPing = r?.coldResponseTimeMs || null;
+		const warmPing = ss_getResponseTimeMs(r?.warmResponseTimeMs || r.responseTimeMs, r.responseTimePingMs);
+		//const getPs = r?.getPsResponseTimeMs || null;
+
+		const verySlowResponse = warmPing >= ss_VERYSLOW_THRESHOLD_MS;
+		const slowResponse = warmPing >= ss_SLOW_THRESHOLD_MS;
 		const alive =
 			r.up ?
 				verySlowResponse ? ss_SVG_verySlow
@@ -214,7 +214,7 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 		const plainError = ss_translateServerError(r.error);
 		const resTime =
 			plainError == null ?
-				getDisplayTime(responseTimeMs, {showMs: true, pad: false})
+				getDisplayTime(warmPing, {showMs: true, pad: false})
 			:	null;
 
 		const isServerDown = !r.up && r.lastSeenUp;
