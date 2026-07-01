@@ -1,0 +1,2450 @@
+[
+    {
+        "cca2": "CH",
+        "city": "Zurich",
+        "iata": "ZRH",
+        "lat": 47.464699,
+        "lon": 8.54917,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PS",
+        "city": "Ramallah",
+        "iata": "ZDM",
+        "lat": 32.2719,
+        "lon": 35.0194,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "HR",
+        "city": "Zagreb",
+        "iata": "ZAG",
+        "lat": 45.742901,
+        "lon": 16.0688,
+        "region": "Europe"
+    },
+    {
+        "cca2": "CA",
+        "city": "Toronto",
+        "iata": "YYZ",
+        "lat": 43.6772,
+        "lon": -79.6306,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Calgary",
+        "iata": "YYC",
+        "lat": 51.113899,
+        "lon": -114.019997,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Saskatoon",
+        "iata": "YXE",
+        "lat": 52.170799,
+        "lon": -106.699997,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Winnipeg",
+        "iata": "YWG",
+        "lat": 49.91,
+        "lon": -97.239899,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Vancouver",
+        "iata": "YVR",
+        "lat": 49.193901,
+        "lon": -123.183998,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Montreal",
+        "iata": "YUL",
+        "lat": 45.4706,
+        "lon": -73.740799,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Ottawa",
+        "iata": "YOW",
+        "lat": 45.322498,
+        "lon": -75.669197,
+        "region": "North America"
+    },
+    {
+        "cca2": "CA",
+        "city": "Halifax",
+        "iata": "YHZ",
+        "lat": 44.880798,
+        "lon": -63.508598,
+        "region": "North America"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Nasiriyah",
+        "iata": "XNH",
+        "lat": 30.935801,
+        "lon": 46.090099,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "BR",
+        "city": "Chapeco",
+        "iata": "XAP",
+        "lat": -27.134199,
+        "lon": -52.656601,
+        "region": "South America"
+    },
+    {
+        "cca2": "PL",
+        "city": "Wroclaw",
+        "iata": "WRO",
+        "lat": 51.102699,
+        "lon": 16.885799,
+        "region": "Europe"
+    },
+    {
+        "cca2": "NZ",
+        "city": "Wellington",
+        "iata": "WLG",
+        "lat": -41.327202,
+        "lon": 174.804993,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "NA",
+        "city": "Windhoek",
+        "iata": "WDH",
+        "lat": -22.4799,
+        "lon": 17.4709,
+        "region": "Africa"
+    },
+    {
+        "cca2": "PL",
+        "city": "Warsaw",
+        "iata": "WAW",
+        "lat": 52.165699,
+        "lon": 20.9671,
+        "region": "Europe"
+    },
+    {
+        "cca2": "LA",
+        "city": "Vientiane",
+        "iata": "VTE",
+        "lat": 17.9883,
+        "lon": 102.563004,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "LT",
+        "city": "Vilnius",
+        "iata": "VNO",
+        "lat": 54.634102,
+        "lon": 25.285801,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BR",
+        "city": "Vitoria",
+        "iata": "VIX",
+        "lat": -20.258057,
+        "lon": -40.286388,
+        "region": "South America"
+    },
+    {
+        "cca2": "AT",
+        "city": "Vienna",
+        "iata": "VIE",
+        "lat": 48.110298,
+        "lon": 16.5697,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BR",
+        "city": "Campinas",
+        "iata": "VCP",
+        "lat": -23.007401,
+        "lon": -47.134499,
+        "region": "South America"
+    },
+    {
+        "cca2": "TH",
+        "city": "Surat Thani",
+        "iata": "URT",
+        "lat": 9.1326,
+        "lon": 99.135597,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "MN",
+        "city": "Ulan Bator",
+        "iata": "ULN",
+        "lat": 47.843102,
+        "lon": 106.766998,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "EC",
+        "city": "Quito",
+        "iata": "UIO",
+        "lat": -0.129167,
+        "lon": -78.3575,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Uberlandia",
+        "iata": "UDI",
+        "lat": -18.883612,
+        "lon": -48.225277,
+        "region": "South America"
+    },
+    {
+        "cca2": "DE",
+        "city": "Berlin",
+        "iata": "TXL",
+        "lat": 52.5597,
+        "lon": 13.2877,
+        "region": "Europe"
+    },
+    {
+        "cca2": "TN",
+        "city": "Tunis",
+        "iata": "TUN",
+        "lat": 36.851002,
+        "lon": 10.2272,
+        "region": "Africa"
+    },
+    {
+        "cca2": "TW",
+        "city": "Taipei",
+        "iata": "TPE",
+        "lat": 25.0777,
+        "lon": 121.233002,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Tampa",
+        "iata": "TPA",
+        "lat": 27.9755,
+        "lon": -82.533203,
+        "region": "North America"
+    },
+    {
+        "cca2": "MG",
+        "city": "Antananarivo",
+        "iata": "TNR",
+        "lat": -18.7969,
+        "lon": 47.478802,
+        "region": "Africa"
+    },
+    {
+        "cca2": "IL",
+        "city": "Tel Aviv",
+        "iata": "TLV",
+        "lat": 32.011398,
+        "lon": 34.8867,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "EE",
+        "city": "Tallinn",
+        "iata": "TLL",
+        "lat": 59.4133,
+        "lon": 24.8328,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Tallahassee",
+        "iata": "TLH",
+        "lat": 30.3965,
+        "lon": -84.350304,
+        "region": "North America"
+    },
+    {
+        "cca2": "AL",
+        "city": "Tirana",
+        "iata": "TIA",
+        "lat": 41.4147,
+        "lon": 19.7206,
+        "region": "Europe"
+    },
+    {
+        "cca2": "HN",
+        "city": "Tegucigalpa",
+        "iata": "TGU",
+        "lat": 14.0609,
+        "lon": -87.217201,
+        "region": "South America"
+    },
+    {
+        "cca2": "GE",
+        "city": "Tbilisi",
+        "iata": "TBS",
+        "lat": 41.669201,
+        "lon": 44.9547,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AU",
+        "city": "Sydney",
+        "iata": "SYD",
+        "lat": -33.946098,
+        "lon": 151.177002,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "FJ",
+        "city": "Nausori",
+        "iata": "SUV",
+        "lat": -18.043301,
+        "lon": 178.559006,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "DE",
+        "city": "Stuttgart",
+        "iata": "STR",
+        "lat": 48.689899,
+        "lon": 9.22196,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "St Louis",
+        "iata": "STL",
+        "lat": 38.748699,
+        "lon": -90.370003,
+        "region": "North America"
+    },
+    {
+        "cca2": "DO",
+        "city": "Santiago",
+        "iata": "STI",
+        "lat": 19.406099,
+        "lon": -70.604698,
+        "region": "North America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Salvador",
+        "iata": "SSA",
+        "lat": -12.068355,
+        "lon": -45.711454,
+        "region": "South America"
+    },
+    {
+        "cca2": "BG",
+        "city": "Sofia",
+        "iata": "SOF",
+        "lat": 42.696693,
+        "lon": 23.411436,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BR",
+        "city": "Sorocaba",
+        "iata": "SOD",
+        "lat": -23.478001,
+        "lon": -47.490002,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Sacramento",
+        "iata": "SMF",
+        "lat": 38.6954,
+        "lon": -121.591003,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Salt Lake City",
+        "iata": "SLC",
+        "lat": 40.788399,
+        "lon": -111.977997,
+        "region": "North America"
+    },
+    {
+        "cca2": "MK",
+        "city": "Skopje",
+        "iata": "SKP",
+        "lat": 41.961601,
+        "lon": 21.621401,
+        "region": "Europe"
+    },
+    {
+        "cca2": "GR",
+        "city": "Thessaloniki",
+        "iata": "SKG",
+        "lat": 40.519699,
+        "lon": 22.9709,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PR",
+        "city": "San Juan",
+        "iata": "SJU",
+        "lat": 18.4394,
+        "lon": -66.001801,
+        "region": "North America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Sao Jose Do Rio Preto",
+        "iata": "SJP",
+        "lat": -20.816601,
+        "lon": -49.406502,
+        "region": "South America"
+    },
+    {
+        "cca2": "CR",
+        "city": "San Jose",
+        "iata": "SJO",
+        "lat": 9.99386,
+        "lon": -84.208801,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Sao Jose Dos Campos",
+        "iata": "SJK",
+        "lat": -23.2292,
+        "lon": -45.8615,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "San Jose",
+        "iata": "SJC",
+        "lat": 37.362598,
+        "lon": -121.929001,
+        "region": "North America"
+    },
+    {
+        "cca2": "SG",
+        "city": "Singapore",
+        "iata": "SIN",
+        "lat": 1.35019,
+        "lon": 103.994003,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "VN",
+        "city": "Ho Chi Minh City",
+        "iata": "SGN",
+        "lat": 10.8188,
+        "lon": 106.652,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "San Francisco",
+        "iata": "SFO",
+        "lat": 37.618999,
+        "lon": -122.375,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Seattle",
+        "iata": "SEA",
+        "lat": 47.449001,
+        "lon": -122.308998,
+        "region": "North America"
+    },
+    {
+        "cca2": "DO",
+        "city": "Santo Domingo",
+        "iata": "SDQ",
+        "lat": 18.429701,
+        "lon": -69.6689,
+        "region": "North America"
+    },
+    {
+        "cca2": "CL",
+        "city": "Santiago",
+        "iata": "SCL",
+        "lat": -33.393002,
+        "lon": -70.785797,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "San Antonio",
+        "iata": "SAT",
+        "lat": 29.533701,
+        "lon": -98.469803,
+        "region": "North America"
+    },
+    {
+        "cca2": "HN",
+        "city": "La Mesa",
+        "iata": "SAP",
+        "lat": 15.4526,
+        "lon": -87.923599,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "San Diego",
+        "iata": "SAN",
+        "lat": 32.733601,
+        "lon": -117.190002,
+        "region": "North America"
+    },
+    {
+        "cca2": "RE",
+        "city": "St Denis",
+        "iata": "RUN",
+        "lat": -20.8871,
+        "lon": 55.5103,
+        "region": "Africa"
+    },
+    {
+        "cca2": "SA",
+        "city": "Riyadh",
+        "iata": "RUH",
+        "lat": 24.9576,
+        "lon": 46.698799,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "LV",
+        "city": "Riga",
+        "iata": "RIX",
+        "lat": 56.923599,
+        "lon": 23.9711,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Richmond",
+        "iata": "RIC",
+        "lat": 37.505199,
+        "lon": -77.319702,
+        "region": "North America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Recife",
+        "iata": "REC",
+        "lat": -8.12649,
+        "lon": -34.923599,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Raleigh/Durham",
+        "iata": "RDU",
+        "lat": 35.877602,
+        "lon": -78.787498,
+        "region": "North America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Ribeirao Preto",
+        "iata": "RAO",
+        "lat": -21.136389,
+        "lon": -47.776669,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Americana",
+        "iata": "QWJ",
+        "lat": -22.738,
+        "lon": -47.334,
+        "region": "South America"
+    },
+    {
+        "cca2": "MX",
+        "city": "Queretaro",
+        "iata": "QRO",
+        "lat": 20.6173,
+        "lon": -100.185997,
+        "region": "North America"
+    },
+    {
+        "cca2": "PA",
+        "city": "Tocumen",
+        "iata": "PTY",
+        "lat": 9.07136,
+        "lon": -79.383499,
+        "region": "South America"
+    },
+    {
+        "cca2": "CZ",
+        "city": "Prague",
+        "iata": "PRG",
+        "lat": 50.1008,
+        "lon": 14.26,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PF",
+        "city": "Papeete",
+        "iata": "PPT",
+        "lat": -17.553699,
+        "lon": -149.606995,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "TT",
+        "city": "Port of Spain",
+        "iata": "POS",
+        "lat": 10.5954,
+        "lon": -61.3372,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Porto Alegre",
+        "iata": "POA",
+        "lat": -29.9944,
+        "lon": -51.171398,
+        "region": "South America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Pune",
+        "iata": "PNQ",
+        "lat": 18.5821,
+        "lon": 73.919701,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "KH",
+        "city": "Phnom Penh",
+        "iata": "PNH",
+        "lat": 11.5466,
+        "lon": 104.844002,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BR",
+        "city": "Palmas",
+        "iata": "PMW",
+        "lat": -10.2915,
+        "lon": -48.356998,
+        "region": "South America"
+    },
+    {
+        "cca2": "IT",
+        "city": "Palermo",
+        "iata": "PMO",
+        "lat": 38.175999,
+        "lon": 13.091,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Pittsburgh",
+        "iata": "PIT",
+        "lat": 40.491501,
+        "lon": -80.232903,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Phoenix",
+        "iata": "PHX",
+        "lat": 33.434299,
+        "lon": -112.012001,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Philadelphia",
+        "iata": "PHL",
+        "lat": 39.871899,
+        "lon": -75.241096,
+        "region": "North America"
+    },
+    {
+        "cca2": "AU",
+        "city": "Perth",
+        "iata": "PER",
+        "lat": -31.9403,
+        "lon": 115.967003,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "US",
+        "city": "Portland",
+        "iata": "PDX",
+        "lat": 45.588699,
+        "lon": -122.598,
+        "region": "North America"
+    },
+    {
+        "cca2": "SR",
+        "city": "Zandery",
+        "iata": "PBM",
+        "lat": 5.45283,
+        "lon": -55.187801,
+        "region": "South America"
+    },
+    {
+        "cca2": "BT",
+        "city": "Paro",
+        "iata": "PBH",
+        "lat": 27.4032,
+        "lon": 89.424599,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IN",
+        "city": "Patna",
+        "iata": "PAT",
+        "lat": 25.591299,
+        "lon": 85.087997,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BF",
+        "city": "Ouagadougou",
+        "iata": "OUA",
+        "lat": 12.3532,
+        "lon": -1.51242,
+        "region": "Africa"
+    },
+    {
+        "cca2": "RO",
+        "city": "Bucharest",
+        "iata": "OTP",
+        "lat": 44.572201,
+        "lon": 26.1022,
+        "region": "Europe"
+    },
+    {
+        "cca2": "NO",
+        "city": "Oslo",
+        "iata": "OSL",
+        "lat": 60.193901,
+        "lon": 11.1004,
+        "region": "Europe"
+    },
+    {
+        "cca2": "DZ",
+        "city": "Oran",
+        "iata": "ORN",
+        "lat": 35.623901,
+        "lon": -0.621183,
+        "region": "Africa"
+    },
+    {
+        "cca2": "US",
+        "city": "Norfolk",
+        "iata": "ORF",
+        "lat": 36.8946,
+        "lon": -76.201202,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Chicago",
+        "iata": "ORD",
+        "lat": 41.9786,
+        "lon": -87.9048,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Omaha",
+        "iata": "OMA",
+        "lat": 41.3032,
+        "lon": -95.894096,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Oklahoma City",
+        "iata": "OKC",
+        "lat": 35.393101,
+        "lon": -97.6007,
+        "region": "North America"
+    },
+    {
+        "cca2": "JP",
+        "city": "Naha",
+        "iata": "OKA",
+        "lat": 26.195801,
+        "lon": 127.646004,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BR",
+        "city": "Navegantes",
+        "iata": "NVT",
+        "lat": -26.879999,
+        "lon": -48.651402,
+        "region": "South America"
+    },
+    {
+        "cca2": "JP",
+        "city": "Tokyo",
+        "iata": "NRT",
+        "lat": 35.764702,
+        "lon": 140.386002,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "KZ",
+        "city": "Astana",
+        "iata": "NQZ",
+        "lat": 51.022202,
+        "lon": 71.466904,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AR",
+        "city": "Neuquen",
+        "iata": "NQN",
+        "lat": -38.949001,
+        "lon": -68.155701,
+        "region": "South America"
+    },
+    {
+        "cca2": "NC",
+        "city": "Noumea",
+        "iata": "NOU",
+        "lat": -22.014601,
+        "lon": 166.212997,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Najaf",
+        "iata": "NJF",
+        "lat": 31.989722,
+        "lon": 44.404167,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "KE",
+        "city": "Nairobi",
+        "iata": "NBO",
+        "lat": -1.31924,
+        "lon": 36.927799,
+        "region": "Africa"
+    },
+    {
+        "cca2": "IN",
+        "city": "Naqpur",
+        "iata": "NAG",
+        "lat": 21.092199,
+        "lon": 79.047203,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IT",
+        "city": "Milan",
+        "iata": "MXP",
+        "lat": 45.6306,
+        "lon": 8.72811,
+        "region": "Europe"
+    },
+    {
+        "cca2": "DE",
+        "city": "Munich",
+        "iata": "MUC",
+        "lat": 48.353802,
+        "lon": 11.7861,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BY",
+        "city": "Minsk",
+        "iata": "MSQ",
+        "lat": 53.8825,
+        "lon": 28.030701,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Minneapolis",
+        "iata": "MSP",
+        "lat": 44.882,
+        "lon": -93.221802,
+        "region": "North America"
+    },
+    {
+        "cca2": "MU",
+        "city": "Port Louis",
+        "iata": "MRU",
+        "lat": -20.430201,
+        "lon": 57.683601,
+        "region": "Africa"
+    },
+    {
+        "cca2": "FR",
+        "city": "Marseille",
+        "iata": "MRS",
+        "lat": 43.439272,
+        "lon": 5.221424,
+        "region": "Europe"
+    },
+    {
+        "cca2": "MZ",
+        "city": "Maputo",
+        "iata": "MPM",
+        "lat": -25.920799,
+        "lon": 32.572601,
+        "region": "Africa"
+    },
+    {
+        "cca2": "PH",
+        "city": "Manila",
+        "iata": "MNL",
+        "lat": 14.5086,
+        "lon": 121.019997,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "ID",
+        "city": "Malang-Java Island",
+        "iata": "MLG",
+        "lat": -7.92656,
+        "lon": 112.714996,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "MV",
+        "city": "Male",
+        "iata": "MLE",
+        "lat": 4.19183,
+        "lon": 73.529099,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "MT",
+        "city": "Luqa",
+        "iata": "MLA",
+        "lat": 35.857498,
+        "lon": 14.4775,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Miami",
+        "iata": "MIA",
+        "lat": 25.7932,
+        "lon": -80.290604,
+        "region": "North America"
+    },
+    {
+        "cca2": "MO",
+        "city": "Taipa",
+        "iata": "MFM",
+        "lat": 22.149599,
+        "lon": 113.592003,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "MX",
+        "city": "Mexico City",
+        "iata": "MEX",
+        "lat": 19.4363,
+        "lon": -99.072098,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Memphis",
+        "iata": "MEM",
+        "lat": 35.0424,
+        "lon": -89.9767,
+        "region": "North America"
+    },
+    {
+        "cca2": "AU",
+        "city": "Melbourne",
+        "iata": "MEL",
+        "lat": -37.673302,
+        "lon": 144.843002,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "CO",
+        "city": "Rionegro",
+        "iata": "MDE",
+        "lat": 6.16454,
+        "lon": -75.4231,
+        "region": "South America"
+    },
+    {
+        "cca2": "OM",
+        "city": "Muscat",
+        "iata": "MCT",
+        "lat": 23.5933,
+        "lon": 58.284401,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "US",
+        "city": "Kansas City",
+        "iata": "MCI",
+        "lat": 39.2976,
+        "lon": -94.713898,
+        "region": "North America"
+    },
+    {
+        "cca2": "KE",
+        "city": "Mombasa",
+        "iata": "MBA",
+        "lat": -4.03483,
+        "lon": 39.5942,
+        "region": "Africa"
+    },
+    {
+        "cca2": "BR",
+        "city": "Manaus",
+        "iata": "MAO",
+        "lat": -3.03861,
+        "lon": -60.049702,
+        "region": "South America"
+    },
+    {
+        "cca2": "GB",
+        "city": "Manchester",
+        "iata": "MAN",
+        "lat": 53.353699,
+        "lon": -2.27495,
+        "region": "Europe"
+    },
+    {
+        "cca2": "ES",
+        "city": "Madrid",
+        "iata": "MAD",
+        "lat": 40.4936,
+        "lon": -3.56676,
+        "region": "Europe"
+    },
+    {
+        "cca2": "IN",
+        "city": "Chennai",
+        "iata": "MAA",
+        "lat": 12.990005,
+        "lon": 80.169296,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "FR",
+        "city": "Lyon",
+        "iata": "LYS",
+        "lat": 45.726398,
+        "lon": 5.09083,
+        "region": "Europe"
+    },
+    {
+        "cca2": "LU",
+        "city": "Luxembourg",
+        "iata": "LUX",
+        "lat": 49.626598,
+        "lon": 6.21152,
+        "region": "Europe"
+    },
+    {
+        "cca2": "ZM",
+        "city": "Lusaka",
+        "iata": "LUN",
+        "lat": -15.3308,
+        "lon": 28.4526,
+        "region": "Africa"
+    },
+    {
+        "cca2": "BO",
+        "city": "La Paz / El Alto",
+        "iata": "LPB",
+        "lat": -16.5133,
+        "lon": -68.192299,
+        "region": "South America"
+    },
+    {
+        "cca2": "NG",
+        "city": "Lagos",
+        "iata": "LOS",
+        "lat": 6.57737,
+        "lon": 3.32116,
+        "region": "Africa"
+    },
+    {
+        "cca2": "MW",
+        "city": "Lilongwe",
+        "iata": "LLW",
+        "lat": -13.7894,
+        "lon": 33.780998,
+        "region": "Africa"
+    },
+    {
+        "cca2": "AZ",
+        "city": "Lankaran",
+        "iata": "LLK",
+        "lat": 38.746399,
+        "lon": 48.818001,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "SI",
+        "city": "Ljubljana",
+        "iata": "LJU",
+        "lat": 46.223701,
+        "lon": 14.4576,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PT",
+        "city": "Lisbon",
+        "iata": "LIS",
+        "lat": 38.7813,
+        "lon": -9.13592,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PE",
+        "city": "Lima",
+        "iata": "LIM",
+        "lat": -12.0219,
+        "lon": -77.114304,
+        "region": "South America"
+    },
+    {
+        "cca2": "GB",
+        "city": "London",
+        "iata": "LHR",
+        "lat": 51.4706,
+        "lon": -0.461941,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PK",
+        "city": "Lahore",
+        "iata": "LHE",
+        "lat": 31.521601,
+        "lon": 74.403603,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "RU",
+        "city": "St. Petersburg",
+        "iata": "LED",
+        "lat": 59.800301,
+        "lon": 30.262501,
+        "region": "Europe"
+    },
+    {
+        "cca2": "CY",
+        "city": "Larnarca",
+        "iata": "LCA",
+        "lat": 34.875099,
+        "lon": 33.624901,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Los Angeles",
+        "iata": "LAX",
+        "lat": 33.942501,
+        "lon": -118.407997,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Las Vegas",
+        "iata": "LAS",
+        "lat": 36.080101,
+        "lon": -115.152,
+        "region": "North America"
+    },
+    {
+        "cca2": "AO",
+        "city": "Luanda",
+        "iata": "LAD",
+        "lat": -8.85837,
+        "lon": 13.2312,
+        "region": "Africa"
+    },
+    {
+        "cca2": "KW",
+        "city": "Kuwait City",
+        "iata": "KWI",
+        "lat": 29.226601,
+        "lon": 47.968899,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "MY",
+        "city": "Kuala Lumpur",
+        "iata": "KUL",
+        "lat": 2.74558,
+        "lon": 101.709999,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "NP",
+        "city": "Kathmandu",
+        "iata": "KTM",
+        "lat": 27.6966,
+        "lon": 85.3591,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IN",
+        "city": "Kanpur",
+        "iata": "KNU",
+        "lat": 26.399462,
+        "lon": 80.42695,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "RU",
+        "city": "Krasnoyarsk",
+        "iata": "KJA",
+        "lat": 56.172901,
+        "lon": 92.493301,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "JP",
+        "city": "Osaka",
+        "iata": "KIX",
+        "lat": 34.427299,
+        "lon": 135.244003,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "JM",
+        "city": "Kingston",
+        "iata": "KIN",
+        "lat": 17.935699,
+        "lon": -76.787498,
+        "region": "North America"
+    },
+    {
+        "cca2": "PK",
+        "city": "Karachi",
+        "iata": "KHI",
+        "lat": 24.9065,
+        "lon": 67.160797,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "TW",
+        "city": "Kaohsiung City",
+        "iata": "KHH",
+        "lat": 22.577101,
+        "lon": 120.349998,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "RW",
+        "city": "Kigali",
+        "iata": "KGL",
+        "lat": -1.96863,
+        "lon": 30.1395,
+        "region": "Africa"
+    },
+    {
+        "cca2": "IS",
+        "city": "Reykjavik",
+        "iata": "KEF",
+        "lat": 63.985001,
+        "lon": -22.6056,
+        "region": "Europe"
+    },
+    {
+        "cca2": "MY",
+        "city": "Kuching",
+        "iata": "KCH",
+        "lat": 1.4847,
+        "lon": 110.347,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "UA",
+        "city": "Kiev",
+        "iata": "KBP",
+        "lat": 50.345001,
+        "lon": 30.894699,
+        "region": "Europe"
+    },
+    {
+        "cca2": "IN",
+        "city": "Jharsuguda",
+        "iata": "JRG",
+        "lat": 21.9135,
+        "lon": 84.0504,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BR",
+        "city": "Joinville",
+        "iata": "JOI",
+        "lat": -26.224501,
+        "lon": -48.797401,
+        "region": "South America"
+    },
+    {
+        "cca2": "ID",
+        "city": "Yogyakarta-Java Island",
+        "iata": "JOG",
+        "lat": -7.78818,
+        "lon": 110.431999,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "ZA",
+        "city": "Johannesburg",
+        "iata": "JNB",
+        "lat": -26.133333,
+        "lon": 28.25,
+        "region": "Africa"
+    },
+    {
+        "cca2": "DJ",
+        "city": "Djibouti City",
+        "iata": "JIB",
+        "lat": 11.5473,
+        "lon": 43.1595,
+        "region": "Africa"
+    },
+    {
+        "cca2": "MY",
+        "city": "Senai",
+        "iata": "JHB",
+        "lat": 1.64131,
+        "lon": 103.669998,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "SA",
+        "city": "Jeddah",
+        "iata": "JED",
+        "lat": 21.6796,
+        "lon": 39.156502,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "BR",
+        "city": "Juazeiro Do Norte",
+        "iata": "JDO",
+        "lat": -7.21896,
+        "lon": -39.2701,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Jacksonville",
+        "iata": "JAX",
+        "lat": 30.494101,
+        "lon": -81.687897,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Chandigarh",
+        "iata": "IXC",
+        "lat": 30.6735,
+        "lon": 76.788498,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Sulaymaniyah",
+        "iata": "ISU",
+        "lat": 35.561749,
+        "lon": 45.316738,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "TR",
+        "city": "Arnavutkoy",
+        "iata": "IST",
+        "lat": 41.262222,
+        "lon": 28.727778,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PK",
+        "city": "Islamabad",
+        "iata": "ISB",
+        "lat": 33.616699,
+        "lon": 73.099197,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Indianapolis",
+        "iata": "IND",
+        "lat": 39.7173,
+        "lon": -86.294403,
+        "region": "North America"
+    },
+    {
+        "cca2": "KR",
+        "city": "Seoul",
+        "iata": "ICN",
+        "lat": 37.469101,
+        "lon": 126.450996,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Houston",
+        "iata": "IAH",
+        "lat": 29.9844,
+        "lon": -95.3414,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Dulles",
+        "iata": "IAD",
+        "lat": 38.9445,
+        "lon": -77.455803,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Hyderabad",
+        "iata": "HYD",
+        "lat": 17.231318,
+        "lon": 78.429855,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "ZW",
+        "city": "Harare",
+        "iata": "HRE",
+        "lat": -17.931801,
+        "lon": 31.0928,
+        "region": "Africa"
+    },
+    {
+        "cca2": "US",
+        "city": "Honolulu",
+        "iata": "HNL",
+        "lat": 21.318701,
+        "lon": -157.921997,
+        "region": "North America"
+    },
+    {
+        "cca2": "HK",
+        "city": "Hong Kong",
+        "iata": "HKG",
+        "lat": 22.308901,
+        "lon": 113.915001,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IL",
+        "city": "Haifa",
+        "iata": "HFA",
+        "lat": 32.809399,
+        "lon": 35.043098,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "FI",
+        "city": "Helsinki",
+        "iata": "HEL",
+        "lat": 60.3172,
+        "lon": 24.963301,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AU",
+        "city": "Hobart",
+        "iata": "HBA",
+        "lat": -42.836102,
+        "lon": 147.509995,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "VN",
+        "city": "Hanoi",
+        "iata": "HAN",
+        "lat": 21.221201,
+        "lon": 105.806999,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "DE",
+        "city": "Hamburg",
+        "iata": "HAM",
+        "lat": 53.630402,
+        "lon": 9.98823,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BR",
+        "city": "Goiania",
+        "iata": "GYN",
+        "lat": -16.632,
+        "lon": -49.220699,
+        "region": "South America"
+    },
+    {
+        "cca2": "EC",
+        "city": "Guayaquil",
+        "iata": "GYE",
+        "lat": -2.15742,
+        "lon": -79.883598,
+        "region": "South America"
+    },
+    {
+        "cca2": "AZ",
+        "city": "Baku",
+        "iata": "GYD",
+        "lat": 40.467499,
+        "lon": 50.0467,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "CH",
+        "city": "Geneva",
+        "iata": "GVA",
+        "lat": 46.238098,
+        "lon": 6.10895,
+        "region": "Europe"
+    },
+    {
+        "cca2": "GU",
+        "city": "Hagatna",
+        "iata": "GUM",
+        "lat": 13.4834,
+        "lon": 144.796005,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "GT",
+        "city": "Guatemala City",
+        "iata": "GUA",
+        "lat": 14.5833,
+        "lon": -90.527496,
+        "region": "North America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Sao Paulo",
+        "iata": "GRU",
+        "lat": -23.435556,
+        "lon": -46.473057,
+        "region": "South America"
+    },
+    {
+        "cca2": "SE",
+        "city": "Gothenburg",
+        "iata": "GOT",
+        "lat": 57.6628,
+        "lon": 12.2798,
+        "region": "Europe"
+    },
+    {
+        "cca2": "GD",
+        "city": "Saint George's",
+        "iata": "GND",
+        "lat": 12.0042,
+        "lon": -61.786201,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Rio De Janeiro",
+        "iata": "GIG",
+        "lat": -22.809999,
+        "lon": -43.250557,
+        "region": "South America"
+    },
+    {
+        "cca2": "GY",
+        "city": "Georgetown",
+        "iata": "GEO",
+        "lat": 6.49855,
+        "lon": -58.254101,
+        "region": "South America"
+    },
+    {
+        "cca2": "MX",
+        "city": "Guadalajara",
+        "iata": "GDL",
+        "lat": 20.521799,
+        "lon": -103.310997,
+        "region": "North America"
+    },
+    {
+        "cca2": "BW",
+        "city": "Gaborone",
+        "iata": "GBE",
+        "lat": -24.555201,
+        "lon": 25.9182,
+        "region": "Africa"
+    },
+    {
+        "cca2": "JP",
+        "city": "Fukuoka",
+        "iata": "FUK",
+        "lat": 33.585899,
+        "lon": 130.451004,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Sioux Falls",
+        "iata": "FSD",
+        "lat": 43.582001,
+        "lon": -96.741898,
+        "region": "North America"
+    },
+    {
+        "cca2": "KG",
+        "city": "Bishkek",
+        "iata": "FRU",
+        "lat": 43.061272,
+        "lon": 74.477508,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "DE",
+        "city": "Frankfurt-am-Main",
+        "iata": "FRA",
+        "lat": 50.026402,
+        "lon": 8.54313,
+        "region": "Europe"
+    },
+    {
+        "cca2": "BR",
+        "city": "Fortaleza",
+        "iata": "FOR",
+        "lat": -3.77628,
+        "lon": -38.5326,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Florianopolis",
+        "iata": "FLN",
+        "lat": -27.670279,
+        "lon": -48.552502,
+        "region": "South America"
+    },
+    {
+        "cca2": "CD",
+        "city": "Kinshasa",
+        "iata": "FIH",
+        "lat": -4.38575,
+        "lon": 15.4446,
+        "region": "Africa"
+    },
+    {
+        "cca2": "IT",
+        "city": "Rome",
+        "iata": "FCO",
+        "lat": 41.804501,
+        "lon": 12.2508,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AR",
+        "city": "Ezeiza",
+        "iata": "EZE",
+        "lat": -34.8222,
+        "lon": -58.5358,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Newark",
+        "iata": "EWR",
+        "lat": 40.692501,
+        "lon": -74.168701,
+        "region": "North America"
+    },
+    {
+        "cca2": "AM",
+        "city": "Yerevan",
+        "iata": "EVN",
+        "lat": 40.147301,
+        "lon": 44.395901,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Arbil",
+        "iata": "EBL",
+        "lat": 36.237598,
+        "lon": 43.9632,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "UG",
+        "city": "Kampala",
+        "iata": "EBB",
+        "lat": 0.042386,
+        "lon": 32.443501,
+        "region": "Africa"
+    },
+    {
+        "cca2": "AE",
+        "city": "Dubai",
+        "iata": "DXB",
+        "lat": 25.2528,
+        "lon": 55.364399,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "DE",
+        "city": "Dusseldorf",
+        "iata": "DUS",
+        "lat": 51.289501,
+        "lon": 6.76678,
+        "region": "Europe"
+    },
+    {
+        "cca2": "ZA",
+        "city": "Durban",
+        "iata": "DUR",
+        "lat": -29.614444,
+        "lon": 31.119722,
+        "region": "Africa"
+    },
+    {
+        "cca2": "IE",
+        "city": "Dublin",
+        "iata": "DUB",
+        "lat": 53.421299,
+        "lon": -6.27007,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Detroit",
+        "iata": "DTW",
+        "lat": 42.212399,
+        "lon": -83.353401,
+        "region": "North America"
+    },
+    {
+        "cca2": "ID",
+        "city": "Denpasar-Bali Island",
+        "iata": "DPS",
+        "lat": -8.74817,
+        "lon": 115.167,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "QA",
+        "city": "Doha",
+        "iata": "DOH",
+        "lat": 25.260595,
+        "lon": 51.613767,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "SA",
+        "city": "Ad Dammam",
+        "iata": "DMM",
+        "lat": 26.471201,
+        "lon": 49.797901,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "RU",
+        "city": "Moscow",
+        "iata": "DME",
+        "lat": 55.408798,
+        "lon": 37.9063,
+        "region": "Europe"
+    },
+    {
+        "cca2": "SN",
+        "city": "Dakar",
+        "iata": "DKR",
+        "lat": 14.7397,
+        "lon": -17.4902,
+        "region": "Africa"
+    },
+    {
+        "cca2": "US",
+        "city": "Dallas-Fort Worth",
+        "iata": "DFW",
+        "lat": 32.896801,
+        "lon": -97.038002,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Denver",
+        "iata": "DEN",
+        "lat": 39.861698,
+        "lon": -104.672997,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "New Delhi",
+        "iata": "DEL",
+        "lat": 28.5665,
+        "lon": 77.103104,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "TZ",
+        "city": "Dar es Salaam",
+        "iata": "DAR",
+        "lat": -6.87811,
+        "lon": 39.202599,
+        "region": "Africa"
+    },
+    {
+        "cca2": "VN",
+        "city": "Da Nang",
+        "iata": "DAD",
+        "lat": 16.0439,
+        "lon": 108.198997,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BD",
+        "city": "Dhaka",
+        "iata": "DAC",
+        "lat": 23.843347,
+        "lon": 90.397783,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "DZ",
+        "city": "Constantine",
+        "iata": "CZL",
+        "lat": 36.276001,
+        "lon": 6.62039,
+        "region": "Africa"
+    },
+    {
+        "cca2": "BR",
+        "city": "Curitiba",
+        "iata": "CWB",
+        "lat": -25.5285,
+        "lon": -49.1758,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Hebron",
+        "iata": "CVG",
+        "lat": 39.048801,
+        "lon": -84.667801,
+        "region": "North America"
+    },
+    {
+        "cca2": "PH",
+        "city": "Angeles City",
+        "iata": "CRK",
+        "lat": 15.186,
+        "lon": 120.559998,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "ZA",
+        "city": "Cape Town",
+        "iata": "CPT",
+        "lat": -33.964802,
+        "lon": 18.6017,
+        "region": "Africa"
+    },
+    {
+        "cca2": "DK",
+        "city": "Copenhagen",
+        "iata": "CPH",
+        "lat": 55.617901,
+        "lon": 12.656,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AR",
+        "city": "Cordoba",
+        "iata": "COR",
+        "lat": -31.323601,
+        "lon": -64.208,
+        "region": "South America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Cochin",
+        "iata": "COK",
+        "lat": 10.152,
+        "lon": 76.401901,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "TH",
+        "city": "Chiang Mai",
+        "iata": "CNX",
+        "lat": 18.7668,
+        "lon": 98.962601,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IN",
+        "city": "Mattanur",
+        "iata": "CNN",
+        "lat": 11.92,
+        "lon": 75.55,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BR",
+        "city": "Belo Horizonte",
+        "iata": "CNF",
+        "lat": -19.624443,
+        "lon": -43.971943,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Columbus",
+        "iata": "CMH",
+        "lat": 39.998001,
+        "lon": -82.891899,
+        "region": "North America"
+    },
+    {
+        "cca2": "LK",
+        "city": "Colombo",
+        "iata": "CMB",
+        "lat": 7.18076,
+        "lon": 79.884102,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Charlotte",
+        "iata": "CLT",
+        "lat": 35.214001,
+        "lon": -80.9431,
+        "region": "North America"
+    },
+    {
+        "cca2": "CO",
+        "city": "Cali",
+        "iata": "CLO",
+        "lat": 3.54322,
+        "lon": -76.3816,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Cleveland",
+        "iata": "CLE",
+        "lat": 41.411701,
+        "lon": -81.8498,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Coimbatore",
+        "iata": "CJB",
+        "lat": 11.03,
+        "lon": 77.043404,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "NZ",
+        "city": "Christchurch",
+        "iata": "CHC",
+        "lat": -43.489399,
+        "lon": 172.531998,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "PH",
+        "city": "Cagayan De Oro City",
+        "iata": "CGY",
+        "lat": 8.41562,
+        "lon": 124.611,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BD",
+        "city": "Chittagong",
+        "iata": "CGP",
+        "lat": 22.249599,
+        "lon": 91.813301,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "ID",
+        "city": "Jakarta",
+        "iata": "CGK",
+        "lat": -6.12557,
+        "lon": 106.655998,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "BR",
+        "city": "Cuiaba",
+        "iata": "CGB",
+        "lat": -15.6529,
+        "lon": -56.116699,
+        "region": "South America"
+    },
+    {
+        "cca2": "BR",
+        "city": "Caçador",
+        "iata": "CFC",
+        "lat": -26.7762,
+        "lon": -51.0125,
+        "region": "South America"
+    },
+    {
+        "cca2": "PH",
+        "city": "Lapu-Lapu City",
+        "iata": "CEB",
+        "lat": 10.3075,
+        "lon": 123.978996,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "FR",
+        "city": "Paris",
+        "iata": "CDG",
+        "lat": 49.012798,
+        "lon": 2.55,
+        "region": "Europe"
+    },
+    {
+        "cca2": "IN",
+        "city": "Kolkata",
+        "iata": "CCU",
+        "lat": 22.654699,
+        "lon": 88.446701,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "AU",
+        "city": "Canberra",
+        "iata": "CBR",
+        "lat": -35.3069,
+        "lon": 149.195007,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "BR",
+        "city": "Campos Dos Goytacazes",
+        "iata": "CAW",
+        "lat": -21.698299,
+        "lon": -41.301701,
+        "region": "South America"
+    },
+    {
+        "cca2": "EG",
+        "city": "Cairo",
+        "iata": "CAI",
+        "lat": 30.121901,
+        "lon": 31.4056,
+        "region": "Africa"
+    },
+    {
+        "cca2": "BN",
+        "city": "Bandar Seri Begawan",
+        "iata": "BWN",
+        "lat": 4.9442,
+        "lon": 114.928001,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "US",
+        "city": "Buffalo",
+        "iata": "BUF",
+        "lat": 42.940498,
+        "lon": -78.732201,
+        "region": "North America"
+    },
+    {
+        "cca2": "HU",
+        "city": "Budapest",
+        "iata": "BUD",
+        "lat": 47.436901,
+        "lon": 19.2556,
+        "region": "Europe"
+    },
+    {
+        "cca2": "SK",
+        "city": "Bratislava",
+        "iata": "BTS",
+        "lat": 48.1702,
+        "lon": 17.2127,
+        "region": "Europe"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Basrah",
+        "iata": "BSR",
+        "lat": 30.549101,
+        "lon": 47.662102,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "BR",
+        "city": "Brasilia",
+        "iata": "BSB",
+        "lat": -15.869167,
+        "lon": -47.920834,
+        "region": "South America"
+    },
+    {
+        "cca2": "BE",
+        "city": "Brussels",
+        "iata": "BRU",
+        "lat": 50.901402,
+        "lon": 4.48444,
+        "region": "Europe"
+    },
+    {
+        "cca2": "US",
+        "city": "Boston",
+        "iata": "BOS",
+        "lat": 42.3643,
+        "lon": -71.005203,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Mumbai",
+        "iata": "BOM",
+        "lat": 19.088699,
+        "lon": 72.867897,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "CO",
+        "city": "Bogota",
+        "iata": "BOG",
+        "lat": 4.70159,
+        "lon": -74.1469,
+        "region": "South America"
+    },
+    {
+        "cca2": "FR",
+        "city": "Bordeaux/Merignac",
+        "iata": "BOD",
+        "lat": 44.8283,
+        "lon": -0.715556,
+        "region": "Europe"
+    },
+    {
+        "cca2": "AU",
+        "city": "Brisbane",
+        "iata": "BNE",
+        "lat": -27.384199,
+        "lon": 153.117004,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "US",
+        "city": "Nashville",
+        "iata": "BNA",
+        "lat": 36.1245,
+        "lon": -86.6782,
+        "region": "North America"
+    },
+    {
+        "cca2": "IN",
+        "city": "Bangalore",
+        "iata": "BLR",
+        "lat": 13.1979,
+        "lon": 77.706299,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "TH",
+        "city": "Bangkok",
+        "iata": "BKK",
+        "lat": 13.6811,
+        "lon": 100.747002,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "IQ",
+        "city": "Baghdad",
+        "iata": "BGW",
+        "lat": 33.262501,
+        "lon": 44.2346,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "US",
+        "city": "Bangor",
+        "iata": "BGR",
+        "lat": 44.8074,
+        "lon": -68.828102,
+        "region": "North America"
+    },
+    {
+        "cca2": "BB",
+        "city": "Bridgetown",
+        "iata": "BGI",
+        "lat": 13.0746,
+        "lon": -59.4925,
+        "region": "North America"
+    },
+    {
+        "cca2": "LB",
+        "city": "Beirut",
+        "iata": "BEY",
+        "lat": 33.8209,
+        "lon": 35.4884,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "BR",
+        "city": "Belem",
+        "iata": "BEL",
+        "lat": -1.37925,
+        "lon": -48.476299,
+        "region": "South America"
+    },
+    {
+        "cca2": "RS",
+        "city": "Belgrad",
+        "iata": "BEG",
+        "lat": 44.818401,
+        "lon": 20.309099,
+        "region": "Europe"
+    },
+    {
+        "cca2": "ES",
+        "city": "Barcelona",
+        "iata": "BCN",
+        "lat": 41.2971,
+        "lon": 2.07846,
+        "region": "Europe"
+    },
+    {
+        "cca2": "IN",
+        "city": "Bhubaneswar",
+        "iata": "BBI",
+        "lat": 20.2444,
+        "lon": 85.817802,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "CO",
+        "city": "Barranquilla",
+        "iata": "BAQ",
+        "lat": 10.8896,
+        "lon": -74.7808,
+        "region": "South America"
+    },
+    {
+        "cca2": "BH",
+        "city": "Manama",
+        "iata": "BAH",
+        "lat": 26.2708,
+        "lon": 50.633598,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "US",
+        "city": "Austin",
+        "iata": "AUS",
+        "lat": 30.1945,
+        "lon": -97.669899,
+        "region": "North America"
+    },
+    {
+        "cca2": "US",
+        "city": "Atlanta",
+        "iata": "ATL",
+        "lat": 33.6367,
+        "lon": -84.428101,
+        "region": "North America"
+    },
+    {
+        "cca2": "GR",
+        "city": "Athens",
+        "iata": "ATH",
+        "lat": 37.936401,
+        "lon": 23.9445,
+        "region": "Europe"
+    },
+    {
+        "cca2": "PY",
+        "city": "Asuncion",
+        "iata": "ASU",
+        "lat": -25.24,
+        "lon": -57.52,
+        "region": "South America"
+    },
+    {
+        "cca2": "CI",
+        "city": "Yamoussoukro",
+        "iata": "ASK",
+        "lat": 6.90317,
+        "lon": -5.36558,
+        "region": "Africa"
+    },
+    {
+        "cca2": "BR",
+        "city": "Aracatuba",
+        "iata": "ARU",
+        "lat": -21.1413,
+        "lon": -50.424702,
+        "region": "South America"
+    },
+    {
+        "cca2": "SE",
+        "city": "Stockholm",
+        "iata": "ARN",
+        "lat": 59.651901,
+        "lon": 17.9186,
+        "region": "Europe"
+    },
+    {
+        "cca2": "CL",
+        "city": "Arica",
+        "iata": "ARI",
+        "lat": -18.348499,
+        "lon": -70.338699,
+        "region": "South America"
+    },
+    {
+        "cca2": "US",
+        "city": "Anchorage",
+        "iata": "ANC",
+        "lat": 61.1744,
+        "lon": -149.996002,
+        "region": "North America"
+    },
+    {
+        "cca2": "NL",
+        "city": "Amsterdam",
+        "iata": "AMS",
+        "lat": 52.308601,
+        "lon": 4.76389,
+        "region": "Europe"
+    },
+    {
+        "cca2": "JO",
+        "city": "Amman",
+        "iata": "AMM",
+        "lat": 31.722601,
+        "lon": 35.993198,
+        "region": "Middle East"
+    },
+    {
+        "cca2": "IN",
+        "city": "Ahmedabad",
+        "iata": "AMD",
+        "lat": 23.0772,
+        "lon": 72.634697,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "DZ",
+        "city": "Algiers",
+        "iata": "ALG",
+        "lat": 36.691002,
+        "lon": 3.21541,
+        "region": "Africa"
+    },
+    {
+        "cca2": "KZ",
+        "city": "Almaty",
+        "iata": "ALA",
+        "lat": 43.3521,
+        "lon": 77.040497,
+        "region": "Europe"
+    },
+    {
+        "cca2": "KZ",
+        "city": "Aktyubinsk",
+        "iata": "AKX",
+        "lat": 50.2458,
+        "lon": 57.206699,
+        "region": "Europe"
+    },
+    {
+        "cca2": "NZ",
+        "city": "Auckland",
+        "iata": "AKL",
+        "lat": -37.008099,
+        "lon": 174.792007,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "IN",
+        "city": "",
+        "iata": "AGR",
+        "lat": 27.1558,
+        "lon": 77.960899,
+        "region": "Asia Pacific"
+    },
+    {
+        "cca2": "AU",
+        "city": "Adelaide",
+        "iata": "ADL",
+        "lat": -34.945,
+        "lon": 138.531006,
+        "region": "Oceania"
+    },
+    {
+        "cca2": "ET",
+        "city": "Addis Ababa",
+        "iata": "ADD",
+        "lat": 8.97789,
+        "lon": 38.799301,
+        "region": "Africa"
+    },
+    {
+        "cca2": "TR",
+        "city": "Izmir",
+        "iata": "ADB",
+        "lat": 38.2924,
+        "lon": 27.157,
+        "region": "Europe"
+    },
+    {
+        "cca2": "GH",
+        "city": "Accra",
+        "iata": "ACC",
+        "lat": 5.60519,
+        "lon": -0.166786,
+        "region": "Africa"
+    },
+    {
+        "cca2": "US",
+        "city": "Albuquerque",
+        "iata": "ABQ",
+        "lat": 35.040199,
+        "lon": -106.609001,
+        "region": "North America"
+    },
+    {
+        "cca2": "CI",
+        "city": "Abidjan",
+        "iata": "ABJ",
+        "lat": 5.26139,
+        "lon": -3.92629,
+        "region": "Africa"
+    },
+    {
+        "cca2": "DZ",
+        "city": "Annabah",
+        "iata": "AAE",
+        "lat": 36.822201,
+        "lon": 7.80917,
+        "region": "Africa"
+    }
+]

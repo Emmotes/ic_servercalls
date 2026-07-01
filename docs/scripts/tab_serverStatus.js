@@ -1,4 +1,4 @@
-const vss = 2.500; // prettier-ignore
+const vss = 2.501; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -12,6 +12,9 @@ const ss_CACHE_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
 const ss_CACHE_GRACE_MS = 60 * 1000; // 60 seconds
 const ss_TIMEOUT_MS = 15 * 1000; // 15 seconds
 const ss_MAX_OUTAGE_LIMIT = 5;
+const ss_geoData = {colos: null, locs: null};
+const ss_geoDataLoading = {colos: null, locs: null};
+const ss_geoDataReady = {colos: false, locs: false};
 let ss_ageTimer = null;
 let ss_recheckTimer = null;
 let ss_statusData = null;
@@ -100,7 +103,7 @@ async function ss_displayServerStatusData(
 	const eFlex = `f fr falc fje`;
 	const sCol = `1 / -1`;
 
-	txt += ss_buildBlurbRows(paddingStyle, sFlex, sCol);
+	txt += await ss_buildBlurbRows(paddingStyle, sFlex, sCol);
 	txt += ss_addSingleServerStatusRow("&nbsp;");
 
 	txt += ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle);
@@ -123,7 +126,7 @@ async function ss_displayServerStatusData(
 		document.getElementById(`ss_graphGapsNote`).style.display = ``;
 }
 
-function ss_buildBlurbRows(paddingStyle, sFlex, sCol) {
+async function ss_buildBlurbRows(paddingStyle, sFlex, sCol) {
 	const lastChecked =
 		`Servers were last checked ` +
 		ss_buildTimestampSpan(ss_statusData?.checkedAt || "", paddingStyle) +
@@ -145,6 +148,19 @@ function ss_buildBlurbRows(paddingStyle, sFlex, sCol) {
 			small: true,
 			gridCol: sCol,
 		});
+		const geoLoc = await ss_buildGeoLocationString(
+			ss_statusData?.geoInfo?.colo,
+			ss_statusData?.geoInfo?.loc,
+		);
+		if (geoLoc != null)
+			blurbRows.push({
+				text: `These times were measured from ${geoLoc}.`,
+				classes: sFlex,
+				styles: `padding-left:20px;`,
+				dim: true,
+				small: true,
+				gridCol: sCol,
+			});
 	}
 	const pruned = ss_statusData?.pruned || [];
 	if (Array.isArray(pruned) && pruned.length > 0) {
@@ -934,6 +950,58 @@ function ss_getColorForServer(index, alpha = 1) {
 		[181, 229, 232], // Pastel Cyan
 	]; // prettier-ignore
 	return `rgba(${colours[index % colours.length].join(",")},${alpha})`;
+}
+
+async function ss_buildGeoLocationString(colo, loc) {
+	if (!colo || !loc) return null;
+
+	const [colos, locs] = await Promise.all([
+		ss_loadGeoData(`colos`, `json/geo_locations.json`, (locsData) => {
+			if (!Array.isArray(locsData)) return null;
+			const locsObj = {};
+			for (const loc of locsData)
+				if (loc?.iata) locsObj[loc.iata] = loc.city;
+			return locsObj;
+		}),
+		ss_loadGeoData(`locs`, `json/geo_country.json`, (countriesData) =>
+			countriesData != null && typeof countriesData === "object" ?
+				countriesData
+			:	null,
+		),
+	]);
+
+	if (colos == null || locs == null) return null;
+
+	const city = colos?.[colo] || null;
+	const country = locs?.[loc] || null;
+	if (city == null || country == null) return null;
+
+	if (city === country) return city;
+	return `${city}, ${country}`;
+}
+
+async function ss_loadGeoData(kind, url, parseData) {
+	if (ss_geoDataReady[kind]) return ss_geoData[kind];
+	if (ss_geoDataLoading[kind]) return ss_geoDataLoading[kind];
+
+	ss_geoDataLoading[kind] = (async () => {
+		try {
+			const response = await fetch(url);
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			const data = await response.json();
+			ss_geoData[kind] = parseData(data);
+			ss_geoDataReady[kind] = true;
+			return ss_geoData[kind];
+		} catch {
+			ss_geoDataReady[kind] = true;
+			ss_geoData[kind] = null;
+			return null;
+		} finally {
+			ss_geoDataLoading[kind] = null;
+		}
+	})();
+
+	return ss_geoDataLoading[kind];
 }
 
 function ss_initServerStatusSettings() {
