@@ -1,4 +1,4 @@
-const vs = 3.030; // prettier-ignore
+const vs = 3.031; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -859,8 +859,14 @@ async function sendOutgoingCall(server, call, customTimeout) {
 			signal: AbortSignal.timeout(timeoutTime),
 		});
 		await sleep(200);
-		if (response.ok) return await JSON.parse(await response.text());
-		else {
+		if (response.ok) {
+			const text = await response.text();
+			try {
+				return JSON.parse(text);
+			} catch (e) {
+				throw new Error(text);
+			}
+		} else {
 			if (response.status === 502) throw new Error(errTxt);
 			if (response.status === 500) throw new Error(errTxt);
 			if (response.status === 404) throw new Error(errTxt);
