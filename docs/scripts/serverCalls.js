@@ -1,9 +1,10 @@
-const vs = 3.032; // prettier-ignore
+const vs = 3.033; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
 const FR = `failure_reason`;
 const OII = `Outdated instance id`;
+const IJSON = `Invalid JSON`;
 const PARAM_CALL = `call`;
 const PARAM_INSTANCEID = `instance_id`;
 const PARAM_USERID = `user_id`;
@@ -832,6 +833,9 @@ async function sendServerCall(
 				throw new Error(`Your user data is incorrect`);
 			} else if (response[FR].includes(`non-atomic`)) {
 				throw new Error(`Interrupted by non-atomic action`);
+			} else if (response[FR] === IJSON) {
+				console.log(`Server response was not a valid JSON: "${response?.error}"`);
+				response = await sendOutgoingCall(server, call, customTimeout);
 			} else {
 				// Unknown error.
 				console.log(`${server}post.php?${call}`);
@@ -874,7 +878,7 @@ async function sendOutgoingCall(server, call, customTimeout) {
 				} catch (_) {
 					// Do nothing.
 				}
-				throw new Error(stripped);
+				return {success: false, ok: false, [FR]: IJSON, error: text};
 			}
 		} else {
 			if (response.status === 502) throw new Error(errTxt);
