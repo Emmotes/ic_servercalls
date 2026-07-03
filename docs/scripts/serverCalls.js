@@ -1,4 +1,4 @@
-const vs = 3.031; // prettier-ignore
+const vs = 3.032; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -863,8 +863,18 @@ async function sendOutgoingCall(server, call, customTimeout) {
 			const text = await response.text();
 			try {
 				return JSON.parse(text);
-			} catch (e) {
-				throw new Error(text);
+			} catch (_) {
+				let stripped = text.replace(/<[^>]*>/g, "");
+				try {
+					if (typeof document !== "undefined") {
+						const div = document.createElement("div");
+						div.innerHTML = stripped;
+						stripped = div.textContent || div.innerText || stripped;
+					}
+				} catch (_) {
+					// Do nothing.
+				}
+				throw new Error(stripped);
 			}
 		} else {
 			if (response.status === 502) throw new Error(errTxt);
