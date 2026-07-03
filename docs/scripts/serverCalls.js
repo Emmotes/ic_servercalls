@@ -1,4 +1,4 @@
-const vs = 3.033; // prettier-ignore
+const vs = 3.034; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
