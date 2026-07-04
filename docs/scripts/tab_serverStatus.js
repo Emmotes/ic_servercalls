@@ -1,4 +1,4 @@
-const vss = 2.501; // prettier-ignore
+const vss = 2.600; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -647,6 +647,7 @@ async function ss_populateGraph() {
 	const rawEntries = history
 		.map((entry) => ({
 			checkedAtMs: Date.parse(entry.checkedAt),
+			geoInfo: entry?.geo,
 			results: entry.results,
 		}))
 		.filter(
@@ -683,6 +684,21 @@ async function ss_populateGraph() {
 	}
 
 	const times = Array.from(new Set(displayTimes)).sort((a, b) => a - b);
+	const geoLocationsByTime = new Map();
+	const geoLocationPromises = rawEntries
+		.filter(
+			(entry) =>
+				Array.isArray(entry.geoInfo) &&
+				entry.geoInfo.length === 2 &&
+				entry.geoInfo[0] &&
+				entry.geoInfo[1],
+		)
+		.map(async (entry) => {
+			const [colo, loc] = entry.geoInfo;
+			const location = await ss_buildGeoLocationString(colo, loc);
+			if (location) geoLocationsByTime.set(entry.checkedAtMs, location);
+		});
+	await Promise.all(geoLocationPromises);
 	const serverTimeMap = new Map();
 	let maxResponse = 0;
 	for (const entry of rawEntries) {
@@ -749,7 +765,7 @@ async function ss_populateGraph() {
 	for (let tickTime = firstHour; tickTime <= axisMax; tickTime += msPerHour)
 		hourTicks.push(tickTime);
 
-	const thousands = Math.max(2, Math.ceil(maxResponse / 1000));
+	const thousands = Math.max(4, Math.ceil(maxResponse / 1000));
 	const maxY = thousands * 1000;
 	ele.height = 104 + thousands * 40;
 	const colourText = "rgba(215,205,217,1)";
@@ -884,6 +900,15 @@ async function ss_populateGraph() {
 							return value == null ?
 									`${tooltipItem.dataset.label}: no data`
 								:	`${tooltipItem.dataset.label}: ${value}`;
+						},
+						footer: function (tooltipItems) {
+							if (!tooltipItems || tooltipItems.length === 0)
+								return "";
+							const value = Number(
+								tooltipItems[0].parsed?.x ?? tooltipItems[0].label,
+							);
+							const location = geoLocationsByTime.get(value);
+							return location ? location : "";
 						},
 					},
 				},
