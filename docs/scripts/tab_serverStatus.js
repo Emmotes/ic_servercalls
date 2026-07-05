@@ -1,4 +1,4 @@
-const vss = 2.600; // prettier-ignore
+const vss = 2.601; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -149,8 +149,8 @@ async function ss_buildBlurbRows(paddingStyle, sFlex, sCol) {
 			gridCol: sCol,
 		});
 		const geoLoc = await ss_buildGeoLocationString(
-			ss_statusData?.geoInfo?.colo,
-			ss_statusData?.geoInfo?.loc,
+			ss_statusData?.geoHistory?.[ss_statusData?.geoHistory?.length - 1]
+				?.geo,
 		);
 		if (geoLoc != null)
 			blurbRows.push({
@@ -647,7 +647,6 @@ async function ss_populateGraph() {
 	const rawEntries = history
 		.map((entry) => ({
 			checkedAtMs: Date.parse(entry.checkedAt),
-			geoInfo: entry?.geo,
 			results: entry.results,
 		}))
 		.filter(
@@ -685,19 +684,25 @@ async function ss_populateGraph() {
 
 	const times = Array.from(new Set(displayTimes)).sort((a, b) => a - b);
 	const geoLocationsByTime = new Map();
-	const geoLocationPromises = rawEntries
-		.filter(
-			(entry) =>
-				Array.isArray(entry.geoInfo) &&
-				entry.geoInfo.length === 2 &&
-				entry.geoInfo[0] &&
-				entry.geoInfo[1],
-		)
-		.map(async (entry) => {
-			const [colo, loc] = entry.geoInfo;
-			const location = await ss_buildGeoLocationString(colo, loc);
-			if (location) geoLocationsByTime.set(entry.checkedAtMs, location);
-		});
+	const geoHistory =
+		Array.isArray(ss_statusData?.geoHistory) ?
+			ss_statusData.geoHistory
+		:	[];
+	const geoLocationPromises = rawEntries.map(async (entry) => {
+		let matchingGeoEntry = null;
+		for (let i = geoHistory.length - 1; i >= 0; i--) {
+			const geoEntry = geoHistory[i];
+			const geoCheckedAtMs = Date.parse(geoEntry?.checkedAt);
+			if (!Number.isFinite(geoCheckedAtMs)) continue;
+			if (geoCheckedAtMs <= entry.checkedAtMs) {
+				matchingGeoEntry = geoEntry;
+				break;
+			}
+		}
+		if (!matchingGeoEntry) return;
+		const location = await ss_buildGeoLocationString(matchingGeoEntry?.geo);
+		if (location) geoLocationsByTime.set(entry.checkedAtMs, location);
+	});
 	await Promise.all(geoLocationPromises);
 	const serverTimeMap = new Map();
 	let maxResponse = 0;
@@ -905,7 +910,8 @@ async function ss_populateGraph() {
 							if (!tooltipItems || tooltipItems.length === 0)
 								return "";
 							const value = Number(
-								tooltipItems[0].parsed?.x ?? tooltipItems[0].label,
+								tooltipItems[0].parsed?.x ??
+									tooltipItems[0].label,
 							);
 							const location = geoLocationsByTime.get(value);
 							return location ? location : "";
@@ -923,19 +929,6 @@ async function ss_populateGraph() {
 	ss_historyChart.update();
 
 	return gapExists;
-}
-
-function ss_getNearestHourMs(timestampMs) {
-	if (!Number.isFinite(timestampMs)) return null;
-	const msPerHour = 60 * 60 * 1000;
-	return Math.round(timestampMs / msPerHour) * msPerHour;
-}
-
-function ss_isNearHourMark(timestampMs) {
-	if (!Number.isFinite(timestampMs)) return false;
-	const nearest = ss_getNearestHourMs(timestampMs);
-	if (!Number.isFinite(nearest)) return false;
-	return Math.abs(timestampMs - nearest) <= ss_CACHE_INTERVAL_MS;
 }
 
 function ss_formatHourLabel(timestampMs) {
@@ -977,7 +970,10 @@ function ss_getColorForServer(index, alpha = 1) {
 	return `rgba(${colours[index % colours.length].join(",")},${alpha})`;
 }
 
-async function ss_buildGeoLocationString(colo, loc) {
+async function ss_buildGeoLocationString(inArr) {
+	if (!Array.isArray(inArr) || inArr.length !== 2) return null;
+
+	const [colo, loc] = inArr;
 	if (!colo || !loc) return null;
 
 	const [colos, locs] = await Promise.all([
