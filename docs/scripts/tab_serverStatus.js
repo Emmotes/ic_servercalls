@@ -1,4 +1,4 @@
-const vss = 2.602; // prettier-ignore
+const vss = 2.603; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -432,7 +432,7 @@ function ss_decidePadding(padLeft, padRight) {
 }
 
 function ss_buildTimestampSpan(timer, style) {
-	return `<span data-ss-age-iso="${timer}"${style}>-</span>`;
+	return `<span data-ss-age-ms="${timer}"${style}>-</span>`;
 }
 
 function ss_buildSVGSpan(svg, style) {
@@ -507,9 +507,9 @@ function ss_translateServerError(error) {
 	return "Connection Failed";
 }
 
-function ss_getAgeMs(isoString, nowMs) {
-	if (!isoString) return null;
-	const t = ss_toMs(isoString);
+function ss_getAgeMs(epochMs, nowMs) {
+	if (!epochMs) return null;
+	const t = ss_toMs(epochMs);
 	if (!Number.isFinite(t)) return null;
 	return Math.max(0, nowMs - t);
 }
@@ -519,10 +519,10 @@ function ss_startAgeTicker(wrapper) {
 
 	const update = () => {
 		const nowMs = Date.now();
-		const nodes = wrapper.querySelectorAll(`[data-ss-age-iso]`);
+		const nodes = wrapper.querySelectorAll(`[data-ss-age-ms]`);
 		for (const n of nodes) {
-			const iso = n.getAttribute(`data-ss-age-iso`);
-			const ageMs = ss_getAgeMs(iso, nowMs);
+			const dataMs = Number(n.getAttribute(`data-ss-age-ms`) || 0);
+			const ageMs = ss_getAgeMs(dataMs, nowMs);
 			n.textContent =
 				ageMs === null ? `-` : getDisplayTime(ageMs, {pad: false});
 		}
@@ -574,8 +574,8 @@ function ss_setCooldownUntil(untilMs) {
 			return;
 		}
 
-		const fakePastIso = new Date(nowMs - remainingMs).toISOString();
-		const ageMs = ss_getAgeMs(fakePastIso, nowMs);
+		const fakePastMs = nowMs - remainingMs;
+		const ageMs = ss_getAgeMs(fakePastMs, nowMs);
 		const countdown = getDisplayTime(ageMs, {pad: false});
 
 		disabled.textContent = `Next update in ${countdown}.`;
