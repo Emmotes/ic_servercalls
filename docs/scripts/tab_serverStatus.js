@@ -1,4 +1,4 @@
-const vss = 2.601; // prettier-ignore
+const vss = 2.602; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -395,8 +395,8 @@ function ss_buildGraphSection(sFlex, sCol) {
 	return txt;
 }
 
-function ss_roundToNearestCacheInterval(isoString) {
-	const t = Date.parse(isoString);
+function ss_roundToNearestCacheInterval(epoch) {
+	const t = ss_toMs(epoch);
 	if (!Number.isFinite(t)) return null;
 	return Math.round(t / ss_CACHE_INTERVAL_MS) * ss_CACHE_INTERVAL_MS;
 }
@@ -509,7 +509,7 @@ function ss_translateServerError(error) {
 
 function ss_getAgeMs(isoString, nowMs) {
 	if (!isoString) return null;
-	const t = Date.parse(isoString);
+	const t = ss_toMs(isoString);
 	if (!Number.isFinite(t)) return null;
 	return Math.max(0, nowMs - t);
 }
@@ -589,7 +589,7 @@ function ss_applyCooldownFromStatus(allowExtend = true) {
 	const nowMs = Date.now();
 
 	const checkedAtMs =
-		ss_statusData?.checkedAt ? Date.parse(ss_statusData.checkedAt) : NaN;
+		ss_statusData?.checkedAt ? ss_toMs(ss_statusData.checkedAt) : NaN;
 
 	const minBlockUntil = nowMs + ss_MIN_RECHECK_MS;
 
@@ -620,7 +620,7 @@ function ss_tryResumeCooldownOnLoad() {
 	ss_statusData = ls_getGlobal(ss_LSKEY_serverStatusData, null);
 	if (ss_statusData == null) return;
 
-	const checkedAt = Date.parse(ss_statusData?.checkedAt);
+	const checkedAt = ss_toMs(ss_statusData?.checkedAt);
 	if (!Number.isFinite(checkedAt)) return;
 
 	const age = Date.now() - checkedAt;
@@ -646,7 +646,7 @@ async function ss_populateGraph() {
 	const gapThresholdMs = Math.max(5 * 60 * 1000, ss_CACHE_INTERVAL_MS * 3);
 	const rawEntries = history
 		.map((entry) => ({
-			checkedAtMs: Date.parse(entry.checkedAt),
+			checkedAtMs: ss_toMs(entry.checkedAt),
 			results: entry.results,
 		}))
 		.filter(
@@ -692,7 +692,7 @@ async function ss_populateGraph() {
 		let matchingGeoEntry = null;
 		for (let i = geoHistory.length - 1; i >= 0; i--) {
 			const geoEntry = geoHistory[i];
-			const geoCheckedAtMs = Date.parse(geoEntry?.checkedAt);
+			const geoCheckedAtMs = ss_toMs(geoEntry?.checkedAt);
 			if (!Number.isFinite(geoCheckedAtMs)) continue;
 			if (geoCheckedAtMs <= entry.checkedAtMs) {
 				matchingGeoEntry = geoEntry;
@@ -1028,4 +1028,13 @@ async function ss_loadGeoData(kind, url, parseData) {
 function ss_initServerStatusSettings() {
 	ls_remove("scServerStatusShowMoreDetails");
 	ls_remove("scServerStatusResponseNumbers");
+}
+
+function ss_toMs(v) {
+	if (typeof v === "number") return v;
+	if (typeof v === "string") {
+		const n = Date.parse(v);
+		return Number.isFinite(n) ? n : NaN;
+	}
+	return NaN;
 }
