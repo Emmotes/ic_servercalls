@@ -1,4 +1,4 @@
-const vss = 2.605; // prettier-ignore
+const vss = 2.606; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -244,7 +244,7 @@ function ss_buildServerGrid(results, sFlex, eFlex, cFlex, paddingStyle) {
 		if (plainError != null) {
 			eles.push({
 				text: plainError,
-				classes: eFlex,
+				classes: cFlex,
 				dim: true,
 				gridCol: `span 3`,
 			});
