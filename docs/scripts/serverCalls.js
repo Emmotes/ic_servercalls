@@ -1,4 +1,4 @@
-const vs = 3.033; // prettier-ignore
+const vs = 3.034; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -834,7 +834,9 @@ async function sendServerCall(
 			} else if (response[FR].includes(`non-atomic`)) {
 				throw new Error(`Interrupted by non-atomic action`);
 			} else if (response[FR] === IJSON) {
-				console.log(`Server response was not a valid JSON: "${response?.error}"`);
+				console.log(
+					`Server response was not a valid JSON: "${response?.error}"`,
+				);
 				response = await sendOutgoingCall(server, call, customTimeout);
 			} else {
 				// Unknown error.
@@ -850,10 +852,7 @@ async function sendServerCall(
 
 async function sendOutgoingCall(server, call, customTimeout) {
 	const url = `${server}post.php?${call}`;
-	const errTxt = `Server ps${server.replace(
-		/[^0-9]/g,
-		``,
-	)} appears to be dead`;
+	const errTxt = `Server ${server} appears to be dead`;
 	const timeoutTime =
 		Number.isInteger(customTimeout) && customTimeout > 0 ?
 			customTimeout
