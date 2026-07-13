@@ -1,4 +1,4 @@
-const vs = 3.034; // prettier-ignore
+const vs = 3.035; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -840,9 +840,11 @@ async function sendServerCall(
 				response = await sendOutgoingCall(server, call, customTimeout);
 			} else {
 				// Unknown error.
+				const sanitised = sanitise(response);
 				console.log(`${server}post.php?${call}`);
 				console.log(` - Unknown Error: ${response[FR]}`);
-				throw new Error(response);
+				console.log(` - Response`, sanitised);
+				throw new Error(response?.[FR] || JSON.stringify(sanitised, stringifyReplacer));
 			}
 		}
 		limit++;
