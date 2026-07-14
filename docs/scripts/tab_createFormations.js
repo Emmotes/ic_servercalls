@@ -1,4 +1,4 @@
-const vcf = 1.205; // prettier-ignore
+const vcf = 1.206; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -2712,6 +2712,8 @@ function cf_buildSpecialisations(data, upgradeDefs) {
 		const sets = Array.from(levelMap.values()).sort(
 			(a, b) => a.requiredLevel - b.requiredLevel,
 		);
+		for (const set of sets)
+			set.options.sort((a, b) => a.upgradeId - b.upgradeId);
 		data.specialisations.byChampionId.set(heroId, sets);
 	}
 }
