@@ -1,4 +1,4 @@
-const vcf = 1.300; // prettier-ignore
+const vcf = 1.301; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -1469,8 +1469,8 @@ function cf_renderSaveSavedFamsPopup(mode) {
 
 	const modeText =
 		mode === `placement` ?
-			`positionally only.<br><br>When you load them again - they will be placed based on your choice in Familiar Placement Mode` :
-			`exactly.<br><br>When you load them again - they will be placed exactly as they are now`;
+			`positionally only.<br><br>When you load them again - they will be placed based on your choice in Familiar Placement Mode`
+		:	`exactly.<br><br>When you load them again - they will be placed exactly as they are now`;
 	const click = `cf_closeSaveSavedFamsPopup()`;
 	let txt = ``;
 	txt += `<span class="f fr falc fjs"><h3>Save Current Familiars?</h3></span>`;
@@ -1557,7 +1557,9 @@ function cf_placeSavedFamiliars() {
 
 	if (!mode || mode === `exact`) {
 		cf_builderState.familiars = structuredClone(saved.fams);
-		cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(cf_builderState.familiars);
+		cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(
+			cf_builderState.familiars,
+		);
 		cf_globalStyleFamiliars();
 		cf_updateUI(cf_UI.FAMILIARS | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
 		return;
@@ -1591,7 +1593,9 @@ function cf_placeSavedFamiliars() {
 		cf_placeFamiliarValidated(pos.type, pos.slot, famId);
 	}
 
-	cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(cf_builderState.familiars);
+	cf_builderState.usedFamiliarIds = cf_extractUsedFamiliars(
+		cf_builderState.familiars,
+	);
 	cf_globalStyleFamiliars();
 	cf_updateUI(cf_UI.FAMILIARS | cf_UI.EXPORT | cf_UI.EXPORT_STRING);
 }
@@ -2521,8 +2525,12 @@ function cf_buildCampaigns(data, formationObjects) {
 	}
 
 	for (const [actualId, camp] of campaigns.byActualId) {
-		if (camp.baseId === actualId) continue;
-		if (!campaigns.byActualId.has(camp.baseId)) continue;
+		if (
+			camp.baseId === actualId ||
+			camp.isEvent ||
+			!campaigns.byActualId.has(camp.baseId)
+		)
+			continue;
 		camp.formation = campaigns.byActualId.get(camp.baseId).formation;
 	}
 
@@ -2694,8 +2702,7 @@ function cf_buildSpecialisations(data, upgradeDefs) {
 			continue;
 
 		const requiredUpgradeId = Number(upg?.required_upgrade_id ?? 0);
-		if (requiredLevel === 9999 && requiredUpgradeId === 9999)
-			continue; // These values are placeholder for deactivated / unused specialisations and should be ignored.
+		if (requiredLevel === 9999 && requiredUpgradeId === 9999) continue; // These values are placeholder for deactivated / unused specialisations and should be ignored.
 
 		if (!specRoot.has(heroId)) specRoot.set(heroId, new Map());
 
