@@ -1,4 +1,4 @@
-const vcf = 1.206; // prettier-ignore
+const vcf = 1.300; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -2518,6 +2518,12 @@ function cf_buildCampaigns(data, formationObjects) {
 			if (campaign.isEvent) campaigns.eventIds.push(actualId);
 			else campaigns.campaignIds.push(actualId);
 		} else campaigns.withPatronIds.add(baseId); // For patron only.
+	}
+
+	for (const [actualId, camp] of campaigns.byActualId) {
+		if (camp.baseId === actualId) continue;
+		if (!campaigns.byActualId.has(camp.baseId)) continue;
+		camp.formation = campaigns.byActualId.get(camp.baseId).formation;
 	}
 
 	campaigns.eventIds.sort((a, b) => a - b);
