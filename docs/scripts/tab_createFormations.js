@@ -1,4 +1,4 @@
-const vcf = 1.301; // prettier-ignore
+const vcf = 1.302; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -3885,7 +3885,11 @@ function cf_deleteLocalFormation() {
 }
 
 function cf_encodeByteglowCampaign() {
-	const campId = cf_builderState.campaignId ?? 0;
+	const isPatron = cf_builderState.patronId ?? 0;
+	const campId =
+		(isPatron ?
+			cf_builderState.baseCampaignId
+		:	cf_builderState.campaignId) ?? 0;
 	if (campId <= 0) return `-1`;
 
 	if (c_byteglowTo.has(campId)) return c_byteglowTo.get(campId).toString(36);
