@@ -1,4 +1,4 @@
-const vss = 2.610; // prettier-ignore
+const vss = 2.611; // prettier-ignore
 const ss_LSKEY_serverStatusCooldown = `scServerStatusCooldown`;
 const ss_LSKEY_serverStatusData = `scServerStatusData`;
 const ss_SVG_up = `<svg width="22" height="22" viewBox="1.5 -9.1 14 14" xmlns="http://www.w3.org/2000/svg" fill="var(--AlienArmpit)" stroke="var(--Black)" stroke-width=".4"><path fill-rule="evenodd" d="m14.75-5.338a1 1 0 0 0-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 0 0-1.264 1.55l3.929 3.2a1 1 0 0 0 1.38-.113l7.072-8z"/></svg>`;
@@ -980,18 +980,25 @@ function ss_getColorForServer(index, alpha = 1) {
 	return `rgba(${colours[index % colours.length].join(",")},${alpha})`;
 }
 
-async function ss_buildGeoLocationString(inArr) {
-	if (!Array.isArray(inArr) || inArr.length !== 2) return null;
-
-	const [colo, loc] = inArr;
-	if (!colo || !loc) return null;
+async function ss_buildGeoLocationString(input) {
+	let colo = null;
+	if (Array.isArray(input) && input.length >= 1)
+		colo = input[0];
+	else if (typeof input === "string")
+		colo = input;
+	if (!colo) return null;
 
 	const [colos, locs] = await Promise.all([
 		ss_loadGeoData(`colos`, `json/geo_locations.json`, (locsData) => {
 			if (!Array.isArray(locsData)) return null;
 			const locsObj = {};
 			for (const loc of locsData)
-				if (loc?.iata) locsObj[loc.iata] = loc.city;
+				if (loc?.iata) {
+					locsObj[loc.iata] = {
+						city: loc.city || null,
+						countryCode: loc.cca2 || null,
+					};
+				}
 			return locsObj;
 		}),
 		ss_loadGeoData(`locs`, `json/geo_country.json`, (countriesData) =>
@@ -1003,11 +1010,15 @@ async function ss_buildGeoLocationString(inArr) {
 
 	if (colos == null || locs == null) return null;
 
-	const city = colos?.[colo] || null;
-	const country = locs?.[loc] || null;
-	if (city == null || country == null) return null;
+	const locationData = colos?.[colo] || null;
+	if (locationData == null) return null;
 
-	if (city === country) return city;
+	const city = locationData?.city || null;
+	const countryCode = locationData?.countryCode || null;
+	const country = countryCode != null ? locs?.[countryCode] || null : null;
+
+	if (city == null) return null;
+	if (country == null || city === country) return city;
 	return `${city}, ${country}`;
 }
 
