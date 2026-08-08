@@ -1,4 +1,4 @@
-const vt = 1.105; // prettier-ignore
+const vt = 1.106; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -200,7 +200,7 @@ function t_generateTabHTML() {
 		}
 
 		let html = `
-			<input${!t_editMode ? ` onClick="setHash('${tab.id}')"` : ``} type="radio" class="tabsRadio" name="serverTabs" id="${tab.id}" ${isChecked ? "checked" : ""}>
+			<input onClick="${t_editMode ? `t_toggleTabVisibility('${tab.id}')` : `setHash('${tab.id}')`}" type="radio" class="tabsRadio" name="serverTabs" id="${tab.id}" ${isChecked ? "checked" : ""}>
 			<label for="${tab.id}" class="${tabClass}" ${t_editMode ? `draggable="true" ondragstart="t_onDragStart(event, '${tab.id}')" ondragover="t_onDragOver(event)" ondrop="t_onDrop(event, '${tab.id}')"` : ""}>
 				${t_editMode ? `<span class="t_dragHandle">⋮⋮</span>` : ""}
 				<span>${tab.name}</span>
