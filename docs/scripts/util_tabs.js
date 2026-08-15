@@ -1,4 +1,4 @@
-const vt = 1.200; // prettier-ignore
+const vt = 1.201; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -411,12 +411,13 @@ async function pullAllTabsData() {
 	}
 }
 
-function t_addFairy() {
+function t_addFairy(type, id, left, rand) {
 	const ele = document.getElementById(`f`);
 	if (!ele) return;
 
-	const type = randInt(1, 4) === 1 ? `a` : `i`;
-	const id = randInt(1, 4);
+	if (type == null) type = randInt(1, 4) === 1 ? `a` : `i`;
+	if (id == null) id = randInt(1, 4);
+	if (left == null) left = randInt(0, 1) === 1;
 
 	ele.style.cssText = ``;
 
@@ -438,7 +439,6 @@ function t_addFairy() {
 		ele.style.position = `absolute`;
 
 		const rect = pullAll.getBoundingClientRect();
-		const left = randInt(0, 1) === 0;
 		const fam = id === 1 || id === 2;
 
 		const y = rect.bottom - (fam ? 95 : 65);
@@ -457,14 +457,12 @@ function t_addFairy() {
 	if (type === `i`) {
 		ele.style.position = `fixed`;
 
-		const rand = randInt(0, 5);
-		const left = rand <= 2;
+		if (rand == null) rand = randInt(0, 2);
 		if (left) ele.style.left = `10px`;
 		else ele.style.right = `10px`;
 
-		const mod = rand % 3;
-		if (mod === 0) ele.style.top = left ? `50px` : `80px`;
-		else if (mod === 1) ele.style.top = `${window.innerHeight / 2}px`;
+		if (rand === 0) ele.style.top = left ? `50px` : `80px`;
+		else if (rand === 1) ele.style.top = `${window.innerHeight / 2}px`;
 		else ele.style.bottom = `10px`;
 
 		makeImg(type, id, `Fairy idle in the corner.`, !left);
