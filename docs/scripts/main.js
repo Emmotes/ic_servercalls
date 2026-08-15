@@ -1,4 +1,4 @@
-const v = 4.206; // prettier-ignore
+const v = 4.207; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -98,6 +98,11 @@ function init() {
 	ss_tryResumeCooldownOnLoad();
 
 	swapTab();
+
+	const siteFlags = f_getSiteFlags();
+	const [, month, day] = getDateValues();
+	if (siteFlags.has(`fairies`) || (month === 6 && day >= 17 && day <= 25))
+		t_addFairy();
 
 	startUpdateCheckInterval(1800000); // 30 mins
 }
@@ -811,6 +816,11 @@ function randInt(min, max) {
 	const minCeiled = Math.ceil(min);
 	const maxFloored = Math.floor(max);
 	return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+}
+
+function getDateValues() {
+	const date = new Date();
+	return [date.getFullYear(), date.getMonth() + 1, date.getDate()];
 }
 
 function dateFormat(input, options = {}) {

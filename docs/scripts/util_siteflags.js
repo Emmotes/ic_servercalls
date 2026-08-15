@@ -1,4 +1,4 @@
-const vf = 1.000; // prettier-ignore
+const vf = 1.001; // prettier-ignore
 const f_LSKEY_siteFlags = `scSiteFlags`;
 const f_siteFlags = document.getElementById("siteFlags");
 const f_siteFlagsContainer = document.getElementById("siteFlagsContainer");
@@ -51,6 +51,9 @@ function f_addSiteFlag(flag) {
 
 	flags.add(flag);
 	ls_setGlobal_arr(f_LSKEY_siteFlags, [...flags]);
+
+	if (flag === `fairies`)
+		t_addFairy();
 
 	f_updateSiteFlags();
 }

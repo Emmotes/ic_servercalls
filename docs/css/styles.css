@@ -1313,3 +1313,7 @@ input[type="checkbox"]:checked::before {
 .s_removeSiteFlagSVG:hover {
 	background-color: var(--Eagle);
 }
+.t_f {
+	cursor: crosshair;
+	z-index: 999;
+}
