@@ -1,4 +1,4 @@
-const vt = 1.201; // prettier-ignore
+const vt = 1.202; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -431,6 +431,9 @@ function t_addFairy(type, id, left, rand) {
 		ele.replaceChildren(img);
 		ele.hidden = false;
 	};
+
+	if (type === `a` && (pbCodeRunning || pbTimerRunning))
+		type = `i`;
 
 	if (type === `a`) {
 		const pullAll = document.getElementById(`allTabsDataPullButton`);
