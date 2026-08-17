@@ -1,4 +1,4 @@
-const va = 1.002; // prettier-ignore
+const va = 1.003; // prettier-ignore
 let a_ignoreLSKEYs = null;
 
 function a_collectLSKEYs() {
@@ -89,7 +89,6 @@ function a_getIgnoreSet() {
 			fs_LSKEY_activeLock,
 			ss_LSKEY_serverStatusCooldown,
 			ss_LSKEY_serverStatusData,
-			ss_LSKEY_showMoreDetails,
 		];
 	if (!Array.isArray(a_ignoreLSKEYs)) return s;
 	a_ignoreLSKEYs.forEach((entry) => {
