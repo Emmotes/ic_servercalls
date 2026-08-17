@@ -1,4 +1,4 @@
-const vcf = 1.302; // prettier-ignore
+const vcf = 1.400; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -354,7 +354,7 @@ function cf_renderImportGameSelector() {
 		const cb = campaigns.get(b);
 		if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
 		if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
-		return (ca.patronId ?? 0) - (cb.patronId ?? 0);
+		return ca.patronId - cb.patronId;
 	});
 
 	let txt = `<div id="cf_importGameSelectWrapper" style="position:relative;width:100%;">`;
@@ -365,22 +365,23 @@ function cf_renderImportGameSelector() {
 	for (const campaignId of campaignIds) {
 		const campaign = campaigns.get(campaignId);
 		const forms = byCampaign.get(campaignId);
+		const sorted = forms.sort((a, b) => {
+			const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
+			if (favoriteOrder !== 0) return favoriteOrder;
+			return a.name.localeCompare(b.name);
+		});
 
-		const groupLabel = campaign.name;
+		const patronSuffix = cf_buildPatronSuffix(campaign.patronId ?? 0);
+
+		const groupLabel = campaign.name + patronSuffix;
 		txt += `<div class="cf_optgroup-label" data-search="${groupLabel.toLowerCase()}" style="font-weight:bold;padding:4px 8px;cursor:default">${cf_escapeHtml(groupLabel)}</div>`;
 
-		for (const form of forms) {
-			const formCamp = campaigns.get(form.campaignId);
-			let patronSuffix = ``;
-			if (formCamp.patronId ?? 0 > 0) {
-				const patronName = c_patronById.get(formCamp.patronId);
-				if (patronName)
-					patronSuffix = ` (${cf_escapeHtml(patronName)})`;
-			}
-			const displayText = `${cf_escapeHtml(form.name)}${patronSuffix}`;
+		for (const form of sorted) {
+			const name =
+				cf_escapeHtml(form.name) + cf_getFavouriteText(form.favorite);
 			txt +=
-				`<div class="cf_option" data-value="${form.id}" data-search="${(form.name + patronSuffix).toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
-				displayText +
+				`<div class="cf_option" data-value="${form.id}" data-search="${name.toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
+				name +
 				`</div>`;
 		}
 	}
@@ -521,7 +522,10 @@ function cf_renderImportLocalSelector(id) {
 			const cb = campaigns.get(b.save.campaignId);
 			if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
 			if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
-			return ca.patronId - cb.patronId;
+			if (ca.patronId !== cb.patronId) return ca.patronId - cb.patronId;
+			const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
+			if (favoriteOrder !== 0) return favoriteOrder;
+			return a.save.name.localeCompare(b.save.name);
 		});
 
 	const selectId = id ?? `cf_importLocalSelect`;
@@ -540,20 +544,18 @@ function cf_renderImportLocalSelector(id) {
 		const campaign = campaigns.get(save.campaignId);
 		if (!campaign) continue;
 
-		const groupLabel = campaign.name;
+		const patronSuffix = cf_buildPatronSuffix(campaign.patronId ?? 0);
+
+		const groupLabel = campaign.name + patronSuffix;
 		if (groupLabel !== currentGroup) {
 			currentGroup = groupLabel;
 			txt += `<div class="cf_optgroup-label" data-search="${groupLabel.toLowerCase()}" style="font-weight:bold;padding:4px 8px;cursor:default">${cf_escapeHtml(groupLabel)}</div>`;
 		}
-		let patronSuffix = ``;
-		if (campaign.patronId ?? 0 > 0) {
-			const patronName = c_patronById.get(campaign.patronId);
-			if (patronName) patronSuffix = ` (${cf_escapeHtml(patronName)})`;
-		}
-		const displayText = `${cf_escapeHtml(save.name)}${patronSuffix}`;
+		const name =
+			cf_escapeHtml(save.name) + cf_getFavouriteText(save.favorite ?? 0);
 		txt +=
-			`<div class="cf_option" data-value="${index}" data-search="${(save.name + patronSuffix).toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
-			displayText +
+			`<div class="cf_option" data-value="${index}" data-search="${name.toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
+			name +
 			`</div>`;
 	}
 
@@ -3937,6 +3939,28 @@ function cf_encodeByteglowSpecs() {
 	}
 
 	return specs;
+}
+
+function cf_saveFormationFavouriteSort(a, b) {
+	const af = Number(a?.save?.favorite ?? a?.favorite ?? 0);
+	const bf = Number(b?.save?.favorite ?? b?.favorite ?? 0);
+
+	if (af === 0 && bf === 0) return 0;
+	if (af === 0) return 1;
+	if (bf === 0) return -1;
+	return af - bf;
+}
+
+function cf_buildPatronSuffix(patronId) {
+	if (patronId > 0) {
+		const patronName = c_patronById.get(patronId);
+		if (patronName) return ` - ${cf_escapeHtml(patronName)}`;
+	}
+	return ``;
+}
+
+function cf_getFavouriteText(fav) {
+	return fav > 0 ? ` (Fav: ${fav})` : ``;
 }
 
 // =====================
