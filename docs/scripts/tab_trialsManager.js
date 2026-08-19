@@ -1,4 +1,4 @@
-const vtm = 1.100; // prettier-ignore
+const vtm = 1.101; // prettier-ignore
 const tm_serverCalls = new Set(["trialsRefreshData", "getDefinitions"]);
 const tm_definitionsFilters = new Set([
 	"hero_defines",
@@ -384,7 +384,7 @@ async function tm_joinTrial() {
 	if (!txt.includes("Joining a Trial"))
 		txt += `<br><br>` + tm_addInfoHeader(`Joining a Trial`);
 
-	const joinKey = trialsJoinKey.value;
+	const joinKey = escapeHTML(trialsJoinKey.value);
 	const response = await trialsJoinCampaign(joinKey);
 	let successType = `Failed to join`;
 	if (response.success & response.okay) {

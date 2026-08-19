@@ -1,4 +1,4 @@
-const v = 4.207; // prettier-ignore
+const v = 4.300; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -122,29 +122,31 @@ function accountLoading() {
 		ls_remove(old_LSKEY);
 		settingsToggle();
 		settingsUserName.focus();
-		settingsIconName.innerHTML = `&nbsp;`;
-	} else {
-		let accountData = getUserAccounts();
-		if (
-			accountData == null ||
-			accountData.current == null ||
-			accountData.accounts == null ||
-			Object.keys(accountData.current).length === 0 ||
-			Object.keys(accountData.accounts) === 0
-		) {
-			currAccount = undefined;
-			settingsIconName.innerHTML = `&nbsp;`;
-			disabledUntilData.hidden = false;
-			tabsContainer.hidden = true;
-			settingsClose.hidden = true;
-			settingsToggle();
-		} else {
-			settingsClose.hidden = false;
-			currAccount = accountData.current;
-			if (currAccount.networkId == null) currAccount.networkId = "-1";
-			settingsIconName.innerHTML = currAccount.name;
-		}
+		settingsIconName.textContent = `&nbsp;`;
+		return;
 	}
+
+	let accountData = getUserAccounts();
+	if (
+		accountData == null ||
+		accountData.current == null ||
+		accountData.accounts == null ||
+		Object.keys(accountData.current).length === 0 ||
+		Object.keys(accountData.accounts).length === 0
+	) {
+		currAccount = undefined;
+		settingsIconName.textContent = `&nbsp;`;
+		disabledUntilData.hidden = false;
+		tabsContainer.hidden = true;
+		settingsClose.hidden = true;
+		settingsToggle();
+		return;
+	}
+
+	settingsClose.hidden = false;
+	currAccount = accountData.current;
+	if (currAccount.networkId == null) currAccount.networkId = "-1";
+	settingsIconName.textContent = currAccount.name;
 }
 
 function oldLocalStorageMigrations() {
@@ -206,14 +208,14 @@ function settingsToggle() {
 				userName.value = ``;
 				userId.value = ``;
 				userHash.value = ``;
-				settingsIconName.innerHTML = `&nbsp;`;
+				settingsIconName.textContent = `&nbsp;`;
 			}
 		} else {
 			userName.value = currAccount.name;
 			userId.value = currAccount.id;
 			userHash.value = currAccount.hash;
 			settingsUserPlatform.value = currAccount.networkId || "-1";
-			settingsIconName.innerHTML = currAccount.name;
+			settingsIconName.textContent = currAccount.name;
 		}
 		settingsMenu.style.display = `flex`;
 	} else {
@@ -307,10 +309,10 @@ function enableVersionUpdate() {
 }
 
 async function saveUserData() {
-	const userName = settingsUserName.value.trim() ?? ``;
-	const userId = settingsUserId.value.trim() ?? ``;
-	const userHash = settingsUserHash.value.trim() ?? ``;
-	const userPlatform = settingsUserPlatform.value ?? `-1`;
+	const userName = escapeHTML(settingsUserName.value).trim();
+	const userId = escapeHTML(settingsUserId.value).trim();
+	const userHash = escapeHTML(settingsUserHash.value).trim();
+	const userPlatform = escapeHTML(settingsUserPlatform.value);
 	if (userName !== `` && userId !== `` && userHash !== ``) {
 		const newAccount = {
 			name: userName,
@@ -320,7 +322,7 @@ async function saveUserData() {
 		};
 		addUserAccount(newAccount);
 		currAccount = newAccount;
-		settingsIconName.innerHTML = currAccount.name;
+		settingsIconName.textContent = currAccount.name;
 		settingsSave.value = `SAVED`;
 		if (settingsClose.hidden) settingsClose.hidden = false;
 		if (tabsContainer.hidden) tabsContainer.hidden = false;
@@ -385,7 +387,7 @@ async function loadUserAccount() {
 		settingsUserId.value = currAccount.id;
 		settingsUserHash.value = currAccount.hash;
 		settingsUserPlatform.value = currAccount.networkId;
-		settingsIconName.innerHTML = currAccount.name;
+		settingsIconName.textContent = currAccount.name;
 		SERVER = ``;
 		instanceId = ``;
 		boilerplate = ``;
@@ -440,19 +442,18 @@ function sanitise(obj) {
 
 async function refreshSettingsList() {
 	const userAccounts = getUserAccounts();
-	let select = ``;
-	for (let name in userAccounts.accounts)
-		select += `<option value="${name}"${
-			(
-				currAccount != null &&
-				currAccount.name != null &&
-				currAccount.name === name
-			) ?
-				` selected`
-			:	``
-		}>${name}</option>`;
-	if (select === ``) select += `<option value="-" selected>-</option>`;
-	settingsList.innerHTML = select;
+	
+	settingsList.replaceChildren();
+
+	for (const name in userAccounts.accounts) {
+		const option = new Option(name, name);
+		option.selected =
+			currAccount != null && currAccount.name === name;
+		settingsList.append(option);
+	}
+
+	if (settingsList.options.length === 0)
+		settingsList.append(new Option("-", "-"));
 }
 
 function swapTab() {
@@ -587,8 +588,9 @@ function renderDeleteAccountConfirmationPopup() {
 	if (!importButtonEle || !container) return;
 
 	let txt = ``;
+	const accName = escapeHTML(settingsList.value); // TODO: Prevent possible injections here.
 	txt += `<span class="f fr falc fjs"><h3 style="padding-left:5px;">Are you sure?</h3></span>`;
-	txt += `<span class="f fr falc fjs p5">Do you really want to delete your '${settingsList.value}' account?</span>`;
+	txt += `<span class="f fr falc fjs p5">Do you really want to delete your '${accName}' account?</span>`;
 	txt += `<span class="f fr falc fjs w100 p5" style="padding-top:10px;">`;
 	txt += `<span class="f falc fjc w100"><input type="button" value="Yes" style="width:60%;" onclick="deleteUserAccount()"></span>`;
 	txt += `<span class="f falc fjc w100"><input type="button" value="No" style="width:60%;" onclick="closeDeleteAccountConfirmationPopup()"></span>`;
@@ -946,7 +948,7 @@ function removeUserAccount(name) {
 	if (userAccounts.current.name === name) {
 		userAccounts.current = {};
 		currAccount = undefined;
-		settingsIconName.innerHTML = `&nbsp;`;
+		settingsIconName.textContent = `&nbsp;`;
 	}
 	saveUserAccounts(userAccounts);
 }
@@ -1031,6 +1033,16 @@ function arrayToListReadable(arr, options) {
 	if (arr.length === 2) return arr[0] + and + arr[1];
 
 	return arr.slice(0, -1).join(`, `) + and + arr[arr.length - 1];
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+    }[char]));
 }
 
 function stringifyReplacer(key, value) {
