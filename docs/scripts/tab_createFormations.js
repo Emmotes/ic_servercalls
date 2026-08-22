@@ -1,4 +1,4 @@
-const vcf = 1.400; // prettier-ignore
+const vcf = 1.401; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -362,12 +362,17 @@ function cf_renderImportGameSelector() {
 	txt += `<input type="hidden" id="cf_importGameSelect" value="-">`;
 	txt += `<div id="cf_importGameDropdown" style="position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;background:var(--ChineseBlack);border:1px solid currentColor;border-top:none;display:none;z-index:1000">`;
 
+	const siteFlags = f_getSiteFlags();
+	const irisiriSort = siteFlags.has("iri_sort");
+
 	for (const campaignId of campaignIds) {
 		const campaign = campaigns.get(campaignId);
 		const forms = byCampaign.get(campaignId);
 		const sorted = forms.sort((a, b) => {
-			const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
-			if (favoriteOrder !== 0) return favoriteOrder;
+			if (!irisiriSort) {
+				const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
+				if (favoriteOrder !== 0) return favoriteOrder;
+			}
 			return a.name.localeCompare(b.name);
 		});
 
@@ -514,6 +519,8 @@ function cf_renderImportLocalSelector(id) {
 		return `<select style="width:100%"><option>No saved formations</option></select>`;
 
 	const campaigns = cf_data.campaigns.byActualId;
+	const siteFlags = f_getSiteFlags();
+	const irisiriSort = siteFlags.has("iri_sort");
 
 	const sorted = saves
 		.map((save, index) => ({save, index}))
@@ -523,8 +530,10 @@ function cf_renderImportLocalSelector(id) {
 			if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
 			if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
 			if (ca.patronId !== cb.patronId) return ca.patronId - cb.patronId;
-			const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
-			if (favoriteOrder !== 0) return favoriteOrder;
+			if (!irisiriSort) {
+				const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
+				if (favoriteOrder !== 0) return favoriteOrder;
+			}
 			return a.save.name.localeCompare(b.save.name);
 		});
 
