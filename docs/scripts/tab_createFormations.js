@@ -1,4 +1,4 @@
-const vcf = 1.401; // prettier-ignore
+const vcf = 1.402; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_serverCalls = new Set([
@@ -311,6 +311,7 @@ function cf_renderImportMode() {
 		txt +=
 			`<input id="cf_importGameButton" type="button" style="width:72%;margin-top:10px;" ` +
 			`value="Modify Existing Game Formation" onclick="${click}">`;
+		txt += cf_buildIriSortNote();
 	} else if (type === `local`) {
 		const click =
 			dirty ?
@@ -320,6 +321,7 @@ function cf_renderImportMode() {
 		txt +=
 			`<input id="cf_importLocalButton" type="button" style="width:72%;margin-top:10px;" ` +
 			`value="Create from Browser Formation" onclick="${click}">`;
+		txt += cf_buildIriSortNote();
 	} else if (type === `string`) {
 		const click =
 			dirty ?
@@ -3420,6 +3422,15 @@ function cf_removeFamiliarFromAllPlacements(familiarId) {
 function cf_placeFamiliarValidated(targetType, targetKey, famId) {
 	if (famId <= 0) return;
 
+	// remove current familiar in slot (if it exists)
+	const oldFamId = cf_builderState.familiars[targetType]?.[targetKey] ?? -1;
+	if (oldFamId > 0) {
+		// don't need to remove familiar globally as that
+		// would have happened when it was placed originally
+		cf_builderState.usedFamiliarIds.delete(oldFamId);
+		cf_styleSelectedFamiliar(oldFamId, false);
+	}
+
 	// enforce Umberto max 1
 	if (targetType === "UmbertoInvestigation") {
 		const ui = cf_builderState.familiars.UmbertoInvestigation;
@@ -3970,6 +3981,18 @@ function cf_buildPatronSuffix(patronId) {
 
 function cf_getFavouriteText(fav) {
 	return fav > 0 ? ` (Fav: ${fav})` : ``;
+}
+
+function cf_buildIriSortNote() {
+	return addHTMLElement({
+		text:
+			`<em>If you don't want the dropdown to be sorted by favourites - add the ` +
+			`<code style="color:var(--TangerineYellow)">iri_sort</code> site flag in the settings.</em>`,
+		classes: `w100`,
+		styles: `text-align:center;text-wrap-style:balance;padding-top:8px;`,
+		small: true,
+		dim: true,
+	});
 }
 
 // =====================
