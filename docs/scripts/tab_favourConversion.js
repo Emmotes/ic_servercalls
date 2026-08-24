@@ -1,4 +1,4 @@
-const vfc = 1.103; // prettier-ignore
+const vfc = 1.200; // prettier-ignore
 const fc_FAVOURS = new Map([
 	[ 1, fc_createFavour(1, "Torm's Favor", "Torm", "Grand Tour of the Sword Coast", true, true, 1)],
 	[ 2, fc_createFavour(2, "Chauntea's Favor", "Chauntea", "Highharvestide", false, false, Infinity)],
@@ -108,7 +108,6 @@ async function fc_pullFavourData(userDetails) {
 async function fc_buildData(wrapper, userData) {
 	const deets = userData?.details?.reset_currencies ?? null;
 	const defs = userData?.defines?.reset_currency_defines ?? null;
-	const favourConvert = document.getElementById(`favourConvert`);
 	if (!Array.isArray(deets) || !Array.isArray(defs)) {
 		setWrapperFormat(wrapper, 0);
 		handleInvalidData(wrapper);
@@ -131,42 +130,46 @@ async function fc_displayFavourData(wrapper) {
 
 	let txt = ``;
 
-	const extraColWidth = 140;
-
-	const titleCol = addHTMLElements([
-		{text: `Current Favour`, styles: `width:${extraColWidth}px;`},
-		{text: `Campaign`},
-	]);
 	txt += addHTMLElements([
 		{text: `Favour Type`, classes: eFlex, header: true},
-		{text: titleCol, classes: sFlex, header: true},
+		{
+			text: `Current Favour`,
+			classes: sFlex,
+			header: true,
+			gridCol: `span 2`,
+		},
+		{text: `Campaign`, classes: sFlex, header: true},
 	]);
-	const ids = [...fc_currentFavours.keys()].filter(
-		(e) => fc_favourDefs.has(e) && fc_favourDefs.get(e).canConvertTo,
-	);
+	const ids = [];
+	const nonZeroTemps = [];
+	for (const [id, amnt] of fc_currentFavours) {
+		if (!fc_favourDefs.has(id)) continue;
+		if (fc_favourDefs.get(id).canConvertTo)
+			ids.push(id);
+		else if (amnt > 0)
+			nonZeroTemps.push(id);
+	}
 	ids.sort(fc_favourSort);
-	for (const id of ids) {
-		const amount = fc_currentFavours.get(id);
-		const favour = fc_favourDefs?.get(id) ?? null;
-		if (!favour || !favour.canConvertTo || favour.campaignName === "")
-			continue;
+	txt += fc_renderFavours(ids, sFlex, eFlex);
+
+	if (nonZeroTemps.length > 0) {
+		nonZeroTemps.sort(fc_favourSort);
+		txt += addHTMLElement({
+			text: `&nbsp;`,
+			styles: `height:0;`,
+			gridCol: `1 / -1`,
+		});
 		txt += addHTMLElements([
+			{text: `Favour Type`, classes: eFlex, header: true},
 			{
-				text: favour.displayName + `:`,
-				classes: eFlex,
-			},
-			{
-				text: addHTMLElements([
-					{
-						text: sciNote(amount),
-						styles: `width:${extraColWidth}px`,
-						id: `fc_amount_${id}`,
-					},
-					{text: favour.campaignName},
-				]),
+				text: `Current Favour`,
 				classes: sFlex,
+				header: true,
+				gridCol: `span 2`,
 			},
+			{text: `Temporary Favour`, classes: sFlex, header: true},
 		]);
+		txt += fc_renderFavours(nonZeroTemps, sFlex, eFlex);
 	}
 
 	if (fc_convertiblesSorted.length === 0) {
@@ -186,15 +189,20 @@ async function fc_displayFavourData(wrapper) {
 
 	txt += addHTMLElements([
 		{text: sourceLabel, classes: eFlex},
-		{text: fc_buildConvertSourceSelect(), classes: sFlex},
+		{
+			text: fc_buildConvertSourceSelect(),
+			classes: sFlex,
+			gridCol: `span 3`,
+		},
 		{text: `Favour Earned:`, classes: eFlex, hide: true, data: hideStage1},
 		{
 			text: `&nbsp;`,
-			classes: sFlex,
+			classes: eFlex,
 			hide: true,
 			data: hideStage1,
 			id: `fc_sourceFavour`,
 		},
+		{text: `&nbsp`, gridCol: `span 2`},
 		{text: targetLabel, classes: eFlex, hide: true, data: hideStage2},
 		{
 			text: `&nbsp;`,
@@ -202,15 +210,17 @@ async function fc_displayFavourData(wrapper) {
 			hide: true,
 			data: hideStage2,
 			id: `fc_targetSelectContainer`,
+			gridCol: `span 3`,
 		},
 		{text: `Current Favour:`, classes: eFlex, hide: true, data: hideStage3},
 		{
 			text: `&nbsp;`,
-			classes: sFlex,
+			classes: eFlex,
 			hide: true,
 			data: hideStage3,
 			id: `fc_targetFavour`,
 		},
+		{text: `&nbsp`, gridCol: `span 2`},
 		{
 			text: `Conversion Gain:`,
 			classes: eFlex,
@@ -219,11 +229,12 @@ async function fc_displayFavourData(wrapper) {
 		},
 		{
 			text: `&nbsp;`,
-			classes: sFlex,
+			classes: eFlex,
 			hide: true,
 			data: hideStage3,
 			id: `fc_targetConversion`,
 		},
+		{text: `&nbsp`, gridCol: `span 2`},
 		{
 			text: `Resulting Favour:`,
 			classes: eFlex,
@@ -232,11 +243,12 @@ async function fc_displayFavourData(wrapper) {
 		},
 		{
 			text: `&nbsp;`,
-			classes: sFlex,
+			classes: eFlex,
 			hide: true,
 			data: hideStage3,
 			id: `fc_targetResult`,
 		},
+		{text: `&nbsp`, gridCol: `span 2`},
 		{
 			text: fc_buildConvertButton(),
 			classes: cFlex + ` greenButton`,
@@ -252,6 +264,22 @@ async function fc_displayFavourData(wrapper) {
 	fc_stage1 = document.querySelectorAll(`[data-fcstage1="1"]`);
 	fc_stage2 = document.querySelectorAll(`[data-fcstage2="1"]`);
 	fc_stage3 = document.querySelectorAll(`[data-fcstage3="1"]`);
+}
+
+function fc_renderFavours(ids, sFlex, eFlex) {
+	let txt = ``;
+	for (const id of ids) {
+		const amount = fc_currentFavours.get(id);
+		const favour = fc_favourDefs?.get(id) ?? null;
+		if (!favour || favour.campaignName === "") continue;
+		txt += addHTMLElements([
+			{text: favour.displayName + `:`, classes: eFlex},
+			{text: sciNote(amount), id: `fc_amount_${id}`, classes: eFlex},
+			{text: `&nbsp;`},
+			{text: favour.campaignName, classes: sFlex},
+		]);
+	}
+	return txt;
 }
 
 function fc_buildConvertSourceSelect() {
@@ -373,6 +401,7 @@ async function fc_convertFavour() {
 			styles: `padding-left:10%;`,
 		});
 
+		fc_currentFavours.set(fc_convSource, 0);
 		const amount = Number(response?.reset_currency ?? -1);
 		if (amount > 0) fc_currentFavours.set(fc_convTarget, amount);
 
