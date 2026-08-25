@@ -1,6 +1,7 @@
-const vcf = 1.402; // prettier-ignore
+const vcf = 1.403; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
+const cf_LSKEY_importSortMode = `scImportSortMode`;
 const cf_serverCalls = new Set([
 	"getUserDetails",
 	"getFormationSaves",
@@ -83,6 +84,7 @@ let cf_builderState;
 let cf_activeFeatHeroId = -1;
 let cf_selectedHeroId = null;
 let cf_familiarGridPages = {curr: 1, max: -1};
+let cf_importSortingMode = null;
 
 function cf_registerData() {
 	cf_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
@@ -311,7 +313,7 @@ function cf_renderImportMode() {
 		txt +=
 			`<input id="cf_importGameButton" type="button" style="width:72%;margin-top:10px;" ` +
 			`value="Modify Existing Game Formation" onclick="${click}">`;
-		txt += cf_buildIriSortNote();
+		txt += cf_renderDropdownSortSelector();
 	} else if (type === `local`) {
 		const click =
 			dirty ?
@@ -321,7 +323,7 @@ function cf_renderImportMode() {
 		txt +=
 			`<input id="cf_importLocalButton" type="button" style="width:72%;margin-top:10px;" ` +
 			`value="Create from Browser Formation" onclick="${click}">`;
-		txt += cf_buildIriSortNote();
+		txt += cf_renderDropdownSortSelector();
 	} else if (type === `string`) {
 		const click =
 			dirty ?
@@ -347,6 +349,52 @@ function cf_renderImportMode() {
 	container.innerHTML = txt;
 }
 
+function cf_renderDropdownSortSelector() {
+	if (cf_importSortingMode == null)
+		cf_importSortingMode = cf_ls_getImportSortMode();
+	function isSel(value) {
+		return cf_importSortingMode === value ? " selected" : "";
+	}
+	const select =
+		`<select id="cf_importSortSelector" onchange="cf_updateImportSelect(this.value)" style="width:100%">` +
+		`<option value="fav_alpha"${isSel(`fav_alpha`)}>Favourite (Asc) → Alphabetical (Asc)</option>` +
+		`<option value="alpha"${isSel(`alpha`)}>Alphabetical (Asc)</option>` +
+		`</select>`;
+	return addHTMLElement({
+		text: addHTMLElements([
+			{
+				text: `<label for="cf_importSortSelector">Formation Search Sorting:</label>`,
+				classes: `f fr falc fje`,
+			},
+			{
+				text: select,
+				classes: `f fr falc fjs`,
+			},
+		]),
+		classes: `cf_importsImporter`,
+		styles: `padding:30px 0 0 0;grid-template-columns:1.2fr 1.8fr;`,
+	});
+}
+
+function cf_updateImportSelect(value) {
+	if (!value) value = `fav_alpha`;
+
+	if (value === cf_ls_getImportSortMode()) return;
+
+	cf_importSortingMode = value;
+	cf_ls_saveImportSortMode(value);
+
+	const eles = document.querySelectorAll(`div[id$="SelectWrapper"]`);
+	for (const ele of eles) {
+		if (ele.id.includes("Game"))
+			ele.outerHTML = cf_renderImportGameSelector();
+		else if (ele.id.includes("Local"))
+			ele.outerHTML = cf_renderImportLocalSelector(
+				ele.id.replace("Wrapper", ""),
+			);
+	}
+}
+
 function cf_renderImportGameSelector() {
 	const byCampaign = cf_data.formationSaves.byActualCampaignId;
 	const campaigns = cf_data.campaigns.byActualId;
@@ -364,14 +412,14 @@ function cf_renderImportGameSelector() {
 	txt += `<input type="hidden" id="cf_importGameSelect" value="-">`;
 	txt += `<div id="cf_importGameDropdown" style="position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;background:var(--ChineseBlack);border:1px solid currentColor;border-top:none;display:none;z-index:1000">`;
 
-	const siteFlags = f_getSiteFlags();
-	const irisiriSort = siteFlags.has("iri_sort");
+	if (cf_importSortingMode == null)
+		cf_importSortingMode = cf_ls_getImportSortMode();
 
 	for (const campaignId of campaignIds) {
 		const campaign = campaigns.get(campaignId);
 		const forms = byCampaign.get(campaignId);
 		const sorted = forms.sort((a, b) => {
-			if (!irisiriSort) {
+			if (cf_importSortingMode === `fav_alpha`) {
 				const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
 				if (favoriteOrder !== 0) return favoriteOrder;
 			}
@@ -521,8 +569,9 @@ function cf_renderImportLocalSelector(id) {
 		return `<select style="width:100%"><option>No saved formations</option></select>`;
 
 	const campaigns = cf_data.campaigns.byActualId;
-	const siteFlags = f_getSiteFlags();
-	const irisiriSort = siteFlags.has("iri_sort");
+
+	if (cf_importSortingMode == null)
+		cf_importSortingMode = cf_ls_getImportSortMode();
 
 	const sorted = saves
 		.map((save, index) => ({save, index}))
@@ -532,7 +581,7 @@ function cf_renderImportLocalSelector(id) {
 			if (ca.isEvent !== cb.isEvent) return ca.isEvent - cb.isEvent;
 			if (ca.baseId !== cb.baseId) return ca.baseId - cb.baseId;
 			if (ca.patronId !== cb.patronId) return ca.patronId - cb.patronId;
-			if (!irisiriSort) {
+			if (cf_importSortingMode === `fav_alpha`) {
 				const favoriteOrder = cf_saveFormationFavouriteSort(a, b);
 				if (favoriteOrder !== 0) return favoriteOrder;
 			}
@@ -3983,16 +4032,12 @@ function cf_getFavouriteText(fav) {
 	return fav > 0 ? ` (Fav: ${fav})` : ``;
 }
 
-function cf_buildIriSortNote() {
-	return addHTMLElement({
-		text:
-			`<em>If you don't want the dropdown to be sorted by favourites - add the ` +
-			`<code style="color:var(--TangerineYellow)">iri_sort</code> site flag in the settings.</em>`,
-		classes: `w100`,
-		styles: `text-align:center;text-wrap-style:balance;padding-top:8px;`,
-		small: true,
-		dim: true,
-	});
+function cf_migrateIriSort() {
+	if (!f_getSiteFlags().has(`iri_sort`)) return;
+	if (cf_ls_getImportSortMode() !== `fav_alpha`) return;
+
+	cf_updateImportSelect(`alpha`);
+	f_removeSiteFlag(`iri_sort`);
 }
 
 // =====================
@@ -4525,4 +4570,12 @@ function cf_ls_saveSavedFamiliars(mode) {
 
 function cf_ls_getSavedFamiliars() {
 	return ls_getPerAccount(cf_LSKEY_savedFamiliars, null);
+}
+
+function cf_ls_saveImportSortMode(value) {
+	ls_setGlobal_string(cf_LSKEY_importSortMode, value, `fav_alpha`);
+}
+
+function cf_ls_getImportSortMode() {
+	return ls_getGlobal(cf_LSKEY_importSortMode, `fav_alpha`);
 }

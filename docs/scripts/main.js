@@ -1,4 +1,4 @@
-const v = 4.300; // prettier-ignore
+const v = 4.301; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -69,6 +69,8 @@ function init() {
 
 	f_eventListeners();
 	f_updateSiteFlags();
+
+	cf_migrateIriSort();
 
 	t_initTabs();
 	const visiblePullTabs = t_currentTabs.filter(
