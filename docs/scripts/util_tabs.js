@@ -1,4 +1,4 @@
-const vt = 1.202; // prettier-ignore
+const vt = 1.203; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -412,52 +412,49 @@ async function pullAllTabsData() {
 }
 
 function t_addFairy(type, id, left, rand) {
-	const ele = document.getElementById(`f`);
-	if (!ele) return;
-
 	if (type == null) type = randInt(1, 4) === 1 ? `a` : `i`;
 	if (id == null) id = randInt(1, 4);
 	if (left == null) left = randInt(0, 1) === 1;
 
-	ele.style.cssText = ``;
-
 	// Helper to create and insert the image efficiently
-	const makeImg = (type, id, alt, flip) => {
+	const makeImg = (ele, type, id, alt, flip) => {
 		const img = document.createElement(`img`);
 		img.src = `images/assets/f${type}_${id}.webp`;
 		img.alt = alt;
 		if (flip) img.style.transform = `scaleX(-1)`;
-		img.addEventListener(`click`, t_removeFairy);
+		img.addEventListener(`click`, t_removeFairies);
 		ele.replaceChildren(img);
-		ele.hidden = false;
 	};
 
-	if (type === `a` && (pbCodeRunning || pbTimerRunning))
-		type = `i`;
-
 	if (type === `a`) {
-		const pullAll = document.getElementById(`allTabsDataPullButton`);
-		if (!pullAll) return;
+		const parent = document.getElementById("pullAllTabsDataContainer")
+			.children[0];
+		if (!parent) return;
 
+		const ele = document.createElement(`div`);
+		ele.classList.add(`t_f`);
 		ele.style.position = `absolute`;
 
-		const rect = pullAll.getBoundingClientRect();
 		const fam = id === 1 || id === 2;
+		ele.style.top =
+			id === 1 ? `-70px`
+			: id === 2 ? `-65px`
+			: `-35px`;
 
-		const y = rect.bottom - (fam ? 95 : 65);
-		ele.style.top = `${y}px`;
+		ele.style[left ? "left" : "right"] = fam ? `0` : `-110px`;
 
-		const x =
-			left ?
-				rect.left + (fam ? 20 : -100) + window.scrollX
-			:	rect.right + (fam ? -120 : -90) + window.scrollX;
-		ele.style.left = `${x}px`;
+		makeImg(ele, type, id, `Fairy attacking the Pull All button.`, !left);
 
-		makeImg(type, id, `Fairy attacking the Pull All button.`, !left);
+		parent.appendChild(ele);
 		return;
 	}
 
 	if (type === `i`) {
+		const parent = document.body;
+		if (!parent) return;
+
+		const ele = document.createElement(`div`);
+		ele.classList.add(`t_f`);
 		ele.style.position = `fixed`;
 
 		if (rand == null) rand = randInt(0, 2);
@@ -468,19 +465,16 @@ function t_addFairy(type, id, left, rand) {
 		else if (rand === 1) ele.style.top = `${window.innerHeight / 2}px`;
 		else ele.style.bottom = `10px`;
 
-		makeImg(type, id, `Fairy idle in the corner.`, !left);
+		makeImg(ele, type, id, `Fairy idle at the edges.`, !left);
+
+		parent.appendChild(ele);
 		return;
 	}
-
-	ele.textContent = ``;
-	ele.hidden = true;
 }
 
-function t_removeFairy() {
-	const ele = document.getElementById(`f`);
-	if (!ele) return;
-	ele.textContent = ``;
-	ele.hidden = true;
+function t_removeFairies() {
+	const eles = document.getElementsByClassName("t_f");
+	for (const ele of eles) ele.parentNode.removeChild(ele);
 
 	if (!t_fr || !Array.isArray(t_fr)) t_fr = [0, 30];
 	else t_fr[1] += 15;

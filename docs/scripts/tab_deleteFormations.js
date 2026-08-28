@@ -1,5 +1,6 @@
-const vdf = 1.100; // prettier-ignore
+const vdf = 2.000; // prettier-ignore
 const df_serverCalls = new Set(["getFormationSaves"]);
+let df_formsState = null;
 
 function df_registerData() {
 	df_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
@@ -41,6 +42,12 @@ function df_tab() {
 					<span class="f fr w100 p5">
 						&nbsp;
 					</span>
+					<span class="f falc fje mr2" style="width:100%;flex-direction:column" id="deleteFormsSummary">
+						&nbsp;
+					</span>
+					<span class="f fr w100 p5">
+						&nbsp;
+					</span>
 				`;
 }
 
@@ -56,7 +63,12 @@ async function df_pullFormationSaves(formationSaves) {
 			wrapper.innerHTML = `Waiting for formation saves data...`;
 			formationSaves = await getFormationSaves();
 		}
-		await df_displayFormationSaves(wrapper, formationSaves);
+		df_buildMaps(formationSaves);
+		if (df_formsState == null) {
+			handleInvalidData(wrapper);
+			return;
+		}
+		await df_displayFormationSaves(wrapper);
 		codeEnablePullButtons();
 	} catch (error) {
 		setWrapperFormat(wrapper, 0);
@@ -64,64 +76,114 @@ async function df_pullFormationSaves(formationSaves) {
 	}
 }
 
-async function df_displayFormationSaves(wrapper, saves) {
-	if (saves == null || saves.all_saves == null) {
+function df_buildMaps(saves) {
+	if (!saves || !saves.all_saves || !saves.formation_objects) {
+		df_formsState = null;
+		return;
+	}
+
+	const map = new Map();
+	for (const key in saves.all_saves) {
+		const campaignId = Number(key);
+		if (campaignId === -1) continue;
+
+		const formObj = saves.formation_objects?.[key];
+		if (!formObj) continue;
+
+		const patronId = Number(formObj?.patron_id ?? 0);
+		const campaignName =
+			c_campaignIds.get(campaignId) ?? formObj?.campaign_name;
+		if (!campaignName) continue;
+
+		const patronName =
+			patronId === 0 ? `No Patron` : c_patronById?.get(patronId);
+		if (!patronName) continue;
+
+		if (!map.has(campaignId)) map.set(campaignId, new Map());
+		if (!map.get(campaignId).has(patronId))
+			map.get(campaignId).set(patronId, []);
+
+		for (const form of saves.all_saves[key]) {
+			const id = Number(form.formation_save_id ?? -1);
+			if (id < 0) continue;
+
+			const name = form?.name;
+			if (!name) continue;
+
+			const fav = Number(form.favorite ?? 0);
+			const formation = form.formation;
+			const hasFeats = !Array.isArray(formation?.feats ?? []);
+			const tooltip = df_createFormationTooltip(name, formation, formObj);
+
+			map.get(campaignId).get(patronId).push({
+				id,
+				name,
+				fav,
+				formation,
+				hasFeats,
+				tooltip,
+				campaignId,
+				campaignName,
+				patronId,
+				patronName,
+				markedForDelete: false,
+			});
+		}
+	}
+
+	df_formsState = map;
+}
+
+async function df_displayFormationSaves(wrapper) {
+	if (!(df_formsState instanceof Map)) {
 		wrapper.innerHTML = `Error.`;
 		return;
 	}
-	const all = saves.all_saves;
-	const formObjs = saves.formation_objects;
 	let c = ``;
 	let added = 0;
-	for (let key in all) {
-		if (key === "-1") continue;
-		const id = Number(key);
-		const camp = id % 1000;
-		let patron = id - camp;
-		const formObj = formObjs[`${id}`];
-		let campName = c_campaignIds.get(camp);
-		if (id > 1000 && id < 1000000) campName = formObj.campaign_name;
-		if (patron > 1000000) patron = (patron - 1000000) / 100000;
-		if (campName == null) campName = `Unknown Campaign ID: ${camp}`;
-		let patronName = patron === 0 ? `` : c_patronById.get(patron);
-		if (patronName == null) patronName = ``;
-		const patronDisplay = patronName === `` ? `No Patron` : patronName;
-		c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${campName}<br>${patronDisplay}</span><span class="formsCampaign" id="formsCamp_${key}">`;
-		for (let formation of all[key]) {
-			const formId = formation.formation_save_id;
-			const campId = Number(formation.campaign_id);
-			const formName = formation.name;
-			const formFav = Number(formation.favorite || 0);
-			const formLet =
-				formFav === 1 ? `Q`
-				: formFav === 2 ? `W`
-				: formFav === 3 ? `E`
-				: ``;
-			const formFeats =
-				Object.prototype.toString.call(formation.feats || []) !==
-				`[object Array]`;
-			let extras = ``;
-			if (formLet !== ``) extras += `Fav: ${formLet}`;
-			if (formFeats) {
-				if (extras !== ``) extras += " / ";
-				extras += "Has Feats";
+	for (const [campaignId, patrons] of df_formsState) {
+		for (const [patronId, formations] of patrons) {
+			const groupId = `${campaignId}_${patronId}`;
+			const group = formations[0];
+			if (!group) continue;
+			c += `<span style="display:flex;flex-direction:column"><span class="formsCampaignTitle">${group.campaignName}<br>${group.patronName}</span><span class="formsCampaign" id="formsCamp_${groupId}">`;
+			for (const formation of formations) {
+				const formId = formation.id;
+				const formName = formation.name;
+				const formFav = formation.fav;
+				const formLet =
+					formFav === 1 ? `Q`
+					: formFav === 2 ? `W`
+					: formFav === 3 ? `E`
+					: ``;
+				const formFeats = formation.hasFeats;
+				let extras = ``;
+				if (formLet !== ``) extras += `Fav: ${formLet}`;
+				if (formFeats) {
+					if (extras !== ``) extras += " / ";
+					extras += "Has Feats";
+				}
+				if (extras !== ``) extras = ` (${extras})`;
+				const tt = formation.tooltip;
+				c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}"${formation.markedForDelete ? ` checked` : ``} onchange="df_markFormationForDelete(${campaignId},${patronId},${formId},this.checked)"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
+				added++;
 			}
-			if (extras !== ``) extras = ` (${extras})`;
-			const tt = df_createFormationTooltip(
-				formName + extras,
-				formation.formation,
-				formObj,
-			);
-			c += `<span class="formsCampaignFormation"><input type="checkbox" id="form_${formId}" name="${formName}" data-camp="${campName}" data-campid="${campId}" data-extras="${extras}"><label class="cblabel" for="form_${formId}">${formName}${extras}</label>${tt}</span>`;
-			added++;
+			c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${groupId}" type="button" onClick="df_formsSelectAll(${campaignId},${patronId},true)" value="Select All"><input id="forms_selectNone_${groupId}" type="button" onClick="df_formsSelectAll(${campaignId},${patronId},false)" value="Deselect All"></span></span></span>`;
 		}
-		c += `<span class="formsCampaignSelect"><input id="forms_selectAll_${key}" type="button" onClick="df_formsSelectAll('${key}',true)" value="Select All"><input id="forms_selectNone_${key}" type="button" onClick="df_formsSelectAll('${key}',false)" value="Deselect All"></span></span></span>`;
 	}
 	setWrapperFormat(wrapper, 1);
 	wrapper.innerHTML = c;
 	const deleteFormsDeleter = document.getElementById(`deleteFormsDeleter`);
 	let fd = ``;
-	if (document.querySelectorAll('input[name="___AUTO___SAVE___"]').length > 0)
+	if (
+		[...df_formsState.values()].some((patrons) =>
+			[...patrons.values()].some((formations) =>
+				formations.some(
+					(formation) => formation.name === `___AUTO___SAVE___`,
+				),
+			),
+		)
+	)
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:50%"><input type="button" onClick="df_toggleSelectAutosaveForms()" id="toggleSelectAutosaveFormsButton" value="Select All Autosaved Formations"></span></span><br>`;
 	if (added > 0)
 		fd += `<span class="f fr w100 p5"><span class="f falc fje mr2 redButton" style="width:50%" id="formationsDeleteRow"><input type="button" onClick="df_deleteFormationSaves()" name="formationsDeleteButton" id="formationsDeleteButton" style="font-size:0.9em;min-width:180px" value="Delete Selected Formations"></span></span>`;
@@ -182,72 +244,130 @@ function df_createFormationTooltip(name, champs, formation) {
 	return `<span class="tooltipContents">${name}${svg}</span>`;
 }
 
-function df_formsSelectAll(id, check) {
-	for (let ele of document
-		.getElementById(`formsCamp_${id}`)
-		.querySelectorAll('input[type="checkbox"]'))
-		ele.checked = check;
+function df_markFormationForDelete(campaignId, patronId, formationId, check) {
+	const formations = df_formsState?.get(campaignId)?.get(patronId) ?? [];
+	const formation = formations.find((form) => form.id === formationId);
+	if (formation) formation.markedForDelete = check;
+}
+
+function df_refreshFormationCheckboxes() {
+	for (const patrons of df_formsState?.values() ?? [])
+		for (const formations of patrons.values())
+			for (const formation of formations) {
+				const checkbox = document.getElementById(
+					`form_${formation.id}`,
+				);
+				if (checkbox) checkbox.checked = formation.markedForDelete;
+			}
+}
+
+function df_formsSelectAll(campaignId, patronId, check) {
+	const formations = df_formsState?.get(campaignId)?.get(patronId) ?? [];
+	for (const formation of formations) formation.markedForDelete = check;
+	df_refreshFormationCheckboxes();
 }
 
 function df_toggleSelectAutosaveForms() {
 	const button = document.getElementById(`toggleSelectAutosaveFormsButton`);
+	if (!button) return;
+
 	const check = !button.value.includes(`Deselect`);
-	for (let ele of document.querySelectorAll(
-		'input[name="___AUTO___SAVE___"]',
-	))
-		ele.checked = check;
+	for (const patrons of df_formsState?.values() ?? [])
+		for (const formations of patrons.values())
+			for (const formation of formations)
+				if (formation.name === `___AUTO___SAVE___`)
+					formation.markedForDelete = check;
 	button.value = `${check ? `Deselect` : `Select`} All Autosaved Formations`;
+	df_refreshFormationCheckboxes();
 }
 
 async function df_deleteFormationSaves() {
 	df_disableAllFormationsButtonsAndCheckboxes(true);
-	const deleteFormsDeleter = document.getElementById(`deleteFormsDeleter`);
+	const deleteFormsSummary = document.getElementById(`deleteFormsSummary`);
+
+	const deleteButton = document.getElementById(`formationsDeleteButton`);
+	if (deleteButton) deleteButton.hidden = true;
+
 	let c = `<span class="f fr w100 p5">Deleting Formation Saves:</span>`;
-	deleteFormsDeleter.innerHTML = c;
+	deleteFormsSummary.innerHTML = c;
 	let count = 0;
-	for (let form of document.querySelectorAll('[id^="form_"]')) {
-		if (!form.checked) continue;
-		count++;
-		const id = Number(form.id.replaceAll("form_", ""));
-		let autosaveError = false;
-		if (form.name === `___AUTO___SAVE___`) {
-			if (autosaveError) {
-				form.parentNode.style.display = `none`;
-				form.checked = false;
-				continue;
-			}
-			// Can't delete the autosaves atm. So have to rename them first.
-			const campId = form.dataset.campid;
-			const result = await saveFormation(
-				id,
-				campId,
-				`renameAutoSaveToDeleteIt`,
-			);
-			if (result[FR] === `Invalid or incomplete parameters`) {
-				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
-				autosaveError = true;
-				form.parentNode.style.display = `none`;
-				form.checked = false;
-				deleteFormsDeleter.innerHTML = c;
-				continue;
+	let autosaveError = false;
+	for (const [campaignId, patrons] of df_formsState ?? []) {
+		for (const formations of patrons.values()) {
+			for (const form of [...formations]) {
+				if (!form || !form.markedForDelete) continue;
+				count++;
+				if (form.name === `___AUTO___SAVE___`) {
+					if (autosaveError) continue;
+					// Can't delete the autosaves atm. So have to rename them first.
+					const result = await saveFormation(
+						form.id,
+						campaignId,
+						`renameAutoSaveToDeleteIt`,
+					);
+					if (result[FR] === `Invalid or incomplete parameters`) {
+						c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- Failed to delete:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">Your browser is modifying parameters required for the deletion of autosave formations. Ignoring further autosaves.</span></span>`;
+						autosaveError = true;
+						deleteFormsSummary.innerHTML = c;
+						continue;
+					}
+				}
+				const result = await deleteFormationSave(form.id);
+				const extras = [];
+				if (form.fav > 0 && form.fav < 4)
+					extras.push(`Fav: ${[``, `Q`, `W`, `E`][form.fav]}`);
+				if (form.hasFeats) extras.push(`Has Feats`);
+				let successType = ``;
+				if (result["success"] && result["okay"]) {
+					successType = `Successfully deleted`;
+					df_removeFormationFromStateAndUI(form);
+				} else successType = `Failed to delete`;
+
+				c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.campaignName}${extras.length > 0 ? ` (${extras.join(" / ")})` : ``}</span></span>`;
+				deleteFormsSummary.innerHTML = c;
 			}
 		}
-		const result = await deleteFormationSave(id);
-		const extras = form.dataset.extras;
-		let successType = ``;
-		if (result["success"] && result["okay"])
-			successType = `Successfully deleted`;
-		else successType = `Failed to delete`;
-		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- ${successType}:</span><span class="f falc fjs ml2" style="flex-grow:1;margin-left:5px;flex-wrap:wrap">${form.name} in ${form.dataset.camp}${extras}</span></span>`;
-		form.parentNode.style.display = `none`;
-		form.checked = false;
-		deleteFormsDeleter.innerHTML = c;
 	}
 	if (count === 0) {
 		c += `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:175px;margin-right:5px;flex-wrap:nowrap;flex-shrink:0">- None</span></span>`;
-		deleteFormsDeleter.innerHTML = c;
+		deleteFormsSummary.innerHTML = c;
 	}
+	await df_displayFormationSaves(
+		document.getElementById(`deleteFormsWrapper`),
+	);
 	df_disableAllFormationsButtonsAndCheckboxes(false);
+}
+
+function df_removeFormationFromStateAndUI(form) {
+	const campaignId = form.campaignId;
+	const patronId = form.patronId;
+	const index = df_formsState.get(campaignId).get(patronId).indexOf(form);
+	if (campaignId < 1 || patronId < 0 || index < 0) return;
+
+	// Delete the formation from the state.
+	df_formsState.get(campaignId).get(patronId).splice(index, 1);
+
+	// Delete the formation from the UI
+	const formEle = document?.getElementById(`form_${form.id}`)?.parentElement;
+	if (formEle && formEle.parentElement)
+		formEle.parentElement.removeChild(formEle);
+
+	// If there are no more formations for this campaign and patron
+	if (df_formsState.get(campaignId).get(patronId).length === 0) {
+		// Remove the patronId array from the campaignId map.
+		df_formsState.get(campaignId).delete(patronId);
+
+		// And remove the campaign/patron box from the UI
+		const campPatEle = document?.getElementById(
+			`formsCamp_${campaignId}_${patronId}`,
+		)?.parentElement;
+		if (campPatEle && campPatEle.parentElement)
+			campPatEle.parentElement.removeChild(campPatEle);
+
+		// Remove the campaignId map if it has no more patronId arrays.
+		if (df_formsState.get(campaignId).size === 0)
+			df_formsState.delete(campaignId);
+	}
 }
 
 function df_disableAllFormationsButtonsAndCheckboxes(disable) {

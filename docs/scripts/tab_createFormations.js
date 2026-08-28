@@ -1,4 +1,4 @@
-const vcf = 1.403; // prettier-ignore
+const vcf = 1.404; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_LSKEY_importSortMode = `scImportSortMode`;
@@ -163,11 +163,7 @@ async function cf_pullFormationSaves(userDetails, formationSaves, definitions) {
 		}
 		cf_data = cf_buildMaps(details, formationSaves, definitions);
 		if (!cf_data) {
-			wrapper.innerHTML = addHTMLElement({
-				text: `Pulled data is somehow invalid. Cannot continue without it.`,
-				classes: `f fr w100 p5`,
-			});
-			codeEnablePullButtons();
+			handleInvalidData(wrapper);
 			return;
 		}
 		cf_setMaxFamiliarPages();
