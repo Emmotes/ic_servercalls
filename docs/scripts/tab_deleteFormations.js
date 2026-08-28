@@ -1,4 +1,4 @@
-const vdf = 2.000; // prettier-ignore
+const vdf = 2.001; // prettier-ignore
 const df_serverCalls = new Set(["getFormationSaves"]);
 let df_formsState = null;
 
@@ -59,6 +59,8 @@ async function df_pullFormationSaves(formationSaves) {
 	const wrapper = document.getElementById(`deleteFormsWrapper`);
 	setWrapperFormat(wrapper, 0);
 	try {
+		const summary = document.getElementById(`deleteFormsSummary`);
+		if (summary) summary.innerHTML = `&nbsp;`;
 		if (!formationSaves) {
 			wrapper.innerHTML = `Waiting for formation saves data...`;
 			formationSaves = await getFormationSaves();
