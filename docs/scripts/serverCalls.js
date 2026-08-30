@@ -1,4 +1,4 @@
-const vs = 3.035; // prettier-ignore
+const vs = 3.036; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -749,6 +749,75 @@ async function unequipCardSleeve(heroId) {
 	return await sendServerCall(SERVER, "equipcardsleeve", params, true, true);
 }
 
+async function getBastionDetails() {
+	return await sendServerCall(
+		SERVER,
+		"getbastiondetails",
+		undefined,
+		true,
+		true,
+	);
+}
+
+async function unlockBastionRoom(roomId) {
+	const params = [["room_id", roomId]];
+	return await sendServerCall(
+		SERVER,
+		"unlockbastionroom",
+		params,
+		true,
+		true,
+	);
+}
+
+async function unlockBastionRoomFeature(roomId, roomLevel) {
+	const params = [
+		["room_id", roomId],
+		["room_level", roomLevel],
+	];
+	return await sendServerCall(
+		SERVER,
+		"unlockbastionroomfeature",
+		params,
+		true,
+		true,
+	);
+}
+
+async function levelUpBastionRoom(roomId) {
+	const params = [["room_id", roomId]];
+	return await sendServerCall(
+		SERVER,
+		"levelupbastionroom",
+		params,
+		true,
+		true,
+	);
+}
+
+async function saveBastionLayout(layout) {
+	// I have no idea what format `layout` takes yet.
+	const params = [["details", JSON.stringify(layout, stringifyReplacer)]];
+	return await sendServerCall(
+		SERVER,
+		"savebastionlayout",
+		params,
+		true,
+		true,
+	);
+}
+
+async function purchaseBastionTrophy(trophyId) {
+	const params = [["trophy_id", trophyId]];
+	return await sendServerCall(
+		SERVER,
+		"purchasebastiontrophy",
+		params,
+		true,
+		true,
+	);
+}
+
 async function getServerStatus() {
 	const res = await fetch(STATUS, {});
 	if (!res.ok) throw new Error(`Status fetch failed: ${res.status}`);
@@ -844,7 +913,10 @@ async function sendServerCall(
 				console.log(`${server}post.php?${call}`);
 				console.log(` - Unknown Error: ${response[FR]}`);
 				console.log(` - Response`, sanitised);
-				throw new Error(response?.[FR] || JSON.stringify(sanitised, stringifyReplacer));
+				throw new Error(
+					response?.[FR] ||
+						JSON.stringify(sanitised, stringifyReplacer),
+				);
 			}
 		}
 		limit++;
