@@ -1,4 +1,4 @@
-const v = 4.301; // prettier-ignore
+const v = 4.400; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -26,9 +26,9 @@ const allTabsDataPullButton = document.getElementById(`allTabsDataPullButton`);
 const supportUrl = document.getElementById(`supportUrl`);
 const NF_GROUPS = {useGrouping: true, maximumFractionDigits: 2};
 const TIME_UNITS = {
-	long: {d: ["day", "days"], h: ["hour", "hours"], m: ["minute", "minutes"], s: ["second", "seconds"], ms: ["millisecond", "milliseconds"]},
-	medium: {d: ["day", "days"], h: ["hr", "hrs"], m: ["min", "mins"], s: ["sec", "secs"], ms: ["ms", "ms"]},
-	short: {d: ["d", "d"], h: ["h", "h"], m: ["m", "m"], s: ["s", "s"], ms: ["ms", "ms"]},
+	long: {y: ["year", "years"], mo: ["month", "months"], d: ["day", "days"], h: ["hour", "hours"], m: ["minute", "minutes"], s: ["second", "seconds"], ms: ["millisecond", "milliseconds"]},
+	medium: {y: ["yr", "yrs"], mo: ["mon", "mons"], d: ["day", "days"], h: ["hr", "hrs"], m: ["min", "mins"], s: ["sec", "secs"], ms: ["ms", "ms"]},
+	short: {y: ["y", "y"], mo: ["m", "m"], d: ["d", "d"], h: ["h", "h"], m: ["m", "m"], s: ["s", "s"], ms: ["ms", "ms"]},
 }; // prettier-ignore
 const sciNoteForm = new Intl.NumberFormat(undefined, {
 	maximumFractionDigits: 2,
@@ -444,13 +444,12 @@ function sanitise(obj) {
 
 async function refreshSettingsList() {
 	const userAccounts = getUserAccounts();
-	
+
 	settingsList.replaceChildren();
 
 	for (const name in userAccounts.accounts) {
 		const option = new Option(name, name);
-		option.selected =
-			currAccount != null && currAccount.name === name;
+		option.selected = currAccount != null && currAccount.name === name;
 		settingsList.append(option);
 	}
 
@@ -839,59 +838,217 @@ function dateFormat(input, options = {}) {
 	return Intl.DateTimeFormat("en-GB", params).format(input);
 }
 
-function getDisplayTime(timeMs, options = {}) {
+function getDisplayTime(startEpoch, endEpoch, options = {}) {
+	if (arguments.length === 1 && typeof startEpoch === "number") {
+		endEpoch = new Date().getTime();
+		startEpoch = endEpoch - startEpoch;
+		options = {};
+	} else if (arguments.length === 2 && typeof endEpoch === "object") {
+		options = endEpoch;
+		endEpoch = new Date().getTime();
+		startEpoch = endEpoch - startEpoch;
+	}
+	if (typeof startEpoch !== "number" || !isFinite(startEpoch)) {
+		console.log(
+			`Invalid startEpoch provided to getDisplayTime():`,
+			startEpoch,
+		);
+		startEpoch = 0;
+	}
+	if (typeof endEpoch !== "number" || !isFinite(endEpoch)) {
+		console.log(`Invalid endEpoch provided to getDisplayTime():`, endEpoch);
+		endEpoch = 0;
+	}
 	const {
 		showMs = false,
 		showSecs = true,
 		style = "medium",
 		pad = true,
+		useTemporal = true,
 	} = options;
+
+	startEpoch = Math.floor(Number(startEpoch || 0));
+	endEpoch = Math.floor(Number(endEpoch || 0));
 
 	// Note: Always pad milliseconds.
 	const getPad = (t, p) => (pad ? padZeros(t, p) : t);
 
-	const ms = Math.max(0, Number(timeMs) || 0);
-
+	const ms = Math.max(0, Number(endEpoch || 0) - Number(startEpoch || 0));
 	const totalSeconds = Math.floor(ms / 1000);
-	const milliseconds = ms % 1000;
+	let timeObj = {};
 
-	const seconds = totalSeconds % 60;
-	const minutes = Math.floor(totalSeconds / 60) % 60;
-	const hours = Math.floor(totalSeconds / 3600) % 24;
-	const days = Math.floor(totalSeconds / 86400);
+	if (useTemporal && typeof Temporal !== "undefined" && Temporal != null) {
+		const start = Temporal.Instant.fromEpochMilliseconds(startEpoch);
+		const end = Temporal.Instant.fromEpochMilliseconds(endEpoch);
+		const duration = start.until(end);
+		timeObj = duration.round({
+			smallestUnit:
+				showMs ? "millisecond"
+				: showSecs ? "second"
+				: "minute",
+			largestUnit: "years",
+			relativeTo: end.toZonedDateTimeISO("UTC"),
+		});
+	} else {
+		timeObj = getCalendarDiff(startEpoch, endEpoch);
+	}
 
 	if (style === "clock") {
 		const totalHours = Math.floor(totalSeconds / 3600);
 		const base =
 			getPad(totalHours, 2) +
 			":" +
-			getPad(minutes, 2) +
+			getPad(timeObj.minutes, 2) +
 			":" +
-			getPad(seconds, 2);
-
-		return showMs ? base + "." + padZeros(milliseconds, 3) : base;
+			getPad(timeObj.seconds, 2);
+		return showMs ? base + "." + padZeros(timeObj.milliseconds, 3) : base;
 	}
 
+	const parts = buildDisplayParts(timeObj, getPad, style, showMs, showSecs);
+	return parts.join(" ");
+}
+
+function getCalendarDiff(startEpoch, endEpoch) {
+	const start = new Date(startEpoch);
+	const end = new Date(endEpoch);
+	const zero = {
+		years: 0,
+		months: 0,
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		milliseconds: 0,
+	};
+	if (endEpoch <= startEpoch) return zero;
+
+	const getMonthLength = (year, monthIndex) =>
+		new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+
+	const isLastDayOfMonth = (date) => {
+		const value = new Date(date.getTime());
+		return (
+			value.getUTCDate() ===
+			getMonthLength(value.getUTCFullYear(), value.getUTCMonth())
+		);
+	};
+
+	const addYears = (date, years) => {
+		const value = new Date(date.getTime());
+		const month = value.getUTCMonth();
+		const day = value.getUTCDate();
+		const targetYear = value.getUTCFullYear() + years;
+		const monthLength = getMonthLength(targetYear, month);
+		const dayOfMonth =
+			isLastDayOfMonth(value) ? monthLength : Math.min(day, monthLength);
+		return new Date(
+			Date.UTC(
+				targetYear,
+				month,
+				dayOfMonth,
+				value.getUTCHours(),
+				value.getUTCMinutes(),
+				value.getUTCSeconds(),
+				value.getUTCMilliseconds(),
+			),
+		);
+	};
+
+	const addMonths = (date, months) => {
+		const value = new Date(date.getTime());
+		const targetMonth = value.getUTCMonth() + months;
+		const targetYear =
+			value.getUTCFullYear() + Math.floor(targetMonth / 12);
+		const normalizedMonth = ((targetMonth % 12) + 12) % 12;
+		const monthLength = getMonthLength(targetYear, normalizedMonth);
+		const dayOfMonth =
+			isLastDayOfMonth(value) ? monthLength : (
+				Math.min(value.getUTCDate(), monthLength)
+			);
+		return new Date(
+			Date.UTC(
+				targetYear,
+				normalizedMonth,
+				dayOfMonth,
+				value.getUTCHours(),
+				value.getUTCMinutes(),
+				value.getUTCSeconds(),
+				value.getUTCMilliseconds(),
+			),
+		);
+	};
+
+	const addDays = (date, days) => new Date(date.getTime() + days * 86400000);
+
+	let current = new Date(start.getTime());
+	const diff = {...zero};
+
+	while (true) {
+		const next = addYears(current, 1);
+		if (next.getTime() > end.getTime()) break;
+		current = next;
+		diff.years++;
+	}
+
+	while (true) {
+		const next = addMonths(current, 1);
+		if (next.getTime() > end.getTime()) break;
+		current = next;
+		diff.months++;
+	}
+
+	while (true) {
+		const next = addDays(current, 1);
+		if (next.getTime() > end.getTime()) break;
+		current = next;
+		diff.days++;
+	}
+
+	let remaining = end.getTime() - current.getTime();
+	diff.hours = Math.floor(remaining / 3600000);
+	remaining -= diff.hours * 3600000;
+	diff.minutes = Math.floor(remaining / 60000);
+	remaining -= diff.minutes * 60000;
+	diff.seconds = Math.floor(remaining / 1000);
+	remaining -= diff.seconds * 1000;
+	diff.milliseconds = remaining;
+
+	return diff;
+}
+
+function buildDisplayParts(timeObj, getPad, style, showMs, showSecs) {
+	const {years, months, days, hours, minutes, seconds, milliseconds} =
+		timeObj;
 	const u = TIME_UNITS[style] || TIME_UNITS.medium;
 	const parts = [];
 
-	if (days > 0) parts.push(`${days} ${days === 1 ? u.d[0] : u.d[1]}`);
+	if (years > 0) parts.push(`${years} ${years === 1 ? u.y[0] : u.y[1]}`);
+	if (years > 0 || months > 0)
+		parts.push(`${months} ${months === 1 ? u.mo[0] : u.mo[1]}`);
+	if (years > 0 || months > 0 || days > 0)
+		parts.push(`${days} ${days === 1 ? u.d[0] : u.d[1]}`);
 
-	if (days > 0 || hours > 0)
+	if (years > 0 || months > 0 || days > 0 || hours > 0)
 		parts.push(`${hours} ${hours === 1 ? u.h[0] : u.h[1]}`);
 
-	if (days > 0 || hours > 0 || minutes > 0)
+	if (years > 0 || months > 0 || days > 0 || hours > 0 || minutes > 0)
 		parts.push(`${getPad(minutes, 2)} ${minutes === 1 ? u.m[0] : u.m[1]}`);
 
 	if (
 		showSecs &&
-		(!showMs || days > 0 || hours > 0 || minutes > 0 || seconds > 0)
+		(!showMs ||
+			years > 0 ||
+			months > 0 ||
+			days > 0 ||
+			hours > 0 ||
+			minutes > 0 ||
+			seconds > 0)
 	)
 		parts.push(`${getPad(seconds, 2)} ${seconds === 1 ? u.s[0] : u.s[1]}`);
 
 	if (showMs) parts.push(`${padZeros(milliseconds, 3)} ${u.ms[0]}`);
 
-	return parts.join(" ");
+	return parts;
 }
 
 function padZeros(num, places) {
@@ -1038,13 +1195,17 @@ function arrayToListReadable(arr, options) {
 }
 
 function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-    }[char]));
+	return String(value).replace(
+		/[&<>"']/g,
+		(char) =>
+			({
+				"&": "&amp;",
+				"<": "&lt;",
+				">": "&gt;",
+				'"': "&quot;",
+				"'": "&#39;",
+			})[char],
+	);
 }
 
 function stringifyReplacer(key, value) {
