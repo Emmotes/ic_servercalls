@@ -1,4 +1,4 @@
-const v = 4.400; // prettier-ignore
+const v = 4.401; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -234,22 +234,19 @@ function initSettingsNumberFormat() {
 	const num = 12345.67;
 
 	let opts = ``;
-	const types = [undefined, "fr-FR", "en-GB", "de-DE"];
-	for (let k = 0; k < types.length; k++) {
-		let name = "Browser";
-		switch (k) {
-			case 1:
-				name = "&nbsp;&nbsp;Space";
-				break;
-			case 2:
-				name = "&nbsp;&nbsp;Comma";
-				break;
-			case 3:
-				name = "&nbsp;Period";
-		}
-		opts += `<option value="${types[k] == null ? "-" : types[k]}"${
-			types[k] === setting ? " selected" : ""
-		}>${name}: ${new Intl.NumberFormat(types[k], NF_GROUPS).format(
+	const types = [
+		{name: "Browser", type: undefined},
+		{name: "Comma", type: "en-GB"},
+		{name: "Period", type: "de-DE"},
+		{name: "Space", type: "fr-FR"},
+		{name: "Apostrophe", type: "de-CH"},
+	];
+	const l = types.map(e=>e.name.length).reduce((a,b)=>a>b?a:b);
+	for (const obj of types) {
+		const {name, type} = obj;
+		opts += `<option value="${type}"${
+			type === setting ? " selected" : ""
+		}>${"&nbsp;".repeat(l - name.length)}${name}: ${new Intl.NumberFormat(type, NF_GROUPS).format(
 			num,
 		)}</option>`;
 	}
