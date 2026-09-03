@@ -1,4 +1,4 @@
-const v = 4.401; // prettier-ignore
+const v = 4.402; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -244,7 +244,7 @@ function initSettingsNumberFormat() {
 	const l = types.map(e=>e.name.length).reduce((a,b)=>a>b?a:b);
 	for (const obj of types) {
 		const {name, type} = obj;
-		opts += `<option value="${type}"${
+		opts += `<option value="${type??"-"}"${
 			type === setting ? " selected" : ""
 		}>${"&nbsp;".repeat(l - name.length)}${name}: ${new Intl.NumberFormat(type, NF_GROUPS).format(
 			num,
