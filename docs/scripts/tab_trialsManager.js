@@ -1,4 +1,4 @@
-const vtm = 1.101; // prettier-ignore
+const vtm = 1.102; // prettier-ignore
 const tm_serverCalls = new Set(["trialsRefreshData", "getDefinitions"]);
 const tm_definitionsFilters = new Set([
 	"hero_defines",
@@ -761,6 +761,7 @@ function tm_displayRunningTrial(wrapper, campaign) {
 	const diff = tm_diffs[tier];
 	const tierName = diff.name;
 	const day = campaign.current_day;
+	const playerIndex = Number(campaign.active_player_index);
 	let completed = false;
 	if (
 		campaign.dps_bonuses_earned != null &&
@@ -810,7 +811,7 @@ function tm_displayRunningTrial(wrapper, campaign) {
 		`<span style="font-size:0.9em;color:var(--Boulder)">Active timers are based on the last time you pulled data.</span>`,
 	);
 	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Players:</span>`;
-	for (let roleId of playersByRoleKeys) {
+	for (const roleId of playersByRoleKeys) {
 		const roleName = tm_roles[roleId];
 		const player = playersByRole[roleId];
 		if (player.empty) txt += tm_addRow(`${roleName}:`, `-`);
@@ -822,6 +823,14 @@ function tm_displayRunningTrial(wrapper, campaign) {
 				nf(player.dps),
 			);
 	}
+	txt += `<span class="f fr w100 p5">&nbsp;</span>`;
+	txt += `<span class="f fr w100 p5" style="font-size:1.2em">Current Restrictions:</span>`;
+	const playerChamp = tm_champsById?.[campaign?.players?.[playerIndex]?.hero_id ?? -1];
+	if (playerChamp != null)
+		txt += tm_addRow(`Your ${playerChamp} is in the Trials jail.`);
+	for (const restriction of campaign?.active_game_rules ?? [])
+		txt += tm_addRow(restriction + (!restriction.endsWith(".") ? "." : ""));
+
 	wrapper.innerHTML = txt;
 
 	createTimer(
@@ -923,6 +932,11 @@ function tm_addRowHeader(txt) {
 }
 
 function tm_addRow(left, right, left2, right2) {
+	if (arguments.length === 1)
+		return (
+			`<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:10%;min-width:100px;">&nbsp;</span>` +
+			`<span class="f falc fjs mr2" style="width:90%;min-width:300px;">${left}</span></span>`
+		);
 	const hasLeftAndRight2 = left2 != null && right2 != null;
 	let txt = `<span class="f fr w100 p5"><span class="f falc fje mr2" style="width:25%;min-width:200px;">${left}</span><span class="f falc fjs mr2${
 		right.includes('input type="checkbox') ? " greenCheckbox" : ""
