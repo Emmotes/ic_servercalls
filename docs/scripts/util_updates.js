@@ -1,4 +1,4 @@
-const vu = 1.103; // prettier-ignore
+const vu = 1.104; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -118,7 +118,21 @@ const u_FEATURE_UPDATES = new Map([
 				"For people whose browsers seem to forget easily.",
 			],
 			setting: true,
-		}
+		},
+	],
+	[
+		9,
+		{
+			id: 9,
+			date: "2026-09-06",
+			title: "New Tab: Bastion",
+			list: [
+				"Displays details of your Bastion rooms.",
+				"Also includes the trophies you have or haven't unlocked.",
+			],
+			tab: "bastion",
+			flag: "beta",
+		},
 	],
 ]);
 let u_currentUnseenUpdateIds = new Set([]);
@@ -127,7 +141,11 @@ function u_displayUnseenUpdates() {
 	const cont = document.getElementById(u_updatesContainer);
 	if (cont) cont.outerHTML = ``;
 
-	const allIds = [...u_FEATURE_UPDATES.keys()];
+	const siteFlags = f_getSiteFlags();
+
+	const allIds = [...u_FEATURE_UPDATES.values()]
+		.filter((e) => e?.flag == null || siteFlags.has(e.flag))
+		.map((e) => e.id);
 	const seenIds = u_getSeenUpdates();
 	const unseenIds = allIds
 		.filter((id) => !seenIds.has(id))

@@ -52,8 +52,7 @@ function f_addSiteFlag(flag) {
 	flags.add(flag);
 	ls_setGlobal_arr(f_LSKEY_siteFlags, [...flags]);
 
-	if (flag === `fairies`)
-		t_addFairy();
+	if (flag === `fairies`) t_addFairy();
 
 	f_updateSiteFlags();
 }

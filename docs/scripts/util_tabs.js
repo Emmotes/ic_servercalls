@@ -1,4 +1,4 @@
-const vt = 1.203; // prettier-ignore
+const vt = 1.300; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -13,6 +13,7 @@ const t_DEFAULT_TABS = [
 	{id: "apothecaryTab", name: "Apothecary", visible: true},
 	{id: "trialsTab", name: "Trials", visible: true},
 	{id: "legendariesTab", name: "Legendaries", visible: true},
+	{id: "bastionTab", name: "Bastion", visible: true, flag: "beta"},
 	{id: "eventTiersTab", name: "Event Tiers", visible: true},
 	{id: "ilvlreportTab", name: "iLvl Report", visible: true},
 	{id: "shiniesTab", name: "Shinies Calculator", visible: true},
@@ -163,6 +164,10 @@ function t_generateTabHTML() {
 				lf_registerData();
 				contentHtml = lf_tab();
 				break;
+			case "bastionTab":
+				bt_registerData();
+				contentHtml = bt_tab();
+				break;
 			case "eventTiersTab":
 				et_registerData();
 				contentHtml = et_tab();
@@ -309,6 +314,7 @@ function getTabPullFunctions(data) {
 		partyTab: () => pm_pullPartyData(data.userDetails, data.definitions),
 		shiniesTab: () => sc_pullShiniesData(data.userDetails),
 		trialsTab: () => tm_pullData(false, data.trialsRefresh, data.definitions),
+		bastionTab: () => bt_pullBastionData(data.bastionDetails, data.definitions),
 	}; // prettier-ignore
 }
 
@@ -328,6 +334,7 @@ async function pullAllTabsData() {
 		let shopData;
 		let completionData;
 		let trialsRefresh;
+		let bastionDetails;
 
 		// Fetch server data sequentially only if tabs need it
 		if (t_tabsServerCalls.has("getUserDetails")) {
@@ -380,6 +387,12 @@ async function pullAllTabsData() {
 			await sleep(200);
 		}
 
+		if (t_tabsServerCalls.has("bastionDetails")) {
+			statusText.innerHTML = `Waiting for bastion details...`;
+			bastionDetails = await getBastionDetails();
+			await sleep(200);
+		}
+
 		statusText.innerHTML = `Processing data...`;
 		const dataPackage = {
 			userDetails,
@@ -390,6 +403,7 @@ async function pullAllTabsData() {
 			shopData,
 			completionData,
 			trialsRefresh,
+			bastionDetails,
 		};
 		const pullFunctions = getTabPullFunctions(dataPackage);
 		const pullPromises = t_currentTabs
