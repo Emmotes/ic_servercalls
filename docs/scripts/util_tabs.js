@@ -1,4 +1,4 @@
-const vt = 1.300; // prettier-ignore
+const vt = 1.301; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -323,6 +323,7 @@ async function pullAllTabsData() {
 	disablePullButtons(globalButtonDisableTimeAllTabs);
 
 	const statusText = document.getElementById("allTabsDataPullButtonStatus");
+	const siteFlags = f_getSiteFlags();
 
 	try {
 		// Initialize data variables
@@ -387,7 +388,7 @@ async function pullAllTabsData() {
 			await sleep(200);
 		}
 
-		if (t_tabsServerCalls.has("bastionDetails")) {
+		if (siteFlags.has("beta") && t_tabsServerCalls.has("getbastiondetails")) {
 			statusText.innerHTML = `Waiting for bastion details...`;
 			bastionDetails = await getBastionDetails();
 			await sleep(200);
