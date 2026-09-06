@@ -1,4 +1,4 @@
-const vbt = 1.000; // prettier-ignore
+const vbt = 1.001; // prettier-ignore
 const bt_serverCalls = new Set(["getbastiondetails"]);
 const bt_definitionsFilters = new Set([
 	"bastion_room_defines",
@@ -21,7 +21,7 @@ function bt_tab() {
 					</span>
 					<span class="f fr w100 p5">
 						<span class="f falc fjs ml2" style="width:100%">
-							This page will provide details about your Bastion.
+							This page will provide details about your Bastion including rooms and trophies.
 						</span>
 					</span>
 					<span class="f fr w100 p5">
@@ -116,15 +116,19 @@ function bt_displayBastionData(
 		const body = document.createElement(`span`);
 		body.classList.add(`formsCampaign`);
 
-		if (room.level > 0) bt_appendRow(body, `Level`, nf(room.level));
-		else
-			bt_appendRow(
-				body,
-				`Level`,
-				`Locked`,
-				null,
-				`var(--TangerineYellow)`,
-			);
+		const maxRoomLevel = room.unlocks.length + (room.level === 0 ? 0 : 1);
+
+		const levelStr =
+			room.level === maxRoomLevel ?
+				`Max (${nf(room.level)})`
+			:	`${nf(room.level)} / ${nf(maxRoomLevel)}`;
+		const levelCol =
+			room.level === maxRoomLevel ? null
+			: room.level > 0 ? `var(--CarolinaBlue)`
+			: `var(--TangerineYellow)`;
+		bt_appendRow(body, `Level`, levelStr, null, levelCol);
+
+		if (room.unlocks.length > 0) bt_tryAppendNextUpgrade(body, room);
 
 		outer.appendChild(body);
 		wrapper.appendChild(outer);
@@ -164,23 +168,51 @@ function bt_displayBastionData(
 	}
 }
 
-function bt_appendCategoryHeader(parent, headerText, addSpacer = false) {
+function bt_tryAppendNextUpgrade(body, room) {
+	const unlock = room.unlocks.filter(
+		(e) => e?.level === room?.level + 1,
+	)?.[0];
+	if (
+		!unlock ||
+		!unlock?.unlocks ||
+		!Array.isArray(unlock.requires) ||
+		room?.level == null ||
+		unlock?.level == null
+	)
+		return;
+
+	const header =
+		(room.level === 0 ? `Room` : `Next Level (${nf(unlock.level)})`) +
+		` Unlocks & Requirements`;
+	bt_appendRow(body, blankSpace);
+	bt_appendRequirementHeader(body, header);
+	bt_appendRequirementRow(body, 1, unlock.unlocks);
+	for (const req of unlock.requires) {
+		let text = addFullStop(req.desc);
+		if (req?.earned) text += ` (Earned)`;
+		else if (req?.progress && req?.goal)
+			text += ` (${nf(req.progress)} / ${nf(req.goal)})`;
+		bt_appendRequirementRow(body, 2, text);
+	}
+}
+
+function bt_appendCategoryHeader(parent, text, addSpacer = false) {
 	const header = document.createElement(`span`);
 	header.classList.add(`f`, `fr`, `falc`, `fjs`);
 	header.style.gridColumn = `1 / -1`;
 	header.style.fontSize = `1.5em`;
 	header.style.fontWeight = `bold`;
 	if (addSpacer) header.style.marginTop = `1em`;
-	header.textContent = headerText;
+	header.textContent = text;
 
 	parent.appendChild(header);
 }
 
-function bt_appendItemHeader(parent, headerText) {
+function bt_appendItemHeader(parent, text) {
 	const header = document.createElement(`span`);
 	header.classList.add(`formsCampaignTitle`);
 	header.style.fontSize = `1.2em`;
-	header.textContent = headerText;
+	header.textContent = text;
 
 	parent.appendChild(header);
 }
@@ -219,6 +251,26 @@ function bt_appendRow(
 	parent.appendChild(row);
 }
 
+function bt_appendRequirementHeader(parent, text) {
+	const header = document.createElement(`span`);
+	header.style.fontSize = `1.1em`;
+	header.style.fontWeight = `bold`;
+	header.textContent = text;
+
+	parent.appendChild(header);
+}
+
+function bt_appendRequirementRow(parent, padMult, text) {
+	const row = document.createElement(`span`);
+	row.classList.add(`formsCampaignFormation`, `p5`);
+	row.textContent = text;
+	row.style.textWrapStyle = `pretty`;
+	row.style.paddingLeft = `${padMult * 15}px`;
+
+	parent.appendChild(row);
+	return;
+}
+
 function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 	const map = new Map();
 
@@ -229,7 +281,14 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 		const name = room?.name;
 		const desc = room?.description;
 		if (id <= 0 || !name || !desc) continue;
-		rooms.set(id, {id, name, desc, level: 0});
+		const roomObj = {id, name, desc, level: 0, unlocks: []};
+
+		const unlockReqs = bt_parseRoomUnlockReqs(room);
+		if (unlockReqs) roomObj.unlocks.push(unlockReqs);
+
+		const extraUnlocks = bt_parseRoomExtraUnlocks(room);
+		if (extraUnlocks) roomObj.unlocks.push(...extraUnlocks);
+		rooms.set(id, roomObj);
 	}
 	const roomDetails = bastionDetails?.bastion_details?.rooms;
 	if (Array.isArray(roomDetails) && roomDetails.length > 0) {
@@ -238,6 +297,34 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 			const level = Number(room?.level ?? -1);
 			if (id <= 0 || level <= 0) continue;
 			rooms.get(id).level = level;
+		}
+	}
+	const requirementsProgress =
+		bastionDetails?.bastion_details?.requirements_progress;
+	if (requirementsProgress) {
+		for (const roomIdStr in Object.keys(requirementsProgress)) {
+			const progs = requirementsProgress[roomIdStr];
+			const roomId = Number(roomIdStr ?? -1);
+			if (!Array.isArray(progs) || roomId <= 0) continue;
+			for (const prog of progs) {
+				const reqIndex = Number(prog?.req_index ?? -1);
+				const progress = Number(prog?.progress ?? -1);
+				const goal = Number(prog?.goal ?? -1);
+				console.log(roomId, reqIndex, progress, goal);
+				if (reqIndex < 0 || progress < 0 || goal <= 0) continue;
+				const room = rooms?.get(roomId);
+				if (!room || !room?.unlocks || !room?.level) continue;
+				for (const unlock of room.unlocks) {
+					if (unlock.level !== room?.level + 1) continue;
+					const specificReq = unlock?.requires?.[reqIndex];
+					console.log("specificReq", specificReq);
+					if (!specificReq) continue;
+					if (progress < goal) specificReq.earned = true;
+					specificReq.progress = progress < goal ? progress : goal;
+					specificReq.goal = goal;
+					break;
+				}
+			}
 		}
 	}
 	map.set("rooms", rooms);
@@ -252,7 +339,7 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 		const rarity = Number(trophy?.rarity ?? 1);
 		const maxCount = Number(trophy?.max_count ?? 1);
 		const bastionBuff = Number(trophy?.bastion_buff ?? 0);
-		const cost = bt_parseCost(trophy?.cost) ?? ["", Infinity, "-"];
+		const cost = bt_parseTrophyCost(trophy?.cost) ?? ["", Infinity, "-"];
 		trophies.set(id, {
 			id,
 			name,
@@ -271,7 +358,56 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 	bt_bastionMap = map;
 }
 
-function bt_parseCost(cost) {
+function bt_parseRoomUnlockReqs(room) {
+	const unlockReqsObj = room?.unlock_requirements;
+	if (!unlockReqsObj || Array.isArray(unlockReqsObj)) return null;
+
+	const unlocksText = unlockReqsObj?.unlocks_text;
+	if (!unlocksText) return null;
+
+	const unlockReqs = unlockReqsObj?.requirements;
+	if (!Array.isArray(unlockReqs)) return null;
+
+	const reqs = [];
+	for (const req of unlockReqs) {
+		const desc = (req?.description ?? "None")
+			.replace(/\(current: \$[^)]+\)/g, "")
+			.trim();
+		reqs.push({desc, earned: false});
+	}
+	if (reqs.length === 0) return null;
+
+	return {unlocks: unlocksText, requires: reqs, level: 1};
+}
+
+function bt_parseRoomExtraUnlocks(room) {
+	const extraUnlocks = room?.extra_unlocks;
+	if (!Array.isArray(extraUnlocks) || extraUnlocks.length === 0) return null;
+
+	const unlocks = [];
+	let level = 1;
+	for (const extraUnlock of extraUnlocks) {
+		level++;
+		const unlocksText = extraUnlock?.unlocks_text;
+		if (!unlocksText) continue;
+
+		const unlockReqs = extraUnlock?.requirements;
+		const reqs = [];
+		if (!Array.isArray(unlockReqs)) continue;
+		for (const req of unlockReqs) {
+			const desc = (req?.description ?? "None")
+				.replace(/\(current: \$[^)]+\)/g, "")
+				.trim();
+			reqs.push({desc, earned: false});
+		}
+		unlocks.push({unlocks: unlocksText, requires: reqs, level});
+	}
+	if (unlocks.length === 0) return null;
+
+	return unlocks;
+}
+
+function bt_parseTrophyCost(cost) {
 	if (Array.isArray(cost)) return null;
 	const type = cost?.type;
 	if (!type) return null;

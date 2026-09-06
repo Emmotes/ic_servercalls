@@ -1,4 +1,4 @@
-const v = 4.403; // prettier-ignore
+const v = 4.404; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -1063,6 +1063,10 @@ function findWord(word, str) {
 	if (ciEquals(word, `Test`) && ciEquals(str, `Test of High Sorcery`))
 		return false;
 	return RegExp("\\b" + word + "\\b", "i").test(str);
+}
+
+function addFullStop(str) {
+	return str + (str.endsWith(".") ? "" : ".");
 }
 
 function ciEquals(a, b) {
