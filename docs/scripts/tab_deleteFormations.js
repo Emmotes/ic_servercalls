@@ -1,4 +1,4 @@
-const vdf = 2.001; // prettier-ignore
+const vdf = 2.002; // prettier-ignore
 const df_serverCalls = new Set(["getFormationSaves"]);
 let df_formsState = null;
 
@@ -114,7 +114,7 @@ function df_buildMaps(saves) {
 
 			const fav = Number(form.favorite ?? 0);
 			const formation = form.formation;
-			const hasFeats = !Array.isArray(formation?.feats ?? []);
+			const hasFeats = !Array.isArray(formation?.feats);
 			const tooltip = df_createFormationTooltip(name, formation, formObj);
 
 			map.get(campaignId).get(patronId).push({
