@@ -1,4 +1,4 @@
-const vcf = 1.404; // prettier-ignore
+const vcf = 1.405; // prettier-ignore
 const cf_LSKEY_savedFormations = `scSavedFormations`;
 const cf_LSKEY_savedFamiliars = `scSavedFamiliars`;
 const cf_LSKEY_importSortMode = `scImportSortMode`;
@@ -429,7 +429,7 @@ function cf_renderImportGameSelector() {
 
 		for (const form of sorted) {
 			const name =
-				cf_escapeHtml(form.name) + cf_getFavouriteText(form.favorite);
+				cf_escapeHtml(form.name) + cf_getExtrasText(form.favorite, form.feats);
 			txt +=
 				`<div class="cf_option" data-value="${form.id}" data-search="${name.toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
 				name +
@@ -608,7 +608,7 @@ function cf_renderImportLocalSelector(id) {
 			txt += `<div class="cf_optgroup-label" data-search="${groupLabel.toLowerCase()}" style="font-weight:bold;padding:4px 8px;cursor:default">${cf_escapeHtml(groupLabel)}</div>`;
 		}
 		const name =
-			cf_escapeHtml(save.name) + cf_getFavouriteText(save.favorite ?? 0);
+			cf_escapeHtml(save.name) + cf_getExtrasText(save?.favorite ?? 0, save?.feats ?? new Map());
 		txt +=
 			`<div class="cf_option" data-value="${index}" data-search="${name.toLowerCase()}" style="padding:4px 8px;cursor:pointer;">` +
 			name +
@@ -4024,8 +4024,14 @@ function cf_buildPatronSuffix(patronId) {
 	return ``;
 }
 
-function cf_getFavouriteText(fav) {
-	return fav > 0 ? ` (Fav: ${fav})` : ``;
+function cf_getExtrasText(fav, feats) {
+	if (fav === 0 && feats.size === 0)
+		return ``;
+	let txt = ``;
+	if (fav > 0) txt += `Fav: ${fav}`;
+	if (fav > 0 && feats.size > 0) txt += ` / `;
+	if (feats.size > 0) txt += `Has Feats`;
+	return ` (${txt})`;
 }
 
 function cf_migrateIriSort() {
