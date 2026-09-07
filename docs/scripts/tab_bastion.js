@@ -1,4 +1,4 @@
-const vbt = 1.002; // prettier-ignore
+const vbt = 1.003; // prettier-ignore
 const bt_serverCalls = new Set(["getbastiondetails"]);
 const bt_definitionsFilters = new Set([
 	"bastion_room_defines",
@@ -6,6 +6,17 @@ const bt_definitionsFilters = new Set([
 ]);
 const bt_costTypes = ["hard_currency", "patron_currency", "gems", ""];
 let bt_bastionMap = null;
+
+/*
+    Notes on Bastion server calls:
+	  - `unlockBastionRoom` seems explicitly designed for level 0 -> 1.
+	  - `unlockBastionRoomFeature` is for levelling up 1 -> 2 or 2 -> 3 etc.
+	      - The level it will become must be sent with the call. Too high or too low causes failure.
+	  - `levelupbastionroom` seems to result in `okay:null` no matter what room I use it on.
+	      - I am guessing it will level up rooms that do not unlock features - none of those exist yet.
+	  - `saveBastionLayout` is a mystery. No idea what it will be for or what format the call will take.
+	  - `purchaseBastionTrophy` buys a trophy - very simple.
+*/
 
 function bt_registerData() {
 	bt_serverCalls.forEach((c) => t_tabsServerCalls.add(c));
@@ -116,17 +127,8 @@ function bt_displayBastionData(
 		const body = document.createElement(`span`);
 		body.classList.add(`formsCampaign`);
 
-		const maxRoomLevel = room.unlocks.length + (room.level === 0 ? 0 : 1);
-
-		const levelStr =
-			room.level === maxRoomLevel ?
-				`Max (${nf(room.level)})`
-			:	`${nf(room.level)} / ${nf(maxRoomLevel)}`;
-		const levelCol =
-			room.level === maxRoomLevel ? null
-			: room.level > 0 ? `var(--CarolinaBlue)`
-			: `var(--TangerineYellow)`;
-		bt_appendRow(body, `Level`, levelStr, null, levelCol);
+		const level = bt_generateAmountsStrings(room.level, room.maxLevel);
+		bt_appendRow(body, `Level`, level.text, null, level.colour);
 
 		if (room.unlocks.length > 0) bt_tryAppendNextUpgrade(body, room);
 
@@ -149,13 +151,8 @@ function bt_displayBastionData(
 		const body = document.createElement(`span`);
 		body.classList.add(`formsCampaign`);
 
-		const ownedText =
-			trophy.count === 0 ?
-				`Unowned`
-			:	`${nf(trophy.count)} / ${nf(trophy.maxCount)}`;
-		const ownedColour =
-			trophy.count === 0 ? `var(--TangerineYellow)` : null;
-		bt_appendRow(body, `Owned`, ownedText, null, ownedColour);
+		const owned = bt_generateAmountsStrings(trophy.count, trophy.maxCount);
+		bt_appendRow(body, `Owned`, owned.text, null, owned.colour);
 
 		bt_appendRow(body, `Rarity`, r_nameById?.get(trophy.rarity) ?? `-`);
 
@@ -276,59 +273,84 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 
 	// Rooms
 	const rooms = new Map();
+	bt_parseRoomDefines(rooms, roomDefines);
+	bt_parseRoomDetails(rooms, bastionDetails?.bastion_details?.rooms);
+	bt_parseRoomRequirementProgress(
+		rooms,
+		bastionDetails?.bastion_details?.requirements_progress,
+	);
+	map.set("rooms", rooms);
+
+	// Trophies
+	const trophies = new Map();
+	bt_parseTrophyDefines(trophies, trophyDefines);
+	bt_parseTrophyDetails(trophies, bastionDetails?.bastion_details?.trophies);
+	map.set("trophies", trophies);
+
+	bt_bastionMap = map;
+}
+
+function bt_parseRoomDefines(rooms, roomDefines) {
 	for (const room of roomDefines) {
 		const id = Number(room?.id ?? -1);
 		const name = room?.name;
 		const desc = room?.description;
 		if (id <= 0 || !name || !desc) continue;
-		const roomObj = {id, name, desc, level: 0, unlocks: []};
+		const roomObj = {id, name, desc, level: 0, maxLevel: 1, unlocks: []};
 
 		const unlockReqs = bt_parseRoomUnlockReqs(room);
 		if (unlockReqs) roomObj.unlocks.push(unlockReqs);
 
 		const extraUnlocks = bt_parseRoomExtraUnlocks(room);
-		if (extraUnlocks) roomObj.unlocks.push(...extraUnlocks);
+		if (extraUnlocks)
+			for (const unlock of extraUnlocks) {
+				roomObj.unlocks.push(unlock);
+				if (unlock.level > roomObj.maxLevel)
+					roomObj.maxLevel = unlock.level;
+			}
 		rooms.set(id, roomObj);
 	}
-	const roomDetails = bastionDetails?.bastion_details?.rooms;
-	if (Array.isArray(roomDetails) && roomDetails.length > 0) {
-		for (const room of roomDetails) {
-			const id = Number(room?.room_id ?? -1);
-			const level = Number(room?.level ?? -1);
-			if (id <= 0 || level <= 0) continue;
-			rooms.get(id).level = level;
-		}
+}
+
+function bt_parseRoomDetails(rooms, roomDetails) {
+	if (!Array.isArray(roomDetails) || roomDetails.length === 0) return;
+
+	for (const room of roomDetails) {
+		const id = Number(room?.room_id ?? -1);
+		const level = Number(room?.level ?? -1);
+		if (id <= 0 || level <= 0) continue;
+		rooms.get(id).level = level;
 	}
-	const requirementsProgress =
-		bastionDetails?.bastion_details?.requirements_progress;
-	if (requirementsProgress) {
-		for (const roomIdStr in Object.keys(requirementsProgress)) {
-			const progs = requirementsProgress[roomIdStr];
-			const roomId = Number(roomIdStr ?? -1);
-			if (!Array.isArray(progs) || roomId <= 0) continue;
-			for (const prog of progs) {
-				const reqIndex = Number(prog?.req_index ?? -1);
-				const progress = Number(prog?.progress ?? -1);
-				const goal = Number(prog?.goal ?? -1);
-				if (reqIndex < 0 || progress < 0 || goal <= 0) continue;
-				const room = rooms?.get(roomId);
-				if (!room || !room?.unlocks || !room?.level) continue;
-				for (const unlock of room.unlocks) {
-					if (unlock.level !== room?.level + 1) continue;
-					const specificReq = unlock?.requires?.[reqIndex];
-					if (!specificReq) continue;
-					if (progress < goal) specificReq.earned = true;
-					specificReq.progress = progress < goal ? progress : goal;
-					specificReq.goal = goal;
-					break;
-				}
+}
+
+function bt_parseRoomRequirementProgress(rooms, roomProgress) {
+	if (!roomProgress) return;
+
+	for (const roomIdStr in Object.keys(roomProgress)) {
+		const progs = roomProgress[roomIdStr];
+		const roomId = Number(roomIdStr ?? -1);
+		if (!Array.isArray(progs) || roomId <= 0) continue;
+		for (const prog of progs) {
+			const reqIndex = Number(prog?.req_index ?? -1);
+			const progress = Number(prog?.progress ?? -1);
+			const goal = Number(prog?.goal ?? -1);
+			if (reqIndex < 0 || progress < 0 || goal <= 0) continue;
+			const room = rooms?.get(roomId);
+			if (!room || !room?.unlocks || !room?.level) continue;
+			for (const unlock of room.unlocks) {
+				if (unlock.level !== room?.level + 1) continue;
+				const specificReq = unlock?.requires?.[reqIndex];
+				if (!specificReq) continue;
+				if (progress < goal) specificReq.earned = true;
+				specificReq.progress = progress < goal ? progress : goal;
+				specificReq.goal = goal;
+				break;
 			}
 		}
 	}
-	map.set("rooms", rooms);
+}
 
-	// Trophies
-	const trophies = new Map();
+function bt_parseTrophyDefines(trophies, trophyDefines) {
 	for (const trophy of trophyDefines) {
 		const id = Number(trophy?.id ?? -1);
 		const name = trophy?.name;
@@ -351,9 +373,16 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 			costStr: cost[2],
 		});
 	}
-	map.set("trophies", trophies);
+}
 
-	bt_bastionMap = map;
+function bt_parseTrophyDetails(trophies, trophyDetails) {
+	if (!Array.isArray(trophyDetails) || trophyDetails.length === 0) return;
+
+	for (const trophy of trophyDetails) {
+		const id = Number(trophy?.trophy_id ?? -1);
+		if (id <= 0) continue;
+		trophies.get(id).count++;
+	}
 }
 
 function bt_parseRoomUnlockReqs(room) {
@@ -429,6 +458,16 @@ function bt_parseTrophyCost(cost) {
 	}
 	console.log("Unknown Bastion trophy cost type: " + type);
 	return null;
+}
+
+function bt_generateAmountsStrings(curr, max) {
+	return {
+		text: `${nf(curr)} / ${nf(max)}`,
+		colour:
+			curr === max ? null
+			: curr > 0 ? `var(--CarolinaBlue)`
+			: `var(--TangerineYellow)`,
+	};
 }
 
 function bt_roomSort(a, b) {
