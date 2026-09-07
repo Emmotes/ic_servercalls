@@ -1,4 +1,4 @@
-const vbt = 1.001; // prettier-ignore
+const vbt = 1.002; // prettier-ignore
 const bt_serverCalls = new Set(["getbastiondetails"]);
 const bt_definitionsFilters = new Set([
 	"bastion_room_defines",
@@ -57,11 +57,11 @@ async function bt_pullBastionData(bastionDetails, definitions) {
 	setWrapperFormat(wrapper, 0);
 	try {
 		if (!bastionDetails) {
-			wrapper.innerHTML = `Waiting for bastion details...`;
+			wrapper.textContent = `Waiting for bastion details...`;
 			bastionDetails = await getBastionDetails();
 		}
 		if (!definitions) {
-			wrapper.innerHTML = `Waiting for definitions...`;
+			wrapper.textContent = `Waiting for definitions...`;
 			definitions = await getDefinitions(
 				filtersFromSet(bt_definitionsFilters),
 			);
@@ -99,7 +99,7 @@ function bt_displayBastionData(
 	bt_buildMaps(bastionDetails, roomDefines, trophyDefines);
 	setWrapperFormat(wrapper, 2);
 
-	for (const child of wrapper.childNodes) wrapper.removeChild(child);
+	wrapper.replaceChildren();
 
 	// Rooms
 	bt_appendCategoryHeader(wrapper, `Rooms`);
@@ -310,14 +310,12 @@ function bt_buildMaps(bastionDetails, roomDefines, trophyDefines) {
 				const reqIndex = Number(prog?.req_index ?? -1);
 				const progress = Number(prog?.progress ?? -1);
 				const goal = Number(prog?.goal ?? -1);
-				console.log(roomId, reqIndex, progress, goal);
 				if (reqIndex < 0 || progress < 0 || goal <= 0) continue;
 				const room = rooms?.get(roomId);
 				if (!room || !room?.unlocks || !room?.level) continue;
 				for (const unlock of room.unlocks) {
 					if (unlock.level !== room?.level + 1) continue;
 					const specificReq = unlock?.requires?.[reqIndex];
-					console.log("specificReq", specificReq);
 					if (!specificReq) continue;
 					if (progress < goal) specificReq.earned = true;
 					specificReq.progress = progress < goal ? progress : goal;
