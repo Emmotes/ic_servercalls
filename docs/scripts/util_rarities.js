@@ -1,10 +1,10 @@
-const vr = 1.000; // prettier-ignore
+const vr = 1.001; // prettier-ignore
 const r_rarityRegistry = [
 	{rarity: 1, name: "Common", colour: "var(--WhitecapFoam)"},
-	{rarity: 2, name: "Uncommon", colour: "var(--AlienArmpit)"},
-	{rarity: 3, name: "Rare", colour: "var(--UltramarineBlue)"},
-	{rarity: 4, name: "Epic", colour: "var(--Violet)"},
-	{rarity: 5, name: "Legendary", colour: "var(--Saffron)"},
+	{rarity: 2, name: "Uncommon", colour: "var(--Leafy)"},
+	{rarity: 3, name: "Rare", colour: "var(--CornflowerBlue)"},
+	{rarity: 4, name: "Epic", colour: "var(--Heliotrope)"},
+	{rarity: 5, name: "Legendary", colour: "var(--Orange)"},
 ];
 const r_rarityById = new Map();
 const r_nameById = new Map();

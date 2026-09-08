@@ -1,4 +1,4 @@
-const vbt = 1.003; // prettier-ignore
+const vbt = 1.004; // prettier-ignore
 const bt_serverCalls = new Set(["getbastiondetails"]);
 const bt_definitionsFilters = new Set([
 	"bastion_room_defines",
@@ -154,7 +154,8 @@ function bt_displayBastionData(
 		const owned = bt_generateAmountsStrings(trophy.count, trophy.maxCount);
 		bt_appendRow(body, `Owned`, owned.text, null, owned.colour);
 
-		bt_appendRow(body, `Rarity`, r_nameById?.get(trophy.rarity) ?? `-`);
+		const rarity = bt_generateRarityStrings(trophy.rarity);
+		bt_appendRow(body, `Rarity`, rarity.text, null, rarity.colour);
 
 		bt_appendRow(body, `Cost`, trophy.costStr);
 
@@ -464,25 +465,33 @@ function bt_generateAmountsStrings(curr, max) {
 	return {
 		text: `${nf(curr)} / ${nf(max)}`,
 		colour:
-			curr === max ? null
-			: curr > 0 ? `var(--CarolinaBlue)`
-			: `var(--TangerineYellow)`,
+			curr === max ? `var(--CarolinaBlue)`
+			: curr > 0 ? `var(--Saffron)`
+			: `var(--RedOrange)`,
+	};
+}
+
+function bt_generateRarityStrings(rarityId) {
+	const rarity = r_rarityById.get(rarityId);
+	return {
+		text: rarity?.name ?? "-",
+		colour: rarity?.colour ?? null,
 	};
 }
 
 function bt_roomSort(a, b) {
-	// Owned before unowned.
-	if (a.level > 0 && b.level === 0) return -1;
-	if (a.level === 0 && b.level > 0) return 1;
+	// Put rooms at max level last.
+	if (a.level === a.maxLevel && b.level < b.maxLevel) return 1;
+	if (a.level < a.maxLevel && b.level === b.maxLevel) return -1;
 
-	// Lastly by name.
+	// Then by name.
 	return a.name.localeCompare(b.name);
 }
 
 function bt_trophySort(a, b) {
-	// Owned before unowned.
-	if (a.count > 0 && b.count === 0) return -1;
-	if (a.count === 0 && b.count > 0) return 1;
+	// Put trophies at max count last.
+	if (a.count === a.maxCount && b.count < b.maxCount) return 1;
+	if (a.count < a.maxCount && b.count === b.maxCount) return -1;
 
 	// No Cost -> Gems -> Patron Currency -> Platinum.
 	const aCostInd = bt_costTypes.indexOf(a.costType);
