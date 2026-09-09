@@ -31,8 +31,9 @@ function bt_tab() {
 						</span>
 					</span>
 					<span class="f fr w100 p5">
-						<span class="f falc fjs ml2" style="width:100%">
-							This page will provide details about your Bastion including rooms and trophies.
+						<span class="f fc fals fjs ml2" style="width:100%">
+							<p>This page will provide details about your Bastion including rooms and trophies.</p>
+							<p><em>Note: Trophies don't seem to have made it into the Bastion beta.</em></p>
 						</span>
 					</span>
 					<span class="f fr w100 p5">
