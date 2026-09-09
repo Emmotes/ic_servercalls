@@ -1,4 +1,4 @@
-const vu = 1.104; // prettier-ignore
+const vu = 1.105; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -131,7 +131,6 @@ const u_FEATURE_UPDATES = new Map([
 				"Also includes the trophies you have or haven't unlocked.",
 			],
 			tab: "bastion",
-			flag: "beta",
 		},
 	],
 ]);

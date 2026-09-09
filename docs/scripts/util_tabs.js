@@ -1,4 +1,4 @@
-const vt = 1.301; // prettier-ignore
+const vt = 1.302; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -13,7 +13,7 @@ const t_DEFAULT_TABS = [
 	{id: "apothecaryTab", name: "Apothecary", visible: true},
 	{id: "trialsTab", name: "Trials", visible: true},
 	{id: "legendariesTab", name: "Legendaries", visible: true},
-	{id: "bastionTab", name: "Bastion", visible: true, flag: "beta"},
+	{id: "bastionTab", name: "Bastion", visible: true},
 	{id: "eventTiersTab", name: "Event Tiers", visible: true},
 	{id: "ilvlreportTab", name: "iLvl Report", visible: true},
 	{id: "shiniesTab", name: "Shinies Calculator", visible: true},
@@ -388,7 +388,7 @@ async function pullAllTabsData() {
 			await sleep(200);
 		}
 
-		if (siteFlags.has("beta") && t_tabsServerCalls.has("getbastiondetails")) {
+		if (t_tabsServerCalls.has("getbastiondetails")) {
 			statusText.innerHTML = `Waiting for bastion details...`;
 			bastionDetails = await getBastionDetails();
 			await sleep(200);
