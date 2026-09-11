@@ -1,4 +1,4 @@
-const vbt = 1.004; // prettier-ignore
+const vbt = 1.005; // prettier-ignore
 const bt_serverCalls = new Set(["getbastiondetails"]);
 const bt_definitionsFilters = new Set([
 	"bastion_room_defines",
@@ -32,8 +32,9 @@ function bt_tab() {
 					</span>
 					<span class="f fr w100 p5">
 						<span class="f fc fals fjs ml2" style="width:100%">
-							<p>This page will provide details about your Bastion including rooms and trophies.</p>
-							<p><em>Note: Trophies don't seem to have made it into the Bastion beta.</em></p>
+							<p>This page will provide details about your Bastion rooms.</p>
+							<!-- <p>This page will provide details about your Bastion including rooms and trophies.</p> -->
+							<!-- <p><em>Note: Trophies don't seem to have made it into the Bastion beta.</em></p> -->
 						</span>
 					</span>
 					<span class="f fr w100 p5">
@@ -137,6 +138,7 @@ function bt_displayBastionData(
 		wrapper.appendChild(outer);
 	}
 
+	/*
 	// Trophies
 	bt_appendCategoryHeader(wrapper, `Trophies`, true);
 
@@ -165,6 +167,7 @@ function bt_displayBastionData(
 		outer.appendChild(body);
 		wrapper.appendChild(outer);
 	}
+	*/
 }
 
 function bt_tryAppendNextUpgrade(body, room) {
