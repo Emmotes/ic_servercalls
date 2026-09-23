@@ -1,4 +1,4 @@
-const vtm = 1.102; // prettier-ignore
+const vtm = 1.103; // prettier-ignore
 const tm_serverCalls = new Set(["trialsRefreshData", "getDefinitions"]);
 const tm_definitionsFilters = new Set([
 	"hero_defines",
@@ -480,7 +480,7 @@ function tm_displayLobby(wrapper, campaign, trialsData) {
 		Number(trialsData.difficulty_token_inventory.normal ?? 0),
 		Number(trialsData.difficulty_token_inventory.any ?? 0),
 	];
-	const playerName = trialsData.player_name;
+	const playerName = escapeHTML(trialsData.player_name);
 	const hostIndex = Number(campaign.host_index);
 	const playerIndex = Number(campaign.active_player_index);
 	const player = campaign.players[playerIndex];
@@ -917,7 +917,7 @@ function tm_parsePlayers(campaign) {
 	for (let player of campaign.players) {
 		if (Number(player?.role_id ?? 0) === 0) continue;
 		players[player.role_id] = {
-			name: player.name,
+			name: escapeHTML(player.name),
 			dps: Number(player.dps),
 			tot: Number(player.total_damage),
 			empty: false,
