@@ -1,4 +1,4 @@
-const vu = 1.105; // prettier-ignore
+const vu = 1.106; // prettier-ignore
 const u_LSKEY_updates = `scUpdatesSeen`;
 const u_updatesContainer = `unseenUpdatesContainer`;
 const u_FEATURE_UPDATES = new Map([
@@ -131,6 +131,18 @@ const u_FEATURE_UPDATES = new Map([
 				"Also includes the trophies you have or haven't unlocked.",
 			],
 			tab: "bastion",
+		},
+	],
+	[
+		10,
+		{
+			id: 10,
+			date: "2026-10-01",
+			title: `New Tab: Emergence`,
+			list: [
+				"Lets your buy items from the Thayan Enclave shop.",
+			],
+			tab: `emergency`,
 		},
 	],
 ]);

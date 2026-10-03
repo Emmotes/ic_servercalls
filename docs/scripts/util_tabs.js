@@ -1,4 +1,4 @@
-const vt = 1.302; // prettier-ignore
+const vt = 1.400; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -8,6 +8,7 @@ const t_DEFAULT_TABS = [
 	{id: "featsTab", name: "Buy Feats", visible: true},
 	{id: "buyChestsTab", name: "Buy Chests", visible: true},
 	{id: "openChestsTab", name: "Open Chests", visible: true},
+	{id: "emergencyTab", name: "Emergence", visible: true},
 	{id: "bscTab", name: "Blacksmiths", visible: true},
 	{id: "favourTab", name: "Favour", visible: true},
 	{id: "apothecaryTab", name: "Apothecary", visible: true},
@@ -144,6 +145,10 @@ function t_generateTabHTML() {
 				oc_registerData();
 				contentHtml = oc_tab();
 				break;
+			case "emergencyTab":
+				em_registerData();
+				contentHtml = em_tab();
+				break;
 			case "bscTab":
 				bs_registerData();
 				contentHtml = bs_tab();
@@ -210,7 +215,7 @@ function t_generateTabHTML() {
 			<input onClick="${t_editMode ? `t_toggleTabVisibility('${tab.id}')` : `setHash('${tab.id}')`}" type="radio" class="tabsRadio" name="serverTabs" id="${tab.id}" ${isChecked ? "checked" : ""}>
 			<label for="${tab.id}" class="${tabClass}" ${t_editMode ? `draggable="true" ondragstart="t_onDragStart(event, '${tab.id}')" ondragover="t_onDragOver(event)" ondrop="t_onDrop(event, '${tab.id}')"` : ""}>
 				${t_editMode ? `<span class="t_dragHandle">⋮⋮</span>` : ""}
-				<span>${tab.name}</span>
+				<span>${t_getTabName(tab.name)}</span>
 				${t_editMode ? `<button class="t_hideButton" onclick="t_toggleTabVisibility('${tab.id}')" title="${tab.visible ? "Hide tab" : "Show tab"}">${tab.visible ? "✔️" : "❌"}</button>` : ""}
 			</label>
 			<div class="tabsContent">
@@ -315,6 +320,7 @@ function getTabPullFunctions(data) {
 		shiniesTab: () => sc_pullShiniesData(data.userDetails),
 		trialsTab: () => tm_pullData(false, data.trialsRefresh, data.definitions),
 		bastionTab: () => bt_pullBastionData(data.bastionDetails, data.definitions),
+		emergencyTab: () => em_pullEmergencyData(data.userDetails, data.shopData, data.definitions),
 	}; // prettier-ignore
 }
 
@@ -495,4 +501,9 @@ function t_removeFairies() {
 	else t_fr[1] += 15;
 
 	setTimeout(t_addFairy, randInt(t_fr[0], t_fr[1]) * 1000);
+}
+
+function t_getTabName(name) {
+	if (name === "Emergence" && randInt(1, 10) === 1) return "Emergency";
+	return name;
 }

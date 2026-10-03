@@ -1,4 +1,4 @@
-const v = 4.404; // prettier-ignore
+const v = 4.405; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -95,6 +95,7 @@ function init() {
 	ap_initApothecaryHideOptions();
 	et_initEventTiersSettings();
 	ss_initServerStatusSettings();
+	em_initHideTypes();
 	fs_init();
 
 	resumePullButtonCooldown();
@@ -755,6 +756,9 @@ function setWrapperFormat(wrapper, type) {
 	} else if (type === 8) {
 		wrapper.className = `favourWrapper`;
 		wrapper.style = ``;
+	} else if (type === 9) {
+		wrapper.className = `emergencyWrapper`;
+		wrapper.style = ``;
 	}
 }
 
@@ -1238,20 +1242,20 @@ function parseReviver(key, value) {
 	return value;
 }
 
-function ls_has(key) {
-	const v = localStorage.getItem(key);
-	return v !== null && v !== "";
-}
+const ls_has = (key) => {
+	const v = ls_getGlobal(key, null);
+	return v !== null && v !== ``;
+};
 
-function ls_remove(key) {
+const ls_remove = (key) => {
 	try {
 		localStorage.removeItem(key);
 	} catch {
 		// Do nothing.
 	}
-}
+};
 
-function ls_getGlobal(key, defaultValue) {
+const ls_getGlobal = (key, defaultValue) => {
 	try {
 		const raw = localStorage.getItem(key);
 		if (raw == null) return defaultValue;
@@ -1259,67 +1263,67 @@ function ls_getGlobal(key, defaultValue) {
 	} catch {
 		return defaultValue;
 	}
-}
+};
 
-function ls_getGlobal_set(key, defaultValue) {
+const ls_getGlobal_set = (key, defaultValue) => {
 	const val = ls_getGlobal(key, defaultValue);
 	if (!Array.isArray(val)) return new Set(defaultValue || []);
 	return new Set(val);
-}
+};
 
-function ls_setGlobal(key, value, isEmptyFn) {
-	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
+const ls_getGlobal_bool = (key, defaultValue) => {
+	const def = defaultValue ? 1 : 0;
+	return ls_getGlobal(key, def) === 1;
+};
 
+const ls_setGlobal = (key, value, isEmpty) => {
 	if (isEmpty) ls_remove(key);
 	else {
 		try {
-			localStorage.setItem(key, JSON.stringify(value, stringifyReplacer));
+			localStorage.setItem(
+				key,
+				JSON.stringify(value, stringifyReplacer),
+			);
 		} catch {
 			// Do nothing.
 		}
 	}
-}
+};
 
-function ls_setGlobal_num(key, value, defaultValue) {
-	const num = Number(value);
-	ls_setGlobal(key, num, (v) => !Number.isFinite(v) || v === defaultValue);
-}
+const ls_setGlobal_arr = (key, value, defaultValue = []) => {
+	ls_setGlobal(key, value, ls_emptyFns.array(value, defaultValue));
+};
 
-function ls_setGlobal_string(key, value, defaultValue) {
-	ls_setGlobal(
-		key,
-		value,
-		(v) =>
-			!v || typeof v !== `string` || v.length === 0 || v === defaultValue,
-	);
-}
-
-function ls_setGlobal_bool(key, value, defaultValue) {
+const ls_setGlobal_bool = (key, value, defaultValue = false) => {
 	const num = value ? 1 : 0;
-	const def = defaultValue ? 1 : 0;
 
-	ls_setGlobal(key, num, (v) => v === def);
-}
+	ls_setGlobal(key, num, ls_emptyFns.boolean(value, defaultValue));
+};
 
-function ls_setGlobal_arr(key, arr) {
-	ls_setGlobal(key, arr, (v) => !Array.isArray(v) || v.length === 0);
-}
+const ls_setGlobal_num = (key, value, defaultValue = 0) => {
+	const num = Number(value);
+	ls_setGlobal(key, num, ls_emptyFns.number(num, defaultValue));
+};
 
-function ls_setGlobal_obj(key, obj) {
-	ls_setGlobal(
-		key,
-		obj,
-		(v) => !v || typeof v !== "object" || Object.keys(v).length === 0,
-	);
-}
+const ls_setGlobal_obj = (key, obj, defaultValue = {}) => {
+	ls_setGlobal(key, obj, ls_emptyFns.object(obj, defaultValue));
+};
 
-function ls_getPerAccount(key, defaultValue) {
+const ls_setGlobal_set = (key, value, defaultValue = []) => {
+	ls_setGlobal_arr(key, [...value], defaultValue);
+};
+
+const ls_setGlobal_string = (key, value, defaultValue = ``) => {
+	ls_setGlobal(key, value, ls_emptyFns.string(value, defaultValue));
+};
+
+const ls_getPerAccount = (key, defaultValue) => {
 	try {
 		const raw = localStorage.getItem(key);
 		if (!raw) return defaultValue;
 
 		const parsed = JSON.parse(raw, parseReviver);
-		if (!parsed || typeof parsed !== "object") return defaultValue;
+		if (!parsed || typeof parsed !== `object`) return defaultValue;
 
 		ls_prunePerAccountData(key, parsed);
 
@@ -1328,12 +1332,15 @@ function ls_getPerAccount(key, defaultValue) {
 	} catch {
 		return defaultValue;
 	}
-}
-function ls_getPerAccount_set(key, defaultValue) {
-	return new Set(ls_getPerAccount(key, defaultValue));
-}
+};
 
-function ls_setPerAccount(key, value, isEmptyFn) {
+const ls_getPerAccount_set = (key, defaultValue) => {
+	return new Set(ls_getPerAccount(key, defaultValue));
+};
+
+const ls_setPerAccount = (key, value, isEmpty) => {
+	if (currAccount == null || currAccount?.name == null)
+		return;
 	let parsed = {};
 	try {
 		const raw = localStorage.getItem(key);
@@ -1341,8 +1348,6 @@ function ls_setPerAccount(key, value, isEmptyFn) {
 	} catch {
 		parsed = {};
 	}
-
-	const isEmpty = isEmptyFn ? isEmptyFn(value) : value == null;
 
 	if (isEmpty) delete parsed[currAccount.name];
 	else parsed[currAccount.name] = value;
@@ -1358,44 +1363,62 @@ function ls_setPerAccount(key, value, isEmptyFn) {
 			// Do nothing.
 		}
 	}
-}
+};
 
-function ls_setPerAccount_num(key, value, defaultValue) {
-	const num = Number(value);
-	ls_setPerAccount(
-		key,
-		num,
-		(v) => !Number.isFinite(v) || v === defaultValue,
-	);
-}
+const ls_setPerAccount_arr = (key, value, defaultValue = []) => {
+	ls_setPerAccount(key, value, ls_emptyFns.array(value, defaultValue));
+};
 
-function ls_setPerAccount_bool(key, value, defaultValue) {
+const ls_setPerAccount_bool = (key, value, defaultValue = false) => {
 	const num = value ? 1 : 0;
 	const def = defaultValue ? 1 : 0;
 
-	ls_setPerAccount(key, num, (v) => v === def);
-}
+	ls_setPerAccount(key, num, ls_emptyFns.boolean(num, def));
+};
 
-function ls_setPerAccount_arr(key, arr) {
-	ls_setPerAccount(key, arr, (v) => !Array.isArray(v) || v.length === 0);
-}
+const ls_setPerAccount_num = (key, value, defaultValue = 0) => {
+	const num = Number(value);
+	ls_setPerAccount(key, num, ls_emptyFns.string(num, defaultValue));
+};
 
-function ls_setPerAccount_obj(key, obj) {
-	ls_setPerAccount(
-		key,
-		obj,
-		(v) => !v || typeof v !== "object" || Object.keys(v).length === 0,
-	);
-}
+const ls_setPerAccount_obj = (key, value, defaultValue = {}) => {
+	ls_setPerAccount(key, value, ls_emptyFns.string(value, defaultValue));
+};
 
-function ls_prunePerAccountData(key, parsed) {
-	if (!parsed || typeof parsed !== "object") return;
+const ls_setPerAccount_set = (key, value, defaultValue = []) => {
+	ls_setPerAccount_arr(key, [...value], defaultValue);
+};
+
+const ls_setPerAccount_string = (key, value, defaultValue = ``) => {
+	ls_setPerAccount(key, value, ls_emptyFns.string(value, defaultValue));
+};
+
+const ls_emptyFns = {
+	array: (v, d) => !Array.isArray(v) || v.length === 0 || equal(v, d),
+	boolean: (v, d) => equal(v, d),
+	number: (v, d) => !Number.isFinite(v) || equal(v, d),
+	object: (v, d) =>
+		!v ||
+		typeof v !== `object` ||
+		Object.keys(v).length === 0 ||
+		equal(v, d),
+	set: (v, d) =>
+		!v ||
+		Object.prototype.toString.call(v) !== `[object Set]` ||
+		v.size === 0 ||
+		equal(v, d),
+	string: (v, d) =>
+		!v || typeof v !== `string` || v.length === 0 || equal(v, d),
+};
+
+const ls_prunePerAccountData = (key, parsed) => {
+	if (!parsed || typeof parsed !== `object`) return;
 
 	const userAccounts = getUserAccounts();
 	const accountNames = new Set(Object.keys(userAccounts?.accounts || {}));
 
 	let changed = false;
-	for (const accountName in parsed) {
+	for (const accountName of Object.keys(parsed)) {
 		if (!accountNames.has(accountName)) {
 			delete parsed[accountName];
 			changed = true;
@@ -1403,4 +1426,176 @@ function ls_prunePerAccountData(key, parsed) {
 	}
 
 	if (changed) ls_setGlobal_obj(key, parsed);
-}
+};
+
+/*****************
+ * Compare Utils *
+ *****************/
+
+const equal = (a, b, state = {pairs: []}) => {
+	// 1. Catches identical primitives, matching symbols, and handles NaN correctly
+	if (Object.is(a, b)) return true;
+
+	// 2. Filter out primitives and null/undefined (since they failed Object.is)
+	if (
+		a == null ||
+		typeof a !== `object` ||
+		b == null ||
+		typeof b !== `object`
+	)
+		return false;
+
+	// 3. Get the structural type tag (e.g., `[object Set]`, `[object RegExp]`)
+	const tagA = Object.prototype.toString.call(a);
+	const tagB = Object.prototype.toString.call(b);
+	if (tagA !== tagB) return false;
+
+	if (state.pairs.some(([left, right]) => left === a && right === b))
+		return true;
+	state.pairs.push([a, b]);
+
+	// 4. Delegate to specialized deep equality helpers
+	switch (tagA) {
+		case `[object Date]`:
+			return Object.is(a.getTime(), b.getTime());
+		case `[object RegExp]`:
+			return (
+				a.source === b.source &&
+				a.flags === b.flags &&
+				a.lastIndex === b.lastIndex
+			);
+		case `[object Array]`:
+			return arrEqual(a, b, state);
+		case `[object Set]`:
+			return setEqual(a, b, state);
+		case `[object Map]`:
+			return mapEqual(a, b, state);
+		case `[object String]`:
+		case `[object Number]`:
+		case `[object Boolean]`:
+		case `[object BigInt]`:
+		case `[object Symbol]`:
+			// Handles primitive wrappers like new String(`hello`)
+			return Object.is(a.valueOf(), b.valueOf());
+		case `[object WeakMap]`:
+		case `[object WeakSet]`:
+		case `[object Promise]`:
+		case `[object WeakRef]`:
+		case `[object FinalizationRegistry]`:
+			return false;
+		case `[object ArrayBuffer]`:
+			return bytesEqual(new Uint8Array(a), new Uint8Array(b));
+		case `[object DataView]`:
+			return bytesEqual(
+				new Uint8Array(a.buffer, a.byteOffset, a.byteLength),
+				new Uint8Array(b.buffer, b.byteOffset, b.byteLength),
+			);
+		default:
+			// Falls back to standard plain object comparison
+			return objEqual(a, b, state);
+	}
+};
+
+const bytesEqual = (bytes1, bytes2) => {
+	if (bytes1.length !== bytes2.length) return false;
+	for (let i = 0; i < bytes1.length; i++)
+		if (bytes1[i] !== bytes2[i]) return false;
+	return true;
+};
+
+const objEqual = (obj1, obj2, state) => {
+	// 1. Structural/Prototype Check (Optional but highly recommended)
+	// Ensures they belong to the same class/prototype chain
+	if (Object.getPrototypeOf(obj1) !== Object.getPrototypeOf(obj2))
+		return false;
+
+	// 2. Fetch ALL keys (Strings, Symbols, Enumerable, and Non-Enumerable)
+	const keys1 = Reflect.ownKeys(obj1);
+	const keys2 = Reflect.ownKeys(obj2);
+	if (keys1.length !== keys2.length) return false;
+
+	// 3. Structural value matching
+	for (const key of keys1) {
+		// Reflect.has handles prototype checks, but since we are looking at
+		// direct `own keys`, a simple inclusion/hasOwn check prevents missed keys.
+		if (!Object.prototype.hasOwnProperty.call(obj2, key)) return false;
+		if (!equal(obj1[key], obj2[key], state)) return false;
+	}
+
+	return true;
+};
+
+const arrEqual = (arr1, arr2, state) => {
+	// 1. Fast length check for standard elements
+	if (arr1.length !== arr2.length) return false;
+
+	// 2. Fetch ALL keys (Strings, Symbols, Enumerable, and Non-Enumerable)
+	const keys1 = Reflect.ownKeys(arr1);
+	const keys2 = Reflect.ownKeys(arr2);
+	if (keys1.length !== keys2.length) return false;
+
+	for (const key of keys1) {
+		if (!Object.prototype.hasOwnProperty.call(arr2, key)) return false;
+		if (key !== `length` && !equal(arr1[key], arr2[key], state))
+			return false;
+	}
+
+	return true;
+};
+
+const setEqual = (set1, set2, state) => {
+	// 1. Fast size check
+	if (set1.size !== set2.size) return false;
+
+	// 2. Deep value lookup
+	const matched = new Set();
+	for (const val1 of set1) {
+		let found = false;
+
+		for (const val2 of set2) {
+			if (matched.has(val2)) continue;
+			const candidateState = {pairs: [...state.pairs]};
+			if (equal(val1, val2, candidateState)) {
+				matched.add(val2);
+				state.pairs = candidateState.pairs;
+				found = true;
+				break;
+			}
+		}
+
+		// If an element in set1 doesn't exist anywhere in set2, they aren't equal
+		if (!found) return false;
+	}
+
+	return true;
+};
+
+const mapEqual = (map1, map2, state) => {
+	// 1. Fast size check
+	if (map1.size !== map2.size) return false;
+
+	// 2. Match deep keys and deep values
+	const matched = new Set();
+	for (const [key1, val1] of map1) {
+		let found = false;
+
+		for (const [key2, val2] of map2) {
+			if (matched.has(key2)) continue;
+			const candidateState = {pairs: [...state.pairs]};
+			if (
+				equal(key1, key2, candidateState) &&
+				equal(val1, val2, candidateState)
+			) {
+				matched.add(key2);
+				state.pairs = candidateState.pairs;
+				found = true;
+				break;
+			}
+		}
+
+		// If the key wasn't found, or the value didn't match, they aren't equal
+		if (!found) return false;
+	}
+
+	return true;
+};

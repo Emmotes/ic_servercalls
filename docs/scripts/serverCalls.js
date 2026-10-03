@@ -1,4 +1,4 @@
-const vs = 3.036; // prettier-ignore
+const vs = 3.100; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -110,6 +110,14 @@ async function closeTimeGate() {
 async function purchaseFeat(featId) {
 	const params = [["feat_id", featId]];
 	return await sendServerCall(SERVER, "purchasefeat", params, true, true);
+}
+
+async function purchaseEmergenceItem(itemId, count) {
+	const params = [
+		["corrupted_gem_item_id", itemId],
+		["purchase_count", count],
+	];
+	return await sendServerCall(SERVER, "purchasecorruptedgemitem", params, true, true);
 }
 
 async function forgeLegendary(heroId, slotId) {

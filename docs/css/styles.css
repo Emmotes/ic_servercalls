@@ -1237,7 +1237,9 @@ input[type="checkbox"]:checked::before {
 
 .favourWrapper {
 	display: grid;
-	grid-template-columns: minmax(250px, max-content) minmax(100px, max-content) minmax(20px, max-content) minmax(250px, max-content);
+	grid-template-columns:
+		minmax(250px, max-content) minmax(100px, max-content)
+		minmax(20px, max-content) minmax(250px, max-content);
 	gap: 10px;
 }
 
@@ -1316,4 +1318,68 @@ input[type="checkbox"]:checked::before {
 .t_f {
 	cursor: crosshair;
 	z-index: 999;
+}
+
+.emergenceGroupTitle {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 2px 2px 4px 8px;
+	font-size: 1.2em;
+	line-height: 1.4;
+}
+
+.emergencyWrapper {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 355px);
+	gap: 10px;
+	font-size: 0.875rem;
+}
+
+.emergenceGroup {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: var(--Gunmetal);
+	gap: 5px;
+	margin-bottom: 15px;
+	font-size: 0.9em;
+	text-wrap-style: balance;
+}
+.emergenceGroupRow {
+	display: flex;
+	gap: 5px;
+	padding: 2px 0;
+}
+.emergenceGroupRow > :nth-child(3n + 1) {
+	width: 35px;
+}
+.emergenceGroupRow > :nth-child(3n + 2) {
+	width: 220px;
+}
+.emergenceGroupRow > :nth-child(3n + 3) {
+	width: 70px;
+}
+.emergenceGroupRow > :nth-child(n) {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+.emergenceGroup > :nth-child(1) > :nth-child(3) {
+	display: flex;
+	justify-content: center;
+}
+.emergenceGroup > :nth-child(n + 2) > :nth-child(3n + 3) {
+	display: flex;
+	justify-content: flex-end;
+}
+.emergenceBuyRow {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	width: 50%;
+	padding-left: 10%;
 }
