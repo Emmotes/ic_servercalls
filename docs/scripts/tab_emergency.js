@@ -1,4 +1,4 @@
-const vem = 1.100; // prettier-ignore
+const vem = 1.101; // prettier-ignore
 const em_LSKEY_hideTypes = `scEmergencyHides`;
 const em_serverCalls = new Set(["getShop", "getDefinitions"]);
 const em_definitionsFilters = new Set([
@@ -95,27 +95,32 @@ async function em_pullEmergencyData(userDetails, shopData, definitions) {
 	}
 	const wrapper = document.getElementById(`emergencyWrapper`);
 	setWrapperFormat(wrapper, 0);
-	//try {
-	if (!userDetails) {
-		wrapper.innerHTML = `Waiting for user data...`;
-		userDetails = await getUserDetails();
-	}
-	if (!shopData) {
-		wrapper.innerHTML = `Waiting for shop data...`;
-		shopData = await getShop();
-	}
-	if (!definitions) {
-		wrapper.innerHTML = `Waiting for definitions...`;
-		definitions = await getDefinitions(
-			filtersFromSet(em_definitionsFilters),
+	try {
+		if (!userDetails) {
+			wrapper.innerHTML = `Waiting for user data...`;
+			userDetails = await getUserDetails();
+		}
+		if (!shopData) {
+			wrapper.innerHTML = `Waiting for shop data...`;
+			shopData = await getShop();
+		}
+		if (!definitions) {
+			wrapper.innerHTML = `Waiting for definitions...`;
+			definitions = await getDefinitions(
+				filtersFromSet(em_definitionsFilters),
+			);
+		}
+		await em_displayEmergencyData(
+			wrapper,
+			userDetails,
+			shopData,
+			definitions,
 		);
+		codeEnablePullButtons();
+	} catch (error) {
+		setWrapperFormat(wrapper, 0);
+		handleError(wrapper, error);
 	}
-	await em_displayEmergencyData(wrapper, userDetails, shopData, definitions);
-	codeEnablePullButtons();
-	//} catch (error) {
-	//	setWrapperFormat(wrapper, 0);
-	//	handleError(wrapper, error);
-	//}
 }
 
 async function em_displayEmergencyData(
@@ -677,7 +682,11 @@ async function em_buyEmergencyItems() {
 				buyer,
 				em_addBuyerRow(
 					undefined,
-					{textContent: addFullStop(result.purchase_result.error_msg)},
+					{
+						textContent: addFullStop(
+							result.purchase_result.error_msg,
+						),
+					},
 					true,
 				),
 			);
