@@ -1,4 +1,4 @@
-const vt = 1.400; // prettier-ignore
+const vt = 1.401; // prettier-ignore
 const t_LSKEY_tabOrder = "scTabOrder";
 const t_LSKEY_tabVisibility = "scTabVisibility";
 
@@ -30,6 +30,7 @@ let t_editMode = false;
 let t_currentTabs = [];
 
 let t_fr = null;
+let t_fairyActive = false;
 
 const t_tabsServerCalls = new Set();
 const t_tabsDefinitionsFilters = new Set();
@@ -78,17 +79,14 @@ function t_saveTabSettings() {
 		visibility[tab.id] = tab.visible;
 	});
 
-	ls_setPerAccount(t_LSKEY_tabOrder, order, (v) => {
-		if (!Array.isArray(v) || v.length !== t_DEFAULT_TABS.length)
-			return true;
-		const defaultOrder = t_DEFAULT_TABS.map((tab) => tab.id);
-		return JSON.stringify(v) === JSON.stringify(defaultOrder);
-	});
+	const defaultOrder = t_DEFAULT_TABS.map((tab) => tab.id);
+	ls_setPerAccount_arr(t_LSKEY_tabOrder, order, defaultOrder);
 
-	ls_setPerAccount(t_LSKEY_tabVisibility, visibility, (v) => {
-		if (typeof v !== "object" || v === null) return true;
-		return Object.values(v).every((visible) => visible === true);
-	});
+	ls_setPerAccount(
+		t_LSKEY_tabVisibility,
+		visibility,
+		Object.values(visibility).every((visible) => visible === true),
+	);
 }
 
 function t_generateTabHTML() {
@@ -433,6 +431,7 @@ async function pullAllTabsData() {
 }
 
 function t_addFairy(type, id, left, rand) {
+	if (t_fairyActive) return;
 	if (type == null) type = randInt(1, 4) === 1 ? `a` : `i`;
 	if (id == null) id = randInt(1, 4);
 	if (left == null) left = randInt(0, 1) === 1;
@@ -467,6 +466,7 @@ function t_addFairy(type, id, left, rand) {
 		makeImg(ele, type, id, `Fairy attacking the Pull All button.`, !left);
 
 		parent.appendChild(ele);
+		t_fairyActive = true;
 		return;
 	}
 
@@ -489,6 +489,7 @@ function t_addFairy(type, id, left, rand) {
 		makeImg(ele, type, id, `Fairy idle at the edges.`, !left);
 
 		parent.appendChild(ele);
+		t_fairyActive = true;
 		return;
 	}
 }
@@ -496,6 +497,7 @@ function t_addFairy(type, id, left, rand) {
 function t_removeFairies() {
 	const eles = document.getElementsByClassName("t_f");
 	for (const ele of eles) ele.parentNode.removeChild(ele);
+	t_fairyActive = false;
 
 	if (!t_fr || !Array.isArray(t_fr)) t_fr = [0, 30];
 	else t_fr[1] += 15;
