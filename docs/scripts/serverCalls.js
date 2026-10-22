@@ -1,4 +1,4 @@
-const vs = 3.100; // prettier-ignore
+const vs = 3.101; // prettier-ignore
 const STATUS = "https://ic-server-status.emmote0.workers.dev/ic_server_status";
 const M = `https://master.idlechampions.com/~idledragons/`;
 const SPS = `switch_play_server`;
@@ -417,8 +417,8 @@ async function getShop() {
 async function setCurrentObjective(
 	instanceId,
 	adventureId,
-	patronId,
-	timeGateObjective,
+	patronId = null,
+	timeGateObjective = null,
 ) {
 	// Use patronId OR timeGateObjective. Never both.
 	const params = [
@@ -430,10 +430,10 @@ async function setCurrentObjective(
 			"Cannot set a patronId and a timeGateObjective in the same call.",
 		);
 		return {};
-	} else if (timeGateObjective !== undefined) {
+	} else if (timeGateObjective != null) {
 		params.push(["time_gate_objective", timeGateObjective]);
 	} else {
-		params.push(["patron_tier", 0]);
+		params.push(["patron_tier", patronId > 0 ? 1 : 0]);
 		params.push(["patron_id", patronId || 0]);
 	}
 	return await sendServerCall(
