@@ -1,4 +1,4 @@
-const v = 4.405; // prettier-ignore
+const v = 4.406; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -1382,7 +1382,7 @@ const ls_setPerAccount_num = (key, value, defaultValue = 0) => {
 };
 
 const ls_setPerAccount_obj = (key, value, defaultValue = {}) => {
-	ls_setPerAccount(key, value, ls_emptyFns.string(value, defaultValue));
+	ls_setPerAccount(key, value, ls_emptyFns.object(value, defaultValue));
 };
 
 const ls_setPerAccount_set = (key, value, defaultValue = []) => {

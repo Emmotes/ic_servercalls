@@ -1,4 +1,4 @@
-﻿const vfs = 1.012; // prettier-ignore
+﻿const vfs = 1.013; // prettier-ignore
 const fs_LSKEY_settings = `scFreeStuffSettings`;
 const fs_LSKEY_activeLock = `scFreeStuffActiveLock`;
 const fs_TIMERS = {
@@ -921,8 +921,7 @@ function fs_loadSettings() {
 		...fs_DEFAULT_SETTINGS,
 		...(saved || {}),
 	};
-	if (wasCorrupted)
-		fs_saveSettings();
+	if (wasCorrupted) fs_saveSettings();
 	return fs_state.settings;
 }
 
@@ -930,19 +929,11 @@ function fs_saveSettings() {
 	const settingsToSave = {
 		...fs_state.settings,
 	};
-	if (currAccount?.name) delete settingsToSave[currAccount.name];
 
-	const isDefault = Object.keys(fs_DEFAULT_SETTINGS).every(
-		(key) => settingsToSave[key] === fs_DEFAULT_SETTINGS[key],
-	);
-	ls_setPerAccount(
+	ls_setPerAccount_obj(
 		fs_LSKEY_settings,
 		settingsToSave,
-		(v) =>
-			!v ||
-			typeof v !== `object` ||
-			Object.keys(v).length === 0 ||
-			isDefault,
+		fs_DEFAULT_SETTINGS,
 	);
 }
 
