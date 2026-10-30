@@ -1,4 +1,4 @@
-const v = 4.406; // prettier-ignore
+const v = 4.407; // prettier-ignore
 const LSKEY_accounts = `scAccounts`;
 const LSKEY_numFormat = `scNumberFormat`;
 const LSKEY_pullButtonCooldown = "scPullCooldownEnd";
@@ -393,13 +393,13 @@ async function loadUserAccount() {
 		SERVER = ``;
 		instanceId = ``;
 		boilerplate = ``;
-		oc_initOpenChestsHideChests();
 	}
 	clearTimers(null, "mpb_");
 	if (fs_state?.loopIntervalId != null) fs_toggleFreeStuffChecker();
 	cleanup();
 	t_onAccountSwitch();
 	fs_init();
+	oc_initOpenChestsHideChests();
 	resumePullButtonCooldown();
 
 	swapTab();
