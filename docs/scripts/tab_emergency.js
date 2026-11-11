@@ -1,4 +1,4 @@
-const vem = 1.101; // prettier-ignore
+const vem = 1.200; // prettier-ignore
 const em_LSKEY_hideTypes = `scEmergencyHides`;
 const em_serverCalls = new Set(["getShop", "getDefinitions"]);
 const em_definitionsFilters = new Set([
@@ -41,16 +41,24 @@ function em_tab() {
 							<p><em>Note: The <code>Select All</code> buttons will not increase sliders - but <code>Deselect All</code> will reduce them to 0.</em></p>
 							<span class="f fc" style="position:absolute;top:-85px;font-size:0.85em;right:0;z-index:1">
 								<span class="f fr falc">
+									<input type="checkbox" id="em_hide_buff" onclick="em_toggleHideType(this.checked, 'buff')">
+									<label for="em_hide_buff">Hide Buffs</label>
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="em_hide_skin" onclick="em_toggleHideType(this.checked, 'skin')">
+									<label for="em_hide_skin">Hide Skins</label>
+								</span>
+								<span class="f fr falc">
+									<input type="checkbox" id="em_hide_loot" onclick="em_toggleHideType(this.checked, 'loot')">
+									<label for="em_hide_loot">Hide GEs</label>
+								</span>
+								<span class="f fr falc">
 									<input type="checkbox" id="em_hide_feat" onclick="em_toggleHideType(this.checked, 'feat')">
 									<label for="em_hide_feat">Hide Feats</label>
 								</span>
 								<span class="f fr falc">
 									<input type="checkbox" id="em_hide_chest" onclick="em_toggleHideType(this.checked, 'chest')">
 									<label for="em_hide_chest">Hide Chests</label>
-								</span>
-								<span class="f fr falc">
-									<input type="checkbox" id="em_hide_buff" onclick="em_toggleHideType(this.checked, 'buff')">
-									<label for="em_hide_buff">Hide Buffs</label>
 								</span>
 							</span>
 						</span>
